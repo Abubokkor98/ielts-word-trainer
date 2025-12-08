@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { api } from '../../lib/api';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { axiosInstance } from '../../lib/axios';
+import { useQuizStore } from '../../store/quiz.store';
 import { Button } from '@ielts/ui';
 import {
   Box,
@@ -26,6 +28,24 @@ interface Question {
   question: string;
   options: Option[];
   correctAnswer?: string;
+  wordId?: string;
+}
+
+interface QuizAttempt {
+  questions: Array<{
+    wordId: string;
+    selectedAnswer: string;
+    correctAnswer: string;
+    isCorrect: boolean;
+    timeSpent: number;
+  }>;
+  score: number;
+  totalQuestions: number;
+  startTime: string;
+  endTime: string;
+  totalTimeSpent: number;
+  difficulty?: string;
+  topic?: string;
 }
 
 export default function QuizPage() {
@@ -33,56 +53,92 @@ export default function QuizPage() {
   const [currentIdx, setCurrentIdx] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [questionAnswers, setQuestionAnswers] = useState<
+    Map<number, { selected: string; correct: string; isCorrect: boolean }>
+  >(new Map());
   const toast = useToast();
+  const queryClient = useQueryClient();
+  const { setLastQuizResult } = useQuizStore();
+
+  const { refetch: fetchQuiz, isLoading: loading } = useQuery({
+    queryKey: ['quiz', 'generate'],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get('/quiz/generate?limit=10');
+      return data.data;
+    },
+    enabled: false,
+  });
+
+  const saveAttemptMutation = useMutation({
+    mutationFn: async (attemptData: QuizAttempt) => {
+      const { data } = await axiosInstance.post('/quiz/attempts', attemptData);
+      return data;
+    },
+    onSuccess: (data) => {
+      const xpEarned = data.data?.xpEarned || 0;
+      toast({
+        title: 'Quiz saved!',
+        description: `You earned ${xpEarned} XP!`,
+        status: 'success',
+        duration: 4000,
+      });
+
+      // Invalidate analytics and user queries
+      queryClient.invalidateQueries({ queryKey: ['analytics', 'me'] });
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+    },
+    onError: (error: any) => {
+      console.error('Failed to save quiz attempt:', error);
+      toast({
+        title: 'Failed to save quiz',
+        description: "Your progress couldn't be saved.",
+        status: 'warning',
+        duration: 3000,
+      });
+    },
+  });
 
   const startQuiz = async () => {
-    setLoading(true);
-    try {
-      const { data } = await api.get('/quiz/generate?limit=5');
-      if (data.success) {
-        setQuestions(data.data);
-        setCurrentIdx(0);
-        setScore(0);
-        setShowResult(false);
-        setSelectedAnswer(null);
-      }
-    } catch (err: any) {
-      toast({
-        title: 'Error loading quiz',
-        description: err.response?.data?.message || 'Failed to generate quiz',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-        position: 'top',
-      });
-    } finally {
-      setLoading(false);
+    const result = await fetchQuiz();
+    if (result.data) {
+      setQuestions(result.data);
+      setCurrentIdx(0);
+      setScore(0);
+      setShowResult(false);
+      setSelectedAnswer(null);
+      setStartTime(new Date());
+      setQuestionAnswers(new Map());
     }
   };
 
   const submitAnswer = async (optionId: string) => {
     setSelectedAnswer(optionId);
-    // @ts-ignore
-    const isCorrect = questions[currentIdx].correctAnswer === optionId;
+    const currentQuestion = questions[currentIdx];
+    const isCorrect = currentQuestion.correctAnswer === optionId;
+
+    // Store answer
+    const newAnswers = new Map(questionAnswers);
+    newAnswers.set(currentIdx, {
+      selected: optionId,
+      correct: currentQuestion.correctAnswer!,
+      isCorrect,
+    });
+    setQuestionAnswers(newAnswers);
+
     if (isCorrect) {
       setScore((s) => s + 1);
       toast({
         title: 'Correct!',
         status: 'success',
         duration: 1500,
-        isClosable: true,
-        position: 'top',
       });
     } else {
       toast({
         title: 'Incorrect',
-        description: 'Keep trying!',
         status: 'error',
         duration: 1500,
-        isClosable: true,
-        position: 'top',
       });
     }
 
@@ -91,9 +147,46 @@ export default function QuizPage() {
         setCurrentIdx((i) => i + 1);
         setSelectedAnswer(null);
       } else {
-        setShowResult(true);
+        finishQuiz(newAnswers);
       }
     }, 1500);
+  };
+
+  const finishQuiz = async (answers: Map<number, any>) => {
+    setShowResult(true);
+
+    if (!startTime) return;
+
+    const endTime = new Date();
+    const totalTimeSpent = endTime.getTime() - startTime.getTime();
+
+    // Prepare quiz attempt data
+    const attemptData: QuizAttempt = {
+      questions: Array.from(answers.entries()).map(([idx, answer]) => ({
+        wordId: questions[idx].id, // This is the word ID from backend
+        selectedAnswer: answer.selected,
+        correctAnswer: answer.correct,
+        isCorrect: answer.isCorrect,
+        timeSpent: 0, // Can be calculated per question if needed
+      })),
+      score,
+      totalQuestions: questions.length,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      totalTimeSpent,
+    };
+
+    // Store in Zustand
+    setLastQuizResult({
+      score,
+      totalQuestions: questions.length,
+      correctAnswers: score,
+      difficulty: 'mixed',
+      timestamp: new Date().toISOString(),
+    });
+
+    // Save to backend
+    saveAttemptMutation.mutate(attemptData);
   };
 
   if (questions.length === 0) {
@@ -181,6 +274,11 @@ export default function QuizPage() {
                 ? 'Excellent work! You have a strong vocabulary!'
                 : 'Keep practicing! Review the words and try again.'}
             </Text>
+            {saveAttemptMutation.isPending && (
+              <Text fontSize="sm" color="gray.500">
+                Saving your progress...
+              </Text>
+            )}
             <Button size="lg" onClick={startQuiz} px={10} py={6}>
               Take Another Quiz
             </Button>
@@ -197,99 +295,49 @@ export default function QuizPage() {
     <Box minH="100vh" bg="gray.900" py={12}>
       <Container maxW="4xl">
         <VStack spacing={8}>
-          {/* Progress Bar */}
           <Box w="full">
-            <HStack justify="space-between" mb={3}>
-              <Text fontWeight="600" color="gray.300">
-                Question {currentIdx + 1} of {questions.length}
+            <HStack justify="space-between" mb={2}>
+              <Text color="gray.400" fontSize="sm">
+                Question {currentIdx + 1}/{questions.length}
               </Text>
-              <Badge colorScheme="blue" fontSize="sm">
-                Score: {score}/{currentIdx}
-              </Badge>
+              <Badge colorScheme="brand">{Math.round(progress)}%</Badge>
             </HStack>
             <Progress
               value={progress}
-              size="md"
-              borderRadius="full"
               colorScheme="brand"
+              size="sm"
+              borderRadius="full"
             />
           </Box>
 
-          {/* Question Card */}
           <Box
             w="full"
             bg="gray.800"
-            p={10}
+            p={8}
             borderRadius="lg"
             borderWidth="1px"
             borderColor="gray.700"
           >
-            <VStack spacing={8} align="stretch">
-              <Text
-                fontSize="2xl"
-                fontWeight="600"
-                color="gray.50"
-                textAlign="center"
-              >
-                {currentQuestion.question}
-              </Text>
-
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-                {currentQuestion.options.map((option, index) => (
-                  <Button
-                    key={option.id}
-                    onClick={() => !selectedAnswer && submitAnswer(option.id)}
-                    isDisabled={selectedAnswer !== null}
-                    h="auto"
-                    py={5}
-                    px={5}
-                    fontSize="md"
-                    whiteSpace="normal"
-                    textAlign="left"
-                    justifyContent="flex-start"
-                    variant="outline"
-                    borderColor={
-                      selectedAnswer === option.id
-                        ? // @ts-ignore
-                          currentQuestion.correctAnswer === option.id
-                          ? 'success.500'
-                          : 'error.500'
-                        : 'gray.600'
-                    }
-                    bg={
-                      selectedAnswer === option.id
-                        ? // @ts-ignore
-                          currentQuestion.correctAnswer === option.id
-                          ? 'whiteAlpha.100'
-                          : 'whiteAlpha.50'
-                        : 'transparent'
-                    }
-                    _hover={{
-                      bg: selectedAnswer ? undefined : 'whiteAlpha.100',
-                    }}
-                  >
-                    <HStack spacing={3} w="full">
-                      <Box
-                        minW="32px"
-                        h="32px"
-                        borderRadius="full"
-                        bg="brand.600"
-                        color="white"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        fontWeight="600"
-                      >
-                        {String.fromCharCode(65 + index)}
-                      </Box>
-                      <Text flex={1} color="gray.200">
-                        {option.text}
-                      </Text>
-                    </HStack>
-                  </Button>
-                ))}
-              </SimpleGrid>
-            </VStack>
+            <Heading as="h3" size="lg" color="gray.50" mb={6}>
+              {currentQuestion.question}
+            </Heading>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
+              {currentQuestion.options.map((option) => (
+                <Button
+                  key={option.id}
+                  size="lg"
+                  variant={selectedAnswer === option.id ? 'default' : 'outline'}
+                  onClick={() => submitAnswer(option.id)}
+                  isDisabled={selectedAnswer !== null}
+                  w="full"
+                  py={8}
+                  textAlign="left"
+                  justifyContent="flex-start"
+                >
+                  {option.text}
+                </Button>
+              ))}
+            </SimpleGrid>
           </Box>
         </VStack>
       </Container>

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { QuizController } from './quiz.controller';
 import { QuizAnalyticsController } from './quiz-analytics.controller';
+import { QuizAttemptController } from './quiz-attempt.controller';
 import { authenticate } from '../auth/auth.middleware';
 import { UserRole } from '@ielts/shared';
 import { authorize } from '../../core/middleware/authorize.middleware';
@@ -9,6 +10,10 @@ const router = Router();
 
 // Public endpoint - no auth required for quiz generation
 router.get('/generate', QuizController.generate);
+
+// Quiz attempts
+router.post('/attempts', authenticate, QuizAttemptController.create);
+router.get('/attempts', authenticate, QuizAttemptController.getUserAttempts);
 
 router.get(
   '/analytics/me',
