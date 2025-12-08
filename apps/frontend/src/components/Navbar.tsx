@@ -14,6 +14,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserMenu } from './UserMenu';
+import { useAuthStore } from '../store/auth.store';
 
 const HamburgerIcon = () => (
   <svg
@@ -72,9 +73,28 @@ const NavLink = ({ href, children }: NavLinkProps) => {
         bg: 'gray.800',
         color: 'white',
       }}
+      role="menuitem"
     >
       {children}
     </ChakraLink>
+  );
+};
+
+const NavLinks = () => {
+  const { isAuthenticated } = useAuthStore();
+
+  // Don't show any links if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  // All authenticated users see the same links
+  return (
+    <>
+      <NavLink href="/dashboard">Dashboard</NavLink>
+      <NavLink href="/vocabulary">Vocabulary</NavLink>
+      <NavLink href="/quiz">Quiz</NavLink>
+    </>
   );
 };
 
@@ -143,9 +163,7 @@ export const Navbar = () => {
                 display={{ base: 'none', md: 'flex' }}
                 role="menubar"
               >
-                <NavLink href="/dashboard">Dashboard</NavLink>
-                <NavLink href="/vocabulary">Vocabulary</NavLink>
-                <NavLink href="/quiz">Quiz</NavLink>
+                <NavLinks />
               </HStack>
             </HStack>
             <Flex alignItems="center">
@@ -156,9 +174,7 @@ export const Navbar = () => {
           {isOpen ? (
             <Box pb={4} display={{ md: 'none' }}>
               <Stack as="nav" spacing={4} role="menu">
-                <NavLink href="/dashboard">Dashboard</NavLink>
-                <NavLink href="/vocabulary">Vocabulary</NavLink>
-                <NavLink href="/quiz">Quiz</NavLink>
+                <NavLinks />
               </Stack>
             </Box>
           ) : null}
