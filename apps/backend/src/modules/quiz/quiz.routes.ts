@@ -7,7 +7,9 @@ import { authorize } from '../../core/middleware/authorize.middleware';
 
 const router = Router();
 
-router.post('/generate', authenticate, QuizController.generate);
+// Public endpoint - no auth required for quiz generation
+router.get('/generate', QuizController.generate);
+
 router.get(
   '/analytics/me',
   authenticate,

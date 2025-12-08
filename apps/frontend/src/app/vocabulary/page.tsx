@@ -2,15 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
+import { Button, Card, CardHeader, CardContent, CardFooter } from '@ielts/ui';
+import { WordDetailsModal } from '../../components/WordDetailsModal';
 import {
-  Button,
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from '@ielts/ui';
-import Link from 'next/link';
+  Box,
+  Badge,
+  Text,
+  SimpleGrid,
+  useDisclosure,
+  Heading,
+  Container,
+  HStack,
+} from '@chakra-ui/react';
 
 interface Word {
   _id: string;
@@ -18,6 +21,11 @@ interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: string;
+  partOfSpeech?: string;
+  pronunciation?: string;
+  synonyms?: string[];
+  antonyms?: string[];
+  topic?: string;
 }
 
 export default function VocabularyPage() {
@@ -25,15 +33,27 @@ export default function VocabularyPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+  const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
     fetchWords();
-  }, [page]);
+  }, [page, difficultyFilter]);
 
   const fetchWords = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get(`/words?page=${page}&limit=12`);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '12',
+      });
+
+      if (difficultyFilter !== 'all') {
+        params.append('difficulty', difficultyFilter);
+      }
+
+      const { data } = await api.get(`/words?${params.toString()}`);
       if (data.success) {
         setWords(data.data.words);
         setTotalPages(data.data.totalPages);
@@ -45,65 +65,204 @@ export default function VocabularyPage() {
     }
   };
 
+  const handleViewDetails = (word: Word) => {
+    setSelectedWord(word);
+    onOpen();
+  };
+
+  const handleDifficultyChange = (difficulty: string) => {
+    setDifficultyFilter(difficulty);
+    setPage(1); // Reset to page 1 when filter changes
+  };
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Vocabulary Library
-        </h2>
-      </div>
+    <Box minH="100vh" bg="gray.900" py={8}>
+      <Container maxW="7xl">
+        <Box mb={8}>
+          <Heading as="h1" size="2xl" color="gray.50" mb={2} fontWeight="bold">
+            Vocabulary Library
+          </Heading>
+          <Text fontSize="lg" color="gray.400" mb={6}>
+            Explore and master essential IELTS vocabulary
+          </Text>
 
-      {loading ? (
-        <div className="grid gap-4 md:grid-cols-3">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-40 rounded-lg bg-muted animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {words.map((word) => (
-            <Card key={word._id} className="flex flex-col">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-2xl">{word.word}</CardTitle>
-                  <span className="text-xs uppercase bg-secondary px-2 py-1 rounded text-secondary-foreground">
-                    {word.difficulty}
-                  </span>
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 space-y-2">
-                <p className="font-medium text-muted-foreground">
-                  {word.meaning}
-                </p>
-                <p className="text-sm italic">"{word.exampleSentence}"</p>
-              </CardContent>
-              <CardFooter className="pt-4">
-                <Button  className="w-full">
-                  View Details
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      )}
+          {/* Difficulty Filter */}
+          <HStack spacing={3}>
+            <Text color="gray.300" fontWeight="600" fontSize="sm">
+              Filter by difficulty:
+            </Text>
+            <HStack spacing={2}>
+              <Button
+                size="sm"
+                variant={difficultyFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => handleDifficultyChange('all')}
+              >
+                All
+              </Button>
+              <Button
+                size="sm"
+                variant={
+                  difficultyFilter === 'beginner' ? 'default' : 'outline'
+                }
+                onClick={() => handleDifficultyChange('beginner')}
+              >
+                Beginner
+              </Button>
+              <Button
+                size="sm"
+                variant={
+                  difficultyFilter === 'intermediate' ? 'default' : 'outline'
+                }
+                onClick={() => handleDifficultyChange('intermediate')}
+              >
+                Intermediate
+              </Button>
+              <Button
+                size="sm"
+                variant={
+                  difficultyFilter === 'advanced' ? 'default' : 'outline'
+                }
+                onClick={() => handleDifficultyChange('advanced')}
+              >
+                Advanced
+              </Button>
+            </HStack>
+          </HStack>
+        </Box>
 
-      <div className="flex justify-center gap-2 mt-8">
-        <Button
-          disabled={page === 1}
-          onClick={() => setPage((p) => p - 1)}
-        >
-          Previous
-        </Button>
-        <span className="flex items-center px-4 text-sm font-medium">
-          Page {page} of {totalPages}
-        </span>
-        <Button
-          disabled={page === totalPages}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          Next
-        </Button>
-      </div>
-    </div>
+        {loading ? (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={5}>
+            {[...Array(8)].map((_, i) => (
+              <Box
+                key={i}
+                h="220px"
+                borderRadius="lg"
+                bg="gray.800"
+                borderWidth="1px"
+                borderColor="gray.700"
+                className="animate-pulse"
+              />
+            ))}
+          </SimpleGrid>
+        ) : (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={5}>
+            {words.map((word) => (
+              <Card key={word._id}>
+                <CardHeader>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="start"
+                  >
+                    <Heading
+                      as="h3"
+                      size="md"
+                      color="brand.400"
+                      fontWeight="bold"
+                    >
+                      {word.word}
+                    </Heading>
+                    <Badge
+                      colorScheme={
+                        word.difficulty === 'beginner'
+                          ? 'green'
+                          : word.difficulty === 'intermediate'
+                          ? 'orange'
+                          : 'red'
+                      }
+                      fontSize="xs"
+                    >
+                      {word.difficulty}
+                    </Badge>
+                  </Box>
+                </CardHeader>
+                <CardContent>
+                  <Box mb={3}>
+                    <Text
+                      fontWeight="600"
+                      color="gray.300"
+                      fontSize="xs"
+                      mb={1}
+                    >
+                      MEANING
+                    </Text>
+                    <Text color="gray.400" fontSize="sm" noOfLines={2}>
+                      {word.meaning}
+                    </Text>
+                  </Box>
+                  <Box>
+                    <Text
+                      fontWeight="600"
+                      color="gray.300"
+                      fontSize="xs"
+                      mb={1}
+                    >
+                      EXAMPLE
+                    </Text>
+                    <Text
+                      fontSize="xs"
+                      fontStyle="italic"
+                      color="gray.500"
+                      noOfLines={2}
+                    >
+                      "{word.exampleSentence}"
+                    </Text>
+                  </Box>
+                </CardContent>
+                <CardFooter>
+                  <Button
+                    width="100%"
+                    size="sm"
+                    onClick={() => handleViewDetails(word)}
+                  >
+                    View Details
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </SimpleGrid>
+        )}
+
+        <Box display="flex" justifyContent="center" gap={4} mt={10}>
+          <Button
+            isDisabled={page === 1}
+            onClick={() => setPage((p) => p - 1)}
+            variant="outline"
+            size="sm"
+          >
+            Previous
+          </Button>
+          <Box
+            display="flex"
+            alignItems="center"
+            px={5}
+            py={2}
+            bg="gray.800"
+            borderRadius="md"
+            borderWidth="1px"
+            borderColor="gray.700"
+            fontWeight="600"
+            color="gray.300"
+            fontSize="sm"
+          >
+            Page {page} of {totalPages}
+          </Box>
+          <Button
+            isDisabled={page === totalPages}
+            onClick={() => setPage((p) => p + 1)}
+            variant="outline"
+            size="sm"
+          >
+            Next
+          </Button>
+        </Box>
+
+        <WordDetailsModal
+          isOpen={isOpen}
+          onClose={onClose}
+          word={selectedWord}
+        />
+      </Container>
+    </Box>
   );
 }

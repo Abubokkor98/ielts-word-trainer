@@ -1,10 +1,9 @@
 import { Inter } from 'next/font/google';
 import './global.css';
-import { cn } from '@ielts/ui';
 import { ReactQueryProvider } from './providers';
-import { ThemeProvider } from '@ielts/ui';
+import { ChakraUIProvider } from '@ielts/ui';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata = {
   title: {
@@ -42,19 +41,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn(
-          inter.className,
-          'antialiased min-h-screen bg-background'
-        )}
-      >
+      <body className={`${inter.variable} ${inter.className}`}>
         <ReactQueryProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+          <ChakraUIProvider>
             <div className="flex flex-col min-h-screen">
               <header className="border-b">
                 <div className="container flex items-center justify-between py-4">
@@ -62,28 +51,28 @@ export default function RootLayout({
                   <nav className="flex gap-4">
                     <a
                       href="/dashboard"
-                      className="text-sm font-medium hover:text-primary"
+                      className="text-sm font-medium hover:text-blue-600"
                     >
                       Dashboard
                     </a>
                     <a
                       href="/vocabulary"
-                      className="text-sm font-medium hover:text-primary"
+                      className="text-sm font-medium hover:text-blue-600"
                     >
                       Vocabulary
                     </a>
                     <a
                       href="/quiz"
-                      className="text-sm font-medium hover:text-primary"
+                      className="text-sm font-medium hover:text-blue-600"
                     >
                       Quiz
                     </a>
                   </nav>
                 </div>
               </header>
-              {children}
+              <main className="flex-1">{children}</main>
             </div>
-          </ThemeProvider>
+          </ChakraUIProvider>
         </ReactQueryProvider>
       </body>
     </html>
