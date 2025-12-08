@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '../../lib/api';
+import { useMutation } from '@tanstack/react-query';
+import { axiosInstance } from '../../lib/axios';
+import { useAuthStore } from '../../store/auth.store';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
   Box,
@@ -18,42 +20,44 @@ import Link from 'next/link';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const toast = useToast();
+  const { setUser, setToken } = useAuthStore();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const loginMutation = useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosInstance.post('/auth/login', {
+        email,
+        password,
+      });
+      return data;
+    },
+    onSuccess: (data) => {
+      setToken(data.accessToken);
+      setUser(data.data);
 
-    try {
-      const { data } = await api.post('/auth/login', { email, password });
+      toast({
+        title: 'Login successful!',
+        description: `Welcome back, ${data.data.name}!`,
+        status: 'success',
+        duration: 3000,
+      });
 
-      if (data.success) {
-        toast({
-          title: 'Login successful!',
-          description: `Welcome back, ${data.data.name}!`,
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-          position: 'top',
-        });
-        localStorage.setItem('token', data.accessToken);
-        localStorage.setItem('user', JSON.stringify(data.data));
-        router.push('/');
-      }
-    } catch (err: any) {
+      router.push('/dashboard');
+    },
+    onError: (error: any) => {
       toast({
         title: 'Login failed',
-        description: err.response?.data?.message || 'Invalid email or password',
+        description: error.response?.data?.message || 'Invalid credentials',
         status: 'error',
         duration: 5000,
-        isClosable: true,
-        position: 'top',
       });
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    loginMutation.mutate();
   };
 
   return (
@@ -107,8 +111,7 @@ export default function LoginPage() {
               <Button
                 type="submit"
                 width="100%"
-                isLoading={loading}
-                loadingText="Logging in..."
+                isLoading={loginMutation.isPending}
               >
                 Login
               </Button>
@@ -119,7 +122,6 @@ export default function LoginPage() {
                   href="/forgot-password"
                   color="brand.400"
                   fontWeight="600"
-                  _hover={{ color: 'brand.500', textDecoration: 'underline' }}
                 >
                   Forgot password?
                 </ChakraLink>
@@ -132,7 +134,6 @@ export default function LoginPage() {
                   href="/register"
                   color="brand.400"
                   fontWeight="bold"
-                  _hover={{ color: 'brand.500', textDecoration: 'underline' }}
                 >
                   Sign up
                 </ChakraLink>

@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '../../lib/api';
+import { useMutation } from '@tanstack/react-query';
+import { axiosInstance } from '../../lib/axios';
+import { useAuthStore } from '../../store/auth.store';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
   Box,
@@ -19,46 +21,46 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const toast = useToast();
+  const { setUser, setToken } = useAuthStore();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { data } = await api.post('/auth/register', {
+  const registerMutation = useMutation({
+    mutationFn: async () => {
+      const { data } = await axiosInstance.post('/auth/register', {
         name,
         email,
         password,
       });
+      return data;
+    },
+    onSuccess: (data) => {
+      setToken(data.accessToken);
+      setUser(data.data);
 
-      if (data.success) {
-        toast({
-          title: 'Registration successful!',
-          description: `Welcome, ${data.data.name}! Your account has been created.`,
-          status: 'success',
-          duration: 3000,
-          isClosable: true,
-          position: 'top',
-        });
-        localStorage.setItem('token', data.accessToken);
-        localStorage.setItem('user', JSON.stringify(data.data));
-        router.push('/');
-      }
-    } catch (err: any) {
+      toast({
+        title: 'Registration successful!',
+        description: 'Your account has been created.',
+        status: 'success',
+        duration: 3000,
+      });
+
+      router.push('/dashboard');
+    },
+    onError: (error: any) => {
       toast({
         title: 'Registration failed',
-        description: err.response?.data?.message || 'Unable to create account',
+        description:
+          error.response?.data?.message || 'Unable to create account',
         status: 'error',
         duration: 5000,
-        isClosable: true,
-        position: 'top',
       });
-    } finally {
-      setLoading(false);
-    }
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    registerMutation.mutate();
   };
 
   return (
@@ -78,7 +80,7 @@ export default function RegisterPage() {
               Create Account
             </Text>
             <Text color="gray.400" fontSize="md">
-              Start your IELTS vocabulary journey today
+              Start your IELTS vocabulary journey
             </Text>
           </VStack>
         </CardHeader>
@@ -117,15 +119,14 @@ export default function RegisterPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="Min  6 characters"
                 />
               </FormControl>
 
               <Button
                 type="submit"
                 width="100%"
-                isLoading={loading}
-                loadingText="Creating account..."
+                isLoading={registerMutation.isPending}
               >
                 Sign Up
               </Button>
@@ -137,7 +138,6 @@ export default function RegisterPage() {
                   href="/login"
                   color="brand.400"
                   fontWeight="bold"
-                  _hover={{ color: 'brand.500', textDecoration: 'underline' }}
                 >
                   Login
                 </ChakraLink>

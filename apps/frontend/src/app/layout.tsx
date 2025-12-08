@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google';
 import './global.css';
 import { ReactQueryProvider } from './providers';
 import { ChakraUIProvider } from '@ielts/ui';
+import { Navbar } from '../components/Navbar';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -45,31 +46,7 @@ export default function RootLayout({
         <ReactQueryProvider>
           <ChakraUIProvider>
             <div className="flex flex-col min-h-screen">
-              <header className="border-b">
-                <div className="container flex items-center justify-between py-4">
-                  <h1 className="text-xl font-bold">IELTS Master</h1>
-                  <nav className="flex gap-4">
-                    <a
-                      href="/dashboard"
-                      className="text-sm font-medium hover:text-blue-600"
-                    >
-                      Dashboard
-                    </a>
-                    <a
-                      href="/vocabulary"
-                      className="text-sm font-medium hover:text-blue-600"
-                    >
-                      Vocabulary
-                    </a>
-                    <a
-                      href="/quiz"
-                      className="text-sm font-medium hover:text-blue-600"
-                    >
-                      Quiz
-                    </a>
-                  </nav>
-                </div>
-              </header>
+              <Navbar />
               <main className="flex-1">{children}</main>
             </div>
           </ChakraUIProvider>
