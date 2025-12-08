@@ -82,57 +82,88 @@ export const Navbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
-    <Box
-      bg="gray.900"
-      borderBottom="1px"
-      borderColor="gray.800"
-      position="sticky"
-      top="0"
-      zIndex={10}
-    >
-      <Container maxW="7xl">
-        <Flex h={16} alignItems="center" justifyContent="space-between">
-          <IconButton
-            size="md"
-            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-            aria-label="Toggle Menu"
-            display={{ md: 'none' }}
-            variant="ghost"
-            color="white"
-            onClick={isOpen ? onClose : onOpen}
-          />
-          <HStack spacing={8} alignItems="center">
-            <Heading
-              as={Link}
-              href="/"
+    <>
+      {/* Skip to main content link for screen readers */}
+      <a
+        href="#main-content"
+        style={{
+          position: 'absolute',
+          left: '-9999px',
+          zIndex: 999,
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.left = '0';
+          e.currentTarget.style.top = '0';
+          e.currentTarget.style.padding = '1rem';
+          e.currentTarget.style.background = '#1a202c';
+          e.currentTarget.style.color = '#fff';
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.left = '-9999px';
+        }}
+      >
+        Skip to main content
+      </a>
+      <Box
+        bg="gray.900"
+        borderBottom="1px"
+        borderColor="gray.800"
+        position="sticky"
+        top="0"
+        zIndex={10}
+        as="nav"
+        role="navigation"
+        aria-label="Main navigation"
+      >
+        <Container maxW="7xl">
+          <Flex h={16} alignItems="center" justifyContent="space-between">
+            <IconButton
               size="md"
+              icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              display={{ md: 'none' }}
+              variant="ghost"
               color="white"
-              fontWeight="bold"
-              _hover={{ textDecoration: 'none' }}
-            >
-              IELTS Master
-            </Heading>
-            <HStack as="nav" spacing={4} display={{ base: 'none', md: 'flex' }}>
-              <NavLink href="/dashboard">Dashboard</NavLink>
-              <NavLink href="/vocabulary">Vocabulary</NavLink>
-              <NavLink href="/quiz">Quiz</NavLink>
+              onClick={isOpen ? onClose : onOpen}
+            />
+            <HStack spacing={8} alignItems="center">
+              <Heading
+                as={Link}
+                href="/"
+                size="md"
+                color="white"
+                fontWeight="bold"
+                _hover={{ textDecoration: 'none' }}
+              >
+                IELTS Master
+              </Heading>
+              <HStack
+                as="nav"
+                spacing={4}
+                display={{ base: 'none', md: 'flex' }}
+                role="menubar"
+              >
+                <NavLink href="/dashboard">Dashboard</NavLink>
+                <NavLink href="/vocabulary">Vocabulary</NavLink>
+                <NavLink href="/quiz">Quiz</NavLink>
+              </HStack>
             </HStack>
-          </HStack>
-          <Flex alignItems="center">
-            <UserMenu />
+            <Flex alignItems="center">
+              <UserMenu />
+            </Flex>
           </Flex>
-        </Flex>
 
-        {isOpen ? (
-          <Box pb={4} display={{ md: 'none' }}>
-            <Stack as="nav" spacing={4}>
-              <NavLink href="/dashboard">Dashboard</NavLink>
-              <NavLink href="/vocabulary">Vocabulary</NavLink>
-              <NavLink href="/quiz">Quiz</NavLink>
-            </Stack>
-          </Box>
-        ) : null}
-      </Container>
-    </Box>
+          {isOpen ? (
+            <Box pb={4} display={{ md: 'none' }}>
+              <Stack as="nav" spacing={4} role="menu">
+                <NavLink href="/dashboard">Dashboard</NavLink>
+                <NavLink href="/vocabulary">Vocabulary</NavLink>
+                <NavLink href="/quiz">Quiz</NavLink>
+              </Stack>
+            </Box>
+          ) : null}
+        </Container>
+      </Box>
+    </>
   );
 };

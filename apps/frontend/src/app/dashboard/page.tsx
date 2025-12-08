@@ -125,17 +125,21 @@ export default function DashboardPage() {
 }
 
 const StatCard = ({ label, value, icon, color }: any) => (
-  <Card>
+  <Card role="region" aria-label={`${label} statistic`}>
     <CardContent>
       <VStack align="start" spacing={1}>
         <Text fontSize="sm" color="gray.400" fontWeight="600">
           {label}
         </Text>
         <HStack>
-          <Heading size="2xl" color={color}>
+          <Heading size="2xl" color={color} aria-label={`${label}: ${value}`}>
             {value}
           </Heading>
-          {icon && <Text fontSize="2xl">{icon}</Text>}
+          {icon && (
+            <Text fontSize="2xl" aria-hidden="true">
+              {icon}
+            </Text>
+          )}
         </HStack>
       </VStack>
     </CardContent>
@@ -143,13 +147,19 @@ const StatCard = ({ label, value, icon, color }: any) => (
 );
 
 const ActionCard = ({ href, title, description, emoji }: any) => (
-  <Link href={href} style={{ textDecoration: 'none' }}>
+  <Link
+    href={href}
+    style={{ textDecoration: 'none' }}
+    aria-label={`${title}: ${description}`}
+  >
     <Card
       _hover={{ transform: 'translateY(-4px)', transition: 'all 0.2s' }}
       cursor="pointer"
+      role="button"
+      tabIndex={0}
     >
       <CardHeader>
-        <Text fontSize="3xl" mb={2}>
+        <Text fontSize="3xl" mb={2} aria-hidden="true">
           {emoji}
         </Text>
         <Heading size="md" color="brand.400">
