@@ -1,0 +1,135 @@
+import { Request, Response, NextFunction } from 'express';
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
+import { UserService } from '../users/users.service';
+import { EmailService } from '../../core/services/email.service';
+import { AppError } from '../../core/errors/AppError';
+import { Logger } from '@ielts/utils';
+
+export class PasswordResetController {
+  static async requestReset(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+      const user = await UserService.findByEmail(email);
+
+      if (!user) {
+        // Don't reveal if email exists
+        return res.json({
+          success: true,
+          message: 'If that email exists, a reset link has been sent.',
+        });
+      }
+
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const hashedToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+      user.resetPasswordToken = hashedToken;
+      user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
+      await user.save();
+
+      await EmailService.sendPasswordResetEmail(email, resetToken);
+
+      res.json({
+        success: true,
+        message: 'Password reset email sent.',
+      });
+    } catch (error) {
+      Logger.error(`Password reset request failed: ${error}`);
+      next(error);
+    }
+  }
+
+  static async resetPassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token, password } = req.body;
+
+      const hashedToken = crypto
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
+
+      const user = await UserService.findOne({
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+
+      if (!user) {
+        throw new AppError('Invalid or expired reset token', 400);
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      user.passwordHash = await bcrypt.hash(password, salt);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+
+      res.json({
+        success: true,
+        message: 'Password has been reset successfully.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token } = req.body;
+
+      const user = await UserService.findOne({ verificationToken: token });
+
+      if (!user) {
+        throw new AppError('Invalid verification token', 400);
+      }
+
+      user.emailVerified = true;
+      user.verificationToken = undefined;
+      await user.save();
+
+      res.json({
+        success: true,
+        message: 'Email verified successfully.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async resendVerification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { email } = req.body;
+      const user = await UserService.findByEmail(email);
+
+      if (!user) {
+        return res.json({
+          success: true,
+          message: 'If that email exists, a verification link has been sent.',
+        });
+      }
+
+      if (user.emailVerified) {
+        throw new AppError('Email already verified', 400);
+      }
+
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      user.verificationToken = verificationToken;
+      await user.save();
+
+      await EmailService.sendVerificationEmail(email, verificationToken);
+
+      res.json({
+        success: true,
+        message: 'Verification email sent.',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+}
