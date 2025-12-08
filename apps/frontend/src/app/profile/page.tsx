@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { api } from '../../lib/api';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { axiosInstance } from '../../lib/axios';
+import { useAuthStore } from '../../store/auth.store';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
   Box,
@@ -21,210 +22,103 @@ import {
   TabPanel,
   useToast,
   SimpleGrid,
+  Skeleton,
 } from '@chakra-ui/react';
 
-interface UserProfile {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  xp: number;
-  streak: number;
-}
-
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-  const [changingPassword, setChangingPassword] = useState(false);
-
-  // Edit profile state
-  const [name, setName] = useState('');
-
-  // Change password state
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
-  const router = useRouter();
+  const queryClient = useQueryClient();
   const toast = useToast();
+  const { setUser } = useAuthStore();
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  const [name, setName] = useState('');
+  const [passwords, setPasswords] = useState({
+    current: '',
+    new: '',
+    confirm: '',
+  });
 
-  const fetchProfile = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast({
-          title: 'Please login first',
-          status: 'warning',
-          duration: 3000,
-          position: 'top',
-        });
-        router.push('/login');
-        return;
-      }
+  const { data: profile, isLoading } = useQuery({
+    queryKey: ['user', 'profile'],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get('/users/profile');
+      return data.data;
+    },
+  });
 
-      const { data } = await api.get('/users/profile', {
-        headers: { Authorization: `Bearer ${token}` },
+  const updateProfileMutation = useMutation({
+    mutationFn: async (newName: string) => {
+      const { data } = await axiosInstance.patch('/users/profile', {
+        name: newName,
       });
-
-      if (data.success) {
-        setProfile(data.data);
-        setName(data.data.name);
-      }
-    } catch (err: any) {
-      toast({
-        title: 'Error loading profile',
-        description: err.response?.data?.message || 'Unable to fetch profile',
-        status: 'error',
-        duration: 5000,
-        position: 'top',
-      });
-      if (err.response?.status === 401) {
-        router.push('/login');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setUpdating(true);
-
-    try {
-      const token = localStorage.getItem('token');
-      const { data } = await api.patch(
-        '/users/profile',
-        { name },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (data.success) {
-        toast({
-          title: 'Profile updated!',
-          description: 'Your profile has been updated successfully.',
-          status: 'success',
-          duration: 3000,
-          position: 'top',
-        });
-
-        // Update local storage
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-        user.name = name;
-        localStorage.setItem('user', JSON.stringify(user));
-
-        setProfile(data.data);
-      }
-    } catch (err: any) {
+      return data.data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(['user', 'profile'], data);
+      setUser(data);
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      toast({ title: 'Profile updated!', status: 'success' });
+    },
+    onError: (err: any) => {
       toast({
         title: 'Update failed',
-        description: err.response?.data?.message || 'Unable to update profile',
+        description: err.response?.data?.message,
         status: 'error',
-        duration: 5000,
-        position: 'top',
       });
-    } finally {
-      setUpdating(false);
-    }
-  };
+    },
+  });
 
-  const handleChangePassword = async (e: React.FormEvent) => {
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: any) => {
+      await axiosInstance.post('/users/change-password', {
+        currentPassword: data.current,
+        newPassword: data.new,
+      });
+    },
+    onSuccess: () => {
+      toast({ title: 'Password changed successfully!', status: 'success' });
+      setPasswords({ current: '', new: '', confirm: '' });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Password change failed',
+        description: err.response?.data?.message,
+        status: 'error',
+      });
+    },
+  });
+
+  const handleUpdateProfile = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (newPassword !== confirmPassword) {
-      toast({
-        title: 'Passwords do not match',
-        description: 'Please make sure your new passwords match.',
-        status: 'error',
-        duration: 5000,
-        position: 'top',
-      });
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      toast({
-        title: 'Password too short',
-        description: 'Password must be at least 6 characters long.',
-        status: 'error',
-        duration: 5000,
-        position: 'top',
-      });
-      return;
-    }
-
-    setChangingPassword(true);
-
-    try {
-      const token = localStorage.getItem('token');
-      const { data } = await api.post(
-        '/users/change-password',
-        { currentPassword, newPassword },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (data.success) {
-        toast({
-          title: 'Password changed!',
-          description: 'Your password has been changed successfully.',
-          status: 'success',
-          duration: 3000,
-          position: 'top',
-        });
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-      }
-    } catch (err: any) {
-      toast({
-        title: 'Change password failed',
-        description: err.response?.data?.message || 'Unable to change password',
-        status: 'error',
-        duration: 5000,
-        position: 'top',
-      });
-    } finally {
-      setChangingPassword(false);
-    }
+    updateProfileMutation.mutate(name || profile.name);
   };
 
-  if (loading) {
-    return (
-      <Box
-        minH="100vh"
-        bg="gray.900"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <VStack spacing={4}>
-          <Text fontSize="xl" color="gray.400">
-            Loading profile...
-          </Text>
-        </VStack>
-      </Box>
-    );
-  }
+  const handleChangePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwords.new !== passwords.confirm) {
+      toast({ title: 'Passwords do not match', status: 'error' });
+      return;
+    }
+    if (passwords.new.length < 6) {
+      toast({ title: 'Password too short (min 6 chars)', status: 'error' });
+      return;
+    }
+    changePasswordMutation.mutate(passwords);
+  };
 
-  if (!profile) {
+  if (isLoading) {
     return (
-      <Box
-        minH="100vh"
-        bg="gray.900"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
-        <VStack spacing={4}>
-          <Text fontSize="xl" color="gray.400">
-            Unable to load profile
-          </Text>
-        </VStack>
+      <Box minH="100vh" bg="gray.900" py={8}>
+        <Container maxW="5xl">
+          <VStack spacing={8} align="stretch">
+            <Skeleton height="60px" />
+            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} height="100px" />
+              ))}
+            </SimpleGrid>
+            <Skeleton height="400px" />
+          </VStack>
+        </Container>
       </Box>
     );
   }
@@ -233,137 +127,65 @@ export default function ProfilePage() {
     <Box minH="100vh" bg="gray.900" py={8}>
       <Container maxW="5xl">
         <VStack align="stretch" spacing={8}>
-          {/* Header */}
           <Box>
             <Heading as="h1" size="2xl" color="gray.50" mb={2}>
               Profile Settings
             </Heading>
-            <Text fontSize="lg" color="gray.400">
-              Manage your account settings and preferences
-            </Text>
+            <Text color="gray.400">Manage your account</Text>
           </Box>
 
-          {/* User Stats Cards */}
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-            <Card>
-              <CardContent>
-                <VStack align="start" spacing={1}>
-                  <Text fontSize="sm" color="gray.400" fontWeight="600">
-                    TOTAL XP
-                  </Text>
-                  <Heading size="2xl" color="brand.400">
-                    {profile.xp}
-                  </Heading>
-                </VStack>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <VStack align="start" spacing={1}>
-                  <Text fontSize="sm" color="gray.400" fontWeight="600">
-                    STREAK
-                  </Text>
-                  <HStack>
-                    <Heading size="2xl" color="warning.400">
-                      {profile.streak}
-                    </Heading>
-                    <Text fontSize="xl">🔥</Text>
-                  </HStack>
-                </VStack>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent>
-                <VStack align="start" spacing={1}>
-                  <Text fontSize="sm" color="gray.400" fontWeight="600">
-                    ROLE
-                  </Text>
-                  <Badge
-                    colorScheme={profile.role === 'admin' ? 'purple' : 'blue'}
-                    fontSize="lg"
-                    px={3}
-                    py={1}
-                  >
-                    {profile.role}
-                  </Badge>
-                </VStack>
-              </CardContent>
-            </Card>
+            <StatCard label="TOTAL XP" value={profile.xp} color="brand.400" />
+            <StatCard
+              label="STREAK"
+              value={profile.streak}
+              icon="🔥"
+              color="warning.400"
+            />
+            <StatCard label="ROLE" value={profile.role} isBadge />
           </SimpleGrid>
 
-          {/* Tabs for different sections */}
           <Tabs colorScheme="brand" variant="enclosed">
             <TabList borderColor="gray.700">
               <Tab
                 color="gray.400"
                 _selected={{ color: 'brand.400', borderColor: 'brand.400' }}
               >
-                Profile Information
+                Info
               </Tab>
               <Tab
                 color="gray.400"
                 _selected={{ color: 'brand.400', borderColor: 'brand.400' }}
               >
-                Edit Profile
+                Edit
               </Tab>
               <Tab
                 color="gray.400"
                 _selected={{ color: 'brand.400', borderColor: 'brand.400' }}
               >
-                Change Password
+                Password
               </Tab>
             </TabList>
 
             <TabPanels>
-              {/* Profile Information Tab */}
-              <TabPanel px={0} py={6}>
+              <TabPanel>
                 <Card>
                   <CardHeader>
                     <Heading size="md" color="gray.50">
-                      Account Information
+                      Profile Information
                     </Heading>
                   </CardHeader>
                   <CardContent>
                     <VStack align="stretch" spacing={4}>
-                      <HStack justify="space-between">
-                        <Text color="gray.400" fontWeight="600">
-                          Name:
-                        </Text>
-                        <Text color="gray.200">{profile.name}</Text>
-                      </HStack>
-                      <HStack justify="space-between">
-                        <Text color="gray.400" fontWeight="600">
-                          Email:
-                        </Text>
-                        <Text color="gray.200">{profile.email}</Text>
-                      </HStack>
-                      <HStack justify="space-between">
-                        <Text color="gray.400" fontWeight="600">
-                          User ID:
-                        </Text>
-                        <Text color="gray.200" fontSize="sm">
-                          {profile.id}
-                        </Text>
-                      </HStack>
-                      <HStack justify="space-between">
-                        <Text color="gray.400" fontWeight="600">
-                          Account Type:
-                        </Text>
-                        <Badge
-                          colorScheme={
-                            profile.role === 'admin' ? 'purple' : 'blue'
-                          }
-                        >
-                          {profile.role}
-                        </Badge>
-                      </HStack>
+                      <InfoRow label="Name" value={profile.name} />
+                      <InfoRow label="Email" value={profile.email} />
+                      <InfoRow label="ID" value={profile.id} />
                     </VStack>
                   </CardContent>
                 </Card>
               </TabPanel>
 
-              {/* Edit Profile Tab */}
-              <TabPanel px={0} py={6}>
+              <TabPanel>
                 <Card>
                   <CardHeader>
                     <Heading size="md" color="gray.50">
@@ -372,42 +194,20 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleUpdateProfile}>
-                      <VStack spacing={6} align="stretch">
-                        <FormControl isRequired>
-                          <FormLabel fontWeight="bold" color="gray.300">
-                            Name
-                          </FormLabel>
-                          <Input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Your name"
-                          />
-                        </FormControl>
-
+                      <VStack spacing={4}>
                         <FormControl>
-                          <FormLabel fontWeight="bold" color="gray.300">
-                            Email
-                          </FormLabel>
+                          <FormLabel color="gray.300">Name</FormLabel>
                           <Input
-                            type="email"
-                            value={profile.email}
-                            isDisabled
-                            bg="gray.700"
-                            cursor="not-allowed"
+                            defaultValue={profile.name}
+                            onChange={(e) => setName(e.target.value)}
                           />
-                          <Text fontSize="sm" color="gray.500" mt={1}>
-                            Email cannot be changed
-                          </Text>
                         </FormControl>
-
                         <Button
                           type="submit"
-                          width="full"
-                          isLoading={updating}
-                          loadingText="Updating..."
+                          isLoading={updateProfileMutation.isPending}
+                          w="full"
                         >
-                          Update Profile
+                          Update
                         </Button>
                       </VStack>
                     </form>
@@ -415,8 +215,7 @@ export default function ProfilePage() {
                 </Card>
               </TabPanel>
 
-              {/* Change Password Tab */}
-              <TabPanel px={0} py={6}>
+              <TabPanel>
                 <Card>
                   <CardHeader>
                     <Heading size="md" color="gray.50">
@@ -425,48 +224,54 @@ export default function ProfilePage() {
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleChangePassword}>
-                      <VStack spacing={6} align="stretch">
+                      <VStack spacing={4}>
                         <FormControl isRequired>
-                          <FormLabel fontWeight="bold" color="gray.300">
+                          <FormLabel color="gray.300">
                             Current Password
                           </FormLabel>
                           <Input
                             type="password"
-                            value={currentPassword}
-                            onChange={(e) => setCurrentPassword(e.target.value)}
-                            placeholder="Enter current password"
+                            value={passwords.current}
+                            onChange={(e) =>
+                              setPasswords({
+                                ...passwords,
+                                current: e.target.value,
+                              })
+                            }
                           />
                         </FormControl>
-
                         <FormControl isRequired>
-                          <FormLabel fontWeight="bold" color="gray.300">
-                            New Password
+                          <FormLabel color="gray.300">New Password</FormLabel>
+                          <Input
+                            type="password"
+                            value={passwords.new}
+                            onChange={(e) =>
+                              setPasswords({
+                                ...passwords,
+                                new: e.target.value,
+                              })
+                            }
+                          />
+                        </FormControl>
+                        <FormControl isRequired>
+                          <FormLabel color="gray.300">
+                            Confirm Password
                           </FormLabel>
                           <Input
                             type="password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="Enter new password (min 6 characters)"
+                            value={passwords.confirm}
+                            onChange={(e) =>
+                              setPasswords({
+                                ...passwords,
+                                confirm: e.target.value,
+                              })
+                            }
                           />
                         </FormControl>
-
-                        <FormControl isRequired>
-                          <FormLabel fontWeight="bold" color="gray.300">
-                            Confirm New Password
-                          </FormLabel>
-                          <Input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm new password"
-                          />
-                        </FormControl>
-
                         <Button
                           type="submit"
-                          width="full"
-                          isLoading={changingPassword}
-                          loadingText="Changing password..."
+                          isLoading={changePasswordMutation.isPending}
+                          w="full"
                         >
                           Change Password
                         </Button>
@@ -482,3 +287,39 @@ export default function ProfilePage() {
     </Box>
   );
 }
+
+const StatCard = ({ label, value, icon, color, isBadge }: any) => (
+  <Card>
+    <CardContent>
+      <VStack align="start" spacing={1}>
+        <Text fontSize="sm" color="gray.400" fontWeight="600">
+          {label}
+        </Text>
+        {isBadge ? (
+          <Badge
+            colorScheme={value === 'admin' ? 'purple' : 'blue'}
+            fontSize="lg"
+          >
+            {value}
+          </Badge>
+        ) : (
+          <HStack>
+            <Heading size="2xl" color={color}>
+              {value}
+            </Heading>
+            {icon && <Text fontSize="2xl">{icon}</Text>}
+          </HStack>
+        )}
+      </VStack>
+    </CardContent>
+  </Card>
+);
+
+const InfoRow = ({ label, value }: any) => (
+  <HStack justify="space-between">
+    <Text color="gray.400" fontWeight="600">
+      {label}:
+    </Text>
+    <Text color="gray.200">{value}</Text>
+  </HStack>
+);
