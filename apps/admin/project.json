@@ -1,0 +1,16 @@
+{
+  "name": "admin",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/admin",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "command": "next build",
+      "options": {
+        "cwd": "apps/admin",
+        "args": ["--webpack"]
+      }
+    }
+  }
+}

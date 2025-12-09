@@ -4,3 +4,7 @@ export * from './components/ui/input';
 export * from './components/ui/card';
 export { ChakraUIProvider } from './components/chakra-provider';
 export { default as theme } from './theme';
+export { Navbar } from './lib/Navbar';
+export { UserMenu } from './lib/UserMenu';
+export { WordDetailsModal } from './lib/WordDetailsModal';
+export { LoadingSpinner } from './lib/loading-spinner';

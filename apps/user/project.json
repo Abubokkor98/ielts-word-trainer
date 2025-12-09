@@ -1,0 +1,16 @@
+{
+  "name": "user",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/user",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "command": "next build",
+      "options": {
+        "cwd": "apps/user",
+        "args": ["--webpack"]
+      }
+    }
+  }
+}
