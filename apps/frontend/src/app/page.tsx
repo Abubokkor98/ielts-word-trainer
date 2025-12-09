@@ -1,137 +1,132 @@
-import Link from 'next/link';
-import { Button } from '@ielts/ui';
+'use client';
+
+import { useAuthStore } from '../store/auth.store';
 import {
   Box,
+  Container,
+  Heading,
   Text,
   VStack,
-  HStack,
-  Container,
+  Button,
   SimpleGrid,
-  Heading,
-  Icon,
 } from '@chakra-ui/react';
+import Link from 'next/link';
 
-export default function Home() {
+export default function HomePage() {
+  const { isAuthenticated, user } = useAuthStore();
+
   return (
-    <Box bg="gray.900" minH="100vh">
-      {/* Hero Section */}
-      <Container maxW="7xl" pt={24} pb={20}>
-        <VStack spacing={6} textAlign="center">
-          <Heading
-            as="h1"
-            fontSize={{ base: '4xl', md: '6xl' }}
-            fontWeight="bold"
-            color="gray.50"
-            lineHeight="1.2"
-          >
-            Master IELTS Vocabulary
-          </Heading>
-          <Text fontSize={{ base: 'lg', md: 'xl' }} color="gray.400" maxW="2xl">
-            Learn essential vocabulary with interactive quizzes and personalized
-            learning paths designed for IELTS success
-          </Text>
-          <HStack spacing={4} pt={4}>
-            <Link href="/vocabulary">
-              <Button size="lg" px={8}>
-                Start Learning
-              </Button>
-            </Link>
-            <Link href="/quiz">
-              <Button size="lg" variant="outline" px={8}>
-                Take a Quiz
-              </Button>
-            </Link>
-          </HStack>
-        </VStack>
-      </Container>
+    <Box minH="100vh" bg="gray.900" py={16}>
+      <Container maxW="7xl">
+        <VStack spacing={12} align="stretch">
+          {/* Hero Section */}
+          <Box textAlign="center" py={12}>
+            <Heading as="h1" size="3xl" color="white" mb={6}>
+              Master IELTS Vocabulary
+            </Heading>
+            <Text fontSize="xl" color="gray.400" mb={8}>
+              Learn 3000+ words with adaptive quizzes and spaced repetition
+            </Text>
 
-      {/* Features Section */}
-      <Container maxW="7xl" pb={20}>
-        <VStack spacing={12}>
-          <Heading
-            as="h2"
-            fontSize={{ base: '2xl', md: '3xl' }}
-            fontWeight="bold"
-            color="gray.50"
-            textAlign="center"
-          >
-            Why Choose Our Platform?
-          </Heading>
+            {!isAuthenticated ? (
+              <VStack spacing={4}>
+                <Link href="/register">
+                  <Button size="lg" colorScheme="brand" px={8}>
+                    Get Started Free
+                  </Button>
+                </Link>
+              </VStack>
+            ) : (
+              <Link href="/dashboard">
+                <Button size="lg" colorScheme="brand" px={8}>
+                  Go to Dashboard
+                </Button>
+              </Link>
+            )}
+          </Box>
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} w="full">
-            {/* Feature 1 */}
+          {/* Features Section */}
+          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} py={8}>
             <Box
               bg="gray.800"
-              p={8}
+              p={6}
               borderRadius="lg"
-              borderWidth="1px"
-              borderColor="gray.700"
+              textAlign="center"
+              cursor="pointer"
+              transition="all 0.3s ease"
+              borderWidth="2px"
+              borderColor="transparent"
               _hover={{
-                borderColor: 'brand.600',
-                transform: 'translateY(-4px)',
+                transform: 'translateY(-8px)',
+                bg: 'gray.750',
+                borderColor: 'brand.400',
+                boxShadow: '0 10px 30px rgba(30, 136, 229, 0.3)',
               }}
-              transition="all 0.2s"
             >
-              <VStack align="start" spacing={4}>
-                <Box fontSize="4xl">📚</Box>
-                <Heading as="h3" size="md" color="brand.400">
-                  Rich Vocabulary
-                </Heading>
-                <Text color="gray.400">
-                  Access hundreds of essential IELTS words categorized by topics
-                  and difficulty levels
-                </Text>
-              </VStack>
+              <Text fontSize="4xl" mb={4}>
+                📚
+              </Text>
+              <Heading size="md" color="white" mb={3}>
+                3000+ Words
+              </Heading>
+              <Text color="gray.400">
+                Comprehensive IELTS vocabulary database with meanings, examples,
+                and usage
+              </Text>
             </Box>
 
-            {/* Feature 2 */}
             <Box
               bg="gray.800"
-              p={8}
+              p={6}
               borderRadius="lg"
-              borderWidth="1px"
-              borderColor="gray.700"
+              textAlign="center"
+              cursor="pointer"
+              transition="all 0.3s ease"
+              borderWidth="2px"
+              borderColor="transparent"
               _hover={{
-                borderColor: 'brand.600',
-                transform: 'translateY(-4px)',
+                transform: 'translateY(-8px)',
+                bg: 'gray.750',
+                borderColor: 'brand.400',
+                boxShadow: '0 10px 30px rgba(30, 136, 229, 0.3)',
               }}
-              transition="all 0.2s"
             >
-              <VStack align="start" spacing={4}>
-                <Box fontSize="4xl">🎯</Box>
-                <Heading as="h3" size="md" color="brand.400">
-                  Interactive Quizzes
-                </Heading>
-                <Text color="gray.400">
-                  Test your knowledge with engaging quizzes and track your
-                  progress over time
-                </Text>
-              </VStack>
+              <Text fontSize="4xl" mb={4}>
+                🎯
+              </Text>
+              <Heading size="md" color="white" mb={3}>
+                Adaptive Quizzes
+              </Heading>
+              <Text color="gray.400">
+                Smart quizzes that adapt to your level and track your progress
+              </Text>
             </Box>
 
-            {/* Feature 3 */}
             <Box
               bg="gray.800"
-              p={8}
+              p={6}
               borderRadius="lg"
-              borderWidth="1px"
-              borderColor="gray.700"
+              textAlign="center"
+              cursor="pointer"
+              transition="all 0.3s ease"
+              borderWidth="2px"
+              borderColor="transparent"
               _hover={{
-                borderColor: 'brand.600',
-                transform: 'translateY(-4px)',
+                transform: 'translateY(-8px)',
+                bg: 'gray.750',
+                borderColor: 'brand.400',
+                boxShadow: '0 10px 30px rgba(30, 136, 229, 0.3)',
               }}
-              transition="all 0.2s"
             >
-              <VStack align="start" spacing={4}>
-                <Box fontSize="4xl">🚀</Box>
-                <Heading as="h3" size="md" color="brand.400">
-                  Smart Learning
-                </Heading>
-                <Text color="gray.400">
-                  Adaptive learning system that focuses on words you need to
-                  improve
-                </Text>
-              </VStack>
+              <Text fontSize="4xl" mb={4}>
+                📊
+              </Text>
+              <Heading size="md" color="white" mb={3}>
+                Analytics
+              </Heading>
+              <Text color="gray.400">
+                Detailed performance tracking and insights to improve faster
+              </Text>
             </Box>
           </SimpleGrid>
         </VStack>

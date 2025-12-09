@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '../../lib/axios';
-import { useQuizStore } from '../../store/quiz.store';
+import { axiosInstance } from '../../../lib/axios';
+import { useQuizStore } from '../../../store/quiz.store';
 import { Button } from '@ielts/ui';
+import { useAuthStore } from '../../../store/auth.store';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Text,
@@ -61,6 +63,15 @@ export default function QuizPage() {
   const toast = useToast();
   const queryClient = useQueryClient();
   const { setLastQuizResult } = useQuizStore();
+  const { isAuthenticated, user } = useAuthStore();
+  const router = useRouter();
+
+  // Redirect admins to dashboard - quiz is for regular users only
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
 
   const { refetch: fetchQuiz, isLoading: loading } = useQuery({
     queryKey: ['quiz', 'generate'],
@@ -101,6 +112,18 @@ export default function QuizPage() {
   });
 
   const startQuiz = async () => {
+    // Check if user is authenticated before starting quiz
+    if (!isAuthenticated) {
+      toast({
+        title: 'Login Required',
+        description: 'Please login to take quizzes and track your progress',
+        status: 'info',
+        duration: 3000,
+      });
+      router.push('/login');
+      return;
+    }
+
     const result = await fetchQuiz();
     if (result.data) {
       setQuestions(result.data);

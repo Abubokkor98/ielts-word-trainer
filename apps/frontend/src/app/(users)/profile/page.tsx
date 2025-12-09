@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '../../lib/axios';
-import { useAuthStore } from '../../store/auth.store';
+import { axiosInstance } from '../../../lib/axios';
+import { useAuthStore } from '../../../store/auth.store';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
   Box,

@@ -81,13 +81,28 @@ const NavLink = ({ href, children }: NavLinkProps) => {
 };
 
 const NavLinks = () => {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
+  const isAdmin = user?.role === 'admin';
 
   return (
     <>
-      {isAuthenticated && <NavLink href="/dashboard">Dashboard</NavLink>}
-      <NavLink href="/vocabulary">Vocabulary</NavLink>
-      <NavLink href="/quiz">Quiz</NavLink>
+      <NavLink href="/">Home</NavLink>
+      {/* Show Vocabulary and Quiz to everyone EXCEPT admins */}
+      {!isAdmin && (
+        <>
+          <NavLink href="/vocabulary">Vocabulary</NavLink>
+          <NavLink href="/quiz">Quiz</NavLink>
+        </>
+      )}
+      {isAuthenticated && (
+        <>
+          <NavLink href="/dashboard">Dashboard</NavLink>
+          {!isAdmin && (
+            // User-specific navigation only
+            <NavLink href="/analytics">Analytics</NavLink>
+          )}
+        </>
+      )}
     </>
   );
 };

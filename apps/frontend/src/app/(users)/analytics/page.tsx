@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { axiosInstance } from '../../lib/axios';
+import { axiosInstance } from '../../../lib/axios';
 import { Card, CardHeader, CardContent } from '@ielts/ui';
 import {
   Box,

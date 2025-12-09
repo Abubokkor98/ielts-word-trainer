@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { axiosInstance } from '../../lib/axios';
+import { axiosInstance } from '../../../lib/axios';
+import { useAuthStore } from '../../../store/auth.store';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Container,
@@ -16,13 +18,22 @@ import {
   Skeleton,
 } from '@chakra-ui/react';
 import { Card, CardHeader, CardContent, CardFooter } from '@ielts/ui';
-import { WordDetailsModal } from '../../components/WordDetailsModal';
+import { WordDetailsModal } from '../../../components/WordDetailsModal';
 
 export default function VocabularyPage() {
   const [page, setPage] = useState(1);
   const [difficulty, setDifficulty] = useState('all');
   const [selectedWord, setSelectedWord] = useState<any>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { user } = useAuthStore();
+  const router = useRouter();
+
+  // Redirect admins to dashboard - vocabulary is for regular users only
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      router.push('/dashboard');
+    }
+  }, [user, router]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['words', page, difficulty],

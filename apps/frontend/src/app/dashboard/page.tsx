@@ -35,7 +35,6 @@ import Link from 'next/link';
 export default function DashboardPage() {
   const { user: localUser, isAuthenticated } = useAuthStore();
   const router = useRouter();
-  const toast = useToast();
 
   // Protect route - redirect if not authenticated
   useEffect(() => {
