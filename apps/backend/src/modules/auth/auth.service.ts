@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { env } from '../../config/env';
 import { IUser } from '../users/users.model';
 
-import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@ielts/auth';
+import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@ielts/shared';
 
 export class AuthService {
   static async generateTokens(

@@ -11,13 +11,22 @@ import rateLimit from 'express-rate-limit';
 
 export const createServer = (): Express => {
   const app = express();
+  console.log(
+    '----------------------------------------------------------------'
+  );
+  console.log(
+    'Server Request - CORS Config: http://localhost:3000, http://localhost:3001'
+  );
+  console.log(
+    '----------------------------------------------------------------'
+  );
 
   // Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
-      origin: 'http://localhost:3000', // Allow frontend
+      origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow frontend & admin
       credentials: true,
     })
   );

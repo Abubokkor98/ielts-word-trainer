@@ -14,7 +14,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserMenu } from './UserMenu';
-import { useAuthStore } from '@ielts/auth';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
 
 const HamburgerIcon = () => (
   <svg

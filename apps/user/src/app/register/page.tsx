@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
@@ -37,6 +37,9 @@ export default function RegisterPage() {
     onSuccess: (data) => {
       setToken(data.accessToken);
       setUser(data.data);
+
+      // Set cookie for middleware
+      document.cookie = `user_auth_token=${data.accessToken}; path=/; max-age=86400; SameSite=Strict`;
 
       toast({
         title: 'Registration successful!',

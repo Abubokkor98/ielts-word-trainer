@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { Button } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';

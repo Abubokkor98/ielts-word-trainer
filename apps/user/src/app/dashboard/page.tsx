@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

@@ -17,7 +17,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@ielts/auth';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 
 export const UserMenu = () => {
   const { user, logout } = useAuthStore();

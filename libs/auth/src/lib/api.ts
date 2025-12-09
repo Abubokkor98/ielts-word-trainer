@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useAuthStore } from '@ielts/auth';
+import { useAuthStore } from './auth.store';
 
 const baseURL =
   process.env['NEXT_PUBLIC_API_URL'] || 'http://localhost:3333/api/v1';
