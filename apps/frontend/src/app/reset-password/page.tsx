@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from '../../lib/axios';
@@ -14,7 +14,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [token, setToken] = useState('');
@@ -140,5 +140,13 @@ export default function ResetPasswordPage() {
         </CardContent>
       </Card>
     </Box>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }

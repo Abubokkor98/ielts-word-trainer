@@ -83,15 +83,9 @@ const NavLink = ({ href, children }: NavLinkProps) => {
 const NavLinks = () => {
   const { isAuthenticated } = useAuthStore();
 
-  // Don't show any links if not authenticated
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  // All authenticated users see the same links
   return (
     <>
-      <NavLink href="/dashboard">Dashboard</NavLink>
+      {isAuthenticated && <NavLink href="/dashboard">Dashboard</NavLink>}
       <NavLink href="/vocabulary">Vocabulary</NavLink>
       <NavLink href="/quiz">Quiz</NavLink>
     </>
