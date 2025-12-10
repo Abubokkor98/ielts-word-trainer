@@ -39,10 +39,21 @@ export default function UserManagementPage() {
   // Leveraging the existing stats endpoint which returns recent users slightly abused here
   // Ideally we need a dedicated /admin/users endpoint with pagination
   const { data: stats, isLoading } = useQuery({
-    queryKey: ['admin', 'stats'], // Reusing stats for now as it has recent users
+    queryKey: ['admin', 'stats', search], // Include search in query key
     queryFn: async () => {
       const { data } = await axiosInstance.get('/admin/stats');
-      return data.data;
+      const users = data.data.recentUsers || [];
+      // Client-side filter until dedicated endpoint exists
+      return {
+        ...data.data,
+        recentUsers: search
+          ? users.filter(
+              (u: RecentUser) =>
+                u.name?.toLowerCase().includes(search.toLowerCase()) ||
+                u.email?.toLowerCase().includes(search.toLowerCase())
+            )
+          : users,
+      };
     },
     enabled: !!user && user.role === 'admin',
   });

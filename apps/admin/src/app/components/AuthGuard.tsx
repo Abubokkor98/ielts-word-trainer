@@ -20,7 +20,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         router.push('/login');
       } else if (user?.role !== 'admin') {
         // Redirect non-admins
-        window.location.href = 'http://localhost:3000';
+        window.location.href =
+          process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
       }
     }
   }, [isAuthenticated, user, router, isMounted]);

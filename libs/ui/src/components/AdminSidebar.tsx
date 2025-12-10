@@ -68,8 +68,8 @@ const SidebarItem = ({ icon, label, href, isCollapsed }: SidebarItemProps) => {
         w="full"
         p={3}
         position="relative"
-        borderRadius={isCollapsed ? 'lg' : 'r-lg'} // Rounded right only when expanded
-        borderLeftRadius={isCollapsed ? 'lg' : 'none'}
+        borderRadius="lg"
+        borderLeftRadius={isCollapsed ? 'lg' : 0}
         bg={isActive ? activeBg : 'transparent'}
         color={isActive ? activeColor : 'gray.400'}
         _hover={{
@@ -113,9 +113,10 @@ export const AdminSidebar = () => {
   const { user, logout } = useAuthStore();
   const borderColor = useColorModeValue('gray.200', 'gray.800');
   const bgColor = useColorModeValue('white', 'gray.900');
+  const pathname = usePathname();
 
   // Hide sidebar on login page
-  if (usePathname() === '/login') {
+  if (pathname === '/login') {
     return null;
   }
 

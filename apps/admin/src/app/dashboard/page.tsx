@@ -65,7 +65,7 @@ export default function AdminDashboardPage() {
 
   // Transform wordsByDifficulty for chart
   const difficultyData =
-    stats.wordsByDifficulty?.map((item: WordDifficulty) => ({
+    stats?.wordsByDifficulty?.map((item: WordDifficulty) => ({
       name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
       count: item.count,
     })) || [];

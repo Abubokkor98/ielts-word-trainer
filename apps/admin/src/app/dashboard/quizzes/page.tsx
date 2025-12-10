@@ -35,7 +35,11 @@ export default function QuizManagementPage() {
       <VStack spacing={8} align="stretch">
         <HStack justify="space-between">
           <Heading size="lg">Quiz Management</Heading>
-          <Button leftIcon={<Plus size={16} />} colorScheme="brand">
+          <Button
+            leftIcon={<Plus size={16} />}
+            colorScheme="brand"
+            onClick={() => alert('Quiz creation feature coming soon!')}
+          >
             Create Quiz
           </Button>
         </HStack>

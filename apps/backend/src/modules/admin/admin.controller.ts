@@ -247,7 +247,10 @@ export class AdminController {
   static async updateQuiz(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const quiz = await Quiz.findByIdAndUpdate(id, req.body, { new: true });
+      const quiz = await Quiz.findByIdAndUpdate(id, req.body, {
+        new: true,
+        runValidators: true,
+      });
 
       if (!quiz) {
         throw new AppError('Quiz not found', 404);
