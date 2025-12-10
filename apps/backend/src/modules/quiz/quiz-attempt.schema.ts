@@ -2,7 +2,9 @@ import { z } from 'zod';
 
 export const QuizAttemptSchema = z.object({
   topic: z.string().optional(),
-  difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+  difficulty: z
+    .enum(['beginner', 'intermediate', 'advanced', 'mixed'])
+    .optional(),
   questions: z.array(
     z.object({
       wordId: z.string(),

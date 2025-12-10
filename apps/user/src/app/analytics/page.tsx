@@ -204,7 +204,9 @@ export default function AnalyticsPage() {
                             {new Date(attempt.completedAt).toLocaleDateString()}
                           </Td>
                           <Td>
-                            <Badge>{attempt.difficulty}</Badge>
+                            <Badge>
+                              {attempt.difficulty?.toUpperCase() || 'MIXED'}
+                            </Badge>
                           </Td>
                           <Td color="gray.300" isNumeric>
                             {attempt.score}
