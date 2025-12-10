@@ -19,7 +19,7 @@ const WordSchema = new Schema<IWord>(
     exampleSentence: { type: String, required: true },
     synonyms: [{ type: String }],
     antonyms: [{ type: String }],
-    topic: { type: String },
+    topic: { type: String, index: true },
     partOfSpeech: { type: String },
     pronunciation: { type: String },
     difficulty: {

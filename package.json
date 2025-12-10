@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:user\" \"pnpm dev:admin\"",
-    "dev:backend": "node dist/apps/backend/main.js",
+    "dev:backend": "npx tsx --tsconfig apps/backend/tsconfig.json apps/backend/src/main.ts",
     "dev:user": "next dev apps/user --webpack --port 3000",
     "dev:admin": "next dev apps/admin --webpack --port 3001",
     "build": "nx run-many --target=build --projects=backend,user,admin",

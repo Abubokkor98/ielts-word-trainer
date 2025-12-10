@@ -15,15 +15,45 @@ export class WordsService {
   static async findAll(query: any, page: number = 1, limit: number = 20) {
     const skip = (page - 1) * limit;
     const filter: any = {};
+    const andConditions: any[] = [];
 
     if (query.module) filter.module = query.module;
     if (query.difficulty) filter.difficulty = query.difficulty;
+
+    // Direct topic ID filter
     if (query.topic) filter.topic = query.topic;
+
+    // Search by topic Name
+    if (query.topicName) {
+      const topics = await Topic.find({
+        name: { $regex: query.topicName, $options: 'i' },
+      }).select('_id');
+
+      const topicIds = topics.map((t) => t._id);
+
+      andConditions.push({
+        $or: [
+          { topic: { $in: topicIds } },
+          { topic: { $regex: query.topicName, $options: 'i' } },
+        ],
+      });
+    }
+
+    // General Word Search (Word, Meaning, Synonyms, Antonyms)
     if (query.search) {
-      filter.$or = [
-        { word: { $regex: query.search, $options: 'i' } },
-        { meaning: { $regex: query.search, $options: 'i' } },
-      ];
+      const searchRegex = { $regex: query.search, $options: 'i' };
+      andConditions.push({
+        $or: [
+          { word: searchRegex },
+          { meaning: searchRegex },
+          { synonyms: searchRegex },
+          { antonyms: searchRegex },
+        ],
+      });
+    }
+
+    if (andConditions.length > 0) {
+      filter.$and = andConditions;
     }
 
     const [words, total] = await Promise.all([
