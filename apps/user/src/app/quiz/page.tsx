@@ -57,6 +57,7 @@ export default function QuizPage() {
   const [showResult, setShowResult] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('mixed');
   const [questionAnswers, setQuestionAnswers] = useState<
     Map<number, { selected: string; correct: string; isCorrect: boolean }>
   >(new Map());
@@ -74,9 +75,13 @@ export default function QuizPage() {
   }, [user, router]);
 
   const { refetch: fetchQuiz, isLoading: loading } = useQuery({
-    queryKey: ['quiz', 'generate'],
+    queryKey: ['quiz', 'generate', selectedDifficulty],
     queryFn: async () => {
-      const { data } = await axiosInstance.get('/quiz/generate?limit=10');
+      const params = new URLSearchParams({ limit: '10' });
+      if (selectedDifficulty && selectedDifficulty !== 'mixed') {
+        params.append('difficulty', selectedDifficulty);
+      }
+      const { data } = await axiosInstance.get(`/quiz/generate?${params}`);
       return data.data;
     },
     enabled: false,
@@ -124,15 +129,52 @@ export default function QuizPage() {
       return;
     }
 
-    const result = await fetchQuiz();
-    if (result.data) {
-      setQuestions(result.data);
-      setCurrentIdx(0);
-      setScore(0);
-      setShowResult(false);
-      setSelectedAnswer(null);
-      setStartTime(new Date());
-      setQuestionAnswers(new Map());
+    try {
+      const result = await fetchQuiz();
+      if (result.data) {
+        setQuestions(result.data);
+        setCurrentIdx(0);
+        setScore(0);
+        setShowResult(false);
+        setSelectedAnswer(null);
+        setStartTime(new Date());
+        setQuestionAnswers(new Map());
+      }
+    } catch (error: any) {
+      console.error('Error generating quiz:', error);
+
+      // Handle insufficient words error
+      if (
+        error.response?.status === 400 &&
+        error.response?.data?.message?.includes('Not enough words')
+      ) {
+        const difficultyName =
+          selectedDifficulty === 'mixed'
+            ? 'Mixed'
+            : selectedDifficulty.charAt(0).toUpperCase() +
+              selectedDifficulty.slice(1);
+
+        toast({
+          title: 'Not Enough Words',
+          description: `There aren't enough ${difficultyName} level words in the database yet. Try selecting "Mixed (All Levels)" for now!`,
+          status: 'warning',
+          duration: 6000,
+          isClosable: true,
+        });
+
+        // Auto-switch to mixed if not already selected
+        if (selectedDifficulty !== 'mixed') {
+          setSelectedDifficulty('mixed');
+        }
+      } else {
+        // Generic error
+        toast({
+          title: 'Failed to Generate Quiz',
+          description: error.response?.data?.message || 'Please try again',
+          status: 'error',
+          duration: 4000,
+        });
+      }
     }
   };
 
@@ -141,11 +183,19 @@ export default function QuizPage() {
     const currentQuestion = questions[currentIdx];
     const isCorrect = currentQuestion.correctAnswer === optionId;
 
-    // Store answer
+    // Find the selected option text and correct option text
+    const selectedOptionText =
+      currentQuestion.options.find((opt) => opt.id === optionId)?.text || '';
+    const correctOptionText =
+      currentQuestion.options.find(
+        (opt) => opt.id === currentQuestion.correctAnswer
+      )?.text || '';
+
+    // Store answer with text instead of IDs
     const newAnswers = new Map(questionAnswers);
     newAnswers.set(currentIdx, {
-      selected: optionId,
-      correct: currentQuestion.correctAnswer!,
+      selected: selectedOptionText,
+      correct: correctOptionText,
       isCorrect,
     });
     setQuestionAnswers(newAnswers);
@@ -204,6 +254,7 @@ export default function QuizPage() {
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
       totalTimeSpent,
+      difficulty: selectedDifficulty,
     };
 
     // Store in Zustand
@@ -211,7 +262,7 @@ export default function QuizPage() {
       score: correctCount,
       totalQuestions: questions.length,
       correctAnswers: correctCount,
-      difficulty: 'mixed',
+      difficulty: selectedDifficulty,
       timestamp: new Date().toISOString(),
     });
 
@@ -246,6 +297,38 @@ export default function QuizPage() {
               Challenge yourself with our interactive quiz featuring carefully
               selected IELTS vocabulary
             </Text>
+            <Box w="full" maxW="md">
+              <Text color="gray.300" fontWeight="600" mb={2}>
+                Select Difficulty Level
+              </Text>
+              <select
+                value={selectedDifficulty}
+                onChange={(e) => setSelectedDifficulty(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  borderRadius: '0.375rem',
+                  backgroundColor: '#2D3748',
+                  borderColor: '#4A5568',
+                  color: '#F7FAFC',
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                }}
+              >
+                <option value="mixed" style={{ background: '#1A202C' }}>
+                  Mixed (All Levels)
+                </option>
+                <option value="beginner" style={{ background: '#1A202C' }}>
+                  Beginner
+                </option>
+                <option value="intermediate" style={{ background: '#1A202C' }}>
+                  Intermediate
+                </option>
+                <option value="advanced" style={{ background: '#1A202C' }}>
+                  Advanced
+                </option>
+              </select>
+            </Box>
             <Button
               size="lg"
               onClick={startQuiz}
@@ -265,53 +348,125 @@ export default function QuizPage() {
   if (showResult) {
     const percentage = Math.round((score / questions.length) * 100);
     return (
-      <Box
-        minH="100vh"
-        bg="gray.900"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        py={12}
-      >
-        <Container maxW="2xl">
-          <VStack
-            spacing={8}
-            bg="gray.800"
-            p={12}
-            borderRadius="lg"
-            borderWidth="1px"
-            borderColor={percentage >= 70 ? 'success.500' : 'warning.500'}
-          >
-            <Text fontSize="6xl">{percentage >= 70 ? '🎉' : '📚'}</Text>
-            <Heading as="h2" fontSize="4xl" color="gray.50">
-              Quiz Complete!
-            </Heading>
-            <VStack spacing={4}>
-              <Text fontSize="2xl" fontWeight="600" color="gray.300">
-                Your Score: {score}/{questions.length}
-              </Text>
-              <Badge
-                fontSize="xl"
-                px={6}
-                py={2}
-                colorScheme={percentage >= 70 ? 'green' : 'orange'}
+      <Box minH="100vh" bg="gray.900" py={8}>
+        <Container maxW="6xl">
+          <VStack spacing={8} align="stretch">
+            {/* Top: Score Card (Home Page Style) */}
+            <HStack justify="center" w="full">
+              <Box
+                bg="gray.800"
+                p={8}
+                borderRadius="lg"
+                textAlign="center"
+                transition="all 0.3s ease"
+                borderWidth="2px"
+                borderColor="transparent"
+                maxW="md"
+                _hover={{
+                  transform: 'translateY(-8px)',
+                  bg: 'gray.750',
+                  borderColor: 'brand.400',
+                  boxShadow: '0 10px 30px rgba(30, 136, 229, 0.3)',
+                }}
               >
-                {percentage}%
-              </Badge>
-            </VStack>
-            <Text fontSize="md" color="gray.400" textAlign="center" maxW="md">
-              {percentage >= 70
-                ? 'Excellent work! You have a strong vocabulary!'
-                : 'Keep practicing! Review the words and try again.'}
-            </Text>
-            {saveAttemptMutation.isPending && (
-              <Text fontSize="sm" color="gray.500">
-                Saving your progress...
-              </Text>
-            )}
-            <Button size="lg" onClick={startQuiz} px={10} py={6}>
-              Take Another Quiz
-            </Button>
+                <VStack spacing={6}>
+                  <Text fontSize="5xl">{percentage >= 70 ? '🎉' : '📚'}</Text>
+                  <Heading as="h2" fontSize="3xl" color="gray.50">
+                    Quiz Complete!
+                  </Heading>
+                  <VStack spacing={3}>
+                    <Text fontSize="xl" fontWeight="600" color="gray.300">
+                      Your Score: {score}/{questions.length}
+                    </Text>
+                    <Badge
+                      fontSize="2xl"
+                      px={6}
+                      py={2}
+                      colorScheme={percentage >= 70 ? 'green' : 'orange'}
+                    >
+                      {percentage}%
+                    </Badge>
+                  </VStack>
+                  <Text fontSize="md" color="gray.400" maxW="sm">
+                    {percentage >= 70
+                      ? 'Excellent work! You have a strong vocabulary!'
+                      : 'Keep practicing! Review the words and try again.'}
+                  </Text>
+                  <Button size="lg" onClick={startQuiz} px={10} py={6} mt={4}>
+                    Take Another Quiz
+                  </Button>
+                </VStack>
+              </Box>
+            </HStack>
+
+            {/* Bottom: Q&A List in 5 columns */}
+            <Box>
+              <Heading as="h3" size="md" color="gray.50" mb={6}>
+                📝 Answer Review
+              </Heading>
+              <SimpleGrid
+                columns={{ base: 1, sm: 2, md: 3, lg: 5 }}
+                spacing={6}
+                rowGap={6}
+              >
+                {questions.map((question, idx) => {
+                  const userAnswer = questionAnswers.get(idx);
+                  const isCorrect = userAnswer?.isCorrect || false;
+
+                  return (
+                    <VStack key={idx} align="stretch" spacing={2}>
+                      {/* Q# and Status */}
+                      <HStack spacing={2}>
+                        <Text fontSize="sm" fontWeight="700" color="gray.200">
+                          Q{idx + 1}
+                        </Text>
+                        <Text
+                          fontSize="lg"
+                          color={isCorrect ? 'green.400' : 'red.400'}
+                        >
+                          {isCorrect ? '✓' : '✗'}
+                        </Text>
+                      </HStack>
+
+                      {/* Question */}
+                      <Text fontSize="sm" color="gray.300">
+                        {question.question}
+                      </Text>
+
+                      {/* Your Answer */}
+                      <Box>
+                        <Text fontSize="xs" color="gray.500">
+                          You:
+                        </Text>
+                        <Text
+                          fontSize="xs"
+                          color={isCorrect ? 'green.400' : 'red.400'}
+                          fontWeight="600"
+                        >
+                          {userAnswer?.selected}
+                        </Text>
+                      </Box>
+
+                      {/* Correct Answer (if wrong) */}
+                      {!isCorrect && (
+                        <Box>
+                          <Text fontSize="xs" color="gray.500">
+                            Correct:
+                          </Text>
+                          <Text
+                            fontSize="xs"
+                            color="green.400"
+                            fontWeight="600"
+                          >
+                            {userAnswer?.correct}
+                          </Text>
+                        </Box>
+                      )}
+                    </VStack>
+                  );
+                })}
+              </SimpleGrid>
+            </Box>
           </VStack>
         </Container>
       </Box>

@@ -15,8 +15,19 @@ export class QuizAttemptController {
         });
       }
 
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('📝 Quiz attempt create - User ID:', userId);
+        console.log(
+          '📝 Quiz attempt create - Request body:',
+          JSON.stringify(req.body, null, 2)
+        );
+      }
+
       // Validate request body
       const validatedData = QuizAttemptSchema.parse(req.body);
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('✅ Validation passed');
+      }
 
       // Convert wordIds to ObjectId
       const questionsWithObjectIds = validatedData.questions.map((q) => ({
@@ -33,14 +44,34 @@ export class QuizAttemptController {
         endTime: new Date(validatedData.endTime),
       });
 
+      console.log('✅ Quiz attempt saved to DB - ID:', attempt._id);
+      console.log(
+        '📊 Quiz stats - Score:',
+        validatedData.score,
+        '/',
+        validatedData.totalQuestions
+      );
+
       // Calculate XP earned (10 XP per correct answer)
       const xpEarned = validatedData.score * 10;
 
       // Update user XP and streak
-      await User.findByIdAndUpdate(userId, {
-        $inc: { xp: xpEarned },
-        $set: { lastQuizDate: new Date() },
-      });
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        {
+          $inc: { xp: xpEarned },
+          $set: { lastQuizDate: new Date() },
+        },
+        { new: true }
+      );
+
+      console.log(
+        '✅ User XP updated - New XP:',
+        updatedUser?.xp,
+        '(+',
+        xpEarned,
+        ')'
+      );
 
       // TODO: Implement streak logic based on consecutive days
       // For now, we'll increment streak if quiz taken today
@@ -54,9 +85,13 @@ export class QuizAttemptController {
         },
       });
     } catch (error: any) {
-      console.error('Error creating quiz attempt:', error);
+      console.error('❌ Error creating quiz attempt:', error);
 
       if (error.name === 'ZodError') {
+        console.error(
+          '❌ Validation errors:',
+          JSON.stringify(error.errors, null, 2)
+        );
         return res.status(400).json({
           success: false,
           message: 'Validation error',

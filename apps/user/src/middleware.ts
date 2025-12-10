@@ -13,6 +13,8 @@ export function middleware(request: NextRequest) {
     '/forgot-password',
     '/reset-password',
     '/',
+    '/vocabulary',
+    '/quiz',
   ];
   const isPublicRoute = publicRoutes.includes(pathname);
 

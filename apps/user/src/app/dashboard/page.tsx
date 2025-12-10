@@ -19,15 +19,15 @@ import { Card, CardHeader, CardContent } from '@ielts/ui';
 import Link from 'next/link';
 
 export default function UserDashboardPage() {
-  const { user: localUser, isAuthenticated } = useAuthStore();
+  const { user: localUser, isAuthenticated, hasHydrated } = useAuthStore();
   const router = useRouter();
 
-  // Protect route - redirect if not authenticated
+  // Redirect to login if not authenticated (but wait for hydration first)
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (hasHydrated && !isAuthenticated) {
       router.push('/login');
     }
-  }, [isAuthenticated, router]);
+  }, [hasHydrated, isAuthenticated, router]);
 
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['user', 'me'],
@@ -47,7 +47,26 @@ export default function UserDashboardPage() {
     enabled: !!localUser && isAuthenticated,
   });
 
-  // Don't render if not authenticated
+  // Show loading during hydration
+  if (!hasHydrated) {
+    return (
+      <Box minH="100vh" bg="gray.900" py={8}>
+        <Container maxW="7xl">
+          <VStack spacing={8} align="stretch">
+            <Skeleton height="60px" />
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} height="120px" />
+              ))}
+            </SimpleGrid>
+            <Skeleton height="200px" />
+          </VStack>
+        </Container>
+      </Box>
+    );
+  }
+
+  // Early return AFTER hydration check
   if (!isAuthenticated) {
     return null;
   }
