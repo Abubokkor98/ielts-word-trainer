@@ -95,11 +95,7 @@ export default function VocabularyManagementPage() {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      await axiosInstance.post('/admin/upload-words', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      await axiosInstance.post('/admin/upload-words', formData);
     },
     onSuccess: () => {
       toast({ title: 'Words imported successfully', status: 'success' });
@@ -125,8 +121,11 @@ export default function VocabularyManagementPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.name.endsWith('.csv')) {
-        toast({ title: 'Please select a CSV file', status: 'error' });
+      if (!file.name.endsWith('.csv') || !file.type.includes('csv')) {
+        toast({
+          title: 'Please select a valid CSV file',
+          status: 'error',
+        });
         return;
       }
       uploadMutation.mutate(file);

@@ -19,6 +19,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
+import { AxiosError } from 'axios';
 
 interface AddWordModalProps {
   isOpen: boolean;
@@ -53,10 +54,16 @@ export function AddWordModal({ isOpen, onClose }: AddWordModalProps) {
       const payload = {
         ...data,
         synonyms: data.synonyms
-          ? data.synonyms.split(',').map((s) => s.trim())
+          ? data.synonyms
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
           : [],
         antonyms: data.antonyms
-          ? data.antonyms.split(',').map((s) => s.trim())
+          ? data.antonyms
+              .split(',')
+              .map((s) => s.trim())
+              .filter((s) => s.length > 0)
           : [],
       };
       const response = await axiosInstance.post('/admin/words', payload);
@@ -72,7 +79,7 @@ export function AddWordModal({ isOpen, onClose }: AddWordModalProps) {
       reset();
       onClose();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       toast({
         title: 'Failed to add word',
         description: error.response?.data?.message || 'Something went wrong',

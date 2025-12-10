@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../users/users.model';
 import { Word } from '../words/words.model';
+import { WordsService } from '../words/words.service';
 import { QuizAttempt } from '../quiz/quiz-attempt.model';
 import { Quiz } from '../quiz/quiz.entity';
 import { CSVImportService } from './csv-import.service';
@@ -118,7 +119,7 @@ export class AdminController {
 
   static async createWord(req: Request, res: Response, next: NextFunction) {
     try {
-      const word = await Word.create(req.body);
+      const word = await WordsService.create(req.body);
       res.status(201).json({
         success: true,
         data: word,
@@ -171,9 +172,29 @@ export class AdminController {
         user != null;
         user = await cursor.next()
       ) {
-        const row = `${user.name},${user.email},${user.role},${
-          user.xp
-        },${user.createdAt.toISOString()}\n`;
+        const rowData = [
+          user.name,
+          user.email,
+          user.role,
+          user.xp,
+          user.createdAt.toISOString(),
+        ];
+
+        const row =
+          rowData
+            .map((field) => {
+              const value = String(field || '');
+              if (
+                value.includes(',') ||
+                value.includes('"') ||
+                value.includes('\n')
+              ) {
+                return `"${value.replace(/"/g, '""')}"`;
+              }
+              return value;
+            })
+            .join(',') + '\n';
+
         res.write(row);
       }
 

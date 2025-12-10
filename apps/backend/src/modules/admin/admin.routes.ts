@@ -18,8 +18,10 @@ router.post(
 );
 router.get('/template', AdminController.downloadTemplate);
 
+import { validateWordInput } from '../words/words.validation';
+
 router.get('/words', AdminController.getWords);
-router.post('/words', AdminController.createWord);
+router.post('/words', validateWordInput, AdminController.createWord);
 router.delete('/words/:id', AdminController.deleteWord);
 
 router.get('/users/export', AdminController.exportUsers);

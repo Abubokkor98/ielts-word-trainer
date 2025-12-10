@@ -162,6 +162,7 @@ export function CreateQuizModal({
                   {...register('duration', {
                     required: 'Duration is required',
                     min: { value: 1, message: 'Minimum 1 minute' },
+                    valueAsNumber: true,
                   })}
                 />
                 <FormErrorMessage>
@@ -193,7 +194,11 @@ export function CreateQuizModal({
             <Button variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button colorScheme="brand" type="submit" isLoading={isSubmitting}>
+            <Button
+              colorScheme="brand"
+              type="submit"
+              isLoading={mutation.isPending}
+            >
               {isEditing ? 'Update Quiz' : 'Create Quiz'}
             </Button>
           </ModalFooter>

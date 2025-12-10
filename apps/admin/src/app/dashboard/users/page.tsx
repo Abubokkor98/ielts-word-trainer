@@ -48,7 +48,11 @@ export default function UserManagementPage() {
     return () => clearTimeout(handler);
   }, [search]);
 
-  const { data: usersData, isLoading } = useQuery({
+  const {
+    data: usersData,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['admin', 'users', page, debouncedSearch],
     queryFn: async () => {
       const params = new URLSearchParams({
@@ -77,6 +81,7 @@ export default function UserManagementPage() {
       document.body.appendChild(link);
       link.click();
       link.remove();
+      window.URL.revokeObjectURL(url);
       toast({ title: 'Export successful', status: 'success' });
     } catch (error) {
       toast({ title: 'Export failed', status: 'error' });
@@ -96,6 +101,12 @@ export default function UserManagementPage() {
             Export Users
           </Button>
         </HStack>
+
+        {isError && (
+          <Text color="red.500">
+            Failed to load users. Please try again later.
+          </Text>
+        )}
 
         <Card>
           <CardHeader>
@@ -134,51 +145,63 @@ export default function UserManagementPage() {
                         <Th>Role</Th>
                         <Th>XP</Th>
                         <Th>Joined</Th>
-                        <Th>Status</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
-                      {usersData?.users.map((u: User) => (
-                        <Tr key={u._id}>
-                          <Td>
-                            <HStack>
-                              <Avatar size="sm" name={u.name} src={u.avatar} />
-                              <Box>
-                                <Text fontWeight="600">{u.name}</Text>
-                                <HStack
-                                  spacing={1}
-                                  color="gray.500"
-                                  fontSize="xs"
-                                >
-                                  <Mail size={12} />
-                                  <Text>{u.email}</Text>
-                                </HStack>
-                              </Box>
-                            </HStack>
-                          </Td>
-                          <Td>
-                            <Badge
-                              colorScheme={
-                                u.role === 'admin' ? 'purple' : 'gray'
-                              }
-                            >
-                              {u.role || 'User'}
-                            </Badge>
-                          </Td>
-                          <Td fontWeight="bold">{u.xp || 0}</Td>
-                          <Td>
-                            <HStack spacing={1} color="gray.500" fontSize="sm">
-                              <Calendar size={14} />
-                              <Text>
-                                {new Date(u.createdAt).toLocaleDateString()}
-                              </Text>
-                            </HStack>
-                          </Td>
-                          <Td>
-                            <Badge colorScheme="green">Active</Badge>
+                      {usersData?.users?.length ? (
+                        usersData.users.map((u: User) => (
+                          <Tr key={u._id}>
+                            <Td>
+                              <HStack>
+                                <Avatar
+                                  size="sm"
+                                  name={u.name}
+                                  src={u.avatar}
+                                />
+                                <Box>
+                                  <Text fontWeight="600">{u.name}</Text>
+                                  <HStack
+                                    spacing={1}
+                                    color="gray.500"
+                                    fontSize="xs"
+                                  >
+                                    <Mail size={12} />
+                                    <Text>{u.email}</Text>
+                                  </HStack>
+                                </Box>
+                              </HStack>
+                            </Td>
+                            <Td>
+                              <Badge
+                                colorScheme={
+                                  u.role === 'admin' ? 'purple' : 'gray'
+                                }
+                              >
+                                {u.role || 'User'}
+                              </Badge>
+                            </Td>
+                            <Td fontWeight="bold">{u.xp || 0}</Td>
+                            <Td>
+                              <HStack
+                                spacing={1}
+                                color="gray.500"
+                                fontSize="sm"
+                              >
+                                <Calendar size={14} />
+                                <Text>
+                                  {new Date(u.createdAt).toLocaleDateString()}
+                                </Text>
+                              </HStack>
+                            </Td>
+                          </Tr>
+                        ))
+                      ) : (
+                        <Tr>
+                          <Td colSpan={5} textAlign="center" py={8}>
+                            <Text color="gray.500">No users found</Text>
                           </Td>
                         </Tr>
-                      ))}
+                      )}
                     </Tbody>
                   </Table>
                 </Box>

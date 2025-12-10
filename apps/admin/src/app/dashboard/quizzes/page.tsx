@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { Card, CardContent } from '@ielts/ui';
+import { Difficulty } from '@ielts/shared';
 import {
   Box,
   Heading,
@@ -19,18 +20,18 @@ import {
 } from '@chakra-ui/react';
 import { Plus, FileText, CheckCircle, Clock } from 'lucide-react';
 import { CreateQuizModal } from './CreateQuizModal';
+import { useState } from 'react';
 
 interface Quiz {
   _id: string;
   title: string;
   description?: string;
   topic: string;
-  difficulty: string;
+  difficulty: Difficulty;
   duration: number;
   isActive: boolean;
   questions?: unknown[];
 }
-import { useState } from 'react';
 
 export default function QuizManagementPage() {
   const { user } = useAuthStore();
@@ -138,7 +139,14 @@ export default function QuizManagementPage() {
             ))}
 
             <Card
-              className="border-dashed border-2 border-gray-200 flex items-center justify-center min-h-[200px] cursor-pointer hover:bg-gray-50"
+              border="2px dashed"
+              borderColor="gray.200"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              minH="200px"
+              cursor="pointer"
+              _hover={{ bg: 'gray.50' }}
               onClick={handleCreate}
             >
               <VStack color="gray.400">
@@ -161,7 +169,7 @@ export default function QuizManagementPage() {
               ? {
                   ...editingQuiz,
                   description: editingQuiz.description || '',
-                  difficulty: editingQuiz.difficulty as any,
+                  difficulty: editingQuiz.difficulty,
                 }
               : undefined
           }

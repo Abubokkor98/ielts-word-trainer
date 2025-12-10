@@ -18,7 +18,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SettingsPage() {
   const { user } = useAuthStore();
@@ -27,12 +27,19 @@ export default function SettingsPage() {
   const {
     register: registerProfile,
     handleSubmit: handleProfileSubmit,
+    reset: resetProfile,
     formState: { isSubmitting: isProfileSubmitting },
   } = useForm({
     defaultValues: {
       name: user?.name || '',
     },
   });
+
+  useEffect(() => {
+    if (user) {
+      resetProfile({ name: user.name });
+    }
+  }, [user, resetProfile]);
 
   const {
     register: registerPassword,
@@ -49,9 +56,7 @@ export default function SettingsPage() {
     onSuccess: (response, variables) => {
       // Update local auth store with new user data
       if (user) {
-        useAuthStore
-          .getState()
-          .setUser({ ...user, name: variables.name } as any);
+        useAuthStore.getState().setUser({ ...user, name: variables.name });
       }
       toast({ title: 'Profile updated successfully', status: 'success' });
     },
@@ -138,7 +143,10 @@ export default function SettingsPage() {
                     {...registerPassword('currentPassword', { required: true })}
                   />
                 </FormControl>
-                <FormControl isRequired>
+                <FormControl
+                  isRequired
+                  isInvalid={!!passwordErrors.newPassword}
+                >
                   <FormLabel>New Password</FormLabel>
                   <Input
                     type="password"
@@ -147,6 +155,9 @@ export default function SettingsPage() {
                       minLength: { value: 6, message: 'Minimum 6 characters' },
                     })}
                   />
+                  <FormErrorMessage>
+                    {passwordErrors.newPassword?.message as string}
+                  </FormErrorMessage>
                 </FormControl>
                 <FormControl
                   isRequired
