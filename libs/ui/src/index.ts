@@ -10,3 +10,4 @@ export { WordDetailsModal } from './lib/WordDetailsModal';
 export { LoadingSpinner } from './lib/loading-spinner';
 export { AdminSidebar } from './components/AdminSidebar';
 export { DashboardChart } from './components/DashboardChart';
+export { ReactQueryProvider } from './components/react-query-provider';

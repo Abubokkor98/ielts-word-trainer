@@ -19,6 +19,19 @@ import {
 } from '@chakra-ui/react';
 import { Users, BookOpen, FileText, TrendingUp, Activity } from 'lucide-react';
 
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  icon: any;
+  color: string;
+  bg: string;
+}
+
+interface WordDifficulty {
+  _id: string;
+  count: number;
+}
+
 export default function AdminDashboardPage() {
   const { user, isAuthenticated } = useAuthStore();
   const router = useRouter();
@@ -53,7 +66,7 @@ export default function AdminDashboardPage() {
 
   // Transform wordsByDifficulty for chart
   const difficultyData =
-    stats.wordsByDifficulty?.map((item: any) => ({
+    stats.wordsByDifficulty?.map((item: WordDifficulty) => ({
       name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
       count: item.count,
     })) || [];
@@ -138,7 +151,7 @@ export default function AdminDashboardPage() {
 }
 
 // Shared Component
-const StatCard = ({ label, value, icon, color, bg }: any) => (
+const StatCard = ({ label, value, icon, color, bg }: StatCardProps) => (
   <Card className="overflow-hidden border-none shadow-sm transition-all hover:shadow-md">
     <CardContent className="p-6">
       <Flex justify="space-between" align="center">

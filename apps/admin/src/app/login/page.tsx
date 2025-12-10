@@ -61,10 +61,14 @@ export default function LoginPage() {
 
       router.push('/dashboard');
     },
-    onError: (error: any) => {
+    onError: (
+      error: Error | { response?: { data?: { message?: string } } }
+    ) => {
       toast({
         title: 'Login failed',
-        description: error.response?.data?.message || 'Invalid credentials',
+        description:
+          ('response' in error && error.response?.data?.message) ||
+          'Invalid credentials',
         status: 'error',
         duration: 5000,
       });

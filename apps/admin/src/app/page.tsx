@@ -34,6 +34,21 @@ export default function AdminHomePage() {
     }
   }, [isAuthenticated, user, router]);
 
+  // Show loading state while redirecting authenticated users
+  if (isAuthenticated) {
+    return (
+      <Box
+        minH="100vh"
+        bg="gray.900"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Text color="gray.400">Redirecting...</Text>
+      </Box>
+    );
+  }
+
   // Show welcome page for unauthenticated users
   return (
     <Box minH="100vh" bg="gray.900" display="flex" alignItems="center">

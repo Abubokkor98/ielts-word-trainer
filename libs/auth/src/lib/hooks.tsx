@@ -26,8 +26,10 @@ export const useUserRole = () => {
   return user?.role || null;
 };
 
-export const protectUserRoute = (Component: React.ComponentType<any>) => {
-  return function ProtectedUserRoute(props: any) {
+export const protectUserRoute = <P extends object>(
+  Component: React.ComponentType<P>
+) => {
+  return function ProtectedUserRoute(props: P) {
     const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
 
@@ -50,8 +52,10 @@ export const protectUserRoute = (Component: React.ComponentType<any>) => {
   };
 };
 
-export const protectAdminRoute = (Component: React.ComponentType<any>) => {
-  return function ProtectedAdminRoute(props: any) {
+export const protectAdminRoute = <P extends object>(
+  Component: React.ComponentType<P>
+) => {
+  return function ProtectedAdminRoute(props: P) {
     const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
 

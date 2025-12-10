@@ -1,8 +1,7 @@
 import { Inter } from 'next/font/google';
 import './global.css';
-import { ReactQueryProvider } from './providers';
-import { ChakraUIProvider } from '@ielts/ui';
-import { AdminSidebar } from '@ielts/ui';
+import { ReactQueryProvider } from '@ielts/ui';
+import { ChakraUIProvider, AdminSidebar } from '@ielts/ui';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 

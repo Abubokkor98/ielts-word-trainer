@@ -139,8 +139,22 @@ export default function UserDashboardPage() {
   );
 }
 
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  icon?: string;
+  color: string;
+}
+
+interface ActionCardProps {
+  href: string;
+  title: string;
+  description: string;
+  emoji: string;
+}
+
 // Shared Components
-const StatCard = ({ label, value, icon, color }: any) => (
+const StatCard = ({ label, value, icon, color }: StatCardProps) => (
   <Card role="region" aria-label={`${label} statistic`}>
     <CardContent>
       <VStack align="start" spacing={1}>
@@ -162,7 +176,7 @@ const StatCard = ({ label, value, icon, color }: any) => (
   </Card>
 );
 
-const ActionCard = ({ href, title, description, emoji }: any) => (
+const ActionCard = ({ href, title, description, emoji }: ActionCardProps) => (
   <Link
     href={href}
     style={{ textDecoration: 'none' }}

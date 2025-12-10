@@ -16,6 +16,11 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react';
 import Link from 'next/link';
+import { AxiosError } from 'axios';
+
+interface ApiError {
+  message: string;
+}
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -50,11 +55,11 @@ export default function RegisterPage() {
 
       router.push('/dashboard');
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ApiError>) => {
       toast({
         title: 'Registration failed',
         description:
-          error.response?.data?.message || 'Unable to create account',
+          error.response?.data?.message ?? 'Unable to create account',
         status: 'error',
         duration: 5000,
       });
