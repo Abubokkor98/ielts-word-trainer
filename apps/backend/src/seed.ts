@@ -25,6 +25,7 @@ async function seed() {
     await User.deleteMany({});
     await Word.deleteMany({});
     await Topic.deleteMany({});
+    await Quiz.deleteMany({});
     await QuizAttempt.deleteMany({});
     console.log('Cleared existing data');
 

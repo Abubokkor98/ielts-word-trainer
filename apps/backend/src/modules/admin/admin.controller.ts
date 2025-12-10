@@ -218,7 +218,6 @@ export class AdminController {
         success: true,
         data: {
           quizzes,
-          total,
           pagination: {
             page,
             limit,

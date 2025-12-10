@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent, Button, Input } from '@ielts/ui';
 import {
   Box,
@@ -24,22 +24,41 @@ import {
 } from '@chakra-ui/react';
 import { Plus, Upload, Trash2, Search, Filter } from 'lucide-react';
 
+interface Word {
+  _id: string;
+  word: string;
+  meaning: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+}
+
 export default function VocabularyManagementPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [difficulty, setDifficulty] = useState('all');
   const toast = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // Reset page on search
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
+
   const { data: wordsData, isLoading } = useQuery({
-    queryKey: ['admin', 'words', page, search, difficulty],
+    queryKey: ['admin', 'words', page, debouncedSearch, difficulty],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '10',
       });
-      if (search) params.append('search', search);
+      if (debouncedSearch) params.append('search', debouncedSearch);
       if (difficulty !== 'all') params.append('difficulty', difficulty);
 
       const { data } = await axiosInstance.get(
@@ -137,7 +156,7 @@ export default function VocabularyManagementPage() {
                       </Tr>
                     </Thead>
                     <Tbody>
-                      {wordsData?.words.map((word: any) => (
+                      {wordsData?.words.map((word: Word) => (
                         <Tr key={word._id}>
                           <Td fontWeight="600">{word.word}</Td>
                           <Td maxW="300px" isTruncated color="gray.500">

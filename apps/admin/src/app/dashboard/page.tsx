@@ -17,7 +17,7 @@ import {
   Flex,
   Icon,
 } from '@chakra-ui/react';
-import { Users, BookOpen, FileText, TrendingUp, Activity } from 'lucide-react';
+import { Users, BookOpen, FileText, Activity } from 'lucide-react';
 
 interface StatCardProps {
   label: string;
@@ -34,7 +34,6 @@ interface WordDifficulty {
 
 export default function AdminDashboardPage() {
   const { user, isAuthenticated } = useAuthStore();
-  const router = useRouter();
   const cardBg = useColorModeValue('white', 'gray.800');
 
   // Auth checks handled by DashboardLayout
@@ -152,7 +151,10 @@ export default function AdminDashboardPage() {
 
 // Shared Component
 const StatCard = ({ label, value, icon, color, bg }: StatCardProps) => (
-  <Card className="overflow-hidden border-none shadow-sm transition-all hover:shadow-md">
+  <Card
+    className="overflow-hidden border-none shadow-sm transition-all hover:shadow-md"
+    style={{ backgroundColor: bg }}
+  >
     <CardContent className="p-6">
       <Flex justify="space-between" align="center">
         <Box>
@@ -165,7 +167,7 @@ const StatCard = ({ label, value, icon, color, bg }: StatCardProps) => (
         </Box>
         <Box
           p={3}
-          bg={`${color.split('.')[0]}.50`}
+          bg={color.includes('.') ? `${color.split('.')[0]}.50` : `${color}50`}
           borderRadius="xl"
           color={color}
         >

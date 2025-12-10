@@ -22,6 +22,16 @@ import {
 import { Search, Mail, Calendar } from 'lucide-react';
 import { useState } from 'react';
 
+interface RecentUser {
+  _id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  role?: string;
+  xp?: number;
+  createdAt: string;
+}
+
 export default function UserManagementPage() {
   const { user } = useAuthStore();
   const [search, setSearch] = useState('');
@@ -84,7 +94,7 @@ export default function UserManagementPage() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {stats?.recentUsers?.map((u: any) => (
+                  {stats?.recentUsers?.map((u: RecentUser) => (
                     <Tr key={u._id}>
                       <Td>
                         <HStack>

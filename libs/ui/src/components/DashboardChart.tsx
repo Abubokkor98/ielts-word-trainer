@@ -21,7 +21,7 @@ interface DashboardChartProps {
   data: any[];
   dataKeys: { key: string; color: string; name?: string }[];
   xAxisKey: string;
-  height?: number | string | any;
+  height?: number | string;
 }
 
 export const DashboardChart = ({
@@ -176,7 +176,7 @@ export const DashboardChart = ({
   };
 
   return (
-    <ResponsiveContainer width="100%" height={height}>
+    <ResponsiveContainer width="100%" height={height as any}>
       {renderChart()}
     </ResponsiveContainer>
   );

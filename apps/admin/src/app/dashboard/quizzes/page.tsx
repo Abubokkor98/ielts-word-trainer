@@ -21,14 +21,14 @@ export default function QuizManagementPage() {
   const { user } = useAuthStore();
 
   // Placeholder query - ideally fetch quiz list
-  const { data: stats } = useQuery({
-    queryKey: ['admin', 'stats'],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get('/admin/stats');
-      return data.data;
-    },
-    enabled: !!user && user.role === 'admin',
-  });
+  // const { data: stats } = useQuery({
+  //   queryKey: ['admin', 'stats'],
+  //   queryFn: async () => {
+  //     const { data } = await axiosInstance.get('/admin/stats');
+  //     return data.data;
+  //   },
+  //   enabled: !!user && user.role === 'admin',
+  // });
 
   return (
     <Box>
@@ -41,7 +41,12 @@ export default function QuizManagementPage() {
         </HStack>
 
         <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
-          <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-purple-500">
+          <Card
+            _hover={{ shadow: 'lg' }}
+            transition="shadow 0.2s"
+            borderLeftWidth="4px"
+            borderLeftColor="purple.500"
+          >
             <CardContent className="p-6">
               <VStack align="start" spacing={4}>
                 <HStack justify="space-between" w="full">

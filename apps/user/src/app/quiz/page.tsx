@@ -176,6 +176,13 @@ export default function QuizPage() {
   };
 
   const finishQuiz = async (answers: Map<number, any>) => {
+    // Derive the final score from recorded answers to avoid stale state
+    const correctCount = Array.from(answers.values()).filter(
+      (answer) => answer.isCorrect
+    ).length;
+
+    // Sync state used by the UI with the derived score
+    setScore(correctCount);
     setShowResult(true);
 
     if (!startTime) return;
@@ -192,7 +199,7 @@ export default function QuizPage() {
         isCorrect: answer.isCorrect,
         timeSpent: 0, // Can be calculated per question if needed
       })),
-      score,
+      score: correctCount,
       totalQuestions: questions.length,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
@@ -201,9 +208,9 @@ export default function QuizPage() {
 
     // Store in Zustand
     setLastQuizResult({
-      score,
+      score: correctCount,
       totalQuestions: questions.length,
-      correctAnswers: score,
+      correctAnswers: correctCount,
       difficulty: 'mixed',
       timestamp: new Date().toISOString(),
     });
