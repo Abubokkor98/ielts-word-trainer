@@ -164,14 +164,14 @@ export default function VocabularyPage() {
                     setPage(1);
                   }}
                 />
-                {topicSearchQuery && (
+                {wordSearchQuery && (
                   <InputRightElement>
                     <X
                       size={16}
                       color="gray"
                       cursor="pointer"
                       onClick={() => {
-                        setTopicSearchQuery('');
+                        setWordSearchQuery('');
                         setPage(1);
                       }}
                     />
@@ -200,14 +200,14 @@ export default function VocabularyPage() {
                     setPage(1);
                   }}
                 />
-                {wordSearchQuery && (
+                {topicSearchQuery && (
                   <InputRightElement>
                     <X
                       size={16}
                       color="gray"
                       cursor="pointer"
                       onClick={() => {
-                        setWordSearchQuery('');
+                        setTopicSearchQuery('');
                         setPage(1);
                       }}
                     />
