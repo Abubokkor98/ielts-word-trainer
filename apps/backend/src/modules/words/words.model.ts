@@ -6,7 +6,7 @@ export interface IWord extends Document {
   exampleSentence: string;
   synonyms?: string[];
   antonyms?: string[];
-  topic?: string;
+  topic?: mongoose.Types.ObjectId | string;
   partOfSpeech?: string;
   pronunciation?: string;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
@@ -19,7 +19,7 @@ const WordSchema = new Schema<IWord>(
     exampleSentence: { type: String, required: true },
     synonyms: [{ type: String }],
     antonyms: [{ type: String }],
-    topic: { type: String, index: true },
+    topic: { type: Schema.Types.ObjectId, ref: 'Topic', index: true },
     partOfSpeech: { type: String },
     pronunciation: { type: String },
     difficulty: {

@@ -1,13 +1,29 @@
 import { Word } from './words.model';
 import { CreateWordInput } from '@ielts/shared';
 import { Topic } from '../topics/topics.model';
+import mongoose from 'mongoose';
 
 export class WordsService {
   static async create(input: CreateWordInput) {
-    // If topic is provided, verify it exists
+    // If topic is provided, handle it (it might be a name or an ID)
     if (input.topic) {
-      const topicExists = await Topic.findById(input.topic);
-      if (!topicExists) throw new Error('Topic not found');
+      const isObjectId = mongoose.isValidObjectId(input.topic);
+
+      if (isObjectId) {
+        const topicExists = await Topic.findById(input.topic);
+        if (!topicExists) throw new Error('Topic not found');
+      } else {
+        // It's likely a topic name
+        let topic = await Topic.findOne({
+          name: { $regex: new RegExp(`^${input.topic}$`, 'i') },
+        });
+
+        if (!topic) {
+          // Create new topic if it doesn't exist
+          topic = await Topic.create({ name: input.topic });
+        }
+        input.topic = topic._id.toString();
+      }
     }
     return Word.create(input);
   }
@@ -31,12 +47,9 @@ export class WordsService {
 
       const topicIds = topics.map((t) => t._id);
 
-      andConditions.push({
-        $or: [
-          { topic: { $in: topicIds } },
-          { topic: { $regex: query.topicName, $options: 'i' } },
-        ],
-      });
+      if (topicIds.length > 0) {
+        andConditions.push({ topic: { $in: topicIds } });
+      }
     }
 
     // General Word Search (Word, Synonyms, Antonyms)
