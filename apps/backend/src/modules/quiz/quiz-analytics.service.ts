@@ -8,6 +8,9 @@ export class QuizAnalyticsService {
     if (attempts.length === 0) {
       return {
         totalAttempts: 0,
+        totalQuizzes: 0, // Same as totalAttempts, for frontend consistency
+        totalQuestionsAnswered: 0,
+        correctAnswers: 0,
         averageScore: 0,
         bestScore: 0,
         worstScore: 0,
@@ -31,6 +34,10 @@ export class QuizAnalyticsService {
       0
     );
     const averageTimePerQuestion = totalTime / totalQuestions;
+
+    // Calculate total questions answered and correct answers for accuracy metric
+    const totalQuestionsAnswered = totalQuestions;
+    const totalCorrectAnswers = attempts.reduce((sum, a) => sum + a.score, 0);
 
     // Performance by difficulty
     const difficultyStats = await QuizAttempt.aggregate([
@@ -96,6 +103,9 @@ export class QuizAnalyticsService {
 
     return {
       totalAttempts: attempts.length,
+      totalQuizzes: attempts.length, // Same as totalAttempts, for frontend consistency
+      totalQuestionsAnswered,
+      correctAnswers: totalCorrectAnswers,
       averageScore: averageScore.toFixed(1),
       bestScore: bestScore.toFixed(1),
       worstScore: worstScore.toFixed(1),

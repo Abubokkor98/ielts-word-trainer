@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
@@ -21,6 +21,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const toast = useToast();
   const { setUser, setToken } = useAuthStore();
 
@@ -60,7 +61,13 @@ export default function LoginPage() {
         duration: 3000,
       });
 
-      router.push('/dashboard');
+      // Get redirect URL from query params, default to home page
+      const redirectTo = searchParams.get('redirect') || '/';
+
+      // Security: Ensure redirect is a relative path (not external URL)
+      const safeRedirect = redirectTo.startsWith('/') ? redirectTo : '/';
+
+      router.push(safeRedirect);
     },
     onError: (error: any) => {
       toast({
