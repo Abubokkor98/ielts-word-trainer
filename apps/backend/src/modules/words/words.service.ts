@@ -39,13 +39,12 @@ export class WordsService {
       });
     }
 
-    // General Word Search (Word, Meaning, Synonyms, Antonyms)
+    // General Word Search (Word, Synonyms, Antonyms)
     if (query.search) {
       const searchRegex = { $regex: query.search, $options: 'i' };
       andConditions.push({
         $or: [
           { word: searchRegex },
-          { meaning: searchRegex },
           { synonyms: searchRegex },
           { antonyms: searchRegex },
         ],
