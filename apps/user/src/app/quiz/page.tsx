@@ -404,7 +404,11 @@ export default function QuizPage() {
               <Heading as="h3" size="md" color="gray.50" mb={6}>
                 📝 Answer Review
               </Heading>
-              <SimpleGrid columns={5} spacing={6} rowGap={6}>
+              <SimpleGrid
+                columns={{ base: 1, sm: 2, md: 3, lg: 5 }}
+                spacing={6}
+                rowGap={6}
+              >
                 {questions.map((question, idx) => {
                   const userAnswer = questionAnswers.get(idx);
                   const isCorrect = userAnswer?.isCorrect || false;

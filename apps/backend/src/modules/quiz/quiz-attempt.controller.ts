@@ -15,15 +15,19 @@ export class QuizAttemptController {
         });
       }
 
-      console.log('📝 Quiz attempt create - User ID:', userId);
-      console.log(
-        '📝 Quiz attempt create - Request body:',
-        JSON.stringify(req.body, null, 2)
-      );
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('📝 Quiz attempt create - User ID:', userId);
+        console.log(
+          '📝 Quiz attempt create - Request body:',
+          JSON.stringify(req.body, null, 2)
+        );
+      }
 
       // Validate request body
       const validatedData = QuizAttemptSchema.parse(req.body);
-      console.log('✅ Validation passed');
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('✅ Validation passed');
+      }
 
       // Convert wordIds to ObjectId
       const questionsWithObjectIds = validatedData.questions.map((q) => ({
