@@ -26,10 +26,19 @@ export default function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      const { data } = await axiosInstance.post('/auth/login', {
-        email,
-        password,
-      });
+      const { data } = await axiosInstance.post(
+        '/auth/login',
+        {
+          email,
+          password,
+        },
+        { timeout: 10000 }
+      );
+
+      if (!data || !data.accessToken || !data.data || !data.data.role) {
+        throw new Error('Invalid response structure from server');
+      }
+
       return data;
     },
     onSuccess: (data) => {
@@ -37,8 +46,9 @@ export default function LoginPage() {
       if (data.data.role !== 'admin') {
         toast({
           title: 'Access Denied',
-          description:
-            'Only administrators can access this portal. Regular users should use the User Portal at http://localhost:3000',
+          description: `Only administrators can access this portal. Regular users should use the User Portal at ${
+            process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'
+          }`,
           status: 'warning',
           duration: 6000,
           isClosable: true,
@@ -139,7 +149,10 @@ export default function LoginPage() {
               <Text color="gray.400" textAlign="center" fontSize="sm">
                 <ChakraLink
                   as={Link}
-                  href="http://localhost:3000"
+                  href={
+                    process.env.NEXT_PUBLIC_USER_APP_URL ||
+                    'http://localhost:3000'
+                  }
                   color="brand.400"
                   fontWeight="600"
                 >

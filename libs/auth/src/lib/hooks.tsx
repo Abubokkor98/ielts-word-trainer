@@ -39,7 +39,9 @@ export const protectUserRoute = <P extends object>(
       } else if (user?.role === 'admin') {
         // Redirect admins to admin app
         if (typeof window !== 'undefined') {
-          window.location.href = 'http://localhost:3001/dashboard';
+          window.location.href = `${
+            process.env['NEXT_PUBLIC_ADMIN_APP_URL'] || 'http://localhost:3001'
+          }/dashboard`;
         }
       }
     }, [isAuthenticated, user, router]);
@@ -65,7 +67,9 @@ export const protectAdminRoute = <P extends object>(
       } else if (user?.role === 'user') {
         // Redirect regular users to user app
         if (typeof window !== 'undefined') {
-          window.location.href = 'http://localhost:3000/dashboard';
+          window.location.href = `${
+            process.env['NEXT_PUBLIC_USER_APP_URL'] || 'http://localhost:3000'
+          }/dashboard`;
         }
       }
     }, [isAuthenticated, user, router]);

@@ -29,7 +29,8 @@ export default function AdminHomePage() {
     } else if (user?.role === 'user') {
       // Regular user trying to access admin portal - redirect to user app
       if (typeof window !== 'undefined') {
-        window.location.href = 'http://localhost:3000';
+        window.location.href =
+          process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
       }
     }
   }, [isAuthenticated, user, router]);
@@ -73,12 +74,15 @@ export default function AdminHomePage() {
 
             <Text fontSize="sm" color="gray.500">
               Regular users? Visit the{' '}
-              <Link
-                href="http://localhost:3000"
+              <a
+                href={
+                  process.env.NEXT_PUBLIC_USER_APP_URL ||
+                  'http://localhost:3000'
+                }
                 style={{ color: '#4299e1', textDecoration: 'underline' }}
               >
                 User Portal
-              </Link>
+              </a>
             </Text>
           </VStack>
 

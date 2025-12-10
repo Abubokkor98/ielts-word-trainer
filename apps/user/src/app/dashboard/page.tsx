@@ -29,18 +29,13 @@ export default function UserDashboardPage() {
     }
   }, [isAuthenticated, router]);
 
-  // Don't render if not authenticated
-  if (!isAuthenticated) {
-    return null;
-  }
-
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: async () => {
       const { data } = await axiosInstance.get('/auth/me');
       return data.data;
     },
-    enabled: !!localUser,
+    enabled: !!localUser && isAuthenticated,
   });
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
@@ -49,8 +44,13 @@ export default function UserDashboardPage() {
       const { data } = await axiosInstance.get('/quiz/analytics/me');
       return data.data;
     },
-    enabled: !!localUser,
+    enabled: !!localUser && isAuthenticated,
   });
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   if (userLoading || analyticsLoading) {
     return (

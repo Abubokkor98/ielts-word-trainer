@@ -37,8 +37,9 @@ export default function LoginPage() {
       if (data.data.role === 'admin') {
         toast({
           title: 'Access Denied',
-          description:
-            'Admin accounts must use the Admin Portal at http://localhost:3001',
+          description: `Admin accounts must use the Admin Portal at ${
+            process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'the admin portal'
+          }`,
           status: 'warning',
           duration: 6000,
           isClosable: true,
