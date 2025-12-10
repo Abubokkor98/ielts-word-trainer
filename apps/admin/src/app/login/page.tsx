@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
@@ -26,10 +26,19 @@ export default function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      const { data } = await axiosInstance.post('/auth/login', {
-        email,
-        password,
-      });
+      const { data } = await axiosInstance.post(
+        '/auth/login',
+        {
+          email,
+          password,
+        },
+        { timeout: 10000 }
+      );
+
+      if (!data || !data.accessToken || !data.data || !data.data.role) {
+        throw new Error('Invalid response structure from server');
+      }
+
       return data;
     },
     onSuccess: (data) => {
@@ -37,8 +46,9 @@ export default function LoginPage() {
       if (data.data.role !== 'admin') {
         toast({
           title: 'Access Denied',
-          description:
-            'Only administrators can access this portal. Regular users should use the User Portal at http://localhost:3000',
+          description: `Only administrators can access this portal. Regular users should use the User Portal at ${
+            process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'
+          }`,
           status: 'warning',
           duration: 6000,
           isClosable: true,
@@ -49,6 +59,9 @@ export default function LoginPage() {
       setToken(data.accessToken);
       setUser(data.data);
 
+      // Set cookie for middleware
+      document.cookie = `admin_auth_token=${data.accessToken}; path=/; max-age=86400; SameSite=Strict`;
+
       toast({
         title: 'Login successful!',
         description: `Welcome back, ${data.data.name}!`,
@@ -58,10 +71,14 @@ export default function LoginPage() {
 
       router.push('/dashboard');
     },
-    onError: (error: any) => {
+    onError: (
+      error: Error | { response?: { data?: { message?: string } } }
+    ) => {
       toast({
         title: 'Login failed',
-        description: error.response?.data?.message || 'Invalid credentials',
+        description:
+          ('response' in error && error.response?.data?.message) ||
+          'Invalid credentials',
         status: 'error',
         duration: 5000,
       });
@@ -132,7 +149,10 @@ export default function LoginPage() {
               <Text color="gray.400" textAlign="center" fontSize="sm">
                 <ChakraLink
                   as={Link}
-                  href="http://localhost:3000"
+                  href={
+                    process.env.NEXT_PUBLIC_USER_APP_URL ||
+                    'http://localhost:3000'
+                  }
                   color="brand.400"
                   fontWeight="600"
                 >

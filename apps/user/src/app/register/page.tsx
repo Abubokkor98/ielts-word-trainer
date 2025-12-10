@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
@@ -16,6 +16,11 @@ import {
   Link as ChakraLink,
 } from '@chakra-ui/react';
 import Link from 'next/link';
+import { AxiosError } from 'axios';
+
+interface ApiError {
+  message: string;
+}
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -38,6 +43,9 @@ export default function RegisterPage() {
       setToken(data.accessToken);
       setUser(data.data);
 
+      // Set cookie for middleware
+      document.cookie = `user_auth_token=${data.accessToken}; path=/; max-age=86400; SameSite=Strict`;
+
       toast({
         title: 'Registration successful!',
         description: 'Your account has been created.',
@@ -47,11 +55,11 @@ export default function RegisterPage() {
 
       router.push('/dashboard');
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<ApiError>) => {
       toast({
         title: 'Registration failed',
         description:
-          error.response?.data?.message || 'Unable to create account',
+          error.response?.data?.message ?? 'Unable to create account',
         status: 'error',
         duration: 5000,
       });

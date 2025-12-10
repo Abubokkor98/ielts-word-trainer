@@ -17,6 +17,9 @@ export default function AdminHomePage() {
   const { isAuthenticated, user } = useAuthStore();
   const router = useRouter();
 
+  const userAppUrl =
+    process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
+
   useEffect(() => {
     if (!isAuthenticated) {
       // Not logged in - stay on home to show welcome screen
@@ -29,10 +32,25 @@ export default function AdminHomePage() {
     } else if (user?.role === 'user') {
       // Regular user trying to access admin portal - redirect to user app
       if (typeof window !== 'undefined') {
-        window.location.href = 'http://localhost:3000';
+        window.location.href = userAppUrl;
       }
     }
-  }, [isAuthenticated, user, router]);
+  }, [isAuthenticated, user, router, userAppUrl]);
+
+  // Show loading state while redirecting authenticated users
+  if (isAuthenticated) {
+    return (
+      <Box
+        minH="100vh"
+        bg="gray.900"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Text color="gray.400">Redirecting...</Text>
+      </Box>
+    );
+  }
 
   // Show welcome page for unauthenticated users
   return (
@@ -58,12 +76,12 @@ export default function AdminHomePage() {
 
             <Text fontSize="sm" color="gray.500">
               Regular users? Visit the{' '}
-              <Link
-                href="http://localhost:3000"
+              <a
+                href={userAppUrl}
                 style={{ color: '#4299e1', textDecoration: 'underline' }}
               >
                 User Portal
-              </Link>
+              </a>
             </Text>
           </VStack>
 

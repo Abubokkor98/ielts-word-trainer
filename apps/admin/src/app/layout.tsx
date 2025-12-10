@@ -1,8 +1,7 @@
 import { Inter } from 'next/font/google';
 import './global.css';
-import { ReactQueryProvider } from './providers';
-import { ChakraUIProvider } from '@ielts/ui';
-import { Navbar } from '@ielts/ui';
+import { ReactQueryProvider } from '@ielts/ui';
+import { ChakraUIProvider, AdminSidebar } from '@ielts/ui';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -24,9 +23,14 @@ export default function RootLayout({
       <body className={`${inter.variable} ${inter.className}`}>
         <ReactQueryProvider>
           <ChakraUIProvider>
-            <div className="flex flex-col min-h-screen">
-              <Navbar appType="admin" />
-              <main className="flex-1">{children}</main>
+            <div className="flex min-h-screen bg-gray-900">
+              <AdminSidebar />
+              <main
+                id="main-content"
+                className="flex-1 md:ml-64 p-4 md:p-8 transition-all duration-200"
+              >
+                {children}
+              </main>
             </div>
           </ChakraUIProvider>
         </ReactQueryProvider>

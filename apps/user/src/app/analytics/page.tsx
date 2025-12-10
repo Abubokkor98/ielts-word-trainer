@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { Card, CardHeader, CardContent } from '@ielts/ui';
 import {
   Box,

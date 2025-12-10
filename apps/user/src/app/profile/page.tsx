@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {

@@ -26,8 +26,10 @@ export const useUserRole = () => {
   return user?.role || null;
 };
 
-export const protectUserRoute = (Component: React.ComponentType<any>) => {
-  return function ProtectedUserRoute(props: any) {
+export const protectUserRoute = <P extends object>(
+  Component: React.ComponentType<P>
+) => {
+  return function ProtectedUserRoute(props: P) {
     const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
 
@@ -37,7 +39,9 @@ export const protectUserRoute = (Component: React.ComponentType<any>) => {
       } else if (user?.role === 'admin') {
         // Redirect admins to admin app
         if (typeof window !== 'undefined') {
-          window.location.href = 'http://localhost:3001/dashboard';
+          window.location.href = `${
+            process.env['NEXT_PUBLIC_ADMIN_APP_URL'] || 'http://localhost:3001'
+          }/dashboard`;
         }
       }
     }, [isAuthenticated, user, router]);
@@ -50,8 +54,10 @@ export const protectUserRoute = (Component: React.ComponentType<any>) => {
   };
 };
 
-export const protectAdminRoute = (Component: React.ComponentType<any>) => {
-  return function ProtectedAdminRoute(props: any) {
+export const protectAdminRoute = <P extends object>(
+  Component: React.ComponentType<P>
+) => {
+  return function ProtectedAdminRoute(props: P) {
     const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
 
@@ -61,7 +67,9 @@ export const protectAdminRoute = (Component: React.ComponentType<any>) => {
       } else if (user?.role === 'user') {
         // Redirect regular users to user app
         if (typeof window !== 'undefined') {
-          window.location.href = 'http://localhost:3000/dashboard';
+          window.location.href = `${
+            process.env['NEXT_PUBLIC_USER_APP_URL'] || 'http://localhost:3000'
+          }/dashboard`;
         }
       }
     }, [isAuthenticated, user, router]);

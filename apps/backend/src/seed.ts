@@ -1,10 +1,12 @@
-import 'dotenv/config';
+import dotenv from 'dotenv';
+dotenv.config({ path: 'apps/backend/.env' });
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { User } from './modules/users/users.model';
 import { Word } from './modules/words/words.model';
 import { Topic } from './modules/topics/topics.model';
 import { QuizAttempt } from './modules/quiz/quiz-attempt.model';
+import { Quiz } from './modules/quiz/quiz.entity';
 import { UserRole } from '@ielts/shared';
 
 const MONGODB_URI = process.env['MONGODB_URI'];
@@ -23,6 +25,7 @@ async function seed() {
     await User.deleteMany({});
     await Word.deleteMany({});
     await Topic.deleteMany({});
+    await Quiz.deleteMany({});
     await QuizAttempt.deleteMany({});
     console.log('Cleared existing data');
 
@@ -207,6 +210,54 @@ async function seed() {
     ]);
 
     console.log('Created quiz attempts');
+
+    // Create Real Quiz Definitions
+    await Quiz.create([
+      {
+        title: 'Business Vocabulary Basics',
+        description: 'Test your knowledge of essential business terms.',
+        topic: 'Business',
+        difficulty: 'intermediate',
+        duration: 20,
+        isActive: true,
+        questions: [
+          {
+            wordId: words[4]._id, // sustain
+            questionText: 'Which word means to maintain or keep going?',
+            options: ['sustain', 'abandon', 'create', 'ignore'],
+            correctAnswer: 'sustain',
+          },
+          {
+            wordId: words[7]._id, // establish
+            questionText: 'Select the synonym for "found" or "institute".',
+            options: ['establish', 'abolish', 'finish', 'hide'],
+            correctAnswer: 'establish',
+          },
+        ],
+      },
+      {
+        title: 'Advanced Technology Terms',
+        description: 'Challenge yourself with advanced tech vocabulary.',
+        topic: 'Technology',
+        difficulty: 'advanced',
+        duration: 15,
+        isActive: true,
+        questions: [
+          {
+            wordId: words[3]._id, // innovative
+            questionText: 'What is the best definition for "innovative"?',
+            options: [
+              'featuring new methods',
+              'old fashioned',
+              'boring',
+              'expensive',
+            ],
+            correctAnswer: 'featuring new methods',
+          },
+        ],
+      },
+    ]);
+    console.log('Created quiz definitions');
 
     console.log('\n✅ Database seeded successfully!');
     console.log('\nTest Accounts:');

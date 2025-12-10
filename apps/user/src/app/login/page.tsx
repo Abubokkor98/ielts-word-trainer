@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
@@ -37,8 +37,9 @@ export default function LoginPage() {
       if (data.data.role === 'admin') {
         toast({
           title: 'Access Denied',
-          description:
-            'Admin accounts must use the Admin Portal at http://localhost:3001',
+          description: `Admin accounts must use the Admin Portal at ${
+            process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'the admin portal'
+          }`,
           status: 'warning',
           duration: 6000,
           isClosable: true,
@@ -48,6 +49,9 @@ export default function LoginPage() {
 
       setToken(data.accessToken);
       setUser(data.data);
+
+      // Set cookie for middleware
+      document.cookie = `user_auth_token=${data.accessToken}; path=/; max-age=86400; SameSite=Strict`;
 
       toast({
         title: 'Login successful!',

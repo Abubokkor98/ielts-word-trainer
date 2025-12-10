@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/shared';
+import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -29,18 +29,13 @@ export default function UserDashboardPage() {
     }
   }, [isAuthenticated, router]);
 
-  // Don't render if not authenticated
-  if (!isAuthenticated) {
-    return null;
-  }
-
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: async () => {
       const { data } = await axiosInstance.get('/auth/me');
       return data.data;
     },
-    enabled: !!localUser,
+    enabled: !!localUser && isAuthenticated,
   });
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
@@ -49,8 +44,13 @@ export default function UserDashboardPage() {
       const { data } = await axiosInstance.get('/quiz/analytics/me');
       return data.data;
     },
-    enabled: !!localUser,
+    enabled: !!localUser && isAuthenticated,
   });
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   if (userLoading || analyticsLoading) {
     return (
@@ -139,8 +139,22 @@ export default function UserDashboardPage() {
   );
 }
 
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  icon?: string;
+  color: string;
+}
+
+interface ActionCardProps {
+  href: string;
+  title: string;
+  description: string;
+  emoji: string;
+}
+
 // Shared Components
-const StatCard = ({ label, value, icon, color }: any) => (
+const StatCard = ({ label, value, icon, color }: StatCardProps) => (
   <Card role="region" aria-label={`${label} statistic`}>
     <CardContent>
       <VStack align="start" spacing={1}>
@@ -162,7 +176,7 @@ const StatCard = ({ label, value, icon, color }: any) => (
   </Card>
 );
 
-const ActionCard = ({ href, title, description, emoji }: any) => (
+const ActionCard = ({ href, title, description, emoji }: ActionCardProps) => (
   <Link
     href={href}
     style={{ textDecoration: 'none' }}

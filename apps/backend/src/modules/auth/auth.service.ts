@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { env } from '../../config/env';
 import { IUser } from '../users/users.model';
 
-import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@ielts/auth';
+import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@ielts/shared';
 
 export class AuthService {
   static async generateTokens(
@@ -19,9 +19,8 @@ export class AuthService {
     });
 
     // Store in DB
-    user.refreshToken.push(refreshToken);
-    // Ideally hash this token before storing: await bcrypt.hash(refreshToken, 10);
-    // For now we store plain to keep simple but secure-ish with HTTPS
+    const hashedToken = await bcrypt.hash(refreshToken, 10);
+    user.refreshToken.push(hashedToken);
     await user.save();
 
     return { accessToken, refreshToken };
@@ -35,7 +34,13 @@ export class AuthService {
   }
 
   static async logout(user: IUser, token: string): Promise<void> {
-    user.refreshToken = user.refreshToken.filter((t) => t !== token);
+    const validTokens = [];
+    for (const t of user.refreshToken) {
+      if (!(await bcrypt.compare(token, t))) {
+        validTokens.push(t);
+      }
+    }
+    user.refreshToken = validTokens;
     await user.save();
   }
 }
