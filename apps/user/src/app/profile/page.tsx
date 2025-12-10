@@ -37,7 +37,11 @@ export default function ProfilePage() {
     confirm: '',
   });
 
-  const { data: profile, isLoading } = useQuery({
+  const {
+    data: profile,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['user', 'profile'],
     queryFn: async () => {
       const { data } = await axiosInstance.get('/users/profile');
@@ -118,6 +122,16 @@ export default function ProfilePage() {
             </SimpleGrid>
             <Skeleton height="400px" />
           </VStack>
+        </Container>
+      </Box>
+    );
+  }
+
+  if (isError || !profile) {
+    return (
+      <Box minH="100vh" bg="gray.900" py={8}>
+        <Container maxW="5xl">
+          <Text color="red.400">Failed to load profile data.</Text>
         </Container>
       </Box>
     );

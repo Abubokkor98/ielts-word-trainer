@@ -98,7 +98,7 @@ export class QuizAnalyticsService {
       timeSpent: a.totalTimeSpent,
       difficulty: a.difficulty,
       topic: a.topic,
-      date: a.createdAt,
+      completedAt: a.createdAt,
     }));
 
     return {

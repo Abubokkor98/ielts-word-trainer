@@ -102,7 +102,6 @@ const NavLinks = ({ appType }: { appType: 'user' | 'admin' }) => {
       {isAuthenticated && (
         <>
           <NavLink href="/dashboard">Dashboard</NavLink>
-          <NavLink href="/analytics">Analytics</NavLink>
         </>
       )}
     </>
