@@ -19,7 +19,6 @@ import {
   Skeleton,
   Text,
   useToast,
-  IconButton,
 } from '@chakra-ui/react';
 import { Search, Mail, Calendar, Download } from 'lucide-react';
 import { useState, useEffect } from 'react';

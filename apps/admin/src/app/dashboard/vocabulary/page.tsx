@@ -41,6 +41,7 @@ export default function VocabularyManagementPage() {
   const toast = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -76,14 +77,17 @@ export default function VocabularyManagementPage() {
 
   const deleteWordMutation = useMutation({
     mutationFn: async (wordId: string) => {
+      setDeletingId(wordId);
       await axiosInstance.delete(`/admin/words/${wordId}`);
     },
     onSuccess: () => {
       toast({ title: 'Word deleted successfully', status: 'success' });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
+      setDeletingId(null);
     },
     onError: () => {
       toast({ title: 'Failed to delete word', status: 'error' });
+      setDeletingId(null);
     },
   });
 
@@ -121,6 +125,10 @@ export default function VocabularyManagementPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!file.name.endsWith('.csv')) {
+        toast({ title: 'Please select a CSV file', status: 'error' });
+        return;
+      }
       uploadMutation.mutate(file);
     }
   };
@@ -236,7 +244,7 @@ export default function VocabularyManagementPage() {
                               colorScheme="red"
                               variant="ghost"
                               onClick={() => handleDelete(word._id)}
-                              isLoading={deleteWordMutation.isPending}
+                              isLoading={deletingId === word._id}
                             />
                           </Td>
                         </Tr>

@@ -23,6 +23,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { Difficulty } from '@ielts/shared';
+import { AxiosError } from 'axios';
 
 interface QuizFormData {
   title: string;
@@ -85,7 +86,7 @@ export function CreateQuizModal({
       reset();
       onClose();
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       toast({
         title: `Failed to ${isEditing ? 'update' : 'create'} quiz`,
         description: error.response?.data?.message || 'Something went wrong',
@@ -145,9 +146,9 @@ export function CreateQuizModal({
                     required: 'Difficulty is required',
                   })}
                 >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
+                  <option value={Difficulty.BEGINNER}>Beginner</option>
+                  <option value={Difficulty.INTERMEDIATE}>Intermediate</option>
+                  <option value={Difficulty.ADVANCED}>Advanced</option>
                 </Select>
                 <FormErrorMessage>
                   {errors.difficulty && errors.difficulty.message}

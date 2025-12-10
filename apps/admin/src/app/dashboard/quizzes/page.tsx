@@ -19,16 +19,29 @@ import {
 } from '@chakra-ui/react';
 import { Plus, FileText, CheckCircle, Clock } from 'lucide-react';
 import { CreateQuizModal } from './CreateQuizModal';
-import { useRouter } from 'next/navigation';
+
+interface Quiz {
+  _id: string;
+  title: string;
+  description?: string;
+  topic: string;
+  difficulty: string;
+  duration: number;
+  isActive: boolean;
+  questions?: unknown[];
+}
 import { useState } from 'react';
 
 export default function QuizManagementPage() {
   const { user } = useAuthStore();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [editingQuiz, setEditingQuiz] = useState<any>(null);
-  const router = useRouter();
+  const [editingQuiz, setEditingQuiz] = useState<Quiz | null>(null);
 
-  const { data: quizzesData, isLoading } = useQuery({
+  const {
+    data: quizzesData,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ['admin', 'quizzes'],
     queryFn: async () => {
       const { data } = await axiosInstance.get('/admin/quizzes');
@@ -42,7 +55,7 @@ export default function QuizManagementPage() {
     onOpen();
   };
 
-  const handleEdit = (quiz: any) => {
+  const handleEdit = (quiz: Quiz) => {
     setEditingQuiz(quiz);
     onOpen();
   };
@@ -61,6 +74,8 @@ export default function QuizManagementPage() {
           </Button>
         </HStack>
 
+        {isError && <Text color="red.500">Failed to load quizzes</Text>}
+
         {isLoading ? (
           <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
             {[1, 2, 3].map((i) => (
@@ -69,7 +84,7 @@ export default function QuizManagementPage() {
           </SimpleGrid>
         ) : (
           <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
-            {quizzesData?.quizzes.map((quiz: any) => (
+            {quizzesData?.quizzes.map((quiz: Quiz) => (
               <Card
                 key={quiz._id}
                 _hover={{ shadow: 'lg' }}
@@ -141,7 +156,15 @@ export default function QuizManagementPage() {
         <CreateQuizModal
           isOpen={isOpen}
           onClose={onClose}
-          initialData={editingQuiz}
+          initialData={
+            editingQuiz
+              ? {
+                  ...editingQuiz,
+                  description: editingQuiz.description || '',
+                  difficulty: editingQuiz.difficulty as any,
+                }
+              : undefined
+          }
           isEditing={!!editingQuiz}
         />
       )}

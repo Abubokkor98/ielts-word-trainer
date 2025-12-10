@@ -159,25 +159,25 @@ export class AdminController {
 
   static async exportUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const users = await User.find().sort({ createdAt: -1 });
-
-      const fields = ['name', 'email', 'role', 'xp', 'createdAt'];
-      const csv = [
-        fields.join(','),
-        ...users.map((user) => {
-          return fields
-            .map((field) => {
-              if (field === 'createdAt')
-                return new Date(user[field]).toISOString();
-              return JSON.stringify(user[field as keyof typeof user] || '');
-            })
-            .join(',');
-        }),
-      ].join('\n');
-
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
-      res.send(csv);
+
+      res.write('name,email,role,xp,createdAt\n');
+
+      const cursor = User.find().sort({ createdAt: -1 }).cursor();
+
+      for (
+        let user = await cursor.next();
+        user != null;
+        user = await cursor.next()
+      ) {
+        const row = `${user.name},${user.email},${user.role},${
+          user.xp
+        },${user.createdAt.toISOString()}\n`;
+        res.write(row);
+      }
+
+      res.end();
     } catch (error) {
       next(error);
     }

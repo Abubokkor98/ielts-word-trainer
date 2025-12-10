@@ -13,6 +13,7 @@ import {
   Button,
   useToast,
   Divider,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
@@ -42,9 +43,16 @@ export default function SettingsPage() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: { name: string }) => {
-      await axiosInstance.patch('/users/profile', data);
+      const response = await axiosInstance.patch('/users/profile', data);
+      return response.data;
     },
-    onSuccess: () => {
+    onSuccess: (response, variables) => {
+      // Update local auth store with new user data
+      if (user) {
+        useAuthStore
+          .getState()
+          .setUser({ ...user, name: variables.name } as any);
+      }
       toast({ title: 'Profile updated successfully', status: 'success' });
     },
     onError: (error: any) => {
@@ -78,10 +86,6 @@ export default function SettingsPage() {
   };
 
   const onPasswordSubmit = (data: any) => {
-    if (data.newPassword !== data.confirmPassword) {
-      toast({ title: 'Passwords do not match', status: 'error' });
-      return;
-    }
     changePasswordMutation.mutate({
       currentPassword: data.currentPassword,
       newPassword: data.newPassword,
@@ -111,7 +115,7 @@ export default function SettingsPage() {
                 <Button
                   type="submit"
                   colorScheme="brand"
-                  isLoading={isProfileSubmitting}
+                  isLoading={updateProfileMutation.isPending}
                 >
                   Save Changes
                 </Button>
@@ -144,17 +148,29 @@ export default function SettingsPage() {
                     })}
                   />
                 </FormControl>
-                <FormControl isRequired>
+                <FormControl
+                  isRequired
+                  isInvalid={!!passwordErrors.confirmPassword}
+                >
                   <FormLabel>Confirm New Password</FormLabel>
                   <Input
                     type="password"
-                    {...registerPassword('confirmPassword', { required: true })}
+                    {...registerPassword('confirmPassword', {
+                      required: true,
+                      validate: (value, formValues) =>
+                        value === formValues.newPassword ||
+                        'Passwords do not match',
+                    })}
                   />
+                  <FormErrorMessage>
+                    {passwordErrors.confirmPassword &&
+                      (passwordErrors.confirmPassword.message as string)}
+                  </FormErrorMessage>
                 </FormControl>
                 <Button
                   type="submit"
                   colorScheme="brand"
-                  isLoading={isPasswordSubmitting}
+                  isLoading={changePasswordMutation.isPending}
                 >
                   Update Password
                 </Button>

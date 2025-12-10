@@ -136,6 +136,7 @@ export function AddWordModal({ isOpen, onClose }: AddWordModalProps) {
                   {...register('difficulty', {
                     required: 'Difficulty is required',
                   })}
+                  placeholder="Select difficulty"
                 >
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
@@ -189,7 +190,11 @@ export function AddWordModal({ isOpen, onClose }: AddWordModalProps) {
             <Button variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button colorScheme="brand" type="submit" isLoading={isSubmitting}>
+            <Button
+              colorScheme="brand"
+              type="submit"
+              isLoading={mutation.isPending}
+            >
               Add Word
             </Button>
           </ModalFooter>
