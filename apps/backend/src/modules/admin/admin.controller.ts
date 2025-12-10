@@ -116,6 +116,18 @@ export class AdminController {
     }
   }
 
+  static async createWord(req: Request, res: Response, next: NextFunction) {
+    try {
+      const word = await Word.create(req.body);
+      res.status(201).json({
+        success: true,
+        data: word,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async uploadWords(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.file) {
@@ -143,6 +155,32 @@ export class AdminController {
       'attachment; filename=vocabulary-template.csv'
     );
     res.send(template);
+  }
+
+  static async exportUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const users = await User.find().sort({ createdAt: -1 });
+
+      const fields = ['name', 'email', 'role', 'xp', 'createdAt'];
+      const csv = [
+        fields.join(','),
+        ...users.map((user) => {
+          return fields
+            .map((field) => {
+              if (field === 'createdAt')
+                return new Date(user[field]).toISOString();
+              return JSON.stringify(user[field as keyof typeof user] || '');
+            })
+            .join(',');
+        }),
+      ].join('\n');
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
+      res.send(csv);
+    } catch (error) {
+      next(error);
+    }
   }
 
   static async getUsers(req: Request, res: Response, next: NextFunction) {

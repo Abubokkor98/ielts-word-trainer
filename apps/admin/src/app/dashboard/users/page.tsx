@@ -18,11 +18,13 @@ import {
   Badge,
   Skeleton,
   Text,
+  useToast,
+  IconButton,
 } from '@chakra-ui/react';
-import { Search, Mail, Calendar } from 'lucide-react';
-import { useState } from 'react';
+import { Search, Mail, Calendar, Download } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
-interface RecentUser {
+interface User {
   _id: string;
   name: string;
   email: string;
@@ -34,36 +36,66 @@ interface RecentUser {
 
 export default function UserManagementPage() {
   const { user } = useAuthStore();
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const toast = useToast();
 
-  // Leveraging the existing stats endpoint which returns recent users slightly abused here
-  // Ideally we need a dedicated /admin/users endpoint with pagination
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ['admin', 'stats', search], // Include search in query key
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  const { data: usersData, isLoading } = useQuery({
+    queryKey: ['admin', 'users', page, debouncedSearch],
     queryFn: async () => {
-      const { data } = await axiosInstance.get('/admin/stats');
-      const users = data.data.recentUsers || [];
-      // Client-side filter until dedicated endpoint exists
-      return {
-        ...data.data,
-        recentUsers: search
-          ? users.filter(
-              (u: RecentUser) =>
-                u.name?.toLowerCase().includes(search.toLowerCase()) ||
-                u.email?.toLowerCase().includes(search.toLowerCase())
-            )
-          : users,
-      };
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '10',
+      });
+      if (debouncedSearch) params.append('search', debouncedSearch);
+
+      const { data } = await axiosInstance.get(
+        `/admin/users?${params.toString()}`
+      );
+      return data.data;
     },
     enabled: !!user && user.role === 'admin',
   });
+
+  const handleExport = async () => {
+    try {
+      const response = await axiosInstance.get('/admin/users/export', {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'users.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast({ title: 'Export successful', status: 'success' });
+    } catch (error) {
+      toast({ title: 'Export failed', status: 'error' });
+    }
+  };
 
   return (
     <Box>
       <VStack spacing={8} align="stretch">
         <HStack justify="space-between">
           <Heading size="lg">User Management</Heading>
-          <Button variant="outline">Export Users</Button>
+          <Button
+            variant="outline"
+            leftIcon={<Download size={16} />}
+            onClick={handleExport}
+          >
+            Export Users
+          </Button>
         </HStack>
 
         <Card>
@@ -94,54 +126,90 @@ export default function UserManagementPage() {
                 ))}
               </VStack>
             ) : (
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th>User</Th>
-                    <Th>Role</Th>
-                    <Th>XP</Th>
-                    <Th>Joined</Th>
-                    <Th>Status</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {stats?.recentUsers?.map((u: RecentUser) => (
-                    <Tr key={u._id}>
-                      <Td>
-                        <HStack>
-                          <Avatar size="sm" name={u.name} src={u.avatar} />
-                          <Box>
-                            <Text fontWeight="600">{u.name}</Text>
-                            <HStack spacing={1} color="gray.500" fontSize="xs">
-                              <Mail size={12} />
-                              <Text>{u.email}</Text>
+              <>
+                <Box overflowX="auto">
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>User</Th>
+                        <Th>Role</Th>
+                        <Th>XP</Th>
+                        <Th>Joined</Th>
+                        <Th>Status</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {usersData?.users.map((u: User) => (
+                        <Tr key={u._id}>
+                          <Td>
+                            <HStack>
+                              <Avatar size="sm" name={u.name} src={u.avatar} />
+                              <Box>
+                                <Text fontWeight="600">{u.name}</Text>
+                                <HStack
+                                  spacing={1}
+                                  color="gray.500"
+                                  fontSize="xs"
+                                >
+                                  <Mail size={12} />
+                                  <Text>{u.email}</Text>
+                                </HStack>
+                              </Box>
                             </HStack>
-                          </Box>
-                        </HStack>
-                      </Td>
-                      <Td>
-                        <Badge
-                          colorScheme={u.role === 'admin' ? 'purple' : 'gray'}
-                        >
-                          {u.role || 'User'}
-                        </Badge>
-                      </Td>
-                      <Td fontWeight="bold">{u.xp || 0}</Td>
-                      <Td>
-                        <HStack spacing={1} color="gray.500" fontSize="sm">
-                          <Calendar size={14} />
-                          <Text>
-                            {new Date(u.createdAt).toLocaleDateString()}
-                          </Text>
-                        </HStack>
-                      </Td>
-                      <Td>
-                        <Badge colorScheme="green">Active</Badge>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
+                          </Td>
+                          <Td>
+                            <Badge
+                              colorScheme={
+                                u.role === 'admin' ? 'purple' : 'gray'
+                              }
+                            >
+                              {u.role || 'User'}
+                            </Badge>
+                          </Td>
+                          <Td fontWeight="bold">{u.xp || 0}</Td>
+                          <Td>
+                            <HStack spacing={1} color="gray.500" fontSize="sm">
+                              <Calendar size={14} />
+                              <Text>
+                                {new Date(u.createdAt).toLocaleDateString()}
+                              </Text>
+                            </HStack>
+                          </Td>
+                          <Td>
+                            <Badge colorScheme="green">Active</Badge>
+                          </Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </Box>
+
+                <HStack justify="center" mt={6} spacing={4}>
+                  <Button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    isDisabled={page === 1}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Previous
+                  </Button>
+                  <Text fontSize="sm" color="gray.500">
+                    Page {page} of {usersData?.pagination.totalPages || 1}
+                  </Text>
+                  <Button
+                    onClick={() =>
+                      setPage((p) =>
+                        Math.min(usersData?.pagination.totalPages || 1, p + 1)
+                      )
+                    }
+                    isDisabled={page === usersData?.pagination.totalPages}
+                    variant="outline"
+                    size="sm"
+                  >
+                    Next
+                  </Button>
+                </HStack>
+              </>
             )}
           </CardContent>
         </Card>

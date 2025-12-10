@@ -18,6 +18,11 @@ router.post(
 );
 router.get('/template', AdminController.downloadTemplate);
 
+router.get('/words', AdminController.getWords);
+router.post('/words', AdminController.createWord);
+router.delete('/words/:id', AdminController.deleteWord);
+
+router.get('/users/export', AdminController.exportUsers);
 router.get('/users', AdminController.getUsers);
 
 router.get('/quizzes', AdminController.getQuizzes);

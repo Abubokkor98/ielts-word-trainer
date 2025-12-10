@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent, Button, Input } from '@ielts/ui';
 import {
   Box,
@@ -21,8 +21,10 @@ import {
   Skeleton,
   Text,
   IconButton,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { Plus, Upload, Trash2, Search, Filter } from 'lucide-react';
+import { AddWordModal } from './AddWordModal';
 
 interface Word {
   _id: string;
@@ -39,6 +41,9 @@ export default function VocabularyManagementPage() {
   const toast = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -82,9 +87,41 @@ export default function VocabularyManagementPage() {
     },
   });
 
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      await axiosInstance.post('/admin/upload-words', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    },
+    onSuccess: () => {
+      toast({ title: 'Words imported successfully', status: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    },
+    onError: () => {
+      toast({ title: 'Failed to import words', status: 'error' });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    },
+  });
+
   const handleDelete = (wordId: string) => {
     if (window.confirm('Are you sure you want to delete this word?')) {
       deleteWordMutation.mutate(wordId);
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadMutation.mutate(file);
     }
   };
 
@@ -94,10 +131,26 @@ export default function VocabularyManagementPage() {
         <HStack justify="space-between">
           <Heading size="lg">Vocabulary Management</Heading>
           <HStack>
-            <Button leftIcon={<Upload size={16} />} variant="outline">
+            <input
+              type="file"
+              accept=".csv"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
+            <Button
+              leftIcon={<Upload size={16} />}
+              variant="outline"
+              onClick={handleImportClick}
+              isLoading={uploadMutation.isPending}
+            >
               Import CSV
             </Button>
-            <Button leftIcon={<Plus size={16} />} colorScheme="brand">
+            <Button
+              leftIcon={<Plus size={16} />}
+              colorScheme="brand"
+              onClick={onOpen}
+            >
               Add Word
             </Button>
           </HStack>
@@ -222,6 +275,8 @@ export default function VocabularyManagementPage() {
           </CardContent>
         </Card>
       </VStack>
+
+      <AddWordModal isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 }
