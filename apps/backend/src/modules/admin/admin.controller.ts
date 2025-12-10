@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from '../users/users.model';
 import { Word } from '../words/words.model';
+import { WordsService } from '../words/words.service';
 import { QuizAttempt } from '../quiz/quiz-attempt.model';
 import { Quiz } from '../quiz/quiz.entity';
 import { CSVImportService } from './csv-import.service';
@@ -116,6 +117,18 @@ export class AdminController {
     }
   }
 
+  static async createWord(req: Request, res: Response, next: NextFunction) {
+    try {
+      const word = await WordsService.create(req.body);
+      res.status(201).json({
+        success: true,
+        data: word,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async uploadWords(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.file) {
@@ -143,6 +156,52 @@ export class AdminController {
       'attachment; filename=vocabulary-template.csv'
     );
     res.send(template);
+  }
+
+  static async exportUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
+
+      res.write('name,email,role,xp,createdAt\n');
+
+      const cursor = User.find().sort({ createdAt: -1 }).cursor();
+
+      for (
+        let user = await cursor.next();
+        user != null;
+        user = await cursor.next()
+      ) {
+        const rowData = [
+          user.name,
+          user.email,
+          user.role,
+          user.xp,
+          user.createdAt.toISOString(),
+        ];
+
+        const row =
+          rowData
+            .map((field) => {
+              const value = String(field || '');
+              if (
+                value.includes(',') ||
+                value.includes('"') ||
+                value.includes('\n')
+              ) {
+                return `"${value.replace(/"/g, '""')}"`;
+              }
+              return value;
+            })
+            .join(',') + '\n';
+
+        res.write(row);
+      }
+
+      res.end();
+    } catch (error) {
+      next(error);
+    }
   }
 
   static async getUsers(req: Request, res: Response, next: NextFunction) {

@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Card, CardHeader, CardContent, Button, Input } from '@ielts/ui';
 import {
   Box,
@@ -21,8 +21,10 @@ import {
   Skeleton,
   Text,
   IconButton,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { Plus, Upload, Trash2, Search, Filter } from 'lucide-react';
+import { AddWordModal } from './AddWordModal';
 
 interface Word {
   _id: string;
@@ -39,6 +41,10 @@ export default function VocabularyManagementPage() {
   const toast = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -71,14 +77,34 @@ export default function VocabularyManagementPage() {
 
   const deleteWordMutation = useMutation({
     mutationFn: async (wordId: string) => {
+      setDeletingId(wordId);
       await axiosInstance.delete(`/admin/words/${wordId}`);
     },
     onSuccess: () => {
       toast({ title: 'Word deleted successfully', status: 'success' });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
+      setDeletingId(null);
     },
     onError: () => {
       toast({ title: 'Failed to delete word', status: 'error' });
+      setDeletingId(null);
+    },
+  });
+
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      await axiosInstance.post('/admin/upload-words', formData);
+    },
+    onSuccess: () => {
+      toast({ title: 'Words imported successfully', status: 'success' });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    },
+    onError: () => {
+      toast({ title: 'Failed to import words', status: 'error' });
+      if (fileInputRef.current) fileInputRef.current.value = '';
     },
   });
 
@@ -88,16 +114,50 @@ export default function VocabularyManagementPage() {
     }
   };
 
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.name.endsWith('.csv') || !file.type.includes('csv')) {
+        toast({
+          title: 'Please select a valid CSV file',
+          status: 'error',
+        });
+        return;
+      }
+      uploadMutation.mutate(file);
+    }
+  };
+
   return (
     <Box>
       <VStack spacing={8} align="stretch">
         <HStack justify="space-between">
           <Heading size="lg">Vocabulary Management</Heading>
           <HStack>
-            <Button leftIcon={<Upload size={16} />} variant="outline">
+            <input
+              type="file"
+              accept=".csv"
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
+            <Button
+              leftIcon={<Upload size={16} />}
+              variant="outline"
+              onClick={handleImportClick}
+              isLoading={uploadMutation.isPending}
+            >
               Import CSV
             </Button>
-            <Button leftIcon={<Plus size={16} />} colorScheme="brand">
+            <Button
+              leftIcon={<Plus size={16} />}
+              colorScheme="brand"
+              onClick={onOpen}
+            >
               Add Word
             </Button>
           </HStack>
@@ -183,7 +243,7 @@ export default function VocabularyManagementPage() {
                               colorScheme="red"
                               variant="ghost"
                               onClick={() => handleDelete(word._id)}
-                              isLoading={deleteWordMutation.isPending}
+                              isLoading={deletingId === word._id}
                             />
                           </Td>
                         </Tr>
@@ -222,6 +282,8 @@ export default function VocabularyManagementPage() {
           </CardContent>
         </Card>
       </VStack>
+
+      <AddWordModal isOpen={isOpen} onClose={onClose} />
     </Box>
   );
 }
