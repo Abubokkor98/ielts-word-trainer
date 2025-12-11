@@ -266,16 +266,6 @@ export default function VocabularyPage() {
                   <Text color="gray.500" fontSize="xs" mt={2}>
                     Example: {word.exampleSentence}
                   </Text>
-                  {word.topic && typeof word.topic === 'object' && (
-                    <Badge
-                      mt={2}
-                      colorScheme="blue"
-                      variant="subtle"
-                      fontSize="xs"
-                    >
-                      {word.topic.name}
-                    </Badge>
-                  )}
                 </CardContent>
                 <CardFooter>
                   <Button
