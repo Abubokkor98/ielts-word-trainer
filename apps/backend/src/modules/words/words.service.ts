@@ -3,6 +3,10 @@ import { CreateWordInput } from '@ielts/shared';
 import { Topic } from '../topics/topics.model';
 import mongoose from 'mongoose';
 
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export class WordsService {
   static async create(input: CreateWordInput) {
     // If topic is provided, handle it (it might be a name or an ID)
@@ -15,7 +19,7 @@ export class WordsService {
       } else {
         // It's likely a topic name
         let topic = await Topic.findOne({
-          name: { $regex: new RegExp(`^${input.topic}$`, 'i') },
+          name: { $regex: new RegExp(`^${escapeRegex(input.topic)}$`, 'i') },
         });
 
         if (!topic) {
@@ -41,8 +45,12 @@ export class WordsService {
 
     // Search by topic Name
     if (query.topicName) {
+      const escapedTopicName = query.topicName.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        '\\$&'
+      );
       const topics = await Topic.find({
-        name: { $regex: query.topicName, $options: 'i' },
+        name: { $regex: escapedTopicName, $options: 'i' },
       }).select('_id');
 
       const topicIds = topics.map((t) => t._id);
@@ -54,7 +62,8 @@ export class WordsService {
 
     // General Word Search (Word, Synonyms, Antonyms)
     if (query.search) {
-      const searchRegex = { $regex: query.search, $options: 'i' };
+      const escapedSearch = query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = { $regex: escapedSearch, $options: 'i' };
       andConditions.push({
         $or: [
           { word: searchRegex },
