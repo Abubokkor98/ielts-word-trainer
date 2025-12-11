@@ -55,8 +55,14 @@ export class WordsService {
 
       const topicIds = topics.map((t) => t._id);
 
+      // If a topic name was requested but no matching topics found,
+      // we should return no results (or results that match nothing)
       if (topicIds.length > 0) {
         andConditions.push({ topic: { $in: topicIds } });
+      } else {
+        // Force empty result if topic name was searched but not found
+        // using a condition that will always be false
+        andConditions.push({ _id: { $exists: false } });
       }
     }
 

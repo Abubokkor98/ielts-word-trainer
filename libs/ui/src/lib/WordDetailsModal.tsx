@@ -151,7 +151,9 @@ export function WordDetailsModal({
                     TOPIC
                   </Text>
                   <Badge colorScheme="blue" fontSize="md">
-                    {word.topic}
+                    {typeof word.topic === 'object'
+                      ? (word.topic as any).name
+                      : word.topic}
                   </Badge>
                 </Box>
               </>
