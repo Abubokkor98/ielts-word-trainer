@@ -16,13 +16,46 @@ import {
   Badge,
   useDisclosure,
   Skeleton,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Select,
+  VStack,
+  Tabs,
+  TabList,
+  Tab,
 } from '@chakra-ui/react';
+import { Search, X } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardFooter } from '@ielts/ui';
 import { WordDetailsModal } from '@ielts/ui';
+
+// Simple debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export default function VocabularyPage() {
   const [page, setPage] = useState(1);
   const [difficulty, setDifficulty] = useState('all');
+  const [wordSearchQuery, setWordSearchQuery] = useState('');
+  const [topicSearchQuery, setTopicSearchQuery] = useState('');
+
+  const debouncedWordSearch = useDebounce(wordSearchQuery, 500);
+  const debouncedTopicSearch = useDebounce(topicSearchQuery, 500);
+
   const [selectedWord, setSelectedWord] = useState<any>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { user } = useAuthStore();
@@ -36,13 +69,24 @@ export default function VocabularyPage() {
   }, [user, router]);
 
   const { data, isLoading } = useQuery({
-    queryKey: ['words', page, difficulty],
+    queryKey: [
+      'words',
+      page,
+      difficulty,
+      debouncedWordSearch,
+      debouncedTopicSearch,
+    ],
     queryFn: async () => {
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '12',
       });
+
       if (difficulty !== 'all') params.append('difficulty', difficulty);
+
+      if (debouncedWordSearch) params.append('search', debouncedWordSearch);
+      if (debouncedTopicSearch)
+        params.append('topicName', debouncedTopicSearch);
 
       const { data } = await axiosInstance.get(`/words?${params.toString()}`);
       return data.data;
@@ -74,22 +118,103 @@ export default function VocabularyPage() {
             Explore and master essential IELTS vocabulary
           </Text>
 
-          <HStack spacing={4} overflowX="auto" pb={2}>
-            {['all', 'beginner', 'intermediate', 'advanced'].map((level) => (
-              <Button
-                key={level}
-                onClick={() => {
-                  setDifficulty(level);
-                  setPage(1);
-                }}
-                variant={difficulty === level ? 'solid' : 'outline'}
-                colorScheme={difficulty === level ? 'brand' : 'gray'}
-                size="sm"
-                textTransform="capitalize"
-              >
-                {level}
-              </Button>
-            ))}
+          <HStack justify="space-between" wrap="wrap" spacing={4} mb={6}>
+            <HStack spacing={2} overflowX="auto">
+              {['all', 'beginner', 'intermediate', 'advanced'].map((level) => (
+                <Button
+                  key={level}
+                  onClick={() => {
+                    setDifficulty(level);
+                    setPage(1);
+                  }}
+                  variant={difficulty === level ? 'solid' : 'outline'}
+                  colorScheme={difficulty === level ? 'brand' : 'gray'}
+                  size="sm"
+                  textTransform="capitalize"
+                >
+                  {level}
+                </Button>
+              ))}
+            </HStack>
+
+            <HStack
+              spacing={4}
+              flex={1}
+              justify="flex-end"
+              minW={{ base: '100%', md: 'auto' }}
+            >
+              <InputGroup size="md" maxW={{ base: '100%', md: '250px' }}>
+                <InputLeftElement pointerEvents="none">
+                  <Search color="gray.500" size={16} />
+                </InputLeftElement>
+                <Input
+                  placeholder="Search vocabulary..."
+                  bg="gray.800"
+                  border="1px"
+                  borderColor="gray.700"
+                  color="white"
+                  _focus={{
+                    ring: 2,
+                    ringColor: 'brand.500',
+                    borderColor: 'transparent',
+                  }}
+                  value={wordSearchQuery}
+                  onChange={(e) => {
+                    setWordSearchQuery(e.target.value);
+                    setPage(1);
+                  }}
+                />
+                {wordSearchQuery && (
+                  <InputRightElement>
+                    <X
+                      size={16}
+                      color="gray"
+                      cursor="pointer"
+                      onClick={() => {
+                        setWordSearchQuery('');
+                        setPage(1);
+                      }}
+                    />
+                  </InputRightElement>
+                )}
+              </InputGroup>
+
+              <InputGroup size="md" maxW={{ base: '100%', md: '300px' }}>
+                <InputLeftElement pointerEvents="none">
+                  <Search color="gray.500" size={16} />
+                </InputLeftElement>
+                <Input
+                  placeholder="Search topics..."
+                  bg="gray.800"
+                  border="1px"
+                  borderColor="gray.700"
+                  color="white"
+                  _focus={{
+                    ring: 2,
+                    ringColor: 'brand.500',
+                    borderColor: 'transparent',
+                  }}
+                  value={topicSearchQuery}
+                  onChange={(e) => {
+                    setTopicSearchQuery(e.target.value);
+                    setPage(1);
+                  }}
+                />
+                {topicSearchQuery && (
+                  <InputRightElement>
+                    <X
+                      size={16}
+                      color="gray"
+                      cursor="pointer"
+                      onClick={() => {
+                        setTopicSearchQuery('');
+                        setPage(1);
+                      }}
+                    />
+                  </InputRightElement>
+                )}
+              </InputGroup>
+            </HStack>
           </HStack>
         </Box>
 
@@ -99,6 +224,25 @@ export default function VocabularyPage() {
               <Skeleton key={i} height="220px" borderRadius="md" />
             ))}
           </SimpleGrid>
+        ) : words.length === 0 ? (
+          <Box textAlign="center" py={10}>
+            <Text color="gray.400" fontSize="lg">
+              No vocabulary found matching your criteria.
+            </Text>
+            {(wordSearchQuery || topicSearchQuery) && (
+              <Button
+                mt={4}
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setWordSearchQuery('');
+                  setTopicSearchQuery('');
+                }}
+              >
+                Clear Filters
+              </Button>
+            )}
+          </Box>
         ) : (
           <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
             {words.map((word: any) => (
@@ -122,6 +266,16 @@ export default function VocabularyPage() {
                   <Text color="gray.500" fontSize="xs" mt={2}>
                     Example: {word.exampleSentence}
                   </Text>
+                  {word.topic && typeof word.topic === 'object' && (
+                    <Badge
+                      mt={2}
+                      colorScheme="blue"
+                      variant="subtle"
+                      fontSize="xs"
+                    >
+                      {word.topic.name}
+                    </Badge>
+                  )}
                 </CardContent>
                 <CardFooter>
                   <Button
@@ -137,25 +291,27 @@ export default function VocabularyPage() {
           </SimpleGrid>
         )}
 
-        <HStack justify="center" mt={10} spacing={4}>
-          <Button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            isDisabled={page === 1}
-            variant="outline"
-          >
-            Previous
-          </Button>
-          <Text color="gray.400">
-            Page {page} of {totalPages}
-          </Text>
-          <Button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            isDisabled={page === totalPages}
-            variant="outline"
-          >
-            Next
-          </Button>
-        </HStack>
+        {words.length > 0 && (
+          <HStack justify="center" mt={10} spacing={4}>
+            <Button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              isDisabled={page === 1}
+              variant="outline"
+            >
+              Previous
+            </Button>
+            <Text color="gray.400">
+              Page {page} of {totalPages}
+            </Text>
+            <Button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              isDisabled={page === totalPages}
+              variant="outline"
+            >
+              Next
+            </Button>
+          </HStack>
+        )}
 
         <WordDetailsModal
           isOpen={isOpen}

@@ -1,13 +1,33 @@
 import { Word } from './words.model';
 import { CreateWordInput } from '@ielts/shared';
 import { Topic } from '../topics/topics.model';
+import mongoose from 'mongoose';
+
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 export class WordsService {
   static async create(input: CreateWordInput) {
-    // If topic is provided, verify it exists
+    // If topic is provided, handle it (it might be a name or an ID)
     if (input.topic) {
-      const topicExists = await Topic.findById(input.topic);
-      if (!topicExists) throw new Error('Topic not found');
+      const isObjectId = mongoose.isValidObjectId(input.topic);
+
+      if (isObjectId) {
+        const topicExists = await Topic.findById(input.topic);
+        if (!topicExists) throw new Error('Topic not found');
+      } else {
+        // It's likely a topic name
+        let topic = await Topic.findOne({
+          name: { $regex: new RegExp(`^${escapeRegex(input.topic)}$`, 'i') },
+        });
+
+        if (!topic) {
+          // Create new topic if it doesn't exist
+          topic = await Topic.create({ name: input.topic });
+        }
+        input.topic = topic._id.toString();
+      }
     }
     return Word.create(input);
   }
@@ -15,15 +35,46 @@ export class WordsService {
   static async findAll(query: any, page: number = 1, limit: number = 20) {
     const skip = (page - 1) * limit;
     const filter: any = {};
+    const andConditions: any[] = [];
 
     if (query.module) filter.module = query.module;
     if (query.difficulty) filter.difficulty = query.difficulty;
+
+    // Direct topic ID filter
     if (query.topic) filter.topic = query.topic;
+
+    // Search by topic Name
+    if (query.topicName) {
+      const escapedTopicName = query.topicName.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        '\\$&'
+      );
+      const topics = await Topic.find({
+        name: { $regex: escapedTopicName, $options: 'i' },
+      }).select('_id');
+
+      const topicIds = topics.map((t) => t._id);
+
+      if (topicIds.length > 0) {
+        andConditions.push({ topic: { $in: topicIds } });
+      }
+    }
+
+    // General Word Search (Word, Synonyms, Antonyms)
     if (query.search) {
-      filter.$or = [
-        { word: { $regex: query.search, $options: 'i' } },
-        { meaning: { $regex: query.search, $options: 'i' } },
-      ];
+      const escapedSearch = query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchRegex = { $regex: escapedSearch, $options: 'i' };
+      andConditions.push({
+        $or: [
+          { word: searchRegex },
+          { synonyms: searchRegex },
+          { antonyms: searchRegex },
+        ],
+      });
+    }
+
+    if (andConditions.length > 0) {
+      filter.$and = andConditions;
     }
 
     const [words, total] = await Promise.all([
