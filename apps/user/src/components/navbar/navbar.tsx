@@ -13,8 +13,8 @@ import {
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { UserMenu } from './UserMenu';
-import { axiosInstance, useAuthStore } from '@ielts/auth';
+import { UserMenu } from '@ielts/ui';
+import { useAuthStore } from '@ielts/auth';
 
 const HamburgerIcon = () => (
   <svg
@@ -80,40 +80,9 @@ const NavLink = ({ href, children }: NavLinkProps) => {
   );
 };
 
-const NavLinks = ({ appType }: { appType: 'user' | 'admin' }) => {
-  const { isAuthenticated } = useAuthStore();
-
-  if (appType === 'admin') {
-    // Admin navigation
-    return (
-      <>
-        <NavLink href="/">Home</NavLink>
-        {isAuthenticated && <NavLink href="/dashboard">Dashboard</NavLink>}
-      </>
-    );
-  }
-
-  // User navigation
-  return (
-    <>
-      <NavLink href="/">Home</NavLink>
-      <NavLink href="/vocabulary">Vocabulary</NavLink>
-      <NavLink href="/quiz">Quiz</NavLink>
-      {isAuthenticated && (
-        <>
-          <NavLink href="/dashboard">Dashboard</NavLink>
-        </>
-      )}
-    </>
-  );
-};
-
-export const Navbar = ({
-  appType = 'user',
-}: {
-  appType?: 'user' | 'admin';
-}) => {
+export const UserNavbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <>
@@ -177,7 +146,12 @@ export const Navbar = ({
                 display={{ base: 'none', md: 'flex' }}
                 role="menubar"
               >
-                <NavLinks appType={appType} />
+                <NavLink href="/">Home</NavLink>
+                <NavLink href="/vocabulary">Vocabulary</NavLink>
+                <NavLink href="/quiz">Quiz</NavLink>
+                {isAuthenticated && (
+                  <NavLink href="/dashboard">Dashboard</NavLink>
+                )}
               </HStack>
             </HStack>
             <Flex alignItems="center">
@@ -188,7 +162,12 @@ export const Navbar = ({
           {isOpen ? (
             <Box pb={4} display={{ md: 'none' }}>
               <Stack as="nav" spacing={4} role="menu">
-                <NavLinks appType={appType} />
+                <NavLink href="/">Home</NavLink>
+                <NavLink href="/vocabulary">Vocabulary</NavLink>
+                <NavLink href="/quiz">Quiz</NavLink>
+                {isAuthenticated && (
+                  <NavLink href="/dashboard">Dashboard</NavLink>
+                )}
               </Stack>
             </Box>
           ) : null}

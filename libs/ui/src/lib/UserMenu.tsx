@@ -40,7 +40,7 @@ export const UserMenu = () => {
         duration: 2000,
       });
 
-      router.push('/login');
+      router.push('/');
     }
   };
 

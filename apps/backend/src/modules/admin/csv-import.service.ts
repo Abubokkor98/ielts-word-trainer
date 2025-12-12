@@ -7,11 +7,10 @@ import { AppError } from '../../core/errors/AppError';
 const wordSchema = z.object({
   word: z.string().min(1, 'Word is required'),
   meaning: z.string().min(1, 'Meaning is required'),
-  exampleSentence: z.string().optional(),
-  difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+  exampleSentence: z.string().min(1, 'Example sentence is required'),
+  difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
   topic: z.string().optional(),
   partOfSpeech: z.string().optional(),
-  pronunciation: z.string().optional(),
   synonyms: z.string().optional(), // comma-separated
   antonyms: z.string().optional(), // comma-separated
 });
@@ -29,7 +28,12 @@ export class CSVImportService {
         throw new AppError('CSV file is empty', 400);
       }
 
-      const requiredColumns = ['word', 'meaning'];
+      const requiredColumns = [
+        'word',
+        'meaning',
+        'exampleSentence',
+        'difficulty',
+      ];
       const firstRecord = records[0] as Record<string, unknown>;
       const missingColumns = requiredColumns.filter(
         (col) => !(col in firstRecord)
@@ -108,8 +112,8 @@ export class CSVImportService {
   }
 
   static generateTemplate() {
-    return `word,meaning,exampleSentence,difficulty,topic,partOfSpeech,pronunciation,synonyms,antonyms
-abundant,existing in large quantities,The garden had abundant flowers.,intermediate,vocabulary,adjective,əˈbʌndənt,"plentiful,ample","scarce,sparse"
-elaborate,involving many careful details,She gave an elaborate explanation.,advanced,vocabulary,adjective,ɪˈlæbərət,"detailed,complex","simple,basic"`;
+    return `word,meaning,exampleSentence,difficulty,topic,partOfSpeech,synonyms,antonyms
+abundant,existing in large quantities,The garden had abundant flowers.,intermediate,vocabulary,adjective,"plentiful,ample","scarce,sparse"
+elaborate,involving many careful details,She gave an elaborate explanation.,advanced,vocabulary,adjective,"detailed,complex","simple,basic"`;
   }
 }

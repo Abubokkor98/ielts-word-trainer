@@ -7,7 +7,6 @@ export const createWordSchema = z.object({
   exampleSentence: z.string().min(1, 'Example sentence is required'),
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
   partOfSpeech: z.string().optional(),
-  pronunciation: z.string().optional(),
   topic: z.string().optional(),
   synonyms: z.array(z.string()).optional(),
   antonyms: z.array(z.string()).optional(),

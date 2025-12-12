@@ -115,11 +115,6 @@ export default function ProfilePage() {
         <Container maxW="5xl">
           <VStack spacing={8} align="stretch">
             <Skeleton height="60px" />
-            <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} height="100px" />
-              ))}
-            </SimpleGrid>
             <Skeleton height="400px" />
           </VStack>
         </Container>
@@ -139,201 +134,169 @@ export default function ProfilePage() {
 
   return (
     <Box minH="100vh" bg="gray.900" py={8}>
-      <Container maxW="5xl">
-        <VStack align="stretch" spacing={8}>
+      <Container maxW="6xl">
+        <VStack align="stretch" spacing={6}>
+          {/* Header */}
           <Box>
-            <Heading as="h1" size="2xl" color="gray.50" mb={2}>
-              Profile Settings
+            <Heading as="h1" size="xl" color="gray.50" mb={1}>
+              Account Settings
             </Heading>
-            <Text color="gray.400">Manage your account</Text>
+            <Text color="gray.400">Manage your profile and preferences</Text>
           </Box>
 
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
-            <StatCard label="TOTAL XP" value={profile.xp} color="brand.400" />
-            <StatCard
-              label="STREAK"
-              value={profile.streak}
-              icon="🔥"
-              color="warning.400"
-            />
-            <StatCard label="ROLE" value={profile.role} isBadge />
-          </SimpleGrid>
+          {/* Two Column Layout */}
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+            {/* Left Column */}
+            <VStack spacing={6} align="stretch">
+              {/* Profile Information Card */}
+              <Card>
+                <CardHeader>
+                  <Heading size="md" color="gray.50">
+                    Profile Information
+                  </Heading>
+                </CardHeader>
+                <CardContent>
+                  <VStack spacing={3} align="stretch">
+                    <Box>
+                      <Text
+                        fontSize="xs"
+                        color="gray.500"
+                        mb={1}
+                        textTransform="uppercase"
+                        fontWeight="600"
+                      >
+                        Name
+                      </Text>
+                      <Text color="gray.200" fontSize="md">
+                        {profile.name}
+                      </Text>
+                    </Box>
+                    <Box>
+                      <Text
+                        fontSize="xs"
+                        color="gray.500"
+                        mb={1}
+                        textTransform="uppercase"
+                        fontWeight="600"
+                      >
+                        Email
+                      </Text>
+                      <Text color="gray.200" fontSize="md">
+                        {profile.email}
+                      </Text>
+                    </Box>
+                  </VStack>
+                </CardContent>
+              </Card>
 
-          <Tabs colorScheme="brand" variant="enclosed">
-            <TabList borderColor="gray.700">
-              <Tab
-                color="gray.400"
-                _selected={{ color: 'brand.400', borderColor: 'brand.400' }}
-              >
-                Info
-              </Tab>
-              <Tab
-                color="gray.400"
-                _selected={{ color: 'brand.400', borderColor: 'brand.400' }}
-              >
-                Edit
-              </Tab>
-              <Tab
-                color="gray.400"
-                _selected={{ color: 'brand.400', borderColor: 'brand.400' }}
-              >
-                Password
-              </Tab>
-            </TabList>
-
-            <TabPanels>
-              <TabPanel>
-                <Card>
-                  <CardHeader>
-                    <Heading size="md" color="gray.50">
-                      Profile Information
-                    </Heading>
-                  </CardHeader>
-                  <CardContent>
-                    <VStack align="stretch" spacing={4}>
-                      <InfoRow label="Name" value={profile.name} />
-                      <InfoRow label="Email" value={profile.email} />
-                      <InfoRow label="ID" value={profile.id} />
+              {/* Update Profile Card */}
+              <Card>
+                <CardHeader>
+                  <Heading size="md" color="gray.50">
+                    Update Profile
+                  </Heading>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleUpdateProfile}>
+                    <VStack spacing={4}>
+                      <FormControl>
+                        <FormLabel color="gray.300" fontSize="sm">
+                          Display Name
+                        </FormLabel>
+                        <Input
+                          defaultValue={profile.name}
+                          onChange={(e) => setName(e.target.value)}
+                          placeholder="Enter your name"
+                        />
+                      </FormControl>
+                      <Button
+                        type="submit"
+                        isLoading={updateProfileMutation.isPending}
+                        width="full"
+                      >
+                        Save Changes
+                      </Button>
                     </VStack>
-                  </CardContent>
-                </Card>
-              </TabPanel>
+                  </form>
+                </CardContent>
+              </Card>
+            </VStack>
 
-              <TabPanel>
-                <Card>
-                  <CardHeader>
-                    <Heading size="md" color="gray.50">
-                      Update Profile
-                    </Heading>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleUpdateProfile}>
-                      <VStack spacing={4}>
-                        <FormControl>
-                          <FormLabel color="gray.300">Name</FormLabel>
-                          <Input
-                            defaultValue={profile.name}
-                            onChange={(e) => setName(e.target.value)}
-                          />
-                        </FormControl>
-                        <Button
-                          type="submit"
-                          isLoading={updateProfileMutation.isPending}
-                          w="full"
-                        >
-                          Update
-                        </Button>
-                      </VStack>
-                    </form>
-                  </CardContent>
-                </Card>
-              </TabPanel>
-
-              <TabPanel>
-                <Card>
-                  <CardHeader>
-                    <Heading size="md" color="gray.50">
-                      Change Password
-                    </Heading>
-                  </CardHeader>
-                  <CardContent>
-                    <form onSubmit={handleChangePassword}>
-                      <VStack spacing={4}>
-                        <FormControl isRequired>
-                          <FormLabel color="gray.300">
-                            Current Password
-                          </FormLabel>
-                          <Input
-                            type="password"
-                            value={passwords.current}
-                            onChange={(e) =>
-                              setPasswords({
-                                ...passwords,
-                                current: e.target.value,
-                              })
-                            }
-                          />
-                        </FormControl>
-                        <FormControl isRequired>
-                          <FormLabel color="gray.300">New Password</FormLabel>
-                          <Input
-                            type="password"
-                            value={passwords.new}
-                            onChange={(e) =>
-                              setPasswords({
-                                ...passwords,
-                                new: e.target.value,
-                              })
-                            }
-                          />
-                        </FormControl>
-                        <FormControl isRequired>
-                          <FormLabel color="gray.300">
-                            Confirm Password
-                          </FormLabel>
-                          <Input
-                            type="password"
-                            value={passwords.confirm}
-                            onChange={(e) =>
-                              setPasswords({
-                                ...passwords,
-                                confirm: e.target.value,
-                              })
-                            }
-                          />
-                        </FormControl>
-                        <Button
-                          type="submit"
-                          isLoading={changePasswordMutation.isPending}
-                          w="full"
-                        >
-                          Change Password
-                        </Button>
-                      </VStack>
-                    </form>
-                  </CardContent>
-                </Card>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+            {/* Right Column */}
+            <VStack spacing={6} align="stretch">
+              {/* Change Password Card */}
+              <Card>
+                <CardHeader>
+                  <Heading size="md" color="gray.50">
+                    Change Password
+                  </Heading>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleChangePassword}>
+                    <VStack spacing={4}>
+                      <FormControl isRequired>
+                        <FormLabel color="gray.300" fontSize="sm">
+                          Current Password
+                        </FormLabel>
+                        <Input
+                          type="password"
+                          value={passwords.current}
+                          onChange={(e) =>
+                            setPasswords({
+                              ...passwords,
+                              current: e.target.value,
+                            })
+                          }
+                          placeholder="Enter current password"
+                        />
+                      </FormControl>
+                      <FormControl isRequired>
+                        <FormLabel color="gray.300" fontSize="sm">
+                          New Password
+                        </FormLabel>
+                        <Input
+                          type="password"
+                          value={passwords.new}
+                          onChange={(e) =>
+                            setPasswords({
+                              ...passwords,
+                              new: e.target.value,
+                            })
+                          }
+                          placeholder="Enter new password"
+                        />
+                      </FormControl>
+                      <FormControl isRequired>
+                        <FormLabel color="gray.300" fontSize="sm">
+                          Confirm New Password
+                        </FormLabel>
+                        <Input
+                          type="password"
+                          value={passwords.confirm}
+                          onChange={(e) =>
+                            setPasswords({
+                              ...passwords,
+                              confirm: e.target.value,
+                            })
+                          }
+                          placeholder="Confirm new password"
+                        />
+                      </FormControl>
+                      <Button
+                        type="submit"
+                        isLoading={changePasswordMutation.isPending}
+                        width="full"
+                      >
+                        Update Password
+                      </Button>
+                    </VStack>
+                  </form>
+                </CardContent>
+              </Card>
+            </VStack>
+          </SimpleGrid>
         </VStack>
       </Container>
     </Box>
   );
 }
-
-const StatCard = ({ label, value, icon, color, isBadge }: any) => (
-  <Card>
-    <CardContent>
-      <VStack align="start" spacing={1}>
-        <Text fontSize="sm" color="gray.400" fontWeight="600">
-          {label}
-        </Text>
-        {isBadge ? (
-          <Badge
-            colorScheme={value === 'admin' ? 'purple' : 'blue'}
-            fontSize="lg"
-          >
-            {value}
-          </Badge>
-        ) : (
-          <HStack>
-            <Heading size="2xl" color={color}>
-              {value}
-            </Heading>
-            {icon && <Text fontSize="2xl">{icon}</Text>}
-          </HStack>
-        )}
-      </VStack>
-    </CardContent>
-  </Card>
-);
-
-const InfoRow = ({ label, value }: any) => (
-  <HStack justify="space-between">
-    <Text color="gray.400" fontWeight="600">
-      {label}:
-    </Text>
-    <Text color="gray.200">{value}</Text>
-  </HStack>
-);

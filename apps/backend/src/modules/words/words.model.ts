@@ -8,7 +8,6 @@ export interface IWord extends Document {
   antonyms?: string[];
   topic?: mongoose.Types.ObjectId | string;
   partOfSpeech?: string;
-  pronunciation?: string;
   difficulty?: 'beginner' | 'intermediate' | 'advanced';
 }
 
@@ -21,7 +20,6 @@ const WordSchema = new Schema<IWord>(
     antonyms: [{ type: String }],
     topic: { type: Schema.Types.ObjectId, ref: 'Topic', index: true },
     partOfSpeech: { type: String },
-    pronunciation: { type: String },
     difficulty: {
       type: String,
       enum: ['beginner', 'intermediate', 'advanced'],

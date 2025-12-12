@@ -37,9 +37,9 @@ export default function HomePage() {
                 </Link>
               </VStack>
             ) : (
-              <Link href="/dashboard">
+              <Link href="/vocabulary">
                 <Button size="lg" colorScheme="brand" px={8}>
-                  Go to Dashboard
+                  Start Learning Vocabs
                 </Button>
               </Link>
             )}
@@ -54,7 +54,7 @@ export default function HomePage() {
               textAlign="center"
               cursor="pointer"
               transition="all 0.3s ease"
-              borderWidth="2px"
+              borderWidth="1px"
               borderColor="transparent"
               _hover={{
                 transform: 'translateY(-8px)',
@@ -82,7 +82,7 @@ export default function HomePage() {
               textAlign="center"
               cursor="pointer"
               transition="all 0.3s ease"
-              borderWidth="2px"
+              borderWidth="1px"
               borderColor="transparent"
               _hover={{
                 transform: 'translateY(-8px)',
@@ -109,7 +109,7 @@ export default function HomePage() {
               textAlign="center"
               cursor="pointer"
               transition="all 0.3s ease"
-              borderWidth="2px"
+              borderWidth="1px"
               borderColor="transparent"
               _hover={{
                 transform: 'translateY(-8px)',
