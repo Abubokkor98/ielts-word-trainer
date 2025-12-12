@@ -32,7 +32,6 @@ interface WordFormData {
   exampleSentence: string;
   difficulty: string;
   partOfSpeech: string;
-  pronunciation: string;
   topic: string;
   synonyms: string;
   antonyms: string;
@@ -164,14 +163,6 @@ export function AddWordModal({ isOpen, onClose }: AddWordModalProps) {
                 <Input
                   {...register('partOfSpeech')}
                   placeholder="e.g. Adjective"
-                />
-              </FormControl>
-
-              <FormControl>
-                <FormLabel>Pronunciation</FormLabel>
-                <Input
-                  {...register('pronunciation')}
-                  placeholder="e.g. /əˈfem(ə)rəl/"
                 />
               </FormControl>
 

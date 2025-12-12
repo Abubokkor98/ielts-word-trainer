@@ -27,7 +27,6 @@ interface WordDetailsModalProps {
     exampleSentence: string;
     difficulty: string;
     partOfSpeech?: string;
-    pronunciation?: string;
     synonyms?: string[];
     antonyms?: string[];
     topic?: string;
@@ -51,11 +50,6 @@ export function WordDetailsModal({
               <Heading size="xl" color="brand.400">
                 {word.word}
               </Heading>
-              {word.pronunciation && (
-                <Text fontSize="md" color="gray.400" fontStyle="italic">
-                  /{word.pronunciation}/
-                </Text>
-              )}
             </VStack>
             <HStack>
               {word.partOfSpeech && (

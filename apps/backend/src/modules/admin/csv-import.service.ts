@@ -11,7 +11,6 @@ const wordSchema = z.object({
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
   topic: z.string().optional(),
   partOfSpeech: z.string().optional(),
-  pronunciation: z.string().optional(),
   synonyms: z.string().optional(), // comma-separated
   antonyms: z.string().optional(), // comma-separated
 });
@@ -108,8 +107,8 @@ export class CSVImportService {
   }
 
   static generateTemplate() {
-    return `word,meaning,exampleSentence,difficulty,topic,partOfSpeech,pronunciation,synonyms,antonyms
-abundant,existing in large quantities,The garden had abundant flowers.,intermediate,vocabulary,adjective,əˈbʌndənt,"plentiful,ample","scarce,sparse"
-elaborate,involving many careful details,She gave an elaborate explanation.,advanced,vocabulary,adjective,ɪˈlæbərət,"detailed,complex","simple,basic"`;
+    return `word,meaning,exampleSentence,difficulty,topic,partOfSpeech,synonyms,antonyms
+abundant,existing in large quantities,The garden had abundant flowers.,intermediate,vocabulary,adjective,"plentiful,ample","scarce,sparse"
+elaborate,involving many careful details,She gave an elaborate explanation.,advanced,vocabulary,adjective,"detailed,complex","simple,basic"`;
   }
 }
