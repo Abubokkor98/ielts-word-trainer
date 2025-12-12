@@ -359,13 +359,12 @@ export default function QuizPage() {
                 borderRadius="lg"
                 textAlign="center"
                 transition="all 0.3s ease"
-                borderWidth="2px"
-                borderColor="transparent"
+                borderWidth="1px"
+                borderColor="brand.400"
                 maxW="md"
                 _hover={{
                   transform: 'translateY(-8px)',
                   bg: 'gray.750',
-                  borderColor: 'brand.400',
                   boxShadow: '0 10px 30px rgba(30, 136, 229, 0.3)',
                 }}
               >
