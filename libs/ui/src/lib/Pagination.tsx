@@ -82,7 +82,7 @@ export function Pagination({
   );
 
   return (
-    <HStack justify="center" spacing={2}>
+    <HStack justify="center" spacing={2} mt={10}>
       {/* Previous Button */}
       <Button
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}

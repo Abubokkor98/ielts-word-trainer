@@ -7,8 +7,8 @@ import { AppError } from '../../core/errors/AppError';
 const wordSchema = z.object({
   word: z.string().min(1, 'Word is required'),
   meaning: z.string().min(1, 'Meaning is required'),
-  exampleSentence: z.string().optional(),
-  difficulty: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+  exampleSentence: z.string().min(1, 'Example sentence is required'),
+  difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
   topic: z.string().optional(),
   partOfSpeech: z.string().optional(),
   synonyms: z.string().optional(), // comma-separated
@@ -28,7 +28,12 @@ export class CSVImportService {
         throw new AppError('CSV file is empty', 400);
       }
 
-      const requiredColumns = ['word', 'meaning'];
+      const requiredColumns = [
+        'word',
+        'meaning',
+        'exampleSentence',
+        'difficulty',
+      ];
       const firstRecord = records[0] as Record<string, unknown>;
       const missingColumns = requiredColumns.filter(
         (col) => !(col in firstRecord)
