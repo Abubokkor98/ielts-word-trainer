@@ -37,9 +37,9 @@ export default function HomePage() {
                 </Link>
               </VStack>
             ) : (
-              <Link href="/dashboard">
+              <Link href="/vocabulary">
                 <Button size="lg" colorScheme="brand" px={8}>
-                  Go to Dashboard
+                  Start Learning Vocabs
                 </Button>
               </Link>
             )}
