@@ -27,7 +27,13 @@ import {
   Tab,
 } from '@chakra-ui/react';
 import { Search, X } from 'lucide-react';
-import { Card, CardHeader, CardContent, CardFooter } from '@ielts/ui';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardFooter,
+  Pagination,
+} from '@ielts/ui';
 import { WordDetailsModal } from '@ielts/ui';
 
 // Simple debounce hook
@@ -282,25 +288,11 @@ export default function VocabularyPage() {
         )}
 
         {words.length > 0 && (
-          <HStack justify="center" mt={10} spacing={4}>
-            <Button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              isDisabled={page === 1}
-              variant="outline"
-            >
-              Previous
-            </Button>
-            <Text color="gray.400">
-              Page {page} of {totalPages}
-            </Text>
-            <Button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              isDisabled={page === totalPages}
-              variant="outline"
-            >
-              Next
-            </Button>
-          </HStack>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         )}
 
         <WordDetailsModal

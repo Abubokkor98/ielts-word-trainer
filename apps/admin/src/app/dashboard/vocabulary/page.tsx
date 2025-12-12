@@ -3,7 +3,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { useRef, useState, useEffect } from 'react';
-import { Card, CardHeader, CardContent, Button, Input } from '@ielts/ui';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  Input,
+  Pagination,
+} from '@ielts/ui';
 import {
   Box,
   Heading,
@@ -252,31 +259,11 @@ export default function VocabularyManagementPage() {
                   </Table>
                 </Box>
 
-                <HStack justify="center" mt={6} spacing={4}>
-                  <Button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    isDisabled={page === 1}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Previous
-                  </Button>
-                  <Text fontSize="sm" color="gray.500">
-                    Page {page} of {wordsData?.pagination.totalPages || 1}
-                  </Text>
-                  <Button
-                    onClick={() =>
-                      setPage((p) =>
-                        Math.min(wordsData?.pagination.totalPages || 1, p + 1)
-                      )
-                    }
-                    isDisabled={page === wordsData?.pagination.totalPages}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Next
-                  </Button>
-                </HStack>
+                <Pagination
+                  currentPage={page}
+                  totalPages={wordsData?.pagination.totalPages || 1}
+                  onPageChange={setPage}
+                />
               </>
             )}
           </CardContent>

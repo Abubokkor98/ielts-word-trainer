@@ -2,7 +2,14 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { Card, CardHeader, CardContent, Button, Input } from '@ielts/ui';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  Input,
+  Pagination,
+} from '@ielts/ui';
 import {
   Box,
   Heading,
@@ -206,31 +213,11 @@ export default function UserManagementPage() {
                   </Table>
                 </Box>
 
-                <HStack justify="center" mt={6} spacing={4}>
-                  <Button
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    isDisabled={page === 1}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Previous
-                  </Button>
-                  <Text fontSize="sm" color="gray.500">
-                    Page {page} of {usersData?.pagination.totalPages || 1}
-                  </Text>
-                  <Button
-                    onClick={() =>
-                      setPage((p) =>
-                        Math.min(usersData?.pagination.totalPages || 1, p + 1)
-                      )
-                    }
-                    isDisabled={page === usersData?.pagination.totalPages}
-                    variant="outline"
-                    size="sm"
-                  >
-                    Next
-                  </Button>
-                </HStack>
+                <Pagination
+                  currentPage={page}
+                  totalPages={usersData?.pagination.totalPages || 1}
+                  onPageChange={setPage}
+                />
               </>
             )}
           </CardContent>
