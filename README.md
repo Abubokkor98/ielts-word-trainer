@@ -4,7 +4,7 @@ A full-stack vocabulary learning application built with Next.js, Express, and Mo
 
 ## 🚀 Features
 
-- **3000+ IELTS Words**: Comprehensive vocabulary database with difficulty levels
+- **1000+ IELTS Words**: Comprehensive vocabulary database with difficulty levels
 - **Adaptive Quiz System**: Generate custom quizzes based on difficulty
 - **Progress Tracking**: XP system, streaks, and detailed analytics
 - **User Dashboard**: Personal stats, quick actions, and progress overview
