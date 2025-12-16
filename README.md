@@ -219,7 +219,7 @@ pnpm seed
 
 This will:
 
-- Create 3000+ IELTS vocabulary words
+- Create 1000+ IELTS vocabulary words
 - Set difficulty levels (beginner, intermediate, advanced)
 - Add example sentences, synonyms, antonyms
 - Create sample admin user (if configured)
