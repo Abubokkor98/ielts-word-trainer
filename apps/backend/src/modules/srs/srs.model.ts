@@ -8,6 +8,8 @@ export interface ISRSItem extends Document {
   interval: number; // in days
   repetition: number;
   easeFactor: number;
+  quality: number;
+  lapseCount: number;
   nextReviewDate: Date;
   lastReviewed: Date;
 }
@@ -29,6 +31,8 @@ const SRSItemSchema = new Schema<ISRSItem>(
     interval: { type: Number, default: 0 },
     repetition: { type: Number, default: 0 },
     easeFactor: { type: Number, default: 2.5 },
+    quality: { type: Number, default: 0 }, // Last review quality
+    lapseCount: { type: Number, default: 0 }, // How many times forgotten
     nextReviewDate: { type: Date, default: Date.now, index: true },
     lastReviewed: { type: Date, default: Date.now },
   },

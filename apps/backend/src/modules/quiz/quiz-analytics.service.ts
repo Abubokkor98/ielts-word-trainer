@@ -164,4 +164,64 @@ export class QuizAnalyticsService {
       challengingTopics,
     };
   }
+  static async getRecommendedDifficulty(userId: string): Promise<{
+    recommendation: 'increase' | 'decrease' | 'maintain';
+    reason: string;
+  }> {
+    const lastAttempts = await QuizAttempt.find({
+      userId: new mongoose.Types.ObjectId(userId),
+    })
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    if (lastAttempts.length < 5) {
+      return { recommendation: 'maintain', reason: 'Not enough data yet' };
+    }
+
+    const avgScore =
+      lastAttempts.reduce((sum, a) => sum + a.score / a.totalQuestions, 0) /
+      lastAttempts.length;
+
+    const currentDifficulty = lastAttempts[0].difficulty || 'mixed';
+
+    // For 'mixed' difficulty, only recommend changes for extreme performance
+    if (currentDifficulty === 'mixed') {
+      if (avgScore > 0.85) {
+        return {
+          recommendation: 'increase',
+          reason: "You are crushing it! Consider trying 'Advanced' difficulty.",
+        };
+      } else if (avgScore < 0.4) {
+        return {
+          recommendation: 'decrease',
+          reason: "Struggling a bit? Try 'Beginner' to build confidence.",
+        };
+      }
+      // For mixed, moderate performance (40-85%) is fine - stay on mixed
+      return {
+        recommendation: 'maintain',
+        reason: 'Mixed difficulty is working well for you!',
+      };
+    }
+
+    // For specific difficulties, recommend changes with normal thresholds
+    if (avgScore > 0.8 && currentDifficulty !== 'advanced') {
+      return {
+        recommendation: 'increase',
+        reason: 'You are crushing it! Ready for a harder challenge?',
+      };
+    }
+
+    if (avgScore < 0.5 && currentDifficulty !== 'beginner') {
+      return {
+        recommendation: 'decrease',
+        reason: 'Review basics? Trying a lower difficulty might help.',
+      };
+    }
+
+    return {
+      recommendation: 'maintain',
+      reason: 'You are doing great at this level!',
+    };
+  }
 }
