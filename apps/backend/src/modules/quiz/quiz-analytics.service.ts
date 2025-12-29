@@ -164,4 +164,41 @@ export class QuizAnalyticsService {
       challengingTopics,
     };
   }
+  static async getRecommendedDifficulty(userId: string): Promise<{
+    recommendation: 'increase' | 'decrease' | 'maintain';
+    reason: string;
+  }> {
+    const lastAttempts = await QuizAttempt.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    if (lastAttempts.length < 5) {
+      return { recommendation: 'maintain', reason: 'Not enough data yet' };
+    }
+
+    const avgScore =
+      lastAttempts.reduce((sum, a) => sum + a.score / a.totalQuestions, 0) /
+      lastAttempts.length;
+
+    const currentDifficulty = lastAttempts[0].difficulty || 'mixed';
+
+    if (avgScore > 0.8 && currentDifficulty !== 'advanced') {
+      return {
+        recommendation: 'increase',
+        reason: 'You are crushing it! Ready for a harder challenge?',
+      };
+    }
+
+    if (avgScore < 0.5 && currentDifficulty !== 'beginner') {
+      return {
+        recommendation: 'decrease',
+        reason: 'Review basics? Trying a lower difficulty might help.',
+      };
+    }
+
+    return {
+      recommendation: 'maintain',
+      reason: 'You are doing great at this level!',
+    };
+  }
 }

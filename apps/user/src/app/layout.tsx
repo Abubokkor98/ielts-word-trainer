@@ -42,7 +42,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${inter.className}`}>
+      <body
+        className={`${inter.variable} ${inter.className}`}
+        suppressHydrationWarning
+      >
         <ReactQueryProvider>
           <ChakraUIProvider>
             <div className="flex flex-col min-h-screen">

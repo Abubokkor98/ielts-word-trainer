@@ -5,7 +5,25 @@ export class QuizAttemptService {
     data: Partial<IQuizAttempt>
   ): Promise<IQuizAttempt> {
     const attempt = new QuizAttempt(data);
-    return attempt.save();
+    await attempt.save();
+
+    // Update SRS for each word
+    const { SRSService } = await import('../srs/srs.service');
+
+    if (data.questions && data.userId) {
+      for (const question of data.questions) {
+        // Simple SRS Logic for now: Correct = 3 (Pass), Incorrect = 0 (Fail)
+        // In future with quality ratings, we can pass that directly.
+        const quality = question.isCorrect ? 3 : 0;
+        await SRSService.reviewWord(
+          data.userId.toString(),
+          question.wordId.toString(),
+          quality
+        );
+      }
+    }
+
+    return attempt;
   }
 
   static async getUserAttempts(
