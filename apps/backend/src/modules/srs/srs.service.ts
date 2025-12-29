@@ -1,5 +1,5 @@
 import { SRSItem } from './srs.model';
-import { getNextReviewDate } from '@ielts/shared';
+import { getNextReviewDate, calculateSM2 } from '@ielts/shared';
 import { SRSStatus } from '@ielts/shared';
 
 export class SRSService {
@@ -16,9 +16,6 @@ export class SRSService {
         status: SRSStatus.LEARNING,
       });
     }
-
-    // Dynamic import to avoid circular dependency issues if any
-    const { calculateSM2, getNextReviewDate } = await import('@ielts/shared');
 
     // Calculate new parameters using SM-2
     // If first time or reset, ensure defaults
@@ -93,7 +90,9 @@ export class SRSService {
     limit: number = 10
   ) {
     // Find words user hasn't seen yet
-    const userSRSItems = await SRSItem.find({ user: userId }).select('word');
+    const userSRSItems = await SRSItem.find({ user: userId })
+      .select('word')
+      .lean(); // Add .lean() for better performance
     const seenWordIds = userSRSItems.map((item) => item.word);
 
     const filter: any = {

@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { QuestionType } from '@ielts/shared';
 
 export interface IQuizAttempt extends Document {
   userId: mongoose.Types.ObjectId;
@@ -10,7 +11,7 @@ export interface IQuizAttempt extends Document {
     correctAnswer: string;
     isCorrect: boolean;
     timeSpent: number; // milliseconds
-    questionType?: string;
+    questionType?: QuestionType;
     qualityRating?: number; // 0-5 SM-2 rating
   }>;
   score: number;

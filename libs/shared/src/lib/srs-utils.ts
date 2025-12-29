@@ -21,6 +21,13 @@ export function calculateSM2({
   prevRepetitions,
   prevEaseFactor,
 }: SM2Input): SM2Output {
+  // Validate quality is within SM-2 range (0-5)
+  if (quality < 0 || quality > 5) {
+    throw new Error(
+      `Invalid quality rating: ${quality}. Must be between 0 and 5.`
+    );
+  }
+
   let interval: number;
   let repetitions: number;
   let easeFactor: number;

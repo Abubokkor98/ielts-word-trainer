@@ -12,9 +12,10 @@ export class QuizAttemptService {
 
     if (data.questions && data.userId) {
       for (const question of data.questions) {
-        // Simple SRS Logic for now: Correct = 3 (Pass), Incorrect = 0 (Fail)
-        // In future with quality ratings, we can pass that directly.
-        const quality = question.isCorrect ? 3 : 0;
+        // Use quality rating from frontend (speed-based: 0, 3, 4, 5)
+        // If not provided, fall back to simple logic: Correct = 3, Incorrect = 0
+        const quality = question.qualityRating ?? (question.isCorrect ? 3 : 0);
+
         await SRSService.reviewWord(
           data.userId.toString(),
           question.wordId.toString(),

@@ -49,6 +49,7 @@ interface QuizAttempt {
     isCorrect: boolean;
     timeSpent: number;
     questionType?: string;
+    qualityRating?: number; // 0-5 SM-2 rating
   }>;
   score: number;
   totalQuestions: number;
@@ -71,7 +72,13 @@ export default function QuizPage() {
   const [questionAnswers, setQuestionAnswers] = useState<
     Map<
       number,
-      { selected: string; correct: string; isCorrect: boolean; rating?: number }
+      {
+        selected: string;
+        correct: string;
+        isCorrect: boolean;
+        rating?: number;
+        timeSpentMs?: number; // Time spent on this question in milliseconds
+      }
     >
   >(new Map());
   const toast = useToast();
@@ -148,6 +155,7 @@ export default function QuizPage() {
         setStartTime(new Date());
         setQuestionStartTime(new Date()); // Start timer for first question
         setQuestionAnswers(new Map());
+        setRecommendation(null); // Reset recommendation for new quiz
       }
     } catch (error: any) {
       console.error('Error generating quiz:', error);
@@ -246,7 +254,12 @@ export default function QuizPage() {
       });
     }
 
-    recordAnswer(optionId, isCorrect, qualityRating);
+    // Calculate time spent on this question
+    const timeSpentMs = questionStartTime
+      ? Date.now() - questionStartTime.getTime()
+      : 0;
+
+    recordAnswer(optionId, isCorrect, qualityRating, timeSpentMs);
 
     setTimeout(() => {
       nextQuestion();
@@ -256,7 +269,8 @@ export default function QuizPage() {
   const recordAnswer = (
     selected: string,
     isCorrect: boolean,
-    rating: number
+    rating: number,
+    timeSpentMs: number
   ) => {
     const currentQuestion = questions[currentIdx];
     const selectedOptionText =
@@ -272,6 +286,7 @@ export default function QuizPage() {
       correct: correctOptionText,
       isCorrect,
       rating, // Store the SM-2 rating
+      timeSpentMs, // Store actual time spent
     });
     setQuestionAnswers(newAnswers);
   };
@@ -326,7 +341,7 @@ export default function QuizPage() {
         selectedAnswer: answer.selected,
         correctAnswer: answer.correct,
         isCorrect: answer.isCorrect,
-        timeSpent: 0,
+        timeSpent: answer.timeSpentMs || 0,
         questionType: questions[idx].type,
         qualityRating: answer.rating, // Pass the rating to backend
       })),
