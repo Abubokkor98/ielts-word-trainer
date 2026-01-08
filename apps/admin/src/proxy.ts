@@ -1,21 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Get auth token from cookies
-  const token = request.cookies.get('user_auth_token')?.value;
+  const token = request.cookies.get('admin_auth_token')?.value;
   const { pathname } = request.nextUrl;
 
   // Public routes that don't require authentication
-  const publicRoutes = [
-    '/login',
-    '/register',
-    '/forgot-password',
-    '/reset-password',
-    '/',
-    '/vocabulary',
-    '/quiz',
-  ];
+  const publicRoutes = ['/login', '/'];
   const isPublicRoute = publicRoutes.includes(pathname);
 
   // If accessing protected route without token, redirect to login
