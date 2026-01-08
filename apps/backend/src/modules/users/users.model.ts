@@ -9,6 +9,7 @@ export interface IUser extends Document {
   refreshToken: string[];
   xp: number;
   streak: number;
+  lastQuizDate?: Date;
   emailVerified: boolean;
   verificationToken?: string;
   resetPasswordToken?: string;
@@ -30,6 +31,7 @@ const UserSchema = new Schema<IUser>(
     refreshToken: { type: [String], default: [] },
     xp: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
+    lastQuizDate: { type: Date },
     emailVerified: { type: Boolean, default: false },
     verificationToken: { type: String },
     resetPasswordToken: { type: String },

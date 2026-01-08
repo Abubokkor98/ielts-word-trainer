@@ -91,6 +91,7 @@ export class AuthController {
           role: user.role,
           xp: user.xp,
           streak: user.streak,
+          lastQuizDate: user.lastQuizDate,
         },
       });
     } catch (err) {

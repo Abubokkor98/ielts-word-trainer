@@ -95,6 +95,25 @@ export default function UserDashboardPage() {
   const quizzesTaken = analytics?.totalQuizzes || 0;
   const avgScore = analytics?.averageScore || 0;
 
+  // Format last quiz time
+  const lastQuizDate = currentUser?.lastQuizDate;
+  let lastQuiz = 'Never';
+  if (lastQuizDate) {
+    const now = new Date();
+    const last = new Date(lastQuizDate);
+    const diffMs = now.getTime() - last.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) lastQuiz = 'Just now';
+    else if (diffMins < 60) lastQuiz = `${diffMins}m ago`;
+    else if (diffHours < 24) lastQuiz = `${diffHours}h ago`;
+    else if (diffDays === 1) lastQuiz = 'Yesterday';
+    else if (diffDays < 7) lastQuiz = `${diffDays}d ago`;
+    else lastQuiz = `${Math.floor(diffDays / 7)}w ago`;
+  }
+
   return (
     <Box minH="100vh" bg="gray.900" py={8}>
       <Container maxW="7xl">
@@ -125,6 +144,15 @@ export default function UserDashboardPage() {
               label="Average Score"
               value={`${avgScore}%`}
               color="green.400"
+            />
+          </SimpleGrid>
+
+          <SimpleGrid columns={{ base: 1, md: 1 }} spacing={6}>
+            <StatCard
+              label="Last Quiz"
+              value={lastQuiz}
+              icon="📅"
+              color="blue.400"
             />
           </SimpleGrid>
 

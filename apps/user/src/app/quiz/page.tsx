@@ -633,7 +633,7 @@ export default function QuizPage() {
       case QuestionType.WORD_TO_MEANING:
         return { color: 'blue', text: 'Vocabulary' };
       case QuestionType.MEANING_TO_WORD:
-        return { color: 'purple', text: 'Reverse' };
+        return { color: 'purple', text: 'Find Word' };
       case QuestionType.SYNONYM_MATCH:
         return { color: 'green', text: 'Synonym' };
       case QuestionType.ANTONYM_MATCH:
