@@ -4,6 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:user\" \"pnpm dev:admin\"",
+    "dev:all": "concurrently \"pnpm dev:backend\" \"pnpm dev:user\" \"pnpm dev:admin\"",
     "dev:backend": "npx tsx --tsconfig apps/backend/tsconfig.json apps/backend/src/main.ts",
     "dev:user": "next dev apps/user --webpack --port 3000",
     "dev:admin": "next dev apps/admin --webpack --port 3001",
@@ -51,6 +52,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "autoprefixer": "10.4.13",
+    "concurrently": "^9.2.1",
     "jest": "^30.2.0",
     "nx": "22.1.3",
     "postcss": "8.4.38",
