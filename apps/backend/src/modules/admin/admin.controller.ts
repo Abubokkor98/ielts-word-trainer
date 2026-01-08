@@ -204,6 +204,38 @@ export class AdminController {
     }
   }
 
+  static async updateUserStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      if (!['active', 'inactive', 'banned'].includes(status)) {
+        throw new AppError('Invalid status', 400);
+      }
+
+      const user = await User.findByIdAndUpdate(
+        id,
+        { status },
+        { new: true }
+      ).select('-passwordHash');
+
+      if (!user) {
+        throw new AppError('User not found', 404);
+      }
+
+      res.json({
+        success: true,
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const page = parseInt(req.query.page as string) || 1;

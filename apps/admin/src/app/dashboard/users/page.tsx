@@ -1,15 +1,5 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { axiosInstance, useAuthStore } from '@ielts/auth';
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  Input,
-  Pagination,
-} from '@ielts/ui';
 import {
   Box,
   Heading,
@@ -26,9 +16,37 @@ import {
   Skeleton,
   Text,
   useToast,
+  useDisclosure,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuDivider,
 } from '@chakra-ui/react';
-import { Search, Mail, Calendar, Download } from 'lucide-react';
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Button,
+  Input,
+  Pagination,
+} from '@ielts/ui';
+import { useAuthStore } from '@ielts/auth';
+import {
+  Search,
+  Mail,
+  Calendar,
+  Download,
+  Eye,
+  MoreVertical,
+  Ban,
+  CheckCircle,
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { axiosInstance } from '@ielts/auth';
+import { UserDetailModal } from './UserDetailModal';
 
 interface User {
   _id: string;
@@ -36,7 +54,10 @@ interface User {
   email: string;
   avatar?: string;
   role?: string;
+  status?: 'active' | 'inactive' | 'banned';
   xp?: number;
+  streak?: number;
+  lastQuizDate?: string;
   createdAt: string;
 }
 
@@ -46,6 +67,11 @@ export default function UserManagementPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const toast = useToast();
+  const queryClient = useQueryClient();
+
+  // Modal State
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -76,6 +102,28 @@ export default function UserManagementPage() {
     enabled: !!user && user.role === 'admin',
   });
 
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({
+      userId,
+      status,
+    }: {
+      userId: string;
+      status: string;
+    }) => {
+      await axiosInstance.patch(`/admin/users/${userId}/status`, { status });
+    },
+    onSuccess: (_, variables) => {
+      toast({
+        title: `User ${variables.status === 'banned' ? 'banned' : 'activated'}`,
+        status: 'success',
+      });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+    },
+    onError: () => {
+      toast({ title: 'Failed to update user status', status: 'error' });
+    },
+  });
+
   const handleExport = async () => {
     try {
       const response = await axiosInstance.get('/admin/users/export', {
@@ -93,6 +141,15 @@ export default function UserManagementPage() {
     } catch (error) {
       toast({ title: 'Export failed', status: 'error' });
     }
+  };
+
+  const handleViewUser = (user: User) => {
+    setSelectedUser(user);
+    onOpen();
+  };
+
+  const handleStatusChange = (userId: string, newStatus: string) => {
+    updateStatusMutation.mutate({ userId, status: newStatus });
   };
 
   return (
@@ -144,14 +201,16 @@ export default function UserManagementPage() {
               </VStack>
             ) : (
               <>
-                <Box overflowX="auto">
+                <Box overflowX="auto" pb={4}>
                   <Table variant="simple">
                     <Thead>
                       <Tr>
                         <Th>User</Th>
                         <Th>Role</Th>
+                        <Th>Status</Th>
                         <Th>XP</Th>
                         <Th>Joined</Th>
+                        <Th>Action</Th>
                       </Tr>
                     </Thead>
                     <Tbody>
@@ -187,6 +246,20 @@ export default function UserManagementPage() {
                                 {u.role || 'User'}
                               </Badge>
                             </Td>
+                            <Td>
+                              <Badge
+                                variant="subtle"
+                                colorScheme={
+                                  u.status === 'active'
+                                    ? 'green'
+                                    : u.status === 'banned'
+                                    ? 'red'
+                                    : 'gray'
+                                }
+                              >
+                                {u.status || 'Active'}
+                              </Badge>
+                            </Td>
                             <Td fontWeight="bold">{u.xp || 0}</Td>
                             <Td>
                               <HStack
@@ -200,11 +273,45 @@ export default function UserManagementPage() {
                                 </Text>
                               </HStack>
                             </Td>
+                            <Td>
+                              <HStack spacing={2}>
+                                <IconButton
+                                  aria-label="View user details"
+                                  icon={<Eye size={16} />}
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleViewUser(u)}
+                                />
+                                {u.status === 'banned' ? (
+                                  <IconButton
+                                    aria-label="Activate user"
+                                    icon={<CheckCircle size={16} />}
+                                    size="sm"
+                                    colorScheme="green"
+                                    variant="ghost"
+                                    onClick={() =>
+                                      handleStatusChange(u._id, 'active')
+                                    }
+                                  />
+                                ) : (
+                                  <IconButton
+                                    aria-label="Ban user"
+                                    icon={<Ban size={16} />}
+                                    size="sm"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={() =>
+                                      handleStatusChange(u._id, 'banned')
+                                    }
+                                  />
+                                )}
+                              </HStack>
+                            </Td>
                           </Tr>
                         ))
                       ) : (
                         <Tr>
-                          <Td colSpan={5} textAlign="center" py={8}>
+                          <Td colSpan={6} textAlign="center" py={8}>
                             <Text color="gray.500">No users found</Text>
                           </Td>
                         </Tr>
@@ -223,6 +330,9 @@ export default function UserManagementPage() {
           </CardContent>
         </Card>
       </VStack>
+
+      {/* User Detail Modal */}
+      <UserDetailModal isOpen={isOpen} onClose={onClose} user={selectedUser} />
     </Box>
   );
 }

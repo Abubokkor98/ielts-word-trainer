@@ -6,6 +6,7 @@ export interface IUser extends Document {
   email: string;
   passwordHash: string;
   role: UserRole;
+  status: 'active' | 'inactive' | 'banned';
   refreshToken: string[];
   xp: number;
   streak: number;
@@ -27,6 +28,11 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: Object.values(UserRole),
       default: UserRole.USER,
+    },
+    status: {
+      type: String,
+      enum: ['active', 'inactive', 'banned'],
+      default: 'active',
     },
     refreshToken: { type: [String], default: [] },
     xp: { type: Number, default: 0 },
