@@ -30,14 +30,19 @@ import {
   IconButton,
   useDisclosure,
 } from '@chakra-ui/react';
-import { Plus, Upload, Trash2, Search, Filter } from 'lucide-react';
-import { AddWordModal } from './AddWordModal';
+import { Plus, Upload, Trash2, Search, Filter, Edit2 } from 'lucide-react';
+import { WordModal } from './WordModal';
 
 interface Word {
   _id: string;
   word: string;
   meaning: string;
+  exampleSentence: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  partOfSpeech: string;
+  topic: any;
+  synonyms: string[];
+  antonyms: string[];
 }
 
 export default function VocabularyManagementPage() {
@@ -49,6 +54,9 @@ export default function VocabularyManagementPage() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Edit Mode State
+  const [editingWord, setEditingWord] = useState<Word | null>(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -121,6 +129,16 @@ export default function VocabularyManagementPage() {
     }
   };
 
+  const handleEdit = (word: Word) => {
+    setEditingWord(word);
+    onOpen();
+  };
+
+  const handleAdd = () => {
+    setEditingWord(null);
+    onOpen();
+  };
+
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
@@ -163,7 +181,7 @@ export default function VocabularyManagementPage() {
             <Button
               leftIcon={<Plus size={16} />}
               colorScheme="brand"
-              onClick={onOpen}
+              onClick={handleAdd}
             >
               Add Word
             </Button>
@@ -243,15 +261,25 @@ export default function VocabularyManagementPage() {
                             </Badge>
                           </Td>
                           <Td>
-                            <IconButton
-                              aria-label="Delete word"
-                              icon={<Trash2 size={16} />}
-                              size="sm"
-                              colorScheme="red"
-                              variant="ghost"
-                              onClick={() => handleDelete(word._id)}
-                              isLoading={deletingId === word._id}
-                            />
+                            <HStack spacing={2}>
+                              <IconButton
+                                aria-label="Edit word"
+                                icon={<Edit2 size={16} />}
+                                size="sm"
+                                colorScheme="blue"
+                                variant="ghost"
+                                onClick={() => handleEdit(word)}
+                              />
+                              <IconButton
+                                aria-label="Delete word"
+                                icon={<Trash2 size={16} />}
+                                size="sm"
+                                colorScheme="red"
+                                variant="ghost"
+                                onClick={() => handleDelete(word._id)}
+                                isLoading={deletingId === word._id}
+                              />
+                            </HStack>
                           </Td>
                         </Tr>
                       ))}
@@ -270,7 +298,8 @@ export default function VocabularyManagementPage() {
         </Card>
       </VStack>
 
-      <AddWordModal isOpen={isOpen} onClose={onClose} />
+      {/* Reusable Modal for Add and Edit */}
+      <WordModal isOpen={isOpen} onClose={onClose} initialData={editingWord} />
     </Box>
   );
 }

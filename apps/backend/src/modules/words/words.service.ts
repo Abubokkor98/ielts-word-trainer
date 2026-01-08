@@ -96,6 +96,35 @@ export class WordsService {
   }
 
   static async update(id: string, input: Partial<CreateWordInput>) {
+    // If topic is provided, handle it (it might be a name or an ID)
+    if (input.topic) {
+      const isObjectId = mongoose.isValidObjectId(input.topic);
+
+      if (isObjectId) {
+        // Verify it exists if it's an ID
+        const topicExists = await Topic.findById(input.topic);
+        if (!topicExists) {
+          // It might be a topic Name that happens to be a valid ObjectId hex string (rare but possible) or just a wrong ID
+          // Just in case, let's treat it as a name if strictly not found?
+          // Actually, if it's a valid ObjectId but not found, it's safer to throw or try to find by name.
+          // For simplicity and matching create logic:
+          // We will assume if it looks like an ID, it is an ID.
+          throw new Error('Topic not found');
+        }
+      } else {
+        // It's likely a topic name
+        let topic = await Topic.findOne({
+          name: { $regex: new RegExp(`^${escapeRegex(input.topic)}$`, 'i') },
+        });
+
+        if (!topic) {
+          // Create new topic if it doesn't exist
+          topic = await Topic.create({ name: input.topic });
+        }
+        input.topic = topic._id.toString();
+      }
+    }
+
     return Word.findByIdAndUpdate(id, input, { new: true });
   }
 
