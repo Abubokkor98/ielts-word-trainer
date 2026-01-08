@@ -29,6 +29,12 @@ import {
   Text,
   IconButton,
   useDisclosure,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from '@chakra-ui/react';
 import { Plus, Upload, Trash2, Search, Filter, Edit2 } from 'lucide-react';
 import { WordModal } from './WordModal';
@@ -54,6 +60,14 @@ export default function VocabularyManagementPage() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Alert Dialog State
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const onCloseDeleteAlert = () => {
+    setIsDeleteAlertOpen(false);
+    setDeletingId(null);
+  };
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   // Edit Mode State
   const [editingWord, setEditingWord] = useState<Word | null>(null);
@@ -92,17 +106,18 @@ export default function VocabularyManagementPage() {
 
   const deleteWordMutation = useMutation({
     mutationFn: async (wordId: string) => {
-      setDeletingId(wordId);
       await axiosInstance.delete(`/admin/words/${wordId}`);
     },
     onSuccess: () => {
       toast({ title: 'Word deleted successfully', status: 'success' });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
       setDeletingId(null);
+      onCloseDeleteAlert();
     },
     onError: () => {
       toast({ title: 'Failed to delete word', status: 'error' });
       setDeletingId(null);
+      onCloseDeleteAlert(); // Close anyway or keep open? standard is close or show error.
     },
   });
 
@@ -124,8 +139,13 @@ export default function VocabularyManagementPage() {
   });
 
   const handleDelete = (wordId: string) => {
-    if (window.confirm('Are you sure you want to delete this word?')) {
-      deleteWordMutation.mutate(wordId);
+    setDeletingId(wordId);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deletingId) {
+      deleteWordMutation.mutate(deletingId);
     }
   };
 
@@ -300,6 +320,57 @@ export default function VocabularyManagementPage() {
 
       {/* Reusable Modal for Add and Edit */}
       <WordModal isOpen={isOpen} onClose={onClose} initialData={editingWord} />
+
+      {/* Delete Confirmation Alert Dialog */}
+      <AlertDialog
+        isOpen={isDeleteAlertOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCloseDeleteAlert}
+        isCentered
+        motionPreset="slideInBottom"
+      >
+        <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
+          <AlertDialogContent borderRadius="xl" boxShadow="2xl">
+            <AlertDialogHeader
+              fontSize="lg"
+              color={'red.500'}
+              fontWeight="bold"
+              pt={8}
+              pb={0}
+            >
+              <VStack spacing={4}>
+                <Text>Delete Word</Text>
+              </VStack>
+            </AlertDialogHeader>
+
+            <AlertDialogBody textAlign="center" color="gray.500" py={6}>
+              Are you sure you want to delete this word? <br />
+              This action cannot be undone.
+            </AlertDialogBody>
+
+            <AlertDialogFooter justifyContent="center" pb={8} gap={3}>
+              <Button
+                ref={cancelRef}
+                onClick={onCloseDeleteAlert}
+                variant="outline"
+                borderRadius="lg"
+                px={6}
+              >
+                No, Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={confirmDelete}
+                isLoading={deleteWordMutation.isPending}
+                borderRadius="lg"
+                px={6}
+              >
+                Yes, Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 }
