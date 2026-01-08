@@ -3,7 +3,7 @@ import { User } from '../users/users.model';
 import { Word } from '../words/words.model';
 import { WordsService } from '../words/words.service';
 import { QuizAttempt } from '../quiz/quiz-attempt.model';
-import { Quiz } from '../quiz/quiz.entity';
+
 import { CSVImportService } from './csv-import.service';
 import { AppError } from '../../core/errors/AppError';
 
@@ -276,99 +276,6 @@ export class AdminController {
             totalPages: Math.ceil(total / limit),
           },
         },
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  // Quiz Management Placeholder - Schema for Quiz Definition is missing, assuming simple structure or referencing QuizResult for now is wrong.
-  // We need a Quiz model, but currently only QuizAttempt exists.
-  // I will implement a basic Quiz Schema stub in the same file or assume it exists in quiz module if I missed it.
-  // Wait, I only saw QuizAttempt. Let me check if there is a Quiz definition model.
-  // If not, I'll return empty list for now to satisfy the frontend call without crashing.
-
-  static async getQuizzes(req: Request, res: Response, next: NextFunction) {
-    try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const search = (req.query.search as string) || '';
-      const skip = (page - 1) * limit;
-
-      const query: any = {};
-      if (search) {
-        query.title = { $regex: search, $options: 'i' };
-      }
-
-      const [quizzes, total] = await Promise.all([
-        Quiz.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
-        Quiz.countDocuments(query),
-      ]);
-
-      res.json({
-        success: true,
-        data: {
-          quizzes,
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-          },
-        },
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async createQuiz(req: Request, res: Response, next: NextFunction) {
-    try {
-      const quiz = await Quiz.create(req.body);
-      res.status(201).json({
-        success: true,
-        message: 'Quiz created successfully',
-        data: quiz,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async updateQuiz(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = req.params;
-      const quiz = await Quiz.findByIdAndUpdate(id, req.body, {
-        new: true,
-        runValidators: true,
-      });
-
-      if (!quiz) {
-        throw new AppError('Quiz not found', 404);
-      }
-
-      res.json({
-        success: true,
-        message: 'Quiz updated successfully',
-        data: quiz,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async deleteQuiz(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = req.params;
-      const quiz = await Quiz.findByIdAndDelete(id);
-
-      if (!quiz) {
-        throw new AppError('Quiz not found', 404);
-      }
-
-      res.json({
-        success: true,
-        message: 'Quiz deleted successfully',
       });
     } catch (error) {
       next(error);

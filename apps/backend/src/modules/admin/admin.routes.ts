@@ -28,9 +28,4 @@ router.get('/users/export', AdminController.exportUsers);
 router.patch('/users/:id/status', AdminController.updateUserStatus);
 router.get('/users', AdminController.getUsers);
 
-router.get('/quizzes', AdminController.getQuizzes);
-router.post('/quizzes', AdminController.createQuiz);
-router.put('/quizzes/:id', AdminController.updateQuiz);
-router.delete('/quizzes/:id', AdminController.deleteQuiz);
-
 export default router;
