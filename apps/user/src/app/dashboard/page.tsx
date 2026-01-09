@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
-import { formatRelativeTime } from '../../utils/date-utils';
+import { formatRelativeTime } from '@ielts/utils/date';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {

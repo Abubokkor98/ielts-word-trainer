@@ -43,6 +43,13 @@ export const globalErrorHandler = (
     });
   }
 
+  if (err.name === 'CastError') {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid ID format',
+    });
+  }
+
   // Fallback
   console.error('UNEXPECTED ERROR 💥:', err);
   res.status(500).json({

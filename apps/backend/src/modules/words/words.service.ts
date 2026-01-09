@@ -3,11 +3,11 @@ import { CreateWordInput } from '@ielts/shared';
 import { Topic } from '../topics/topics.model';
 import mongoose from 'mongoose';
 
-function escapeRegex(str: string): string {
+export function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-async function resolveTopic(topicInput: string): Promise<string> {
+export async function resolveTopic(topicInput: string): Promise<string> {
   const isObjectId = mongoose.isValidObjectId(topicInput);
 
   if (isObjectId) {

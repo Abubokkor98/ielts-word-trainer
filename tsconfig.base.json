@@ -10,30 +10,17 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@ielts/shared": [
-        "libs/shared/src/index.ts"
-      ],
-      "@ielts/ui": [
-        "libs/ui/src/index.ts"
-      ],
-      "@ielts/auth": [
-        "libs/auth/src/index.ts"
-      ],
-      "@ielts/utils": [
-        "libs/utils/src/index.ts"
-      ]
+      "@ielts/shared": ["libs/shared/src/index.ts"],
+      "@ielts/ui": ["libs/ui/src/index.ts"],
+      "@ielts/auth": ["libs/auth/src/index.ts"],
+      "@ielts/utils": ["libs/utils/src/index.ts"],
+      "@ielts/utils/date": ["libs/utils/src/lib/date-utils.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }

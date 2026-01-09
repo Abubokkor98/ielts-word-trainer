@@ -10,6 +10,12 @@ export function formatRelativeTime(
   if (!date) return 'Never';
 
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  // Validate the date object
+  if (isNaN(dateObj.getTime())) {
+    return 'Never';
+  }
+
   const now = new Date();
   const diffMs = now.getTime() - dateObj.getTime();
   const diffSecs = Math.floor(diffMs / 1000);

@@ -2,6 +2,7 @@ import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
 import { Word } from '../words/words.model';
 import { Topic } from '../topics/topics.model';
+import { resolveTopic } from '../words/words.service';
 import { Logger } from '@ielts/utils';
 import { AppError } from '../../core/errors/AppError';
 
@@ -97,19 +98,8 @@ export class CSVImportService {
           .filter(Boolean);
 
         // Resolve Topic (Find or Create)
-        let topicId;
-        const topicName = validatedData.topic;
-        let topic = await Topic.findOne({
-          name: new RegExp(`^${topicName}$`, 'i'),
-        });
-
-        if (!topic) {
-          topic = await Topic.create({
-            name: topicName,
-            wordCount: 0,
-          });
-        }
-        topicId = topic._id;
+        // Resolve Topic (Find or Create)
+        const topicId = await resolveTopic(validatedData.topic);
 
         await Word.create({
           ...validatedData,
