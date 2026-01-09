@@ -136,6 +136,17 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                 />
+                <Box textAlign="right" mt={1}>
+                  <ChakraLink
+                    as={Link}
+                    href="/forgot-password"
+                    color="brand.400"
+                    fontSize="sm"
+                    fontWeight="500"
+                  >
+                    Forgot Password?
+                  </ChakraLink>
+                </Box>
               </FormControl>
 
               <Button

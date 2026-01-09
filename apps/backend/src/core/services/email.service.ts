@@ -1,13 +1,24 @@
 import nodemailer from 'nodemailer';
 import { Logger } from '@ielts/utils';
 
+const smtpHost = process.env['SMTP_HOST'];
+const smtpPort = process.env['SMTP_PORT'];
+const smtpUser = process.env['SMTP_USER'];
+const smtpPass = process.env['SMTP_PASS'];
+
+if (!smtpHost || !smtpUser || !smtpPass) {
+  Logger.warn(
+    'SMTP credentials are not fully configured. Email sending may fail.'
+  );
+}
+
 const transporter = nodemailer.createTransport({
-  host: process.env['SMTP_HOST'] || 'smtp.gmail.com',
-  port: parseInt(process.env['SMTP_PORT'] || '587'),
+  host: smtpHost || 'smtp.gmail.com',
+  port: parseInt(smtpPort || '587'),
   secure: false,
   auth: {
-    user: process.env['SMTP_USER'],
-    pass: process.env['SMTP_PASS'],
+    user: smtpUser,
+    pass: smtpPass,
   },
 });
 
