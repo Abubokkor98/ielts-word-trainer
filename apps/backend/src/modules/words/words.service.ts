@@ -17,19 +17,33 @@ export async function resolveTopic(topicInput: string): Promise<string> {
   } else {
     // It's likely a topic name
     const cleanedTopic = topicInput.trim();
-    const topic = await Topic.findOneAndUpdate(
-      {
-        name: { $regex: new RegExp(`^${escapeRegex(cleanedTopic)}$`, 'i') },
-      },
-      {
-        $setOnInsert: { name: cleanedTopic },
-      },
-      {
-        new: true,
-        upsert: true,
+    try {
+      const topic = await Topic.findOneAndUpdate(
+        {
+          name: { $regex: new RegExp(`^${escapeRegex(cleanedTopic)}$`, 'i') },
+        },
+        {
+          $setOnInsert: { name: cleanedTopic },
+        },
+        {
+          new: true,
+          upsert: true,
+        }
+      );
+      return topic._id.toString();
+    } catch (error: any) {
+      // Handle race condition: if duplicate key error (E11000), strictly retry finding the topic
+      // The other process just created it, so simple find will succeed now.
+      if (error.code === 11000) {
+        const existingTopic = await Topic.findOne({
+          name: { $regex: new RegExp(`^${escapeRegex(cleanedTopic)}$`, 'i') },
+        });
+        if (existingTopic) {
+          return existingTopic._id.toString();
+        }
       }
-    );
-    return topic._id.toString();
+      throw error;
+    }
   }
 }
 
