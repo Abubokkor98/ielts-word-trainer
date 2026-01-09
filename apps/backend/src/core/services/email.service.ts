@@ -46,8 +46,15 @@ export class EmailService {
     }
   }
 
-  static async sendPasswordResetEmail(email: string, token: string) {
-    const resetUrl = `${process.env['CLIENT_URL']}/reset-password?token=${token}`;
+  static async sendPasswordResetEmail(
+    email: string,
+    token: string,
+    role: string = 'user'
+  ) {
+    const baseUrl =
+      role === 'admin' ? process.env['ADMIN_URL'] : process.env['CLIENT_URL'];
+
+    const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     try {
       await transporter.sendMail({

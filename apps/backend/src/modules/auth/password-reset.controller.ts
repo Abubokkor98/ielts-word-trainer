@@ -30,7 +30,7 @@ export class PasswordResetController {
       user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
       await user.save();
 
-      await EmailService.sendPasswordResetEmail(email, resetToken);
+      await EmailService.sendPasswordResetEmail(email, resetToken, user.role);
 
       res.json({
         success: true,

@@ -97,7 +97,7 @@ function ResetPasswordForm() {
               Reset Password
             </Text>
             <Text color="gray.400" fontSize="md">
-              Enter your new password
+              Enter your new admin password
             </Text>
           </VStack>
         </CardHeader>
