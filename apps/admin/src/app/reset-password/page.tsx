@@ -6,7 +6,7 @@ import { ResetPasswordForm } from '@ielts/ui';
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <ResetPasswordForm />
+      <ResetPasswordForm description="Enter your new admin password" />
     </Suspense>
   );
 }

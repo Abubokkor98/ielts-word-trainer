@@ -1,13 +1,29 @@
 import nodemailer from 'nodemailer';
 import { Logger } from '@ielts/utils';
 
+const smtpHost = process.env['SMTP_HOST'];
+const smtpPort = process.env['SMTP_PORT'];
+const smtpUser = process.env['SMTP_USER'];
+const smtpPass = process.env['SMTP_PASS'];
+
+if (!smtpHost || !smtpUser || !smtpPass) {
+  throw new Error(
+    'SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS) must be fully configured.'
+  );
+}
+
+const port = Number(smtpPort ?? 587);
+if (!Number.isInteger(port) || port <= 0) {
+  throw new Error(`Invalid SMTP_PORT: ${smtpPort}`);
+}
+
 const transporter = nodemailer.createTransport({
-  host: process.env['SMTP_HOST'] || 'smtp.gmail.com',
-  port: parseInt(process.env['SMTP_PORT'] || '587'),
-  secure: false,
+  host: smtpHost || 'smtp.gmail.com',
+  port,
+  secure: port === 465,
   auth: {
-    user: process.env['SMTP_USER'],
-    pass: process.env['SMTP_PASS'],
+    user: smtpUser,
+    pass: smtpPass,
   },
 });
 
@@ -35,8 +51,22 @@ export class EmailService {
     }
   }
 
-  static async sendPasswordResetEmail(email: string, token: string) {
-    const resetUrl = `${process.env['CLIENT_URL']}/reset-password?token=${token}`;
+  static async sendPasswordResetEmail(
+    email: string,
+    token: string,
+    role: string = 'user'
+  ) {
+    const baseUrl =
+      role === 'admin' ? process.env['ADMIN_URL'] : process.env['CLIENT_URL'];
+
+    if (!baseUrl) {
+      throw new Error(
+        `Missing base URL env for password reset email (role=${role}).`
+      );
+    }
+
+    const resetUrl = new URL('/reset-password', baseUrl);
+    resetUrl.searchParams.set('token', token);
 
     try {
       await transporter.sendMail({
