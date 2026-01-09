@@ -18,6 +18,10 @@ export class AdminService {
       passwordHash = await bcrypt.hash(password, salt);
     }
 
+    if (!passwordHash) {
+      throw new AppError('Password is required', 400);
+    }
+
     const admin = new Admin({
       ...data,
       passwordHash,
