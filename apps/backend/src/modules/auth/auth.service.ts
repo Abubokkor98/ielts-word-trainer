@@ -23,6 +23,14 @@ export class AuthService {
 
     // Store in DB
     const hashedToken = await bcrypt.hash(refreshToken, 10);
+
+    // Limit active sessions to 5
+    const MAX_SESSIONS = 5;
+    if (user.refreshToken.length >= MAX_SESSIONS) {
+      // Remove oldest tokens to maintain limit (keep last MAX_SESSIONS - 1)
+      user.refreshToken = user.refreshToken.slice(-(MAX_SESSIONS - 1));
+    }
+
     user.refreshToken.push(hashedToken);
     await user.save();
 
