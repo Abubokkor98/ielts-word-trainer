@@ -11,6 +11,7 @@ const wordSchema = z.object({
   meaning: z.string().min(1, 'Meaning is required'),
   exampleSentence: z.string().min(1, 'Example sentence is required'),
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+  module: z.enum(['reading', 'writing', 'listening', 'speaking']),
   topic: z.string().min(1, 'Topic is required'),
   partOfSpeech: z.string().min(1, 'Part of speech is required'),
   synonyms: z.string().min(1, 'Synonyms are required'), // comma-separated
@@ -35,6 +36,7 @@ export class CSVImportService {
         'meaning',
         'exampleSentence',
         'difficulty',
+        'module',
         'topic',
         'partOfSpeech',
         'synonyms',
@@ -126,8 +128,8 @@ export class CSVImportService {
   }
 
   static generateTemplate() {
-    return `word,meaning,exampleSentence,difficulty,topic,partOfSpeech,synonyms,antonyms
-abundant,existing in large quantities,The garden had abundant flowers.,intermediate,vocabulary,adjective,"plentiful,ample","scarce,sparse"
-elaborate,involving many careful details,She gave an elaborate explanation.,advanced,vocabulary,adjective,"detailed,complex","simple,basic"`;
+    return `word,meaning,exampleSentence,difficulty,module,topic,partOfSpeech,synonyms,antonyms
+abundant,existing in large quantities,The garden had abundant flowers.,intermediate,reading,vocabulary,adjective,"plentiful,ample","scarce,sparse"
+elaborate,involving many careful details,She gave an elaborate explanation.,advanced,writing,vocabulary,adjective,"detailed,complex","simple,basic"`;
   }
 }

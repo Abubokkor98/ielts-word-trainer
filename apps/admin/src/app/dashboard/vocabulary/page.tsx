@@ -123,7 +123,11 @@ export default function VocabularyManagementPage() {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      await axiosInstance.post('/words/upload', formData);
+      await axiosInstance.post('/words/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
     },
     onSuccess: () => {
       toast({ title: 'Words imported successfully', status: 'success' });

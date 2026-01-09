@@ -52,4 +52,27 @@ export class WordsController {
       next(err);
     }
   }
+
+  static async uploadCSV(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.file) {
+        throw new AppError('No file provided', 400);
+      }
+
+      // Convert buffer to string
+      const csvContent = req.file.buffer.toString('utf-8');
+
+      // Import words using the existing service
+      const results = await CSVImportService.importWords(csvContent);
+
+      // Return detailed results
+      res.status(200).json({
+        success: true,
+        data: results,
+        message: `Import completed: ${results.successful} successful, ${results.failed} failed`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }

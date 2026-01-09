@@ -5,6 +5,7 @@ import { AppError } from '../../core/errors/AppError';
 import { AdminRole } from '@ielts/shared';
 import { AuthRequest } from '../auth/auth.middleware';
 import bcrypt from 'bcryptjs';
+import { CSVExportService } from './csv-export.service';
 
 export class AdminController {
   static async login(req: Request, res: Response, next: NextFunction) {
@@ -137,6 +138,20 @@ export class AdminController {
         success: true,
         message: 'User status updated successfully',
       });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async exportUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const csvContent = await CSVExportService.exportUsers();
+
+      // Set headers for CSV download
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename="users.csv"');
+
+      res.status(200).send(csvContent);
     } catch (err) {
       next(err);
     }

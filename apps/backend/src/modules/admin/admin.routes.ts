@@ -38,6 +38,13 @@ router.patch(
 );
 
 router.get(
+  '/users/export',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminController.exportUsers
+);
+
+router.get(
   '/admins',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
