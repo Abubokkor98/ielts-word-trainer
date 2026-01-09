@@ -13,24 +13,23 @@ import {
   HStack,
   useToast,
 } from '@chakra-ui/react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
+import Link from 'next/link';
 import { useAuthStore } from '@ielts/auth';
 import { axiosInstance } from '@ielts/auth';
 
 export const UserMenu = () => {
   const { user, logout } = useAuthStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post('/auth/logout');
-    } catch (error) {
-      console.error('Logout API call failed:', error);
-    } finally {
+  useEffect(() => {
+    // Check if we just logged out via redirection
+    if (searchParams.get('logout') === 'success' && user) {
       logout();
       queryClient.clear();
 
@@ -40,7 +39,20 @@ export const UserMenu = () => {
         duration: 2000,
       });
 
-      router.push('/');
+      // Clear the query param
+      router.replace('/');
+    }
+  }, [searchParams, user, logout, queryClient, toast, router]);
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout API call failed:', error);
+    } finally {
+      // Navigate to home first with a flag, forcing the protected route to unmount
+      // BEFORE we actually clear the auth state.
+      router.push('/?logout=success');
     }
   };
 

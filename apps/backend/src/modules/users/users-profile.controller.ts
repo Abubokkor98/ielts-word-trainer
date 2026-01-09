@@ -23,7 +23,6 @@ export class UserProfileController {
           role: user.role,
           xp: user.xp,
           streak: user.streak,
-          emailVerified: user.emailVerified,
           createdAt: user.createdAt,
           stats,
         },
