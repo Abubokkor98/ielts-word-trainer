@@ -120,12 +120,15 @@ export class WordsService {
   }
 
   static async update(id: string, input: Partial<CreateWordInput>) {
-    // If topic is provided, handle it (it might be a name or an ID)
-    if (input.topic) {
-      input.topic = await resolveTopic(input.topic);
+    const updateDoc: Partial<CreateWordInput> = { ...input };
+    if (typeof updateDoc.topic === 'string') {
+      updateDoc.topic = await resolveTopic(updateDoc.topic);
     }
 
-    return Word.findByIdAndUpdate(id, input, { new: true });
+    return Word.findByIdAndUpdate(id, updateDoc, {
+      new: true,
+      runValidators: true,
+    });
   }
 
   static async delete(id: string) {

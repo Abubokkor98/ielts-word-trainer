@@ -18,8 +18,7 @@
       "@ielts/shared": ["libs/shared/src/index.ts"],
       "@ielts/ui": ["libs/ui/src/index.ts"],
       "@ielts/auth": ["libs/auth/src/index.ts"],
-      "@ielts/utils": ["libs/utils/src/index.ts"],
-      "@ielts/utils/date": ["libs/utils/src/lib/date-utils.ts"]
+      "@ielts/utils": ["libs/utils/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
