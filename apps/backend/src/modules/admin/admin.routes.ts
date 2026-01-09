@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { AdminController } from './admin.controller';
-import { authenticate } from '../auth/auth.middleware';
-import { authorize } from '../../core/middleware/authorize.middleware';
+import { authenticate, authorize } from '../auth/auth.middleware';
 import { AdminRole } from '@ielts/shared';
 import adminPasswordResetRoutes from './admin-password-reset.routes';
 
@@ -70,9 +69,19 @@ router.delete(
 );
 
 // Profile Routes
-router.patch('/profile', authenticate, AdminController.updateProfile);
+router.patch(
+  '/profile',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminController.updateProfile
+);
 
-router.post('/change-password', authenticate, AdminController.changePassword);
+router.post(
+  '/change-password',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminController.changePassword
+);
 
 // Vocabulary Routes
 // CRUD handled by /api/v1/words

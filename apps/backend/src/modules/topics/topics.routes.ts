@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { TopicsController } from './topics.controller';
-import { authenticate, authorize } from '../../core/middleware/auth.middleware';
+import { authenticate, authorize } from '../auth/auth.middleware';
 import { UserRole } from '@ielts/shared';
 import { AdminRole } from '@ielts/shared';
 

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { WordsController } from './words.controller';
-import { authenticate, authorize } from '../../core/middleware/auth.middleware';
+import { authenticate, authorize } from '../auth/auth.middleware';
 import { validateRequest } from '../../core/middleware/validate.middleware';
 import { CreateWordSchema, AdminRole } from '@ielts/shared';
 import { upload } from '../../core/middleware/upload.middleware';

@@ -18,7 +18,9 @@ export class CSVExportService {
     const dangerousChars = ['=', '+', '-', '@', '\t', '\r'];
     let sanitized = value;
 
-    if (dangerousChars.some((char) => sanitized.startsWith(char))) {
+    const injectionCheck = sanitized.trimStart();
+
+    if (dangerousChars.some((char) => injectionCheck.startsWith(char))) {
       sanitized = `'${sanitized}`;
     }
 

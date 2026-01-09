@@ -1,18 +1,22 @@
 import bcrypt from 'bcryptjs';
 import { Admin, IAdmin } from './admin.model';
-import { AdminRole } from '@ielts/shared';
 import { User } from '../users/users.model';
+import { AppError } from '../../core/errors/AppError';
 import { Word } from '../words/words.model';
 import { QuizAttempt } from '../quiz/quiz-attempt.model';
 
 export class AdminService {
-  static async createAdmin(data: Partial<IAdmin>): Promise<IAdmin> {
-    const salt = await bcrypt.genSalt(10);
-    const passwordHash = await bcrypt.hash(data.passwordHash as string, salt); // Expecting raw password in passwordHash field for convenience, or separate field
+  static async createAdmin(
+    data: Partial<IAdmin>,
+    password?: string
+  ): Promise<IAdmin> {
+    // If password is provided as separate argument, hash it
+    let passwordHash = data.passwordHash;
 
-    // Actually, let's assume the controller passes raw password in a property, say 'password'
-    // But adhering to the interface, let's assume 'passwordHash' in data signifies the raw password to be hashed
-    // Or better, let's just take raw 'password' as argument if possible, but standard is data object.
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      passwordHash = await bcrypt.hash(password, salt);
+    }
 
     const admin = new Admin({
       ...data,
@@ -38,7 +42,10 @@ export class AdminService {
   }
 
   static async deleteAdmin(id: string): Promise<void> {
-    await Admin.findByIdAndDelete(id);
+    const admin = await Admin.findByIdAndDelete(id);
+    if (!admin) {
+      throw new AppError('Admin not found', 404);
+    }
   }
 
   static async updateAdmin(
@@ -87,9 +94,11 @@ export class AdminService {
     const query: any = {};
 
     if (search) {
+      // Escape special characters to prevent ReDoS
+      const sanitizedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
+        { name: { $regex: sanitizedSearch, $options: 'i' } },
+        { email: { $regex: sanitizedSearch, $options: 'i' } },
       ];
     }
 
@@ -115,5 +124,11 @@ export class AdminService {
 
   static async updateUserStatus(userId: string, status: string) {
     return User.findByIdAndUpdate(userId, { status }, { new: true });
+  }
+
+  static async updatePassword(id: string, newPassword: string): Promise<void> {
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(newPassword, salt);
+    await Admin.findByIdAndUpdate(id, { passwordHash });
   }
 }

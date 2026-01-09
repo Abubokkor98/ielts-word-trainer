@@ -115,8 +115,8 @@ export const AdminSidebar = () => {
   const borderColor = useColorModeValue('gray.200', 'gray.800');
   const bgColor = useColorModeValue('white', 'gray.900');
   const pathname = usePathname();
-  const router = useRouter();
   const toast = useToast();
+  // const router = useRouter(); // Removed unused router
 
   const handleLogout = () => {
     // Clear auth cookie first

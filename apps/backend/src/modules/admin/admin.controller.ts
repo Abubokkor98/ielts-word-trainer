@@ -110,10 +110,6 @@ export class AdminController {
         success: true,
         data: result,
       });
-      res.json({
-        success: true,
-        data: result,
-      });
     } catch (err) {
       next(err);
     }
@@ -166,17 +162,23 @@ export class AdminController {
 
       const { email, password, name, role } = req.body;
 
+      if (role && !Object.values(AdminRole).includes(role)) {
+        throw new AppError('Invalid role', 400);
+      }
+
       const existingAdmin = await AdminService.findByEmail(email);
       if (existingAdmin) {
         throw new AppError('Admin with this email already exists', 400);
       }
 
-      const admin = await AdminService.createAdmin({
-        email,
-        passwordHash: password, // Service will hash it
-        name,
-        role: role || AdminRole.ADMIN,
-      });
+      const admin = await AdminService.createAdmin(
+        {
+          email,
+          name,
+          role: role || AdminRole.ADMIN,
+        },
+        password
+      );
 
       res.status(201).json({
         success: true,
@@ -195,9 +197,6 @@ export class AdminController {
   static async delete(req: Request, res: Response, next: NextFunction) {
     try {
       const authReq = req as AuthRequest;
-      if (authReq.user?.role !== AdminRole.SUPER_ADMIN) {
-        throw new AppError('Unauthorized', 403);
-      }
 
       const { id } = req.params;
       if (id === authReq.user.id) {
@@ -218,9 +217,6 @@ export class AdminController {
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
       const authReq = req as AuthRequest;
-      if (authReq.user?.role !== AdminRole.SUPER_ADMIN) {
-        throw new AppError('Unauthorized', 403);
-      }
 
       const { id } = req.params;
       const data = req.body;
@@ -229,6 +225,16 @@ export class AdminController {
       if (data.password) {
         // If password update logic is needed it should happen here or in service
         delete data.password;
+      }
+
+      // Never allow direct passwordHash manipulation via generic update
+      if (data.passwordHash) {
+        delete data.passwordHash;
+      }
+
+      // Optional: validate role changes
+      if (data.role && !Object.values(AdminRole).includes(data.role)) {
+        throw new AppError('Invalid role', 400);
       }
 
       const admin = await AdminService.updateAdmin(id, data);
@@ -306,12 +312,8 @@ export class AdminController {
         throw new AppError('Current password is incorrect', 401);
       }
 
-      // Hash new password
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(newPassword, salt);
-
       // Update password
-      await AdminService.updateAdmin(adminId, { passwordHash });
+      await AdminService.updatePassword(adminId, newPassword);
 
       res.json({
         success: true,

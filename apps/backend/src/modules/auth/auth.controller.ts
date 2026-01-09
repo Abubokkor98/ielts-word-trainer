@@ -129,6 +129,13 @@ export class AuthController {
         throw new AppError('User not found', 401);
       }
 
+      if (user.status === 'banned') {
+        throw new AppError(
+          'Your account has been banned. Please contact support.',
+          403
+        );
+      }
+
       // Check if refresh token exists in user's token list
       let tokenValid = false;
       for (const storedToken of user.refreshToken) {

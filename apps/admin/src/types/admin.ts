@@ -4,4 +4,5 @@ export interface Admin {
   email: string;
   role: 'admin' | 'super_admin';
   createdAt: string;
+  updatedAt?: string;
 }

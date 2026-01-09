@@ -10,12 +10,16 @@ const fileFilter = (
   cb: multer.FileFilterCallback
 ) => {
   // Accept CSV files only
-  if (file.mimetype === 'text/csv' || file.originalname.endsWith('.csv')) {
+  const name = file.originalname.toLowerCase();
+  const isCsvMime =
+    file.mimetype === 'text/csv' ||
+    file.mimetype === 'application/csv' ||
+    file.mimetype === 'application/vnd.ms-excel';
+
+  if (isCsvMime || name.endsWith('.csv')) {
     cb(null, true);
   } else {
-    cb(
-      new AppError('Invalid file type. Only CSV files are allowed.', 400) as any
-    );
+    cb(new AppError('Invalid file type. Only CSV files are allowed.', 400));
   }
 };
 

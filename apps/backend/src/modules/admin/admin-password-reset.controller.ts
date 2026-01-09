@@ -46,6 +46,14 @@ export class AdminPasswordResetController {
     try {
       const { token, password } = req.body;
 
+      if (!token || typeof token !== 'string') {
+        throw new AppError('Reset token is required', 400);
+      }
+
+      if (!password || typeof password !== 'string' || password.length < 8) {
+        throw new AppError('Password must be at least 8 characters', 400);
+      }
+
       const hashedToken = crypto
         .createHash('sha256')
         .update(token)
@@ -66,11 +74,14 @@ export class AdminPasswordResetController {
       admin.resetPasswordExpires = undefined;
       await admin.save();
 
+      Logger.info(`Admin password reset successful for: ${admin.email}`);
+
       res.json({
         success: true,
         message: 'Password has been reset successfully.',
       });
     } catch (error) {
+      Logger.error(`Admin password reset failed: ${error}`);
       next(error);
     }
   }

@@ -18,6 +18,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { Users, BookOpen, FileText, Activity } from 'lucide-react';
+import { AdminRole } from '@ielts/shared';
 
 interface StatCardProps {
   label: string;
@@ -45,7 +46,9 @@ export default function AdminDashboardPage() {
       return data.data;
     },
     // We can assume auth is valid here due to AuthGuard, but keep enabled check for safety
-    enabled: !!user && ['admin', 'super_admin'].includes(user.role),
+    enabled:
+      !!user &&
+      [AdminRole.ADMIN, AdminRole.SUPER_ADMIN].includes(user.role as AdminRole),
   });
 
   if (statsLoading) {

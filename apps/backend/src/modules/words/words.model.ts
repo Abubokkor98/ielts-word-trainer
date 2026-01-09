@@ -35,6 +35,7 @@ const WordSchema = new Schema<IWord>(
       type: String,
       enum: ['reading', 'writing', 'listening', 'speaking'],
       required: true,
+      default: 'reading', // Fallback for existing data/seed
     },
   },
   { timestamps: true, versionKey: false }

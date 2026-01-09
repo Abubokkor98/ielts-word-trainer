@@ -15,14 +15,12 @@ import {
   Skeleton,
   Text,
   useToast,
-  useDisclosure,
   IconButton,
   Button,
 } from '@chakra-ui/react';
 import { Card, CardHeader, CardContent } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';
 import { Trash2, Plus, Shield, ShieldAlert } from 'lucide-react';
-import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { Admin } from '../../../types/admin';

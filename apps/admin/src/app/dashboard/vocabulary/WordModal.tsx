@@ -167,7 +167,15 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
           difficulty: initialData.difficulty,
           partOfSpeech: initialData.partOfSpeech || '',
           topic: topicName,
-          module: initialData.module || 'reading',
+          module: (() => {
+            if (!initialData.module) {
+              console.warn(
+                `Word ${initialData._id} missing module field, defaulting to 'reading'`
+              );
+              return 'reading';
+            }
+            return initialData.module;
+          })(),
           synonyms: initialData.synonyms?.join(', ') || '',
           antonyms: initialData.antonyms?.join(', ') || '',
         });

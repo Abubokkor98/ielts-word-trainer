@@ -2,10 +2,9 @@ import { Router } from 'express';
 import { QuizController } from './quiz.controller';
 import { QuizAnalyticsController } from './quiz-analytics.controller';
 import { QuizAttemptController } from './quiz-attempt.controller';
-import { authenticate } from '../auth/auth.middleware';
+import { authenticate, authorize } from '../auth/auth.middleware';
 import { UserRole } from '@ielts/shared';
 import { AdminRole } from '@ielts/shared';
-import { authorize } from '../../core/middleware/authorize.middleware';
 
 const router = Router();
 

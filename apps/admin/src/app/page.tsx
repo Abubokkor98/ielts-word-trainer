@@ -23,17 +23,26 @@ export default function AdminHomePage() {
       return;
     }
 
-    if (user?.role === 'admin' || user?.role === 'super_admin') {
+    if (!user) return; // avoid being stuck if auth state flips before user is loaded
+
+    if (user.role === 'admin' || user.role === 'super_admin') {
       // Admin user - redirect to dashboard
-      router.push('/dashboard');
-    } else if (user?.role === 'user') {
+      router.replace('/dashboard');
+      return;
+    }
+
+    if (user.role === 'user') {
       // Regular user trying to access admin portal - redirect to user app
       const userAppUrl =
         process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
       if (typeof window !== 'undefined') {
-        window.location.href = userAppUrl;
+        window.location.replace(userAppUrl);
       }
+      return;
     }
+
+    // Fallback for unexpected roles
+    router.replace('/login');
   }, [isAuthenticated, user, router]);
 
   // Show loading state while redirecting authenticated users
