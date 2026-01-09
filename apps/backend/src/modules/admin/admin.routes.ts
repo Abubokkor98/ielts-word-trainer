@@ -3,6 +3,7 @@ import { AdminController } from './admin.controller';
 import { authenticate } from '../auth/auth.middleware';
 import { authorize } from '../../core/middleware/authorize.middleware';
 import { AdminRole } from '@ielts/shared';
+import adminPasswordResetRoutes from './admin-password-reset.routes';
 
 const router = Router();
 
@@ -10,6 +11,9 @@ const router = Router();
 router.post('/login', AdminController.login);
 router.post('/refresh', AdminController.refresh);
 router.get('/me', authenticate, AdminController.me);
+
+// Password Reset Routes
+router.use('/password', adminPasswordResetRoutes);
 
 // Management Routes
 router.get(

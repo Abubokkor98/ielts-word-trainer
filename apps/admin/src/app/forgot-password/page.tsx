@@ -23,9 +23,12 @@ export default function ForgotPasswordPage() {
 
   const forgotPasswordMutation = useMutation<{ success: boolean }, AxiosError>({
     mutationFn: async () => {
-      const { data } = await axiosInstance.post('/password/request-reset', {
-        email,
-      });
+      const { data } = await axiosInstance.post(
+        '/admin/password/request-reset',
+        {
+          email,
+        }
+      );
       return data;
     },
     onSuccess: () => {

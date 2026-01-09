@@ -18,12 +18,14 @@ interface ResetPasswordFormProps {
   redirectPath?: string;
   title?: string;
   description?: string;
+  apiPrefix?: string;
 }
 
 export function ResetPasswordForm({
   redirectPath = '/login',
   title = 'Reset Password',
   description = 'Enter your new password',
+  apiPrefix = '/password',
 }: ResetPasswordFormProps) {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -47,10 +49,16 @@ export function ResetPasswordForm({
   }, [searchParams, router, toast]);
 
   const resetPasswordMutation = useMutation({
-    mutationFn: async () => {
-      const { data } = await axiosInstance.post('/password/reset-password', {
+    mutationFn: async ({
+      token,
+      password,
+    }: {
+      token: string;
+      password: string;
+    }) => {
+      const { data } = await axiosInstance.post(`${apiPrefix}/reset-password`, {
         token,
-        password: newPassword,
+        password,
       });
       return data;
     },
@@ -87,7 +95,7 @@ export function ResetPasswordForm({
       return;
     }
 
-    resetPasswordMutation.mutate();
+    resetPasswordMutation.mutate({ token, password: newPassword });
   };
 
   return (

@@ -25,6 +25,10 @@ export class AdminService {
     return Admin.findOne({ email });
   }
 
+  static async findOne(query: any): Promise<IAdmin | null> {
+    return Admin.findOne(query);
+  }
+
   static async findById(id: string): Promise<IAdmin | null> {
     return Admin.findById(id);
   }
