@@ -7,8 +7,8 @@ const smtpUser = process.env['SMTP_USER'];
 const smtpPass = process.env['SMTP_PASS'];
 
 if (!smtpHost || !smtpUser || !smtpPass) {
-  Logger.warn(
-    'SMTP credentials are not fully configured. Email sending may fail.'
+  throw new Error(
+    'SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS) must be fully configured.'
   );
 }
 
