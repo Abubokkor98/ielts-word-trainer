@@ -29,15 +29,26 @@ import {
   Text,
   IconButton,
   useDisclosure,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from '@chakra-ui/react';
-import { Plus, Upload, Trash2, Search, Filter } from 'lucide-react';
-import { AddWordModal } from './AddWordModal';
+import { Plus, Upload, Trash2, Search, Filter, Edit2 } from 'lucide-react';
+import { WordModal } from './WordModal';
 
 interface Word {
   _id: string;
   word: string;
   meaning: string;
+  exampleSentence: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  partOfSpeech: string;
+  topic: any;
+  synonyms: string[];
+  antonyms: string[];
 }
 
 export default function VocabularyManagementPage() {
@@ -49,6 +60,17 @@ export default function VocabularyManagementPage() {
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // Alert Dialog State
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const onCloseDeleteAlert = () => {
+    setIsDeleteAlertOpen(false);
+    setDeletingId(null);
+  };
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  // Edit Mode State
+  const [editingWord, setEditingWord] = useState<Word | null>(null);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -84,17 +106,17 @@ export default function VocabularyManagementPage() {
 
   const deleteWordMutation = useMutation({
     mutationFn: async (wordId: string) => {
-      setDeletingId(wordId);
       await axiosInstance.delete(`/admin/words/${wordId}`);
     },
     onSuccess: () => {
       toast({ title: 'Word deleted successfully', status: 'success' });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
       setDeletingId(null);
+      onCloseDeleteAlert();
     },
     onError: () => {
       toast({ title: 'Failed to delete word', status: 'error' });
-      setDeletingId(null);
+      // Keep dialog open for retry
     },
   });
 
@@ -116,9 +138,24 @@ export default function VocabularyManagementPage() {
   });
 
   const handleDelete = (wordId: string) => {
-    if (window.confirm('Are you sure you want to delete this word?')) {
-      deleteWordMutation.mutate(wordId);
+    setDeletingId(wordId);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deletingId) {
+      deleteWordMutation.mutate(deletingId);
     }
+  };
+
+  const handleEdit = (word: Word) => {
+    setEditingWord(word);
+    onOpen();
+  };
+
+  const handleAdd = () => {
+    setEditingWord(null);
+    onOpen();
   };
 
   const handleImportClick = () => {
@@ -163,7 +200,7 @@ export default function VocabularyManagementPage() {
             <Button
               leftIcon={<Plus size={16} />}
               colorScheme="brand"
-              onClick={onOpen}
+              onClick={handleAdd}
             >
               Add Word
             </Button>
@@ -243,15 +280,25 @@ export default function VocabularyManagementPage() {
                             </Badge>
                           </Td>
                           <Td>
-                            <IconButton
-                              aria-label="Delete word"
-                              icon={<Trash2 size={16} />}
-                              size="sm"
-                              colorScheme="red"
-                              variant="ghost"
-                              onClick={() => handleDelete(word._id)}
-                              isLoading={deletingId === word._id}
-                            />
+                            <HStack spacing={2}>
+                              <IconButton
+                                aria-label="Edit word"
+                                icon={<Edit2 size={16} />}
+                                size="sm"
+                                colorScheme="blue"
+                                variant="ghost"
+                                onClick={() => handleEdit(word)}
+                              />
+                              <IconButton
+                                aria-label="Delete word"
+                                icon={<Trash2 size={16} />}
+                                size="sm"
+                                colorScheme="red"
+                                variant="ghost"
+                                onClick={() => handleDelete(word._id)}
+                                isLoading={deletingId === word._id}
+                              />
+                            </HStack>
                           </Td>
                         </Tr>
                       ))}
@@ -270,7 +317,59 @@ export default function VocabularyManagementPage() {
         </Card>
       </VStack>
 
-      <AddWordModal isOpen={isOpen} onClose={onClose} />
+      {/* Reusable Modal for Add and Edit */}
+      <WordModal isOpen={isOpen} onClose={onClose} initialData={editingWord} />
+
+      {/* Delete Confirmation Alert Dialog */}
+      <AlertDialog
+        isOpen={isDeleteAlertOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onCloseDeleteAlert}
+        isCentered
+        motionPreset="slideInBottom"
+      >
+        <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
+          <AlertDialogContent borderRadius="xl" boxShadow="2xl">
+            <AlertDialogHeader
+              fontSize="lg"
+              color={'red.500'}
+              fontWeight="bold"
+              pt={8}
+              pb={0}
+            >
+              <VStack spacing={4}>
+                <Text>Delete Word</Text>
+              </VStack>
+            </AlertDialogHeader>
+
+            <AlertDialogBody textAlign="center" color="gray.500" py={6}>
+              Are you sure you want to delete this word? <br />
+              This action cannot be undone.
+            </AlertDialogBody>
+
+            <AlertDialogFooter justifyContent="center" pb={8} gap={3}>
+              <Button
+                ref={cancelRef}
+                onClick={onCloseDeleteAlert}
+                variant="outline"
+                borderRadius="lg"
+                px={6}
+              >
+                No, Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={confirmDelete}
+                isLoading={deleteWordMutation.isPending}
+                borderRadius="lg"
+                px={6}
+              >
+                Yes, Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 }

@@ -4,11 +4,11 @@ export interface IWord extends Document {
   word: string;
   meaning: string;
   exampleSentence: string;
-  synonyms?: string[];
-  antonyms?: string[];
-  topic?: mongoose.Types.ObjectId | string;
-  partOfSpeech?: string;
-  difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  synonyms: string[];
+  antonyms: string[];
+  topic: mongoose.Types.ObjectId | string;
+  partOfSpeech: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
 }
 
 const WordSchema = new Schema<IWord>(
@@ -16,13 +16,19 @@ const WordSchema = new Schema<IWord>(
     word: { type: String, required: true, index: true },
     meaning: { type: String, required: true },
     exampleSentence: { type: String, required: true },
-    synonyms: [{ type: String }],
-    antonyms: [{ type: String }],
-    topic: { type: Schema.Types.ObjectId, ref: 'Topic', index: true },
-    partOfSpeech: { type: String },
+    synonyms: { type: [String], required: true },
+    antonyms: { type: [String], required: true },
+    topic: {
+      type: Schema.Types.ObjectId,
+      ref: 'Topic',
+      index: true,
+      required: true,
+    },
+    partOfSpeech: { type: String, required: true },
     difficulty: {
       type: String,
       enum: ['beginner', 'intermediate', 'advanced'],
+      required: true,
     },
   },
   { timestamps: true, versionKey: false }

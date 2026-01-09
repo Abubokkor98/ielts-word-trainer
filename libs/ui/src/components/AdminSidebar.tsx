@@ -30,7 +30,6 @@ import {
   LayoutDashboard,
   Users,
   BookOpen,
-  FileText,
   LogOut,
   Menu as MenuIcon,
   X,
@@ -122,7 +121,7 @@ export const AdminSidebar = () => {
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-    { icon: FileText, label: 'Quizzes', href: '/dashboard/quizzes' },
+
     { icon: Users, label: 'Users', href: '/dashboard/users' },
     { icon: BookOpen, label: 'Vocabulary', href: '/dashboard/vocabulary' },
   ];

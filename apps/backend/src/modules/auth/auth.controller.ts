@@ -43,10 +43,24 @@ export class AuthController {
       const { email, password } = req.body;
       const user = await UserService.findByEmail(email);
 
-      if (
-        !user ||
-        !(await AuthService.validatePassword(password, user.passwordHash))
-      ) {
+      if (!user) {
+        throw new AppError('Invalid email or password', 401);
+      }
+
+      // Check ban status before password validation to prevent information disclosure
+      if (user.status === 'banned') {
+        throw new AppError(
+          'Your account has been banned. Please contact support.',
+          403
+        );
+      }
+
+      const isValid = await AuthService.validatePassword(
+        password,
+        user.passwordHash
+      );
+
+      if (!isValid) {
         throw new AppError('Invalid email or password', 401);
       }
 
@@ -91,6 +105,7 @@ export class AuthController {
           role: user.role,
           xp: user.xp,
           streak: user.streak,
+          lastQuizDate: user.lastQuizDate,
         },
       });
     } catch (err) {

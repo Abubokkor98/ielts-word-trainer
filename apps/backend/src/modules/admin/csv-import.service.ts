@@ -1,6 +1,8 @@
 import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
 import { Word } from '../words/words.model';
+import { Topic } from '../topics/topics.model';
+import { resolveTopic } from '../words/words.service';
 import { Logger } from '@ielts/utils';
 import { AppError } from '../../core/errors/AppError';
 
@@ -9,10 +11,10 @@ const wordSchema = z.object({
   meaning: z.string().min(1, 'Meaning is required'),
   exampleSentence: z.string().min(1, 'Example sentence is required'),
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
-  topic: z.string().optional(),
-  partOfSpeech: z.string().optional(),
-  synonyms: z.string().optional(), // comma-separated
-  antonyms: z.string().optional(), // comma-separated
+  topic: z.string().min(1, 'Topic is required'),
+  partOfSpeech: z.string().min(1, 'Part of speech is required'),
+  synonyms: z.string().min(1, 'Synonyms are required'), // comma-separated
+  antonyms: z.string().min(1, 'Antonyms are required'), // comma-separated
 });
 
 export class CSVImportService {
@@ -33,6 +35,10 @@ export class CSVImportService {
         'meaning',
         'exampleSentence',
         'difficulty',
+        'topic',
+        'partOfSpeech',
+        'synonyms',
+        'antonyms',
       ];
       const firstRecord = records[0] as Record<string, unknown>;
       const missingColumns = requiredColumns.filter(
@@ -74,7 +80,7 @@ export class CSVImportService {
         const existing = await Word.findOne({ word: validatedData.word });
         if (existing) {
           results.errors.push({
-            row: i + 2, // +2 for header and 0-index
+            row: i + 2,
             error: `Word "${validatedData.word}" already exists`,
           });
           results.failed++;
@@ -91,11 +97,19 @@ export class CSVImportService {
           .map((s) => s.trim())
           .filter(Boolean);
 
+        // Resolve Topic (Find or Create)
+        // Resolve Topic (Find or Create)
+        const topicId = await resolveTopic(validatedData.topic);
+
         await Word.create({
           ...validatedData,
+          topic: topicId,
           synonyms,
           antonyms,
         });
+
+        // Update topic word count
+        await Topic.findByIdAndUpdate(topicId, { $inc: { wordCount: 1 } });
 
         results.successful++;
       } catch (error: any) {

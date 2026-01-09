@@ -4,6 +4,7 @@ import { AdminController } from './admin.controller';
 import { authenticate } from '../auth/auth.middleware';
 import { UserRole } from '@ielts/shared';
 import { authorize } from '../../core/middleware/authorize.middleware';
+import { validateWordInput } from '../words/words.validation';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -18,18 +19,12 @@ router.post(
 );
 router.get('/template', AdminController.downloadTemplate);
 
-import { validateWordInput } from '../words/words.validation';
-
 router.get('/words', AdminController.getWords);
 router.post('/words', validateWordInput, AdminController.createWord);
 router.delete('/words/:id', AdminController.deleteWord);
 
 router.get('/users/export', AdminController.exportUsers);
+router.patch('/users/:id/status', AdminController.updateUserStatus);
 router.get('/users', AdminController.getUsers);
-
-router.get('/quizzes', AdminController.getQuizzes);
-router.post('/quizzes', AdminController.createQuiz);
-router.put('/quizzes/:id', AdminController.updateQuiz);
-router.delete('/quizzes/:id', AdminController.deleteQuiz);
 
 export default router;

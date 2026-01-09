@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
+import { formatRelativeTime } from '@ielts/shared';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
@@ -95,6 +96,10 @@ export default function UserDashboardPage() {
   const quizzesTaken = analytics?.totalQuizzes || 0;
   const avgScore = analytics?.averageScore || 0;
 
+  // Format last quiz time
+  const lastQuizDate = currentUser?.lastQuizDate;
+  const lastQuiz = formatRelativeTime(lastQuizDate);
+
   return (
     <Box minH="100vh" bg="gray.900" py={8}>
       <Container maxW="7xl">
@@ -108,7 +113,7 @@ export default function UserDashboardPage() {
             </Text>
           </Box>
 
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 5 }} spacing={6}>
             <StatCard label="Total XP" value={xp} color="brand.400" />
             <StatCard
               label="Current Streak"
@@ -125,6 +130,12 @@ export default function UserDashboardPage() {
               label="Average Score"
               value={`${avgScore}%`}
               color="green.400"
+            />
+            <StatCard
+              label="Last Quiz"
+              value={lastQuiz}
+              icon="📅"
+              color="blue.400"
             />
           </SimpleGrid>
 

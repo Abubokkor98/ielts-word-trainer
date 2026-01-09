@@ -6,9 +6,11 @@ export interface IUser extends Document {
   email: string;
   passwordHash: string;
   role: UserRole;
+  status: 'active' | 'inactive' | 'banned';
   refreshToken: string[];
   xp: number;
   streak: number;
+  lastQuizDate?: Date;
   emailVerified: boolean;
   verificationToken?: string;
   resetPasswordToken?: string;
@@ -27,9 +29,15 @@ const UserSchema = new Schema<IUser>(
       enum: Object.values(UserRole),
       default: UserRole.USER,
     },
+    status: {
+      type: String,
+      enum: ['active', 'inactive', 'banned'],
+      default: 'active',
+    },
     refreshToken: { type: [String], default: [] },
     xp: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
+    lastQuizDate: { type: Date },
     emailVerified: { type: Boolean, default: false },
     verificationToken: { type: String },
     resetPasswordToken: { type: String },

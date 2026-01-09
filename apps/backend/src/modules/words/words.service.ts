@@ -3,31 +3,55 @@ import { CreateWordInput } from '@ielts/shared';
 import { Topic } from '../topics/topics.model';
 import mongoose from 'mongoose';
 
-function escapeRegex(str: string): string {
+export function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export async function resolveTopic(topicInput: string): Promise<string> {
+  const isObjectId = mongoose.isValidObjectId(topicInput);
+
+  if (isObjectId) {
+    const topicExists = await Topic.findById(topicInput);
+    if (!topicExists) throw new Error('Topic not found');
+    return topicInput;
+  } else {
+    // It's likely a topic name
+    const cleanedTopic = topicInput.trim();
+    try {
+      const topic = await Topic.findOneAndUpdate(
+        {
+          name: { $regex: new RegExp(`^${escapeRegex(cleanedTopic)}$`, 'i') },
+        },
+        {
+          $setOnInsert: { name: cleanedTopic },
+        },
+        {
+          new: true,
+          upsert: true,
+        }
+      );
+      return topic._id.toString();
+    } catch (error: any) {
+      // Handle race condition: if duplicate key error (E11000), strictly retry finding the topic
+      // The other process just created it, so simple find will succeed now.
+      if (error.code === 11000) {
+        const existingTopic = await Topic.findOne({
+          name: { $regex: new RegExp(`^${escapeRegex(cleanedTopic)}$`, 'i') },
+        });
+        if (existingTopic) {
+          return existingTopic._id.toString();
+        }
+      }
+      throw error;
+    }
+  }
 }
 
 export class WordsService {
   static async create(input: CreateWordInput) {
     // If topic is provided, handle it (it might be a name or an ID)
     if (input.topic) {
-      const isObjectId = mongoose.isValidObjectId(input.topic);
-
-      if (isObjectId) {
-        const topicExists = await Topic.findById(input.topic);
-        if (!topicExists) throw new Error('Topic not found');
-      } else {
-        // It's likely a topic name
-        let topic = await Topic.findOne({
-          name: { $regex: new RegExp(`^${escapeRegex(input.topic)}$`, 'i') },
-        });
-
-        if (!topic) {
-          // Create new topic if it doesn't exist
-          topic = await Topic.create({ name: input.topic });
-        }
-        input.topic = topic._id.toString();
-      }
+      input.topic = await resolveTopic(input.topic);
     }
     return Word.create(input);
   }
@@ -96,7 +120,15 @@ export class WordsService {
   }
 
   static async update(id: string, input: Partial<CreateWordInput>) {
-    return Word.findByIdAndUpdate(id, input, { new: true });
+    const updateDoc: Partial<CreateWordInput> = { ...input };
+    if (typeof updateDoc.topic === 'string') {
+      updateDoc.topic = await resolveTopic(updateDoc.topic);
+    }
+
+    return Word.findByIdAndUpdate(id, updateDoc, {
+      new: true,
+      runValidators: true,
+    });
   }
 
   static async delete(id: string) {
