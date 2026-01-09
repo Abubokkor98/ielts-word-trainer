@@ -18,11 +18,12 @@ import {
   useToast,
   useDisclosure,
   IconButton,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
 } from '@chakra-ui/react';
 import {
   Card,
@@ -43,23 +44,11 @@ import {
   Ban,
   CheckCircle,
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { UserDetailModal } from './UserDetailModal';
-
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  role?: string;
-  status?: 'active' | 'inactive' | 'banned';
-  xp?: number;
-  streak?: number;
-  lastQuizDate?: string;
-  createdAt: string;
-}
+import { User } from '../../../types/user';
 
 export default function UserManagementPage() {
   const { user } = useAuthStore();
@@ -72,6 +61,11 @@ export default function UserManagementPage() {
   // Modal State
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  // Ban Confirmation State
+  const [isBanAlertOpen, setIsBanAlertOpen] = useState(false);
+  const [userToBan, setUserToBan] = useState<User | null>(null);
+  const banCancelRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -150,6 +144,24 @@ export default function UserManagementPage() {
 
   const handleStatusChange = (userId: string, newStatus: string) => {
     updateStatusMutation.mutate({ userId, status: newStatus });
+  };
+
+  const handleBanUser = (user: User) => {
+    setUserToBan(user);
+    setIsBanAlertOpen(true);
+  };
+
+  const confirmBan = () => {
+    if (userToBan) {
+      handleStatusChange(userToBan._id, 'banned');
+      setIsBanAlertOpen(false);
+      setUserToBan(null);
+    }
+  };
+
+  const closeBanAlert = () => {
+    setIsBanAlertOpen(false);
+    setUserToBan(null);
   };
 
   return (
@@ -300,9 +312,7 @@ export default function UserManagementPage() {
                                     size="sm"
                                     colorScheme="red"
                                     variant="ghost"
-                                    onClick={() =>
-                                      handleStatusChange(u._id, 'banned')
-                                    }
+                                    onClick={() => handleBanUser(u)}
                                   />
                                 )}
                               </HStack>
@@ -333,6 +343,57 @@ export default function UserManagementPage() {
 
       {/* User Detail Modal */}
       <UserDetailModal isOpen={isOpen} onClose={onClose} user={selectedUser} />
+
+      {/* Ban Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isBanAlertOpen}
+        leastDestructiveRef={banCancelRef}
+        onClose={closeBanAlert}
+        isCentered
+        motionPreset="slideInBottom"
+      >
+        <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
+          <AlertDialogContent borderRadius="xl" boxShadow="2xl">
+            <AlertDialogHeader
+              fontSize="lg"
+              fontWeight="bold"
+              color="red.500"
+              pt={8}
+              pb={0}
+            >
+              <VStack spacing={4}>
+                <Text>Ban User</Text>
+              </VStack>
+            </AlertDialogHeader>
+
+            <AlertDialogBody textAlign="center" color="gray.500" py={6}>
+              Are you sure you want to ban <strong>{userToBan?.name}</strong>?{' '}
+              <br />
+              They will no longer be able to log in.
+            </AlertDialogBody>
+
+            <AlertDialogFooter justifyContent="center" pb={8} gap={3}>
+              <Button
+                ref={banCancelRef}
+                onClick={closeBanAlert}
+                variant="outline"
+                borderRadius="lg"
+                px={6}
+              >
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={confirmBan}
+                borderRadius="lg"
+                px={6}
+              >
+                Ban User
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
     </Box>
   );
 }

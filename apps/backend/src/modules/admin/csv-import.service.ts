@@ -106,8 +106,7 @@ export class CSVImportService {
         if (!topic) {
           topic = await Topic.create({
             name: topicName,
-            wordCount: 0, // Will be incremented properly elsewhere? Or we should increment it here?
-            // For now, simplicity: create it.
+            wordCount: 0,
           });
         }
         topicId = topic._id;

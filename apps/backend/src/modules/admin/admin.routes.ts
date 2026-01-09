@@ -4,6 +4,7 @@ import { AdminController } from './admin.controller';
 import { authenticate } from '../auth/auth.middleware';
 import { UserRole } from '@ielts/shared';
 import { authorize } from '../../core/middleware/authorize.middleware';
+import { validateWordInput } from '../words/words.validation';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -17,8 +18,6 @@ router.post(
   AdminController.uploadWords
 );
 router.get('/template', AdminController.downloadTemplate);
-
-import { validateWordInput } from '../words/words.validation';
 
 router.get('/words', AdminController.getWords);
 router.post('/words', validateWordInput, AdminController.createWord);

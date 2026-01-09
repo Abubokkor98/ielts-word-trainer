@@ -30,7 +30,6 @@ import {
   LayoutDashboard,
   Users,
   BookOpen,
-  FileText,
   LogOut,
   Menu as MenuIcon,
   X,

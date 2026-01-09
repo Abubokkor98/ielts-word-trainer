@@ -47,6 +47,14 @@ export class AuthController {
         throw new AppError('Invalid email or password', 401);
       }
 
+      // Check ban status before password validation to prevent information disclosure
+      if (user.status === 'banned') {
+        throw new AppError(
+          'Your account has been banned. Please contact support.',
+          403
+        );
+      }
+
       const isValid = await AuthService.validatePassword(
         password,
         user.passwordHash
@@ -54,13 +62,6 @@ export class AuthController {
 
       if (!isValid) {
         throw new AppError('Invalid email or password', 401);
-      }
-
-      if (user.status === 'banned') {
-        throw new AppError(
-          'Your account has been banned. Please contact support.',
-          403
-        );
       }
 
       const { accessToken, refreshToken } = await AuthService.generateTokens(

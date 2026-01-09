@@ -25,19 +25,7 @@ import {
   User as UserIcon,
   Shield,
 } from 'lucide-react';
-
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  role?: string;
-  status?: 'active' | 'inactive' | 'banned';
-  xp?: number;
-  streak?: number;
-  lastQuizDate?: string;
-  createdAt: string;
-}
+import { User } from '../../../types/user';
 
 interface UserDetailModalProps {
   isOpen: boolean;
@@ -128,7 +116,7 @@ export function UserDetailModal({
                   }
                   variant="subtle"
                 >
-                  {user.status || 'ACTIVE'}
+                  {user.status || 'active'}
                 </Badge>
               </HStack>
             </VStack>

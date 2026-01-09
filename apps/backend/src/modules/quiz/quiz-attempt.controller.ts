@@ -44,13 +44,15 @@ export class QuizAttemptController {
         endTime: new Date(validatedData.endTime),
       });
 
-      console.log('✅ Quiz attempt saved to DB - ID:', attempt._id);
-      console.log(
-        '📊 Quiz stats - Score:',
-        validatedData.score,
-        '/',
-        validatedData.totalQuestions
-      );
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('✅ Quiz attempt saved to DB - ID:', attempt._id);
+        console.log(
+          '📊 Quiz stats - Score:',
+          validatedData.score,
+          '/',
+          validatedData.totalQuestions
+        );
+      }
 
       // Calculate XP earned (10 XP per correct answer)
       const xpEarned = validatedData.score * 10;
@@ -94,14 +96,16 @@ export class QuizAttemptController {
         { new: true }
       );
 
-      console.log(
-        '✅ User updated - XP:',
-        updatedUser?.xp,
-        '(+' + xpEarned + ')',
-        '| Streak:',
-        updatedUser?.streak,
-        '🔥'
-      );
+      if (process.env.NODE_ENV !== 'production') {
+        console.log(
+          '✅ User updated - XP:',
+          updatedUser?.xp,
+          '(+' + xpEarned + ')',
+          '| Streak:',
+          updatedUser?.streak,
+          '🔥'
+        );
+      }
 
       return res.status(201).json({
         success: true,

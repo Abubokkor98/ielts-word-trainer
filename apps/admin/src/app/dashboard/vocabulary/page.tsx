@@ -116,8 +116,7 @@ export default function VocabularyManagementPage() {
     },
     onError: () => {
       toast({ title: 'Failed to delete word', status: 'error' });
-      setDeletingId(null);
-      onCloseDeleteAlert(); // Close anyway or keep open? standard is close or show error.
+      // Keep dialog open for retry
     },
   });
 

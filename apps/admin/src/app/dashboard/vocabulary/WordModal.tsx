@@ -31,6 +31,11 @@ import { AxiosError } from 'axios';
 import { useEffect, useState, useRef } from 'react';
 
 // Define Interface matching backend data
+interface Topic {
+  _id: string;
+  name: string;
+}
+
 interface Word {
   _id: string;
   word: string;
@@ -38,14 +43,9 @@ interface Word {
   exampleSentence: string;
   difficulty: string;
   partOfSpeech: string;
-  topic: any; // Can be populated object or ID string
+  topic: Topic | string; // Can be populated object or ID string
   synonyms: string[];
   antonyms: string[];
-}
-
-interface Topic {
-  _id: string;
-  name: string;
 }
 
 interface WordModalProps {

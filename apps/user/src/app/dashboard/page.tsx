@@ -3,6 +3,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
+import { formatRelativeTime } from '../../utils/date-utils';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import {
@@ -97,22 +98,7 @@ export default function UserDashboardPage() {
 
   // Format last quiz time
   const lastQuizDate = currentUser?.lastQuizDate;
-  let lastQuiz = 'Never';
-  if (lastQuizDate) {
-    const now = new Date();
-    const last = new Date(lastQuizDate);
-    const diffMs = now.getTime() - last.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) lastQuiz = 'Just now';
-    else if (diffMins < 60) lastQuiz = `${diffMins}m ago`;
-    else if (diffHours < 24) lastQuiz = `${diffHours}h ago`;
-    else if (diffDays === 1) lastQuiz = 'Yesterday';
-    else if (diffDays < 7) lastQuiz = `${diffDays}d ago`;
-    else lastQuiz = `${Math.floor(diffDays / 7)}w ago`;
-  }
+  const lastQuiz = formatRelativeTime(lastQuizDate);
 
   return (
     <Box minH="100vh" bg="gray.900" py={8}>
@@ -127,7 +113,7 @@ export default function UserDashboardPage() {
             </Text>
           </Box>
 
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 5 }} spacing={6}>
             <StatCard label="Total XP" value={xp} color="brand.400" />
             <StatCard
               label="Current Streak"
@@ -145,9 +131,6 @@ export default function UserDashboardPage() {
               value={`${avgScore}%`}
               color="green.400"
             />
-          </SimpleGrid>
-
-          <SimpleGrid columns={{ base: 1, md: 1 }} spacing={6}>
             <StatCard
               label="Last Quiz"
               value={lastQuiz}
