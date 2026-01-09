@@ -113,6 +113,65 @@ export class AuthController {
     }
   }
 
+  static async refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+
+      if (!refreshToken) {
+        throw new AppError('Refresh token not found', 401);
+      }
+
+      // Verify refresh token
+      const decoded = await AuthService.verifyToken(refreshToken);
+      const user = await UserService.findById(decoded.id);
+
+      if (!user) {
+        throw new AppError('User not found', 401);
+      }
+
+      // Check if refresh token exists in user's token list
+      let tokenValid = false;
+      for (const storedToken of user.refreshToken) {
+        const isMatch = await AuthService.validatePassword(
+          refreshToken,
+          storedToken
+        );
+        if (isMatch) {
+          tokenValid = true;
+          break;
+        }
+      }
+
+      if (!tokenValid) {
+        throw new AppError('Invalid refresh token', 401);
+      }
+
+      // Token rotation: Generate new tokens and invalidate old refresh token
+      const { accessToken, refreshToken: newRefreshToken } =
+        await AuthService.generateTokens(user);
+
+      // Remove old refresh token
+      await AuthService.logout(user, refreshToken);
+
+      // Set new refresh token cookie
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 3600000, // 7 days
+      });
+
+      res.json({
+        success: true,
+        accessToken,
+      });
+    } catch (err) {
+      // Clear invalid refresh token
+      res.clearCookie('refreshToken');
+      next(err);
+    }
+  }
+
   static async logout(req: Request, res: Response, next: NextFunction) {
     try {
       const refreshToken = req.cookies.refreshToken;

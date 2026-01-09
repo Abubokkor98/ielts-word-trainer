@@ -1,7 +1,13 @@
 export enum UserRole {
-  ADMIN = 'admin',
   USER = 'user',
 }
+
+export enum AdminRole {
+  SUPER_ADMIN = 'super_admin',
+  ADMIN = 'admin',
+}
+
+// Global Difficulty Levels
 
 export enum Difficulty {
   BEGINNER = 'beginner',

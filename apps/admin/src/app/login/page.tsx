@@ -27,7 +27,7 @@ export default function LoginPage() {
   const loginMutation = useMutation({
     mutationFn: async () => {
       const { data } = await axiosInstance.post(
-        '/auth/login',
+        '/admin/login',
         {
           email,
           password,
@@ -43,7 +43,7 @@ export default function LoginPage() {
     },
     onSuccess: (data) => {
       // Role validation: Only allow admin users
-      if (data.data.role !== 'admin') {
+      if (!['admin', 'super_admin'].includes(data.data.role)) {
         toast({
           title: 'Access Denied',
           description: `Only administrators can access this portal. Regular users should use the User Portal at ${

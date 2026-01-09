@@ -1,206 +1,120 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../users/users.model';
-import { Word } from '../words/words.model';
-import { WordsService } from '../words/words.service';
-import { QuizAttempt } from '../quiz/quiz-attempt.model';
-
-import { CSVImportService } from './csv-import.service';
+import { AdminService } from './admin.service';
+import { AuthService } from '../auth/auth.service';
 import { AppError } from '../../core/errors/AppError';
+import { AdminRole } from '@ielts/shared';
+import { AuthRequest } from '../auth/auth.middleware';
+import bcrypt from 'bcryptjs';
 
 export class AdminController {
-  static async getStats(req: Request, res: Response, next: NextFunction) {
+  static async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const [totalUsers, totalWords, totalQuizAttempts, recentUsers] =
-        await Promise.all([
-          User.countDocuments(),
-          Word.countDocuments(),
-          QuizAttempt.countDocuments(),
-          User.find()
-            .sort({ createdAt: -1 })
-            .limit(5)
-            .select('name email createdAt xp'),
-        ]);
+      const { email, password } = req.body;
+      const admin = await AdminService.findByEmail(email);
 
-      const wordsByDifficulty = await Word.aggregate([
-        { $group: { _id: '$difficulty', count: { $sum: 1 } } },
-      ]);
+      if (!admin) {
+        throw new AppError('Invalid email or password', 401);
+      }
 
-      const quizStats = await QuizAttempt.aggregate([
-        {
-          $group: {
-            _id: null,
-            totalQuestions: { $sum: '$totalQuestions' },
-            totalCorrect: { $sum: '$score' },
-            avgScore: {
-              $avg: {
-                $multiply: [{ $divide: ['$score', '$totalQuestions'] }, 100],
-              },
-            },
-          },
+      const isValid = await AuthService.validatePassword(
+        password,
+        admin.passwordHash
+      );
+
+      if (!isValid) {
+        throw new AppError('Invalid email or password', 401);
+      }
+
+      const { accessToken, refreshToken } = await AuthService.generateTokens(
+        admin
+      );
+
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 3600000,
+      });
+
+      res.status(200).json({
+        success: true,
+        accessToken,
+        data: {
+          id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          role: admin.role,
         },
-      ]);
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async me(req: Request, res: Response, next: NextFunction) {
+    try {
+      const authReq = req as AuthRequest;
+      if (!authReq.user) throw new AppError('Unauthenticated', 401);
+
+      const admin = await AdminService.findById(authReq.user.id);
+      if (!admin) throw new AppError('Admin not found', 404);
 
       res.json({
         success: true,
         data: {
-          totalUsers,
-          totalWords,
-          totalQuizAttempts,
-          wordsByDifficulty,
-          quizStats: quizStats[0] || {
-            totalQuestions: 0,
-            totalCorrect: 0,
-            avgScore: 0,
-          },
-          recentUsers,
+          id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          role: admin.role,
         },
       });
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  static async getWords(req: Request, res: Response, next: NextFunction) {
+  static async getAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const admins = await AdminService.findAll();
+      res.json({
+        success: true,
+        data: admins,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const stats = await AdminService.getDashboardStats();
+      res.json({
+        success: true,
+        data: stats,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
-      const search = (req.query.search as string) || '';
-      const difficulty = req.query.difficulty as string;
+      const search = req.query.search as string;
 
-      const skip = (page - 1) * limit;
-
-      const query: any = {};
-      if (search) {
-        query.word = { $regex: search, $options: 'i' };
-      }
-      if (difficulty && difficulty !== 'all') {
-        query.difficulty = difficulty;
-      }
-
-      const [words, total] = await Promise.all([
-        Word.find(query).sort({ word: 1 }).skip(skip).limit(limit),
-        Word.countDocuments(query),
-      ]);
+      const result = await AdminService.getUsers(page, limit, search);
 
       res.json({
         success: true,
-        data: {
-          words,
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-          },
-        },
+        data: result,
       });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async deleteWord(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { id } = req.params;
-
-      const word = await Word.findByIdAndDelete(id);
-      if (!word) {
-        throw new AppError('Word not found', 404);
-      }
-
       res.json({
         success: true,
-        message: 'Word deleted successfully',
+        data: result,
       });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async createWord(req: Request, res: Response, next: NextFunction) {
-    try {
-      const word = await WordsService.create(req.body);
-      res.status(201).json({
-        success: true,
-        data: word,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async uploadWords(req: Request, res: Response, next: NextFunction) {
-    try {
-      if (!req.file) {
-        throw new AppError('No file uploaded', 400);
-      }
-
-      const csvContent = req.file.buffer.toString('utf-8');
-      const results = await CSVImportService.importWords(csvContent);
-
-      res.json({
-        success: true,
-        data: results,
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async downloadTemplate(req: Request, res: Response) {
-    const template = CSVImportService.generateTemplate();
-
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=vocabulary-template.csv'
-    );
-    res.send(template);
-  }
-
-  static async exportUsers(req: Request, res: Response, next: NextFunction) {
-    try {
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', 'attachment; filename=users.csv');
-
-      res.write('name,email,role,xp,createdAt\n');
-
-      const cursor = User.find().sort({ createdAt: -1 }).cursor();
-
-      for (
-        let user = await cursor.next();
-        user != null;
-        user = await cursor.next()
-      ) {
-        const rowData = [
-          user.name,
-          user.email,
-          user.role,
-          user.xp,
-          user.createdAt.toISOString(),
-        ];
-
-        const row =
-          rowData
-            .map((field) => {
-              const value = String(field || '');
-              if (
-                value.includes(',') ||
-                value.includes('"') ||
-                value.includes('\n')
-              ) {
-                return `"${value.replace(/"/g, '""')}"`;
-              }
-              return value;
-            })
-            .join(',') + '\n';
-
-        res.write(row);
-      }
-
-      res.end();
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      next(err);
     }
   }
 
@@ -213,72 +127,242 @@ export class AdminController {
       const { id } = req.params;
       const { status } = req.body;
 
-      if (!['active', 'inactive', 'banned'].includes(status)) {
+      if (!['active', 'banned', 'inactive'].includes(status)) {
         throw new AppError('Invalid status', 400);
       }
 
-      const user = await User.findByIdAndUpdate(
-        id,
-        { status },
-        { new: true }
-      ).select('-passwordHash');
-
-      if (!user) {
-        throw new AppError('User not found', 404);
-      }
+      await AdminService.updateUserStatus(id, status);
 
       res.json({
         success: true,
-        data: user,
+        message: 'User status updated successfully',
       });
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      next(err);
     }
   }
 
-  static async getUsers(req: Request, res: Response, next: NextFunction) {
+  static async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const search = (req.query.search as string) || '';
-      const role = req.query.role as string;
-
-      const skip = (page - 1) * limit;
-
-      const query: any = {};
-      if (search) {
-        query.$or = [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-        ];
-      }
-      if (role && role !== 'all') {
-        query.role = role;
+      const authReq = req as AuthRequest;
+      if (authReq.user?.role !== AdminRole.SUPER_ADMIN) {
+        throw new AppError('Unauthorized', 403);
       }
 
-      const [users, total] = await Promise.all([
-        User.find(query)
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit)
-          .select('-passwordHash'),
-        User.countDocuments(query),
-      ]);
+      const { email, password, name, role } = req.body;
+
+      const existingAdmin = await AdminService.findByEmail(email);
+      if (existingAdmin) {
+        throw new AppError('Admin with this email already exists', 400);
+      }
+
+      const admin = await AdminService.createAdmin({
+        email,
+        passwordHash: password, // Service will hash it
+        name,
+        role: role || AdminRole.ADMIN,
+      });
+
+      res.status(201).json({
+        success: true,
+        data: {
+          id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          role: admin.role,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async delete(req: Request, res: Response, next: NextFunction) {
+    try {
+      const authReq = req as AuthRequest;
+      if (authReq.user?.role !== AdminRole.SUPER_ADMIN) {
+        throw new AppError('Unauthorized', 403);
+      }
+
+      const { id } = req.params;
+      if (id === authReq.user.id) {
+        throw new AppError('Cannot delete yourself', 400);
+      }
+
+      await AdminService.deleteAdmin(id);
+
+      res.json({
+        success: true,
+        message: 'Admin deleted successfully',
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const authReq = req as AuthRequest;
+      if (authReq.user?.role !== AdminRole.SUPER_ADMIN) {
+        throw new AppError('Unauthorized', 403);
+      }
+
+      const { id } = req.params;
+      const data = req.body;
+
+      // Prevent updating password via this endpoint for now or handle it if needed
+      if (data.password) {
+        // If password update logic is needed it should happen here or in service
+        delete data.password;
+      }
+
+      const admin = await AdminService.updateAdmin(id, data);
+
+      if (!admin) throw new AppError('Admin not found', 404);
 
       res.json({
         success: true,
         data: {
-          users,
-          pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-          },
+          id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          role: admin.role,
         },
       });
-    } catch (error) {
-      next(error);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async updateProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const authReq = req as AuthRequest;
+      const adminId = authReq.user?.id;
+
+      if (!adminId) {
+        throw new AppError('Unauthorized', 401);
+      }
+
+      const { name } = req.body;
+      const admin = await AdminService.updateAdmin(adminId, { name });
+
+      if (!admin) {
+        throw new AppError('Admin not found', 404);
+      }
+
+      res.json({
+        success: true,
+        data: {
+          id: admin._id,
+          name: admin.name,
+          email: admin.email,
+          role: admin.role,
+        },
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const authReq = req as AuthRequest;
+      const adminId = authReq.user?.id;
+
+      if (!adminId) {
+        throw new AppError('Unauthorized', 401);
+      }
+
+      const { currentPassword, newPassword } = req.body;
+
+      // Get admin with password
+      const admin = await AdminService.findById(adminId);
+      if (!admin) {
+        throw new AppError('Admin not found', 404);
+      }
+
+      // Verify current password
+      const isValid = await AuthService.validatePassword(
+        currentPassword,
+        admin.passwordHash
+      );
+
+      if (!isValid) {
+        throw new AppError('Current password is incorrect', 401);
+      }
+
+      // Hash new password
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(newPassword, salt);
+
+      // Update password
+      await AdminService.updateAdmin(adminId, { passwordHash });
+
+      res.json({
+        success: true,
+        message: 'Password updated successfully',
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async refresh(req: Request, res: Response, next: NextFunction) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+
+      if (!refreshToken) {
+        throw new AppError('Refresh token not found', 401);
+      }
+
+      // Verify refresh token
+      const decoded = await AuthService.verifyToken(refreshToken);
+      const admin = await AdminService.findById(decoded.id);
+
+      if (!admin) {
+        throw new AppError('Admin not found', 401);
+      }
+
+      // Check if refresh token exists in admin's token list
+      let tokenValid = false;
+      for (const storedToken of admin.refreshToken) {
+        const isMatch = await AuthService.validatePassword(
+          refreshToken,
+          storedToken
+        );
+        if (isMatch) {
+          tokenValid = true;
+          break;
+        }
+      }
+
+      if (!tokenValid) {
+        throw new AppError('Invalid refresh token', 401);
+      }
+
+      // Token rotation: Generate new tokens and invalidate old refresh token
+      const { accessToken, refreshToken: newRefreshToken } =
+        await AuthService.generateTokens(admin);
+
+      // Remove old refresh token
+      await AuthService.logout(admin, refreshToken);
+
+      // Set new refresh token cookie
+      res.cookie('refreshToken', newRefreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 3600000, // 7 days
+      });
+
+      res.json({
+        success: true,
+        accessToken,
+      });
+    } catch (err) {
+      // Clear invalid refresh token
+      res.clearCookie('refreshToken');
+      next(err);
     }
   }
 }

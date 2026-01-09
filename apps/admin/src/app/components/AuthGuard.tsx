@@ -18,7 +18,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     if (isMounted) {
       if (!isAuthenticated) {
         router.push('/login');
-      } else if (user?.role !== 'admin') {
+      } else if (!['admin', 'super_admin'].includes(user?.role || '')) {
         // Redirect non-admins
         window.location.href =
           process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
@@ -34,7 +34,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isAuthenticated || user?.role !== 'admin') {
+  if (
+    !isAuthenticated ||
+    !['admin', 'super_admin'].includes(user?.role || '')
+  ) {
     return null; // Will redirect via useEffect
   }
 

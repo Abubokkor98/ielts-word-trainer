@@ -2,14 +2,14 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../errors/AppError';
 import { env } from '../../config/env';
-import { UserRole } from '@ielts/shared';
+import { UserRole, AdminRole } from '@ielts/shared';
 
 declare global {
   namespace Express {
     interface Request {
       user?: {
         id: string;
-        role: UserRole;
+        role: UserRole | AdminRole;
       };
     }
   }
@@ -38,7 +38,7 @@ export const authenticate = (
   }
 };
 
-export const authorize = (roles: UserRole[]) => {
+export const authorize = (roles: (UserRole | AdminRole)[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.user || !roles.includes(req.user.role)) {
       return next(new AppError('Forbidden: Insufficient rights', 403));

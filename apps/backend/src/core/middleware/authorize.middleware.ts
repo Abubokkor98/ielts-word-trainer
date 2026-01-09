@@ -1,15 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { UserRole } from '@ielts/shared';
+import { UserRole, AdminRole } from '@ielts/shared';
 import { AppError } from '../errors/AppError';
+import { AuthRequest } from '../../modules/auth/auth.middleware';
 
-interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    role: UserRole;
-  };
-}
-
-export const authorize = (roles: UserRole[]) => {
+export const authorize = (roles: (UserRole | AdminRole)[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const authReq = req as AuthRequest;
 

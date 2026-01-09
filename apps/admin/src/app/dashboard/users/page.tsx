@@ -93,7 +93,7 @@ export default function UserManagementPage() {
       );
       return data.data;
     },
-    enabled: !!user && user.role === 'admin',
+    enabled: !!user && ['admin', 'super_admin'].includes(user.role),
   });
 
   const updateStatusMutation = useMutation({

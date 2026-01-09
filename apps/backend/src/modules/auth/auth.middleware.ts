@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
 import { AppError } from '../../core/errors/AppError';
-import { UserRole } from '@ielts/shared';
+import { UserRole, AdminRole } from '@ielts/shared';
 
 export interface AuthRequest extends Request {
   user?: {
     id: string;
-    role: UserRole;
+    role: UserRole | AdminRole;
   };
 }
 
@@ -31,7 +31,7 @@ export const authenticate = (
     };
     (req as AuthRequest).user = {
       id: decoded.id,
-      role: decoded.role as UserRole,
+      role: decoded.role as UserRole | AdminRole,
     };
     next();
   } catch (error) {

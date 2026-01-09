@@ -7,7 +7,8 @@ import { Word } from './modules/words/words.model';
 import { Topic } from './modules/topics/topics.model';
 import { QuizAttempt } from './modules/quiz/quiz-attempt.model';
 import { Quiz } from './modules/quiz/quiz.entity';
-import { UserRole } from '@ielts/shared';
+import { UserRole, AdminRole } from '@ielts/shared';
+import { Admin } from './modules/admin/admin.model';
 
 const MONGODB_URI = process.env['MONGODB_URI'];
 const MONGODB_DBNAME = process.env['MONGODB_DBNAME'] || 'itelts-vocabs-app';
@@ -22,6 +23,7 @@ async function seed() {
     console.log(`Connected to MongoDB - Database: ${MONGODB_DBNAME}`);
 
     // Clear existing data
+    await Admin.deleteMany({});
     await User.deleteMany({});
     await Word.deleteMany({});
     await Topic.deleteMany({});
@@ -31,13 +33,20 @@ async function seed() {
 
     // Create admin user
     const adminPassword = await bcrypt.hash('admin123', 10);
-    const admin = await User.create({
-      name: 'Admin User',
+    const admin = await Admin.create({
+      name: 'Super Admin',
       email: 'admin@ielts.com',
       passwordHash: adminPassword,
-      role: UserRole.ADMIN,
-      xp: 1000,
-      streak: 5,
+      role: AdminRole.SUPER_ADMIN,
+    });
+
+    // Create regular admin
+    const regularAdminPassword = await bcrypt.hash('admin123', 10);
+    const regularAdmin = await Admin.create({
+      name: 'Regular Admin',
+      email: 'regular_admin@ielts.com',
+      passwordHash: regularAdminPassword,
+      role: AdminRole.ADMIN,
     });
 
     // Create regular user
@@ -536,7 +545,8 @@ async function seed() {
 
     console.log('\n✅ Database seeded successfully!');
     console.log('\nTest Accounts:');
-    console.log('Admin: admin@ielts.com / admin123');
+    console.log('Super Admin: admin@ielts.com / admin123');
+    console.log('Reg Admin:   regular_admin@ielts.com / admin123');
     console.log('User:  user@ielts.com / user123');
     console.log(`\nCreated ${words.length} vocabulary words`);
     console.log(`Created ${topics.length} topics`);

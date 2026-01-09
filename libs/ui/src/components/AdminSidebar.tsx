@@ -34,6 +34,7 @@ import {
   Menu as MenuIcon,
   X,
   Settings,
+  Shield,
 } from 'lucide-react';
 
 interface SidebarItemProps {
@@ -121,7 +122,7 @@ export const AdminSidebar = () => {
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-
+    { icon: Shield, label: 'Admins', href: '/dashboard/admins' },
     { icon: Users, label: 'Users', href: '/dashboard/users' },
     { icon: BookOpen, label: 'Vocabulary', href: '/dashboard/vocabulary' },
   ];

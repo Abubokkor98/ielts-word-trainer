@@ -9,6 +9,7 @@ export interface IWord extends Document {
   topic: mongoose.Types.ObjectId | string;
   partOfSpeech: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  module: 'reading' | 'writing' | 'listening' | 'speaking';
 }
 
 const WordSchema = new Schema<IWord>(
@@ -28,6 +29,11 @@ const WordSchema = new Schema<IWord>(
     difficulty: {
       type: String,
       enum: ['beginner', 'intermediate', 'advanced'],
+      required: true,
+    },
+    module: {
+      type: String,
+      enum: ['reading', 'writing', 'listening', 'speaking'],
       required: true,
     },
   },

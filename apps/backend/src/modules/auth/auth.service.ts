@@ -2,12 +2,15 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { env } from '../../config/env';
 import { IUser } from '../users/users.model';
+import { IAdmin } from '../admin/admin.model';
 
 import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@ielts/shared';
 
+type AuthEntity = IUser | IAdmin;
+
 export class AuthService {
   static async generateTokens(
-    user: IUser
+    user: AuthEntity
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = { id: user._id, role: user.role };
 
@@ -33,7 +36,16 @@ export class AuthService {
     return bcrypt.compare(password, hash);
   }
 
-  static async logout(user: IUser, token: string): Promise<void> {
+  static async verifyToken(token: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, env.JWT_SECRET, (err, decoded) => {
+        if (err) reject(err);
+        resolve(decoded);
+      });
+    });
+  }
+
+  static async logout(user: AuthEntity, token: string): Promise<void> {
     const validTokens = [];
     for (const t of user.refreshToken) {
       if (!(await bcrypt.compare(token, t))) {

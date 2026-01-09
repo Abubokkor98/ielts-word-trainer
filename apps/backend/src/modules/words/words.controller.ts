@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { WordsService } from './words.service';
 import { AppError } from '../../core/errors/AppError';
+import { CSVImportService } from '../admin/csv-import.service';
 
 export class WordsController {
   static async create(req: Request, res: Response, next: NextFunction) {
