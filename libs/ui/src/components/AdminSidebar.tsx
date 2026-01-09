@@ -116,7 +116,7 @@ export const AdminSidebar = () => {
   const bgColor = useColorModeValue('white', 'gray.900');
   const pathname = usePathname();
   const toast = useToast();
-  // const router = useRouter(); // Removed unused router
+  const router = useRouter();
 
   const handleLogout = () => {
     // Clear auth cookie first
@@ -124,6 +124,11 @@ export const AdminSidebar = () => {
 
     // Clear auth state
     logout();
+
+    // Force clear local storage to ensure no persisted state survives
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth-storage');
+    }
 
     // Show success toast
     toast({
@@ -134,7 +139,7 @@ export const AdminSidebar = () => {
     });
 
     // Use window.location.replace to ensure clean redirect without history
-    // Small timeout to ensure cookie is cleared before navigation
+    // and force a full reload to clear any memory/state
     setTimeout(() => {
       window.location.replace('/');
     }, 100);

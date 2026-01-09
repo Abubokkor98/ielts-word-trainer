@@ -22,9 +22,7 @@ export const authenticate = (
   next: NextFunction
 ) => {
   try {
-    const token =
-      req.cookies.refreshToken ||
-      req.headers.authorization?.replace('Bearer ', '');
+    const token = req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) {
       throw new AppError('No token provided', 401);
