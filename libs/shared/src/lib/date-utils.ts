@@ -4,7 +4,14 @@
  * @returns Formatted date string
  */
 export const formatDate = (date: Date | string): string => {
-  return new Date(date).toLocaleDateString('en-US', {
+  const dateObj = new Date(date);
+
+  // Validate the date object
+  if (Number.isNaN(dateObj.getTime())) {
+    return 'Invalid date';
+  }
+
+  return dateObj.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
