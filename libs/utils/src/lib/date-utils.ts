@@ -1,5 +1,5 @@
 /**
- * Formats a date string or Date object to a relative time string (e.g., "5 minutes ago").
+ * Formats a date string or Date object to a relative time string (e.g., "5m ago").
  * Handles edge cases like future dates (clock skew).
  * @param date - The date to format
  * @returns Formatted relative time string
@@ -22,9 +22,6 @@ export function formatRelativeTime(
   const diffMins = Math.floor(diffSecs / 60);
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
-  const diffWeeks = Math.floor(diffDays / 7);
-  const diffMonths = Math.floor(diffDays / 30);
-  const diffYears = Math.floor(diffDays / 365);
 
   // Handle future dates (clock skew)
   if (diffMs < 0) {
@@ -36,7 +33,7 @@ export function formatRelativeTime(
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays === 1) return 'Yesterday';
   if (diffDays < 7) return `${diffDays}d ago`;
-  if (diffWeeks < 4) return `${diffWeeks}w ago`;
-  if (diffMonths < 12) return `${diffMonths}mo ago`;
-  return `${diffYears}y ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
+  return `${Math.floor(diffDays / 365)}y ago`;
 }

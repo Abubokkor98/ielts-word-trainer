@@ -57,6 +57,7 @@ async function seed() {
 
     // Create topics
     const topics = await Topic.create([
+      { name: 'General', description: 'General everyday vocabulary' },
       { name: 'Business', description: 'Business and workplace vocabulary' },
       { name: 'Education', description: 'Academic and learning vocabulary' },
       { name: 'Environment', description: 'Nature and environmental topics' },
@@ -70,6 +71,10 @@ async function seed() {
       acc[topic.name] = topic._id;
       return acc;
     }, {} as Record<string, mongoose.Types.ObjectId>);
+
+    // Fail fast if a seed word references a missing topic key
+    if (!topicMap['General'])
+      throw new Error('Seed misconfig: missing topic "General"');
 
     // Create vocabulary words
     const words = await Word.insertMany([

@@ -16,14 +16,19 @@ export async function resolveTopic(topicInput: string): Promise<string> {
     return topicInput;
   } else {
     // It's likely a topic name
-    let topic = await Topic.findOne({
-      name: { $regex: new RegExp(`^${escapeRegex(topicInput)}$`, 'i') },
-    });
-
-    if (!topic) {
-      // Create new topic if it doesn't exist
-      topic = await Topic.create({ name: topicInput });
-    }
+    const cleanedTopic = topicInput.trim();
+    const topic = await Topic.findOneAndUpdate(
+      {
+        name: { $regex: new RegExp(`^${escapeRegex(cleanedTopic)}$`, 'i') },
+      },
+      {
+        $setOnInsert: { name: cleanedTopic },
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
     return topic._id.toString();
   }
 }
