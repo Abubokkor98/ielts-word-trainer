@@ -22,8 +22,9 @@ import {
   DrawerCloseButton,
   DrawerBody,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@ielts/auth';
 import {
@@ -114,6 +115,30 @@ export const AdminSidebar = () => {
   const borderColor = useColorModeValue('gray.200', 'gray.800');
   const bgColor = useColorModeValue('white', 'gray.900');
   const pathname = usePathname();
+  const router = useRouter();
+  const toast = useToast();
+
+  const handleLogout = () => {
+    // Clear auth cookie first
+    document.cookie = 'admin_auth_token=; path=/; max-age=0';
+
+    // Clear auth state
+    logout();
+
+    // Show success toast
+    toast({
+      title: 'Logged out successfully',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+
+    // Use window.location.replace to ensure clean redirect without history
+    // Small timeout to ensure cookie is cleared before navigation
+    setTimeout(() => {
+      window.location.replace('/');
+    }, 100);
+  };
 
   // Hide sidebar on login page
   if (pathname === '/login') {
@@ -213,7 +238,7 @@ export const AdminSidebar = () => {
             </MenuItem>
             <MenuItem
               icon={<LogOut size={16} />}
-              onClick={logout}
+              onClick={handleLogout}
               color="red.400"
               bg="gray.800"
               _hover={{ bg: 'gray.700' }}
