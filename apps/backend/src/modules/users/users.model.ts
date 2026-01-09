@@ -11,8 +11,6 @@ export interface IUser extends Document {
   xp: number;
   streak: number;
   lastQuizDate?: Date;
-  emailVerified: boolean;
-  verificationToken?: string;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   createdAt: Date;
@@ -38,8 +36,6 @@ const UserSchema = new Schema<IUser>(
     xp: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
     lastQuizDate: { type: Date },
-    emailVerified: { type: Boolean, default: false },
-    verificationToken: { type: String },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
   },

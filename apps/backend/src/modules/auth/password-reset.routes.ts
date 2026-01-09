@@ -18,12 +18,6 @@ const resetPasswordSchema = {
   }),
 };
 
-const verifyEmailSchema = {
-  body: z.object({
-    token: z.string(),
-  }),
-};
-
 router.post(
   '/request-reset',
   validateRequest(requestResetSchema),
@@ -33,16 +27,6 @@ router.post(
   '/reset-password',
   validateRequest(resetPasswordSchema),
   PasswordResetController.resetPassword
-);
-router.post(
-  '/verify-email',
-  validateRequest(verifyEmailSchema),
-  PasswordResetController.verifyEmail
-);
-router.post(
-  '/resend-verification',
-  validateRequest(requestResetSchema),
-  PasswordResetController.resendVerification
 );
 
 export default router;

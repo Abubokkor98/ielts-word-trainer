@@ -28,29 +28,6 @@ const transporter = nodemailer.createTransport({
 });
 
 export class EmailService {
-  static async sendVerificationEmail(email: string, token: string) {
-    const verificationUrl = `${process.env['CLIENT_URL']}/verify-email?token=${token}`;
-
-    try {
-      await transporter.sendMail({
-        from: process.env['SMTP_FROM'] || 'noreply@ielts-platform.com',
-        to: email,
-        subject: 'Verify Your Email - IELTS Vocabulary Platform',
-        html: `
-          <h1>Email Verification</h1>
-          <p>Thank you for registering! Please verify your email address by clicking the link below:</p>
-          <a href="${verificationUrl}">Verify Email</a>
-          <p>This link will expire in 24 hours.</p>
-          <p>If you didn't create an account, please ignore this email.</p>
-        `,
-      });
-      Logger.info(`Verification email sent to ${email}`);
-    } catch (error) {
-      Logger.error(`Failed to send verification email: ${error}`);
-      throw error;
-    }
-  }
-
   static async sendPasswordResetEmail(
     email: string,
     token: string,

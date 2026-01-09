@@ -36,7 +36,6 @@ async function seed() {
       email: 'admin@ielts.com',
       passwordHash: adminPassword,
       role: UserRole.ADMIN,
-      emailVerified: true,
       xp: 1000,
       streak: 5,
     });
@@ -48,7 +47,6 @@ async function seed() {
       email: 'user@ielts.com',
       passwordHash: userPassword,
       role: UserRole.USER,
-      emailVerified: true,
       xp: 500,
       streak: 3,
     });
