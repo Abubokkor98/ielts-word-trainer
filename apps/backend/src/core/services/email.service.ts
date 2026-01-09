@@ -12,10 +12,15 @@ if (!smtpHost || !smtpUser || !smtpPass) {
   );
 }
 
+const port = Number(smtpPort ?? 587);
+if (!Number.isInteger(port) || port <= 0) {
+  throw new Error(`Invalid SMTP_PORT: ${smtpPort}`);
+}
+
 const transporter = nodemailer.createTransport({
   host: smtpHost || 'smtp.gmail.com',
-  port: parseInt(smtpPort || '587'),
-  secure: false,
+  port,
+  secure: port === 465,
   auth: {
     user: smtpUser,
     pass: smtpPass,
@@ -54,7 +59,14 @@ export class EmailService {
     const baseUrl =
       role === 'admin' ? process.env['ADMIN_URL'] : process.env['CLIENT_URL'];
 
-    const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+    if (!baseUrl) {
+      throw new Error(
+        `Missing base URL env for password reset email (role=${role}).`
+      );
+    }
+
+    const resetUrl = new URL('/reset-password', baseUrl);
+    resetUrl.searchParams.set('token', token);
 
     try {
       await transporter.sendMail({

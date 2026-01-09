@@ -34,7 +34,7 @@ export class PasswordResetController {
 
       res.json({
         success: true,
-        message: 'Password reset email sent.',
+        message: 'If that email exists, a reset link has been sent.',
       });
     } catch (error) {
       Logger.error(`Password reset request failed: ${error}`);

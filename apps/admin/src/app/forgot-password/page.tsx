@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
+import { AxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
@@ -20,7 +21,7 @@ export default function ForgotPasswordPage() {
   const [submitted, setSubmitted] = useState(false);
   const toast = useToast();
 
-  const forgotPasswordMutation = useMutation({
+  const forgotPasswordMutation = useMutation<{ success: boolean }, AxiosError>({
     mutationFn: async () => {
       const { data } = await axiosInstance.post('/password/request-reset', {
         email,
@@ -36,17 +37,18 @@ export default function ForgotPasswordPage() {
         duration: 5000,
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError) => {
       toast({
         title: 'Failed to send email',
-        description: error.response?.data?.message || 'Please try again',
+        description:
+          (error.response?.data as any)?.message || 'Please try again',
         status: 'error',
         duration: 5000,
       });
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     forgotPasswordMutation.mutate();
   };
