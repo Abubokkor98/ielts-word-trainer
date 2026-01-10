@@ -1,0 +1,36 @@
+import mongoose, { Schema, Document } from 'mongoose';
+import { AdminRole } from '@ielts/shared';
+
+export interface IAdmin extends Document {
+  name: string;
+  email: string;
+  passwordHash: string;
+  role: AdminRole;
+  refreshToken: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
+}
+
+const AdminSchema = new Schema<IAdmin>(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true, index: true },
+    passwordHash: { type: String, required: true },
+    role: {
+      type: String,
+      enum: Object.values(AdminRole),
+      default: AdminRole.ADMIN,
+    },
+    refreshToken: { type: [String], default: [] },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
+  }
+);
+
+export const Admin = mongoose.model<IAdmin>('Admin', AdminSchema);

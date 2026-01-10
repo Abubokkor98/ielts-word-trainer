@@ -74,7 +74,10 @@ export const protectAdminRoute = <P extends object>(
       }
     }, [isAuthenticated, user, router]);
 
-    if (!isAuthenticated || user?.role !== 'admin') {
+    if (
+      !isAuthenticated ||
+      !['admin', 'super_admin'].includes(user?.role || '')
+    ) {
       return null;
     }
 

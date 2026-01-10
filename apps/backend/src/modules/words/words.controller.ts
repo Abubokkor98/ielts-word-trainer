@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { WordsService } from './words.service';
 import { AppError } from '../../core/errors/AppError';
+import { CSVImportService } from '../admin/csv-import.service';
 
 export class WordsController {
   static async create(req: Request, res: Response, next: NextFunction) {
@@ -47,6 +48,29 @@ export class WordsController {
     try {
       await WordsService.delete(req.params.id);
       res.json({ success: true, message: 'Word deleted' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async uploadCSV(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.file) {
+        throw new AppError('No file provided', 400);
+      }
+
+      // Convert buffer to string
+      const csvContent = req.file.buffer.toString('utf-8');
+
+      // Import words using the existing service
+      const results = await CSVImportService.importWords(csvContent);
+
+      // Return detailed results
+      res.status(200).json({
+        success: true,
+        data: results,
+        message: `Import completed: ${results.successful} successful, ${results.failed} failed`,
+      });
     } catch (err) {
       next(err);
     }

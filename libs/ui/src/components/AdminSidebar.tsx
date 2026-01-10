@@ -22,8 +22,9 @@ import {
   DrawerCloseButton,
   DrawerBody,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuthStore } from '@ielts/auth';
 import {
@@ -34,6 +35,7 @@ import {
   Menu as MenuIcon,
   X,
   Settings,
+  Shield,
 } from 'lucide-react';
 
 interface SidebarItemProps {
@@ -113,6 +115,35 @@ export const AdminSidebar = () => {
   const borderColor = useColorModeValue('gray.200', 'gray.800');
   const bgColor = useColorModeValue('white', 'gray.900');
   const pathname = usePathname();
+  const toast = useToast();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear auth cookie first
+    document.cookie = 'admin_auth_token=; path=/; max-age=0';
+
+    // Clear auth state
+    logout();
+
+    // Force clear local storage to ensure no persisted state survives
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth-storage');
+    }
+
+    // Show success toast
+    toast({
+      title: 'Logged out successfully',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+
+    // Use window.location.replace to ensure clean redirect without history
+    // and force a full reload to clear any memory/state
+    setTimeout(() => {
+      window.location.replace('/');
+    }, 100);
+  };
 
   // Hide sidebar on login page
   if (pathname === '/login') {
@@ -121,7 +152,7 @@ export const AdminSidebar = () => {
 
   const sidebarItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-
+    { icon: Shield, label: 'Admins', href: '/dashboard/admins' },
     { icon: Users, label: 'Users', href: '/dashboard/users' },
     { icon: BookOpen, label: 'Vocabulary', href: '/dashboard/vocabulary' },
   ];
@@ -212,7 +243,7 @@ export const AdminSidebar = () => {
             </MenuItem>
             <MenuItem
               icon={<LogOut size={16} />}
-              onClick={logout}
+              onClick={handleLogout}
               color="red.400"
               bg="gray.800"
               _hover={{ bg: 'gray.700' }}

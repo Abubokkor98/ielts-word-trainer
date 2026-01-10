@@ -19,9 +19,10 @@ export const CreateWordSchema = z.object({
   word: z.string().min(1),
   meaning: z.string().min(1),
   exampleSentence: z.string(),
-  synonyms: z.array(z.string()).optional(),
-  antonyms: z.array(z.string()).optional(),
-  topic: z.string().optional(), // ID reference
+  partOfSpeech: z.string().min(1),
+  synonyms: z.array(z.string()),
+  antonyms: z.array(z.string()),
+  topic: z.string(),
   module: z.nativeEnum(ModuleType),
   difficulty: z.nativeEnum(Difficulty),
 });

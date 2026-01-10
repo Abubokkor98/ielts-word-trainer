@@ -45,6 +45,7 @@ interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
+  module: string;
   partOfSpeech: string;
   topic: any;
   synonyms: string[];
@@ -96,17 +97,15 @@ export default function VocabularyManagementPage() {
       if (debouncedSearch) params.append('search', debouncedSearch);
       if (difficulty !== 'all') params.append('difficulty', difficulty);
 
-      const { data } = await axiosInstance.get(
-        `/admin/words?${params.toString()}`
-      );
+      const { data } = await axiosInstance.get(`/words?${params.toString()}`);
       return data.data;
     },
-    enabled: !!user && user.role === 'admin',
+    enabled: !!user && ['admin', 'super_admin'].includes(user.role),
   });
 
   const deleteWordMutation = useMutation({
     mutationFn: async (wordId: string) => {
-      await axiosInstance.delete(`/admin/words/${wordId}`);
+      await axiosInstance.delete(`/words/${wordId}`);
     },
     onSuccess: () => {
       toast({ title: 'Word deleted successfully', status: 'success' });
@@ -124,7 +123,11 @@ export default function VocabularyManagementPage() {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      await axiosInstance.post('/admin/upload-words', formData);
+      await axiosInstance.post('/words/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
     },
     onSuccess: () => {
       toast({ title: 'Words imported successfully', status: 'success' });
@@ -308,7 +311,7 @@ export default function VocabularyManagementPage() {
 
                 <Pagination
                   currentPage={page}
-                  totalPages={wordsData?.pagination.totalPages || 1}
+                  totalPages={wordsData?.totalPages || 1}
                   onPageChange={setPage}
                 />
               </>

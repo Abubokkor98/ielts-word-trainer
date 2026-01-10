@@ -30,14 +30,37 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Prevent infinite loops
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Skip refresh for these endpoints - they return 401 intentionally
+    const skipRefreshPaths = [
+      '/auth/login',
+      '/admin/login',
+      '/users/change-password',
+      '/admin/change-password',
+      '/password/reset-password',
+    ];
+
+    const shouldSkipRefresh = skipRefreshPaths.some((path) =>
+      originalRequest.url?.includes(path)
+    );
+
+    // Prevent infinite loops and skip refresh for intentional 401s
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !shouldSkipRefresh
+    ) {
       originalRequest._retry = true;
 
       try {
+        // Determine which refresh endpoint to use based on current path
+        const isAdminPath = originalRequest.url?.includes('/admin');
+        const refreshEndpoint = isAdminPath
+          ? '/admin/refresh'
+          : '/auth/refresh';
+
         // Attempt to refresh token
         const response = await axios.post(
-          `${baseURL}/auth/refresh`,
+          `${baseURL}${refreshEndpoint}`,
           {},
           { withCredentials: true }
         );

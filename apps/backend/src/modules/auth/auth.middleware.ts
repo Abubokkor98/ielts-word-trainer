@@ -2,14 +2,19 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
 import { AppError } from '../../core/errors/AppError';
-import { UserRole } from '@ielts/shared';
+import { UserRole, AdminRole } from '@ielts/shared';
 
 export interface AuthRequest extends Request {
   user?: {
     id: string;
-    role: UserRole;
+    role: UserRole | AdminRole;
   };
 }
+
+const VALID_ROLES = new Set<string>([
+  ...Object.values(UserRole),
+  ...Object.values(AdminRole),
+]);
 
 export const authenticate = (
   req: Request,
@@ -17,9 +22,7 @@ export const authenticate = (
   next: NextFunction
 ) => {
   try {
-    const token =
-      req.cookies.refreshToken ||
-      req.headers.authorization?.replace('Bearer ', '');
+    const token = req.headers.authorization?.replace('Bearer ', '');
 
     if (!token) {
       throw new AppError('No token provided', 401);
@@ -28,13 +31,39 @@ export const authenticate = (
     const decoded = jwt.verify(token, env.JWT_SECRET) as {
       id: string;
       role: string;
+      tokenType?: string;
     };
+
+    if (decoded.tokenType === 'refresh') {
+      throw new AppError('Invalid token type', 401);
+    }
+
+    if (!VALID_ROLES.has(decoded.role)) {
+      throw new AppError('Invalid role in token', 401);
+    }
+
     (req as AuthRequest).user = {
       id: decoded.id,
-      role: decoded.role as UserRole,
+      role: decoded.role as UserRole | AdminRole,
     };
     next();
   } catch (error) {
     next(new AppError('Invalid token', 401));
   }
+};
+
+export const authorize = (roles: (UserRole | AdminRole)[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as AuthRequest;
+
+    if (!authReq.user) {
+      return next(new AppError('Unauthenticated', 401));
+    }
+
+    if (!roles.includes(authReq.user.role)) {
+      return next(new AppError('Forbidden: Insufficient rights', 403));
+    }
+
+    next();
+  };
 };

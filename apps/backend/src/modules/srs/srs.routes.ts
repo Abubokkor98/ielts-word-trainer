@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { SRSController } from './srs.controller';
-import { authenticate } from '../../core/middleware/auth.middleware';
+import { authenticate } from '../auth/auth.middleware';
 
 const router = Router();
 

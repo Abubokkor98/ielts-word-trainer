@@ -18,6 +18,7 @@ import {
   Icon,
 } from '@chakra-ui/react';
 import { Users, BookOpen, FileText, Activity } from 'lucide-react';
+import { AdminRole } from '@ielts/shared';
 
 interface StatCardProps {
   label: string;
@@ -45,7 +46,9 @@ export default function AdminDashboardPage() {
       return data.data;
     },
     // We can assume auth is valid here due to AuthGuard, but keep enabled check for safety
-    enabled: !!user && user.role === 'admin',
+    enabled:
+      !!user &&
+      [AdminRole.ADMIN, AdminRole.SUPER_ADMIN].includes(user.role as AdminRole),
   });
 
   if (statsLoading) {
@@ -82,32 +85,31 @@ export default function AdminDashboardPage() {
           </Text>
         </Box>
 
-        {/* Stats Cards */}
         <SimpleGrid columns={{ base: 1, md: 4 }} spacing={6}>
           <StatCard
             label="Total Users"
-            value={stats.totalUsers}
+            value={stats?.totalUsers || 0}
             icon={Users}
             color="blue.500"
             bg={cardBg}
           />
           <StatCard
             label="Total Vocabulary"
-            value={stats.totalWords}
+            value={stats?.totalWords || 0}
             icon={BookOpen}
             color="purple.500"
             bg={cardBg}
           />
           <StatCard
             label="Quiz Attempts"
-            value={stats.totalQuizAttempts}
+            value={stats?.totalQuizAttempts || 0}
             icon={FileText}
             color="green.500"
             bg={cardBg}
           />
           <StatCard
             label="Avg Quiz Score"
-            value={`${Math.round(stats.quizStats?.avgScore || 0)}%`}
+            value={`${Math.round(stats?.quizStats?.avgScore || 0)}%`}
             icon={Activity}
             color="orange.500"
             bg={cardBg}

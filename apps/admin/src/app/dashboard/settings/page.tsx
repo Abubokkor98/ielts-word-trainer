@@ -50,7 +50,7 @@ export default function SettingsPage() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: { name: string }) => {
-      const response = await axiosInstance.patch('/users/profile', data);
+      const response = await axiosInstance.patch('/admin/profile', data);
       return response.data;
     },
     onSuccess: (response, variables) => {
@@ -71,7 +71,7 @@ export default function SettingsPage() {
 
   const changePasswordMutation = useMutation({
     mutationFn: async (data: any) => {
-      await axiosInstance.post('/users/change-password', data);
+      await axiosInstance.post('/admin/change-password', data);
     },
     onSuccess: () => {
       toast({ title: 'Password changed successfully', status: 'success' });

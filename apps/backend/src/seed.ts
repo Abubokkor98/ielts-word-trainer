@@ -7,7 +7,8 @@ import { Word } from './modules/words/words.model';
 import { Topic } from './modules/topics/topics.model';
 import { QuizAttempt } from './modules/quiz/quiz-attempt.model';
 import { Quiz } from './modules/quiz/quiz.entity';
-import { UserRole } from '@ielts/shared';
+import { UserRole, AdminRole } from '@ielts/shared';
+import { Admin } from './modules/admin/admin.model';
 
 const MONGODB_URI = process.env['MONGODB_URI'];
 const MONGODB_DBNAME = process.env['MONGODB_DBNAME'] || 'itelts-vocabs-app';
@@ -22,6 +23,7 @@ async function seed() {
     console.log(`Connected to MongoDB - Database: ${MONGODB_DBNAME}`);
 
     // Clear existing data
+    await Admin.deleteMany({});
     await User.deleteMany({});
     await Word.deleteMany({});
     await Topic.deleteMany({});
@@ -31,13 +33,19 @@ async function seed() {
 
     // Create admin user
     const adminPassword = await bcrypt.hash('admin123', 10);
-    const admin = await User.create({
-      name: 'Admin User',
+    const admin = await Admin.create({
+      name: 'Super Admin',
       email: 'admin@ielts.com',
       passwordHash: adminPassword,
-      role: UserRole.ADMIN,
-      xp: 1000,
-      streak: 5,
+      role: AdminRole.SUPER_ADMIN,
+    });
+
+    // Create regular admin
+    const regularAdmin = await Admin.create({
+      name: 'Regular Admin',
+      email: 'regular_admin@ielts.com',
+      passwordHash: adminPassword, // Reuse hash since passwords are the same
+      role: AdminRole.ADMIN,
     });
 
     // Create regular user
@@ -82,6 +90,7 @@ async function seed() {
         meaning: 'of great value or significance',
         exampleSentence: 'It is important to study every day.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'adjective',
         synonyms: ['significant', 'valuable', 'essential'],
@@ -92,6 +101,7 @@ async function seed() {
         meaning: 'easy to understand or do',
         exampleSentence: 'The instructions are very simple.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'adjective',
         synonyms: ['easy', 'basic', 'straightforward'],
@@ -102,6 +112,7 @@ async function seed() {
         meaning: 'feeling pleasure or contentment',
         exampleSentence: 'She was happy to see her friends.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'adjective',
         synonyms: ['joyful', 'pleased', 'content'],
@@ -112,6 +123,7 @@ async function seed() {
         meaning: 'to gain knowledge or skill',
         exampleSentence: 'Children learn quickly.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['Education'],
         partOfSpeech: 'verb',
         synonyms: ['study', 'acquire', 'grasp'],
@@ -122,6 +134,7 @@ async function seed() {
         meaning: 'in good physical condition',
         exampleSentence: 'Eating vegetables helps you stay healthy.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['Health'],
         partOfSpeech: 'adjective',
         synonyms: ['fit', 'well', 'strong'],
@@ -132,6 +145,7 @@ async function seed() {
         meaning: 'free from dirt or pollution',
         exampleSentence: 'We need clean water to drink.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['Environment'],
         partOfSpeech: 'adjective',
         synonyms: ['pure', 'tidy', 'spotless'],
@@ -142,6 +156,7 @@ async function seed() {
         meaning: 'activity involving effort',
         exampleSentence: 'He goes to work every morning.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['Business'],
         partOfSpeech: 'noun/verb',
         synonyms: ['job', 'labor', 'employment'],
@@ -152,6 +167,7 @@ async function seed() {
         meaning: 'to employ for a purpose',
         exampleSentence: 'We use computers every day.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['Technology'],
         partOfSpeech: 'verb',
         synonyms: ['utilize', 'employ', 'apply'],
@@ -162,6 +178,7 @@ async function seed() {
         meaning: 'of considerable size',
         exampleSentence: 'They live in a big house.',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'adjective',
         synonyms: ['large', 'huge', 'enormous'],
@@ -172,6 +189,7 @@ async function seed() {
         meaning: 'to assist or aid',
         exampleSentence: 'Can you help me with this?',
         difficulty: 'beginner',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'verb',
         synonyms: ['assist', 'aid', 'support'],
@@ -184,6 +202,7 @@ async function seed() {
         meaning: 'to leave behind or give up completely',
         exampleSentence: 'They had to abandon their home due to the flood.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'verb',
         synonyms: ['desert', 'forsake', 'leave'],
@@ -194,6 +213,7 @@ async function seed() {
         meaning: 'existing in large quantities',
         exampleSentence: 'The region has abundant natural resources.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Environment'],
         partOfSpeech: 'adjective',
         synonyms: ['plentiful', 'ample', 'copious'],
@@ -204,6 +224,7 @@ async function seed() {
         meaning: 'to achieve or complete successfully',
         exampleSentence: 'She accomplished all her goals this year.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'verb',
         synonyms: ['achieve', 'complete', 'fulfill'],
@@ -214,6 +235,7 @@ async function seed() {
         meaning: 'absolutely necessary or essential',
         exampleSentence: 'Regular exercise is vital for good health.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Health'],
         partOfSpeech: 'adjective',
         synonyms: ['essential', 'crucial', 'critical'],
@@ -224,6 +246,7 @@ async function seed() {
         meaning: 'to set up or create something',
         exampleSentence: 'The company was established in 1995.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Business'],
         partOfSpeech: 'verb',
         synonyms: ['create', 'found', 'institute'],
@@ -234,6 +257,7 @@ async function seed() {
         meaning: 'achieving maximum productivity',
         exampleSentence: 'Solar panels are an efficient energy source.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Technology'],
         partOfSpeech: 'adjective',
         synonyms: ['effective', 'productive', 'capable'],
@@ -244,6 +268,7 @@ async function seed() {
         meaning: 'showing variety or differences',
         exampleSentence: 'The city has a diverse population.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'adjective',
         synonyms: ['varied', 'different', 'assorted'],
@@ -254,6 +279,7 @@ async function seed() {
         meaning: 'to assess the value or quality',
         exampleSentence: 'Teachers evaluate student performance.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Education'],
         partOfSpeech: 'verb',
         synonyms: ['assess', 'judge', 'appraise'],
@@ -264,6 +290,7 @@ async function seed() {
         meaning: 'accountable for something',
         exampleSentence: 'We are responsible for protecting the environment.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Environment'],
         partOfSpeech: 'adjective',
         synonyms: ['accountable', 'liable', 'answerable'],
@@ -274,6 +301,7 @@ async function seed() {
         meaning: 'to keep in good condition',
         exampleSentence: 'It is important to maintain good health.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Health'],
         partOfSpeech: 'verb',
         synonyms: ['preserve', 'sustain', 'uphold'],
@@ -284,6 +312,7 @@ async function seed() {
         meaning: 'to successfully reach a goal',
         exampleSentence: 'She worked hard to achieve success.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'verb',
         synonyms: ['accomplish', 'attain', 'reach'],
@@ -294,6 +323,7 @@ async function seed() {
         meaning: 'to grow or cause to grow',
         exampleSentence: 'Countries develop their economies over time.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Business'],
         partOfSpeech: 'verb',
         synonyms: ['expand', 'grow', 'advance'],
@@ -304,6 +334,7 @@ async function seed() {
         meaning: 'to give or add to',
         exampleSentence: 'Everyone should contribute to society.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['General'],
         partOfSpeech: 'verb',
         synonyms: ['donate', 'provide', 'supply'],
@@ -314,6 +345,7 @@ async function seed() {
         meaning: 'an advantage or profit',
         exampleSentence: 'Exercise has many health benefits.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Health'],
         partOfSpeech: 'noun',
         synonyms: ['advantage', 'gain', 'profit'],
@@ -324,6 +356,7 @@ async function seed() {
         meaning: 'a strong effect or influence',
         exampleSentence: 'Technology has a huge impact on daily life.',
         difficulty: 'intermediate',
+        module: 'reading',
         topic: topicMap['Technology'],
         partOfSpeech: 'noun',
         synonyms: ['effect', 'influence', 'consequence'],
@@ -336,6 +369,7 @@ async function seed() {
         meaning: 'featuring new methods or ideas',
         exampleSentence: 'The company is known for its innovative products.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Technology'],
         partOfSpeech: 'adjective',
         synonyms: ['creative', 'original', 'novel'],
@@ -346,6 +380,7 @@ async function seed() {
         meaning: 'to maintain or keep going',
         exampleSentence: 'We need to sustain economic growth.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Business'],
         partOfSpeech: 'verb',
         synonyms: ['maintain', 'support', 'preserve'],
@@ -356,6 +391,7 @@ async function seed() {
         meaning: 'complete and including everything',
         exampleSentence: 'The report provides a comprehensive analysis.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Education'],
         partOfSpeech: 'adjective',
         synonyms: ['complete', 'thorough', 'extensive'],
@@ -366,6 +402,7 @@ async function seed() {
         meaning: 'to become progressively worse',
         exampleSentence: 'Air quality continues to deteriorate in cities.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Environment'],
         partOfSpeech: 'verb',
         synonyms: ['decline', 'worsen', 'degrade'],
@@ -376,6 +413,7 @@ async function seed() {
         meaning: 'to put a plan into action',
         exampleSentence: 'The government will implement new policies.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Business'],
         partOfSpeech: 'verb',
         synonyms: ['execute', 'apply', 'enforce'],
@@ -386,6 +424,7 @@ async function seed() {
         meaning: 'to make less severe or serious',
         exampleSentence: 'Measures to mitigate climate change are essential.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Environment'],
         partOfSpeech: 'verb',
         synonyms: ['alleviate', 'reduce', 'lessen'],
@@ -396,6 +435,7 @@ async function seed() {
         meaning: 'able to recover quickly from difficulties',
         exampleSentence: 'Resilient people overcome challenges easily.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Health'],
         partOfSpeech: 'adjective',
         synonyms: ['robust', 'strong', 'tough'],
@@ -406,6 +446,7 @@ async function seed() {
         meaning: 'to examine closely and critically',
         exampleSentence: 'Researchers scrutinize data carefully.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Education'],
         partOfSpeech: 'verb',
         synonyms: ['examine', 'inspect', 'analyze'],
@@ -416,6 +457,7 @@ async function seed() {
         meaning: 'a typical example or pattern',
         exampleSentence: 'The new technology represents a paradigm shift.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Technology'],
         partOfSpeech: 'noun',
         synonyms: ['model', 'pattern', 'framework'],
@@ -426,6 +468,7 @@ async function seed() {
         meaning: 'necessary to make something complete',
         exampleSentence: 'Technology is integral to modern business.',
         difficulty: 'advanced',
+        module: 'reading',
         topic: topicMap['Business'],
         partOfSpeech: 'adjective',
         synonyms: ['essential', 'fundamental', 'vital'],
@@ -536,7 +579,8 @@ async function seed() {
 
     console.log('\n✅ Database seeded successfully!');
     console.log('\nTest Accounts:');
-    console.log('Admin: admin@ielts.com / admin123');
+    console.log('Super Admin: admin@ielts.com / admin123');
+    console.log('Reg Admin:   regular_admin@ielts.com / admin123');
     console.log('User:  user@ielts.com / user123');
     console.log(`\nCreated ${words.length} vocabulary words`);
     console.log(`Created ${topics.length} topics`);

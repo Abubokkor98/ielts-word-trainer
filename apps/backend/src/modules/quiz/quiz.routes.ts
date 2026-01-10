@@ -2,9 +2,9 @@ import { Router } from 'express';
 import { QuizController } from './quiz.controller';
 import { QuizAnalyticsController } from './quiz-analytics.controller';
 import { QuizAttemptController } from './quiz-attempt.controller';
-import { authenticate } from '../auth/auth.middleware';
+import { authenticate, authorize } from '../auth/auth.middleware';
 import { UserRole } from '@ielts/shared';
-import { authorize } from '../../core/middleware/authorize.middleware';
+import { AdminRole } from '@ielts/shared';
 
 const router = Router();
 
@@ -23,7 +23,7 @@ router.get(
 router.get(
   '/analytics/global',
   authenticate,
-  authorize([UserRole.ADMIN]),
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
   QuizAnalyticsController.getGlobalAnalytics
 );
 

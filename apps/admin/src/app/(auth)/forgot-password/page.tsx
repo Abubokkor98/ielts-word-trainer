@@ -16,6 +16,14 @@ import {
 } from '@chakra-ui/react';
 import Link from 'next/link';
 
+interface ErrorResponse {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -23,9 +31,12 @@ export default function ForgotPasswordPage() {
 
   const forgotPasswordMutation = useMutation<{ success: boolean }, AxiosError>({
     mutationFn: async () => {
-      const { data } = await axiosInstance.post('/password/request-reset', {
-        email,
-      });
+      const { data } = await axiosInstance.post(
+        '/admin/password/request-reset',
+        {
+          email,
+        }
+      );
       return data;
     },
     onSuccess: () => {
@@ -38,10 +49,10 @@ export default function ForgotPasswordPage() {
       });
     },
     onError: (error: AxiosError) => {
+      const err = error as unknown as ErrorResponse;
       toast({
         title: 'Failed to send email',
-        description:
-          (error.response?.data as any)?.message || 'Please try again',
+        description: err.response?.data?.message || 'Please try again',
         status: 'error',
         duration: 5000,
       });

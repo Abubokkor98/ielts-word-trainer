@@ -42,6 +42,7 @@ interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: string;
+  module: string;
   partOfSpeech: string;
   topic: Topic | string; // Can be populated object or ID string
   synonyms: string[];
@@ -59,6 +60,7 @@ interface WordFormData {
   meaning: string;
   exampleSentence: string;
   difficulty: string;
+  module: string;
   partOfSpeech: string;
   topic: string;
   synonyms: string;
@@ -165,6 +167,15 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
           difficulty: initialData.difficulty,
           partOfSpeech: initialData.partOfSpeech || '',
           topic: topicName,
+          module: (() => {
+            if (!initialData.module) {
+              console.warn(
+                `Word ${initialData._id} missing module field, defaulting to 'reading'`
+              );
+              return 'reading';
+            }
+            return initialData.module;
+          })(),
           synonyms: initialData.synonyms?.join(', ') || '',
           antonyms: initialData.antonyms?.join(', ') || '',
         });
@@ -176,6 +187,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
           difficulty: '',
           partOfSpeech: '',
           topic: '',
+          module: 'reading',
           synonyms: '',
           antonyms: '',
         });
@@ -280,6 +292,24 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                 />
                 <FormErrorMessage>
                   {errors.exampleSentence && errors.exampleSentence.message}
+                </FormErrorMessage>
+              </FormControl>
+
+              <FormControl isInvalid={!!errors.module} isRequired>
+                <FormLabel>Module</FormLabel>
+                <Select
+                  {...register('module', {
+                    required: 'Module is required',
+                  })}
+                  placeholder="Select module"
+                >
+                  <option value="reading">Reading</option>
+                  <option value="writing">Writing</option>
+                  <option value="listening">Listening</option>
+                  <option value="speaking">Speaking</option>
+                </Select>
+                <FormErrorMessage>
+                  {errors.module && errors.module.message}
                 </FormErrorMessage>
               </FormControl>
 
