@@ -46,6 +46,14 @@ export class PasswordResetController {
     try {
       const { token, password } = req.body;
 
+      if (!token || typeof token !== 'string') {
+        throw new AppError('Reset token is required', 400);
+      }
+
+      if (!password || typeof password !== 'string' || password.length < 6) {
+        throw new AppError('Password must be at least 6 characters', 400);
+      }
+
       const hashedToken = crypto
         .createHash('sha256')
         .update(token)

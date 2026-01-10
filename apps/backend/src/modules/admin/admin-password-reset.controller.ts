@@ -50,8 +50,8 @@ export class AdminPasswordResetController {
         throw new AppError('Reset token is required', 400);
       }
 
-      if (!password || typeof password !== 'string' || password.length < 8) {
-        throw new AppError('Password must be at least 8 characters', 400);
+      if (!password || typeof password !== 'string' || password.length < 6) {
+        throw new AppError('Password must be at least 6 characters', 400);
       }
 
       const hashedToken = crypto
