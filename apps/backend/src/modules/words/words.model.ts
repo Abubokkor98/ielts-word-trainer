@@ -41,4 +41,5 @@ const WordSchema = new Schema<IWord>(
   { timestamps: true, versionKey: false }
 );
 
-export const Word = mongoose.model<IWord>('Word', WordSchema);
+export const Word =
+  mongoose.models.Word || mongoose.model<IWord>('Word', WordSchema);
