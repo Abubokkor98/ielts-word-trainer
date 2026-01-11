@@ -13,6 +13,7 @@ import {
   SimpleGrid,
   Button,
   HStack,
+  Flex,
   Badge,
   useDisclosure,
   Skeleton,
@@ -116,7 +117,7 @@ export default function VocabularyPage() {
   return (
     <Box bg="gray.900" py={8}>
       <Container maxW="7xl">
-        <Box mb={8}>
+        <Box mb={8} textAlign={{ base: 'center', lg: 'left' }}>
           <Heading as="h1" size="2xl" color="gray.50" mb={2}>
             Vocabulary Library
           </Heading>
@@ -124,8 +125,19 @@ export default function VocabularyPage() {
             Explore and master essential IELTS vocabulary
           </Text>
 
-          <HStack justify="space-between" wrap="wrap" spacing={4} mb={6}>
-            <HStack spacing={2} overflowX="auto">
+          <Flex
+            direction={{ base: 'column', lg: 'row' }}
+            justify="space-between"
+            align="center"
+            gap={6}
+            mb={6}
+          >
+            <HStack
+              spacing={2}
+              overflowX="auto"
+              w={{ base: '100%', lg: 'auto' }}
+              justify={{ base: 'center', lg: 'flex-start' }}
+            >
               {['all', 'beginner', 'intermediate', 'advanced'].map((level) => (
                 <Button
                   key={level}
@@ -146,10 +158,10 @@ export default function VocabularyPage() {
             <HStack
               spacing={4}
               flex={1}
-              justify="flex-end"
-              minW={{ base: '100%', md: 'auto' }}
+              justify={{ base: 'center', lg: 'flex-end' }}
+              w={{ base: '100%', lg: 'auto' }}
             >
-              <InputGroup size="md" maxW={{ base: '100%', md: '250px' }}>
+              <InputGroup size="md" maxW={{ base: '100%', sm: '250px' }}>
                 <InputLeftElement pointerEvents="none">
                   <Search color="gray.500" size={16} />
                 </InputLeftElement>
@@ -221,7 +233,7 @@ export default function VocabularyPage() {
                 )}
               </InputGroup>
             </HStack>
-          </HStack>
+          </Flex>
         </Box>
 
         {isLoading ? (
