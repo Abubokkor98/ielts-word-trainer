@@ -47,7 +47,7 @@ export const ReviewCard = ({ stats }: ReviewCardProps) => {
                 : 'Great job! You have no words due for review right now.'}
             </Text>
           </Box>
-          <Link href="/review" passHref>
+          <Link href="/review">
             <Button
               size="lg"
               colorScheme={isDue ? 'brand' : 'green'}

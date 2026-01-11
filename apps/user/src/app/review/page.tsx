@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -49,9 +49,65 @@ export default function ReviewPage() {
   const toast = useToast();
   const queryClient = useQueryClient();
 
+  const fetchDueWords = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const { data } = await axiosInstance.get('/srs/due');
+
+      console.log('SRS Due Words Response:', data);
+
+      if (data.success && data.data.length > 0) {
+        console.log('First word data:', data.data[0]);
+        setWords(data.data);
+      } else {
+        setSessionComplete(true);
+      }
+    } catch (error) {
+      console.error('Error fetching due words:', error);
+      toast({
+        title: 'Failed to load due words',
+        status: 'error',
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
+
   useEffect(() => {
     fetchDueWords();
-  }, []);
+  }, [fetchDueWords]);
+
+  const handleRating = useCallback(
+    async (quality: number) => {
+      try {
+        const word = words[currentIndex];
+        await axiosInstance.post('/srs/review', {
+          wordId: word._id,
+          quality,
+        });
+
+        setReviewedCount((prev) => prev + 1);
+
+        // Invalidate SRS stats cache to update navbar/dashboard badge counts
+        queryClient.invalidateQueries({ queryKey: ['srs', 'stats'] });
+
+        if (currentIndex + 1 < words.length) {
+          setCurrentIndex((prev) => prev + 1);
+          setIsFlipped(false);
+        } else {
+          setSessionComplete(true);
+        }
+      } catch (error) {
+        toast({
+          title: 'Failed to submit review',
+          status: 'error',
+          duration: 3000,
+        });
+      }
+    },
+    [words, currentIndex, queryClient, toast]
+  );
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -80,60 +136,7 @@ export default function ReviewPage() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isFlipped, sessionComplete, currentIndex]);
-
-  const fetchDueWords = async () => {
-    try {
-      setIsLoading(true);
-      const { data } = await axiosInstance.get('/srs/due');
-
-      console.log('SRS Due Words Response:', data);
-
-      if (data.success && data.data.length > 0) {
-        console.log('First word data:', data.data[0]);
-        setWords(data.data);
-      } else {
-        setSessionComplete(true);
-      }
-    } catch (error) {
-      console.error('Error fetching due words:', error);
-      toast({
-        title: 'Failed to load due words',
-        status: 'error',
-        duration: 3000,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleRating = async (quality: number) => {
-    try {
-      const word = words[currentIndex];
-      await axiosInstance.post('/srs/review', {
-        wordId: word._id,
-        quality,
-      });
-
-      setReviewedCount((prev) => prev + 1);
-
-      // Invalidate SRS stats cache to update navbar/dashboard badge counts
-      queryClient.invalidateQueries({ queryKey: ['srs', 'stats'] });
-
-      if (currentIndex + 1 < words.length) {
-        setCurrentIndex((prev) => prev + 1);
-        setIsFlipped(false);
-      } else {
-        setSessionComplete(true);
-      }
-    } catch (error) {
-      toast({
-        title: 'Failed to submit review',
-        status: 'error',
-        duration: 3000,
-      });
-    }
-  };
+  }, [isFlipped, sessionComplete, currentIndex, handleRating]);
 
   const handleRestart = () => {
     router.push('/dashboard');

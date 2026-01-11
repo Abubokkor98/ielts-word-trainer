@@ -53,7 +53,10 @@ function LoginContent() {
       setUser(data.data);
 
       // Set cookie for middleware
-      document.cookie = `user_auth_token=${data.accessToken}; path=/; max-age=86400; SameSite=Strict`;
+      const isSecure = window.location.protocol === 'https:';
+      document.cookie = `user_auth_token=${
+        data.accessToken
+      }; path=/; max-age=900; SameSite=Strict${isSecure ? '; Secure' : ''}`;
 
       toast({
         title: 'Login successful!',

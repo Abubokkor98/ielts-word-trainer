@@ -106,7 +106,10 @@ axiosInstance.interceptors.response.use(
 
           // Update cookie to keep middleware in sync
           if (typeof document !== 'undefined') {
-            document.cookie = `user_auth_token=${accessToken}; path=/; max-age=86400; SameSite=Strict`;
+            const isSecure = window.location.protocol === 'https:';
+            document.cookie = `user_auth_token=${accessToken}; path=/; max-age=900; SameSite=Strict${
+              isSecure ? '; Secure' : ''
+            }`;
           }
 
           processQueue(null, accessToken);

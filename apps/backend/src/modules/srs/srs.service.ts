@@ -137,10 +137,8 @@ export class SRSService {
     ).length;
 
     // New words available (not in SRS yet)
-    const userSRSItems = await SRSItem.find({ user: userId })
-      .select('word')
-      .lean();
-    const seenWordIds = userSRSItems.map((item) => item.word);
+    // New words available (not in SRS yet)
+    const seenWordIds = allItems.map((item) => item.word);
     const { Word } = await import('../words/words.model');
     const newWordsCount = await Word.countDocuments({
       _id: { $nin: seenWordIds },
@@ -167,6 +165,7 @@ export class SRSService {
         easeFactor: null,
         nextReviewDate: null,
         lastReviewed: null,
+        lapseCount: 0,
       };
     }
 
