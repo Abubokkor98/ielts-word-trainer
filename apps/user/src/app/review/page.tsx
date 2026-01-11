@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Box,
   Button,
@@ -18,6 +19,8 @@ import {
   Badge,
   Divider,
   SimpleGrid,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react';
 import { ArrowLeft, RotateCcw } from 'lucide-react';
 import { axiosInstance } from '@ielts/auth';
@@ -25,8 +28,10 @@ import { axiosInstance } from '@ielts/auth';
 interface Word {
   _id: string;
   word: string;
-  definition: string;
-  example: string;
+  meaning: string;
+  exampleSentence: string;
+  synonyms: string[];
+  antonyms: string[];
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   topic?: {
     name: string;
@@ -42,6 +47,7 @@ export default function ReviewPage() {
   const [sessionComplete, setSessionComplete] = useState(false);
   const router = useRouter();
   const toast = useToast();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     fetchDueWords();
@@ -111,6 +117,9 @@ export default function ReviewPage() {
 
       setReviewedCount((prev) => prev + 1);
 
+      // Invalidate SRS stats cache to update navbar/dashboard badge counts
+      queryClient.invalidateQueries({ queryKey: ['srs', 'stats'] });
+
       if (currentIndex + 1 < words.length) {
         setCurrentIndex((prev) => prev + 1);
         setIsFlipped(false);
@@ -133,11 +142,11 @@ export default function ReviewPage() {
   if (isLoading) {
     return (
       <Box
-        minH="100vh"
         bg="gray.900"
         display="flex"
         alignItems="center"
         justifyContent="center"
+        flex="1"
       >
         <VStack spacing={4}>
           <Box className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-500" />
@@ -149,7 +158,7 @@ export default function ReviewPage() {
 
   if (sessionComplete) {
     return (
-      <Box minH="100vh" bg="gray.900" py={8} px={4}>
+      <Box bg="gray.900" py={8} px={4}>
         <Container maxW="800px">
           <VStack spacing={6}>
             <Card
@@ -209,11 +218,11 @@ export default function ReviewPage() {
   if (!currentWord) {
     return (
       <Box
-        minH="100vh"
         bg="gray.900"
         display="flex"
         alignItems="center"
         justifyContent="center"
+        flex="1"
       >
         <Text color="gray.400">Loading word data...</Text>
       </Box>
@@ -236,7 +245,7 @@ export default function ReviewPage() {
   };
 
   return (
-    <Box minH="100vh" bg="gray.900" py={8} px={4}>
+    <Box bg="gray.900" py={8} px={4}>
       <Container maxW="900px">
         <VStack spacing={6}>
           {/* Header with Progress */}
@@ -351,10 +360,10 @@ export default function ReviewPage() {
                         Definition
                       </Text>
                       <Text fontSize="xl" color="gray.50" lineHeight="tall">
-                        {currentWord.definition}
+                        {currentWord.meaning}
                       </Text>
                     </Box>
-                    {currentWord.example && (
+                    {currentWord.exampleSentence && (
                       <Box>
                         <Text
                           fontWeight="bold"
@@ -371,9 +380,77 @@ export default function ReviewPage() {
                           color="gray.300"
                           lineHeight="tall"
                         >
-                          "{currentWord.example}"
+                          "{currentWord.exampleSentence}"
                         </Text>
                       </Box>
+                    )}
+
+                    {/* Synonyms & Antonyms */}
+                    {((currentWord.synonyms &&
+                      currentWord.synonyms.length > 0) ||
+                      (currentWord.antonyms &&
+                        currentWord.antonyms.length > 0)) && (
+                      <SimpleGrid columns={2} spacing={4} mt={2}>
+                        {/* Synonyms */}
+                        {currentWord.synonyms &&
+                          currentWord.synonyms.length > 0 && (
+                            <Box>
+                              <Text
+                                fontWeight="bold"
+                                mb={2}
+                                color="gray.400"
+                                fontSize="sm"
+                                textTransform="uppercase"
+                              >
+                                Synonyms
+                              </Text>
+                              <Wrap spacing={1.5}>
+                                {currentWord.synonyms.map((syn, idx) => (
+                                  <WrapItem key={idx}>
+                                    <Badge
+                                      colorScheme="green"
+                                      fontSize="xs"
+                                      px={2}
+                                      py={0.5}
+                                    >
+                                      {syn}
+                                    </Badge>
+                                  </WrapItem>
+                                ))}
+                              </Wrap>
+                            </Box>
+                          )}
+
+                        {/* Antonyms */}
+                        {currentWord.antonyms &&
+                          currentWord.antonyms.length > 0 && (
+                            <Box>
+                              <Text
+                                fontWeight="bold"
+                                mb={2}
+                                color="gray.400"
+                                fontSize="sm"
+                                textTransform="uppercase"
+                              >
+                                Antonyms
+                              </Text>
+                              <Wrap spacing={1.5}>
+                                {currentWord.antonyms.map((ant, idx) => (
+                                  <WrapItem key={idx}>
+                                    <Badge
+                                      colorScheme="red"
+                                      fontSize="xs"
+                                      px={2}
+                                      py={0.5}
+                                    >
+                                      {ant}
+                                    </Badge>
+                                  </WrapItem>
+                                ))}
+                              </Wrap>
+                            </Box>
+                          )}
+                      </SimpleGrid>
                     )}
                   </VStack>
                 )}
@@ -410,7 +487,7 @@ export default function ReviewPage() {
                         Press 1
                       </Text>
                       <Text fontSize="xs" opacity={0.7} mt={1}>
-                        {'<10m'}
+                        {'<1d'}
                       </Text>
                     </Button>
                     <Button
@@ -428,7 +505,7 @@ export default function ReviewPage() {
                         Press 2
                       </Text>
                       <Text fontSize="xs" opacity={0.7} mt={1}>
-                        {'<1d'}
+                        {'~1d'}
                       </Text>
                     </Button>
                     <Button
@@ -446,7 +523,7 @@ export default function ReviewPage() {
                         Press 3
                       </Text>
                       <Text fontSize="xs" opacity={0.7} mt={1}>
-                        {'<3d'}
+                        {'~3d'}
                       </Text>
                     </Button>
                     <Button
@@ -464,7 +541,7 @@ export default function ReviewPage() {
                         Press 4
                       </Text>
                       <Text fontSize="xs" opacity={0.7} mt={1}>
-                        {'<7d'}
+                        {'~7d'}
                       </Text>
                     </Button>
                   </SimpleGrid>

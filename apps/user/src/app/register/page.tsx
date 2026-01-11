@@ -14,6 +14,7 @@ import {
   FormLabel,
   useToast,
   Link as ChakraLink,
+  Flex,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { AxiosError } from 'axios';
@@ -72,14 +73,14 @@ export default function RegisterPage() {
   };
 
   return (
-    <Box
-      minH="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      flex="1"
       bg="gray.900"
-      py={12}
       px={4}
+      py={12}
     >
       <Card maxW="md" w="full" p={8}>
         <CardHeader>
@@ -154,6 +155,6 @@ export default function RegisterPage() {
           </form>
         </CardContent>
       </Card>
-    </Box>
+    </Flex>
   );
 }

@@ -114,7 +114,7 @@ export default function VocabularyPage() {
   };
 
   return (
-    <Box minH="100vh" bg="gray.900" py={8}>
+    <Box bg="gray.900" py={8}>
       <Container maxW="7xl">
         <Box mb={8}>
           <Heading as="h1" size="2xl" color="gray.50" mb={2}>

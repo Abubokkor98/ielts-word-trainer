@@ -70,6 +70,12 @@ axiosInstance.interceptors.response.use(
         if (accessToken) {
           useAuthStore.getState().setToken(accessToken);
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+          // Update cookie to keep middleware in sync
+          if (typeof document !== 'undefined') {
+            document.cookie = `user_auth_token=${accessToken}; path=/; max-age=86400; SameSite=Strict`;
+          }
+
           return axiosInstance(originalRequest);
         }
       } catch (refreshError) {

@@ -50,6 +50,9 @@ export const UserMenu = () => {
     } catch (error) {
       console.error('Logout API call failed:', error);
     } finally {
+      // Clear the auth cookie
+      document.cookie = 'user_auth_token=; path=/; max-age=0';
+
       // Navigate to home first with a flag, forcing the protected route to unmount
       // BEFORE we actually clear the auth state.
       router.push('/?logout=success');

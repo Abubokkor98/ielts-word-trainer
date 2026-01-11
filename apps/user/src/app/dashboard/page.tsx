@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { Card, CardHeader, CardContent } from '@ielts/ui';
 import Link from 'next/link';
+import { ReviewCard } from '../../components/ReviewCard';
 
 export default function UserDashboardPage() {
   const { user: localUser, isAuthenticated, hasHydrated } = useAuthStore();
@@ -60,7 +61,7 @@ export default function UserDashboardPage() {
   // Show loading during hydration
   if (!hasHydrated) {
     return (
-      <Box minH="100vh" bg="gray.900" py={8}>
+      <Box bg="gray.900" py={8}>
         <Container maxW="7xl">
           <VStack spacing={8} align="stretch">
             <Skeleton height="60px" />
@@ -83,7 +84,7 @@ export default function UserDashboardPage() {
 
   if (userLoading || analyticsLoading || srsLoading) {
     return (
-      <Box minH="100vh" bg="gray.900" py={8}>
+      <Box bg="gray.900" py={8}>
         <Container maxW="7xl">
           <VStack spacing={8} align="stretch">
             <Skeleton height="60px" />
@@ -110,7 +111,7 @@ export default function UserDashboardPage() {
   const lastQuiz = formatRelativeTime(lastQuizDate);
 
   return (
-    <Box minH="100vh" bg="gray.900" py={8}>
+    <Box bg="gray.900" py={8}>
       <Container maxW="7xl">
         <VStack spacing={8} align="stretch">
           <Box>
@@ -149,86 +150,7 @@ export default function UserDashboardPage() {
           </SimpleGrid>
 
           {/* SRS Review Section */}
-          {!srsLoading && srsStats && srsStats.dueToday > 0 && (
-            <Card bg="gradient" borderWidth="2px" borderColor="brand.500">
-              <CardHeader>
-                <HStack justify="space-between">
-                  <Box>
-                    <Heading size="md" color="gray.50">
-                      📚 Words Due for Review
-                    </Heading>
-                    <Text color="gray.400" mt={1}>
-                      You have {srsStats.dueToday} word
-                      {srsStats.dueToday > 1 ? 's' : ''} ready to review
-                    </Text>
-                  </Box>
-                  <Link href="/review">
-                    <button className="bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-                      Study Now →
-                    </button>
-                  </Link>
-                </HStack>
-              </CardHeader>
-              {srsStats && (
-                <CardContent>
-                  <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4}>
-                    <Box
-                      textAlign="center"
-                      p={3}
-                      bg="gray.800"
-                      borderRadius="md"
-                    >
-                      <Text color="blue.400" fontSize="2xl" fontWeight="bold">
-                        {srsStats.learning || 0}
-                      </Text>
-                      <Text color="gray.400" fontSize="sm">
-                        Learning
-                      </Text>
-                    </Box>
-                    <Box
-                      textAlign="center"
-                      p={3}
-                      bg="gray.800"
-                      borderRadius="md"
-                    >
-                      <Text color="yellow.400" fontSize="2xl" fontWeight="bold">
-                        {srsStats.reviewing || 0}
-                      </Text>
-                      <Text color="gray.400" fontSize="sm">
-                        Reviewing
-                      </Text>
-                    </Box>
-                    <Box
-                      textAlign="center"
-                      p={3}
-                      bg="gray.800"
-                      borderRadius="md"
-                    >
-                      <Text color="green.400" fontSize="2xl" fontWeight="bold">
-                        {srsStats.mastered || 0}
-                      </Text>
-                      <Text color="gray.400" fontSize="sm">
-                        Mastered
-                      </Text>
-                    </Box>
-                    <Box
-                      textAlign="center"
-                      p={3}
-                      bg="gray.800"
-                      borderRadius="md"
-                    >
-                      <Text color="purple.400" fontSize="2xl" fontWeight="bold">
-                        {srsStats.totalWords || 0}
-                      </Text>
-                      <Text color="gray.400" fontSize="sm">
-                        Total Words
-                      </Text>
-                    </Box>
-                  </SimpleGrid>
-                </CardContent>
-              )}
-            </Card>
-          )}
+          {!srsLoading && srsStats && <ReviewCard stats={srsStats} />}
 
           <Heading size="lg" color="gray.50">
             Quick Actions
@@ -275,27 +197,37 @@ interface ActionCardProps {
 }
 
 // Shared Components
-const StatCard = ({ label, value, icon, color }: StatCardProps) => (
-  <Card role="region" aria-label={`${label} statistic`}>
-    <CardContent>
-      <VStack align="start" spacing={1}>
-        <Text fontSize="sm" color="gray.400" fontWeight="600">
-          {label}
-        </Text>
-        <HStack>
-          <Heading size="2xl" color={color} aria-label={`${label}: ${value}`}>
-            {value}
-          </Heading>
-          {icon && (
-            <Text fontSize="2xl" aria-hidden="true">
-              {icon}
-            </Text>
-          )}
-        </HStack>
-      </VStack>
-    </CardContent>
-  </Card>
-);
+const StatCard = ({ label, value, icon, color }: StatCardProps) => {
+  const isLongText = String(value).length > 7;
+
+  return (
+    <Card role="region" aria-label={`${label} statistic`}>
+      <CardContent>
+        <VStack align="start" spacing={1}>
+          <Text fontSize="sm" color="gray.400" fontWeight="600">
+            {label}
+          </Text>
+          <HStack w="full" overflow="hidden">
+            <Heading
+              size={isLongText ? 'lg' : '2xl'}
+              color={color}
+              aria-label={`${label}: ${value}`}
+              noOfLines={1}
+              wordBreak="break-word"
+            >
+              {value}
+            </Heading>
+            {icon && (
+              <Text fontSize="2xl" aria-hidden="true" flexShrink={0}>
+                {icon}
+              </Text>
+            )}
+          </HStack>
+        </VStack>
+      </CardContent>
+    </Card>
+  );
+};
 
 const ActionCard = ({ href, title, description, emoji }: ActionCardProps) => (
   <Link

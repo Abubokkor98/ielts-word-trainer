@@ -10,7 +10,10 @@ import {
   Container,
   Heading,
   Link as ChakraLink,
+  Badge,
 } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
+import { axiosInstance } from '@ielts/auth';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserMenu } from '@ielts/ui';
@@ -84,6 +87,19 @@ export const UserNavbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isAuthenticated } = useAuthStore();
 
+  const { data: srsStats } = useQuery({
+    queryKey: ['srs', 'stats'],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get('/srs/stats');
+      return data.data;
+    },
+    enabled: isAuthenticated,
+    // Don't refetch too often to avoid sticker flicker/load
+    staleTime: 60 * 1000,
+  });
+
+  const dueCount = srsStats?.dueToday || 0;
+
   return (
     <>
       {/* Skip to main content link for screen readers */}
@@ -150,7 +166,23 @@ export const UserNavbar = () => {
                 <NavLink href="/vocabulary">Vocabulary</NavLink>
                 <NavLink href="/quiz">Quiz</NavLink>
                 {isAuthenticated && (
-                  <NavLink href="/dashboard">Dashboard</NavLink>
+                  <>
+                    <NavLink href="/dashboard">Dashboard</NavLink>
+                    <NavLink href="/review">
+                      Review
+                      {dueCount > 0 && (
+                        <Badge
+                          ml={2}
+                          colorScheme="red"
+                          variant="solid"
+                          borderRadius="full"
+                          fontSize="xs"
+                        >
+                          {dueCount}
+                        </Badge>
+                      )}
+                    </NavLink>
+                  </>
                 )}
               </HStack>
             </HStack>

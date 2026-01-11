@@ -12,6 +12,7 @@ import {
   FormLabel,
   useToast,
   Link as ChakraLink,
+  Flex,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 
@@ -53,11 +54,11 @@ export default function ForgotPasswordPage() {
 
   if (submitted) {
     return (
-      <Box
-        minH="100vh"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        flex="1"
         bg="gray.900"
         py={12}
         px={4}
@@ -83,16 +84,16 @@ export default function ForgotPasswordPage() {
             </VStack>
           </CardContent>
         </Card>
-      </Box>
+      </Flex>
     );
   }
 
   return (
-    <Box
-      minH="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      flex="1"
       bg="gray.900"
       py={12}
       px={4}
@@ -143,6 +144,6 @@ export default function ForgotPasswordPage() {
           </form>
         </CardContent>
       </Card>
-    </Box>
+    </Flex>
   );
 }

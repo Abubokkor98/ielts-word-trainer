@@ -42,7 +42,7 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <Box minH="100vh" bg="gray.900" py={8}>
+      <Box bg="gray.900" py={8}>
         <Container maxW="7xl">
           <VStack spacing={8} align="stretch">
             <Skeleton height="60px" />
@@ -61,11 +61,11 @@ export default function AnalyticsPage() {
   if (!analytics || analytics.totalQuizzes === 0) {
     return (
       <Box
-        minH="100vh"
         bg="gray.900"
         display="flex"
         alignItems="center"
         justifyContent="center"
+        flex="1"
       >
         <VStack spacing={4}>
           <Text fontSize="4xl">📊</Text>
@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
       : 0;
 
   return (
-    <Box minH="100vh" bg="gray.900" py={8}>
+    <Box bg="gray.900" py={8}>
       <Container maxW="7xl">
         <VStack align="stretch" spacing={8}>
           <Box>

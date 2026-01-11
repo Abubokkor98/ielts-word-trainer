@@ -111,7 +111,7 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <Box minH="100vh" bg="gray.900" py={8}>
+      <Box bg="gray.900" py={8}>
         <Container maxW="5xl">
           <VStack spacing={8} align="stretch">
             <Skeleton height="60px" />
@@ -124,7 +124,7 @@ export default function ProfilePage() {
 
   if (isError || !profile) {
     return (
-      <Box minH="100vh" bg="gray.900" py={8}>
+      <Box bg="gray.900" py={8}>
         <Container maxW="5xl">
           <Text color="red.400">Failed to load profile data.</Text>
         </Container>
@@ -133,7 +133,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <Box minH="100vh" bg="gray.900" py={8}>
+    <Box bg="gray.900" py={8}>
       <Container maxW="6xl">
         <VStack align="stretch" spacing={6}>
           {/* Header */}

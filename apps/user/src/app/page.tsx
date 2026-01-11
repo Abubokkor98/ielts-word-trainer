@@ -16,7 +16,7 @@ export default function HomePage() {
   const { isAuthenticated, user } = useAuthStore();
 
   return (
-    <Box minH="100vh" bg="gray.900" py={16}>
+    <Box bg="gray.900" py={16}>
       <Container maxW="7xl">
         <VStack spacing={12} align="stretch">
           {/* Hero Section */}
