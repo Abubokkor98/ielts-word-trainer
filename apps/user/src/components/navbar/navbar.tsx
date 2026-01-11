@@ -36,6 +36,10 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { useToast } from '@chakra-ui/react';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface NavLinkProps {
   href: string;
@@ -114,7 +118,28 @@ const MobileNavLink = ({
 
 export const UserNavbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const toast = useToast();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Check if we just logged out via redirection
+    if (searchParams.get('logout') === 'success' && user) {
+      logout();
+      queryClient.clear();
+
+      toast({
+        title: 'Logged out successfully',
+        status: 'success',
+        duration: 2000,
+      });
+
+      // Clear the query param
+      router.replace('/');
+    }
+  }, [searchParams, user, logout, queryClient, toast, router]);
 
   const { data: srsStats } = useQuery({
     queryKey: ['srs', 'stats'],
