@@ -6,11 +6,19 @@ import {
   HStack,
   IconButton,
   useDisclosure,
-  Stack,
   Container,
   Heading,
   Link as ChakraLink,
   Badge,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerHeader,
+  DrawerBody,
+  DrawerFooter,
+  VStack,
+  Divider,
+  Text,
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
@@ -18,40 +26,16 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserMenu } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';
-
-const HamburgerIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M4 6h16M4 12h16M4 18h16"
-    />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M6 18L18 6M6 6l12 12"
-    />
-  </svg>
-);
+import {
+  Home,
+  Book,
+  HelpCircle,
+  LayoutDashboard,
+  RotateCcw,
+  BarChart2,
+  Menu,
+  X,
+} from 'lucide-react';
 
 interface NavLinkProps {
   href: string;
@@ -83,6 +67,51 @@ const NavLink = ({ href, children }: NavLinkProps) => {
   );
 };
 
+interface MobileNavLinkProps {
+  href: string;
+  icon: React.ReactElement;
+  children: React.ReactNode;
+  onClick: () => void;
+}
+
+const MobileNavLink = ({
+  href,
+  icon,
+  children,
+  onClick,
+}: MobileNavLinkProps) => {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+
+  return (
+    <ChakraLink
+      as={Link}
+      href={href}
+      onClick={onClick}
+      display="flex"
+      alignItems="center"
+      gap={3}
+      px={4}
+      py={3}
+      rounded="md"
+      fontWeight={isActive ? '600' : '500'}
+      color={isActive ? 'brand.400' : 'gray.300'}
+      _hover={{
+        bg: 'gray.800',
+        color: 'white',
+        textDecoration: 'none',
+      }}
+      minH="48px"
+      transition="all 0.2s"
+    >
+      <Box fontSize="20px" color={isActive ? 'brand.400' : 'gray.400'}>
+        {icon}
+      </Box>
+      <Box flex="1">{children}</Box>
+    </ChakraLink>
+  );
+};
+
 export const UserNavbar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isAuthenticated } = useAuthStore();
@@ -94,7 +123,6 @@ export const UserNavbar = () => {
       return data.data;
     },
     enabled: isAuthenticated,
-    // Don't refetch too often to avoid sticker flicker/load
     staleTime: 60 * 1000,
   });
 
@@ -123,6 +151,8 @@ export const UserNavbar = () => {
       >
         Skip to main content
       </a>
+
+      {/* Main Navbar */}
       <Box
         bg="gray.900"
         borderBottom="1px"
@@ -136,15 +166,12 @@ export const UserNavbar = () => {
       >
         <Container maxW="7xl">
           <Flex h={16} alignItems="center" justifyContent="space-between">
-            <IconButton
-              size="md"
-              icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-              aria-label={isOpen ? 'Close menu' : 'Open menu'}
-              display={{ md: 'none' }}
-              variant="ghost"
-              color="white"
-              onClick={isOpen ? onClose : onOpen}
-            />
+            {/* User Menu - Left Side (Mobile Only) */}
+            <Flex alignItems="center" display={{ base: 'flex', lg: 'none' }}>
+              <UserMenu />
+            </Flex>
+
+            {/* Logo and Desktop Navigation */}
             <HStack spacing={8} alignItems="center">
               <Heading
                 as={Link}
@@ -156,10 +183,12 @@ export const UserNavbar = () => {
               >
                 IELTS Master
               </Heading>
+
+              {/* Desktop Navigation - Hidden on mobile */}
               <HStack
                 as="nav"
                 spacing={4}
-                display={{ base: 'none', md: 'flex' }}
+                display={{ base: 'none', lg: 'flex' }}
                 role="menubar"
               >
                 <NavLink href="/">Home</NavLink>
@@ -186,25 +215,135 @@ export const UserNavbar = () => {
                 )}
               </HStack>
             </HStack>
-            <Flex alignItems="center">
+
+            {/* User Menu - Right Side (Desktop Only) */}
+            <Flex alignItems="center" display={{ base: 'none', lg: 'flex' }}>
               <UserMenu />
             </Flex>
-          </Flex>
 
-          {isOpen ? (
-            <Box pb={4} display={{ md: 'none' }}>
-              <Stack as="nav" spacing={4} role="menu">
-                <NavLink href="/">Home</NavLink>
-                <NavLink href="/vocabulary">Vocabulary</NavLink>
-                <NavLink href="/quiz">Quiz</NavLink>
-                {isAuthenticated && (
-                  <NavLink href="/dashboard">Dashboard</NavLink>
-                )}
-              </Stack>
-            </Box>
-          ) : null}
+            {/* Mobile hamburger menu - Right Side */}
+            <IconButton
+              size="md"
+              icon={<Menu size={24} />}
+              aria-label="Open menu"
+              display={{ base: 'flex', lg: 'none' }}
+              variant="ghost"
+              color="white"
+              onClick={onOpen}
+              minW="48px"
+              minH="48px"
+            />
+          </Flex>
         </Container>
       </Box>
+
+      {/* Mobile Drawer Navigation */}
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
+        <DrawerOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
+        <DrawerContent
+          bg="rgba(17, 24, 39, 0.85)"
+          backdropFilter="blur(16px) saturate(180%)"
+          borderLeft="1px solid"
+          borderColor="whiteAlpha.200"
+          boxShadow="0 8px 32px 0 rgba(0, 0, 0, 0.37)"
+        >
+          <DrawerHeader borderBottomWidth="1px" borderColor="whiteAlpha.200">
+            <Flex justify="space-between" align="center">
+              <Heading size="md" color="white">
+                Menu
+              </Heading>
+              <IconButton
+                aria-label="Close menu"
+                icon={<X size={20} />}
+                onClick={onClose}
+                variant="ghost"
+                size="sm"
+                color="gray.400"
+                _hover={{ color: 'white', bg: 'gray.800' }}
+                minW="48px"
+                minH="48px"
+              />
+            </Flex>
+          </DrawerHeader>
+
+          <DrawerBody px={2} py={4}>
+            <VStack spacing={1} align="stretch">
+              {/* Public Navigation */}
+              <MobileNavLink
+                href="/"
+                icon={<Home size={20} />}
+                onClick={onClose}
+              >
+                Home
+              </MobileNavLink>
+              <MobileNavLink
+                href="/vocabulary"
+                icon={<Book size={20} />}
+                onClick={onClose}
+              >
+                Vocabulary
+              </MobileNavLink>
+              <MobileNavLink
+                href="/quiz"
+                icon={<HelpCircle size={20} />}
+                onClick={onClose}
+              >
+                Quiz
+              </MobileNavLink>
+
+              {/* Authenticated Navigation */}
+              {isAuthenticated && (
+                <>
+                  <Divider my={2} borderColor="whiteAlpha.200" />
+                  <MobileNavLink
+                    href="/dashboard"
+                    icon={<LayoutDashboard size={20} />}
+                    onClick={onClose}
+                  >
+                    Dashboard
+                  </MobileNavLink>
+                  <MobileNavLink
+                    href="/review"
+                    icon={<RotateCcw size={20} />}
+                    onClick={onClose}
+                  >
+                    <Flex justify="space-between" w="full" align="center">
+                      <Text>Review</Text>
+                      {dueCount > 0 && (
+                        <Badge
+                          colorScheme="red"
+                          variant="solid"
+                          borderRadius="full"
+                          fontSize="xs"
+                        >
+                          {dueCount}
+                        </Badge>
+                      )}
+                    </Flex>
+                  </MobileNavLink>
+                  <MobileNavLink
+                    href="/analytics"
+                    icon={<BarChart2 size={20} />}
+                    onClick={onClose}
+                  >
+                    Analytics
+                  </MobileNavLink>
+                </>
+              )}
+            </VStack>
+          </DrawerBody>
+
+          <DrawerFooter
+            borderTopWidth="1px"
+            borderColor="whiteAlpha.200"
+            justifyContent="center"
+          >
+            <Text fontSize="xs" color="gray.500">
+              IELTS Vocabulary Builder
+            </Text>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };
