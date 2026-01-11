@@ -45,6 +45,7 @@ export default function ReviewPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [reviewedCount, setReviewedCount] = useState(0);
   const [sessionComplete, setSessionComplete] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -52,14 +53,15 @@ export default function ReviewPage() {
   const fetchDueWords = useCallback(async () => {
     try {
       setIsLoading(true);
+      setSessionComplete(false);
+      setIsFlipped(false);
+      setCurrentIndex(0);
       const { data } = await axiosInstance.get('/srs/due');
 
-      console.log('SRS Due Words Response:', data);
-
       if (data.success && data.data.length > 0) {
-        console.log('First word data:', data.data[0]);
         setWords(data.data);
       } else {
+        setWords([]);
         setSessionComplete(true);
       }
     } catch (error) {
@@ -80,7 +82,10 @@ export default function ReviewPage() {
 
   const handleRating = useCallback(
     async (quality: number) => {
+      if (isSubmitting) return;
+
       try {
+        setIsSubmitting(true);
         const word = words[currentIndex];
         await axiosInstance.post('/srs/review', {
           wordId: word._id,
@@ -104,14 +109,16 @@ export default function ReviewPage() {
           status: 'error',
           duration: 3000,
         });
+      } finally {
+        setIsSubmitting(false);
       }
     },
-    [words, currentIndex, queryClient, toast]
+    [words, currentIndex, queryClient, toast, isSubmitting]
   );
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (sessionComplete) return;
+      if (sessionComplete || isSubmitting) return;
 
       if (e.key === ' ' && !isFlipped) {
         e.preventDefault();
@@ -136,7 +143,7 @@ export default function ReviewPage() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isFlipped, sessionComplete, currentIndex, handleRating]);
+  }, [isFlipped, sessionComplete, currentIndex, handleRating, isSubmitting]);
 
   const handleRestart = () => {
     router.push('/dashboard');
@@ -482,6 +489,7 @@ export default function ReviewPage() {
                       h="auto"
                       py={4}
                       flexDir="column"
+                      isDisabled={isSubmitting}
                     >
                       <Text fontWeight="bold" fontSize="lg">
                         Again
@@ -500,6 +508,7 @@ export default function ReviewPage() {
                       h="auto"
                       py={4}
                       flexDir="column"
+                      isDisabled={isSubmitting}
                     >
                       <Text fontWeight="bold" fontSize="lg">
                         Hard
@@ -518,6 +527,7 @@ export default function ReviewPage() {
                       h="auto"
                       py={4}
                       flexDir="column"
+                      isDisabled={isSubmitting}
                     >
                       <Text fontWeight="bold" fontSize="lg">
                         Good
@@ -536,6 +546,7 @@ export default function ReviewPage() {
                       h="auto"
                       py={4}
                       flexDir="column"
+                      isDisabled={isSubmitting}
                     >
                       <Text fontWeight="bold" fontSize="lg">
                         Easy

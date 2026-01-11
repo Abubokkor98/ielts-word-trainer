@@ -142,26 +142,25 @@ export const UserNavbar = () => {
   }, [searchParams, user, logout, queryClient, toast, router]);
 
   interface SrsStats {
+    totalWords: number;
+    learning: number;
+    reviewing: number;
+    mastered: number;
     dueToday: number;
-    newCards: number;
-    learningCards: number;
+    newToday: number;
   }
 
-  interface SrsStatsResponse {
-    data: SrsStats;
-  }
-
-  const { data: srsStats } = useQuery<SrsStatsResponse>({
+  const { data: srsStats } = useQuery<SrsStats>({
     queryKey: ['srs', 'stats'],
     queryFn: async () => {
       const { data } = await axiosInstance.get('/srs/stats');
-      return data;
+      return data.data;
     },
     enabled: isAuthenticated,
     staleTime: 60 * 1000,
   });
 
-  const dueCount = srsStats?.data?.dueToday || 0;
+  const dueCount = srsStats?.dueToday || 0;
 
   return (
     <>

@@ -50,7 +50,7 @@ export default function RootLayout({
           <ChakraUIProvider>
             <div className="flex flex-col min-h-screen">
               <UserNavbar />
-              <main className="flex-1 flex flex-col">{children}</main>
+              <main id="main-content" className="flex-1 flex flex-col">{children}</main>
             </div>
           </ChakraUIProvider>
         </ReactQueryProvider>
