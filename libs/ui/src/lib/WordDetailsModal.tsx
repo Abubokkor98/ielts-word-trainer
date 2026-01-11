@@ -52,7 +52,12 @@ export function WordDetailsModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
-      <ModalContent bg="gray.800" borderWidth="1px" borderColor="gray.700">
+      <ModalContent
+        bg="gray.800"
+        borderWidth="1px"
+        borderColor="gray.700"
+        mx={{ base: 4, md: 0 }}
+      >
         {/* Compact Header */}
         <ModalHeader
           pb={3}
@@ -141,7 +146,7 @@ export function WordDetailsModal({
             {/* Synonyms & Antonyms - Two Column Layout */}
             {((word.synonyms && word.synonyms.length > 0) ||
               (word.antonyms && word.antonyms.length > 0)) && (
-              <SimpleGrid columns={2} spacing={4}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
                 {/* Synonyms */}
                 {word.synonyms && word.synonyms.length > 0 && (
                   <Box>

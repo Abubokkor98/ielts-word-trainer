@@ -14,6 +14,7 @@ import {
   FormLabel,
   useToast,
   Link as ChakraLink,
+  Flex,
 } from '@chakra-ui/react';
 import Link from 'next/link';
 
@@ -52,7 +53,10 @@ function LoginContent() {
       setUser(data.data);
 
       // Set cookie for middleware
-      document.cookie = `user_auth_token=${data.accessToken}; path=/; max-age=86400; SameSite=Strict`;
+      const isSecure = window.location.protocol === 'https:';
+      document.cookie = `user_auth_token=${
+        data.accessToken
+      }; path=/; max-age=900; SameSite=Strict${isSecure ? '; Secure' : ''}`;
 
       toast({
         title: 'Login successful!',
@@ -85,14 +89,14 @@ function LoginContent() {
   };
 
   return (
-    <Box
-      minH="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
+    <Flex
+      direction="column"
+      align="center"
+      justify="center"
+      flex="1"
       bg="gray.900"
-      py={12}
       px={4}
+      py={12}
     >
       <Card maxW="md" w="full" p={8}>
         <CardHeader>
@@ -166,7 +170,7 @@ function LoginContent() {
           </form>
         </CardContent>
       </Card>
-    </Box>
+    </Flex>
   );
 }
 

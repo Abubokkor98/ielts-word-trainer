@@ -109,4 +109,110 @@ export class SRSService {
 
     return Word.find(filter).limit(limit).lean();
   }
+
+  static async getStats(userId: string) {
+    const allItems = await SRSItem.find({ user: userId });
+
+    // Get total unique words the user has encountered
+    const totalWords = allItems.length;
+
+    // Count by status
+    const learning = allItems.filter(
+      (item) => item.status === SRSStatus.LEARNING
+    ).length;
+    const reviewing = allItems.filter(
+      (item) => item.status === SRSStatus.REVIEWING
+    ).length;
+    const mastered = allItems.filter(
+      (item) => item.status === SRSStatus.MASTERED
+    ).length;
+
+    // Count due today (nextReviewDate <= now and not mastered)
+    const now = new Date();
+    const dueToday = allItems.filter(
+      (item) =>
+        item.nextReviewDate &&
+        item.nextReviewDate <= now &&
+        item.status !== SRSStatus.MASTERED
+    ).length;
+
+    // New words available (not in SRS yet)
+    // New words available (not in SRS yet)
+    const seenWordIds = allItems.map((item) => item.word);
+    const { Word } = await import('../words/words.model');
+    const newWordsCount = await Word.countDocuments({
+      _id: { $nin: seenWordIds },
+    });
+
+    return {
+      totalWords,
+      learning,
+      reviewing,
+      mastered,
+      dueToday,
+      newToday: newWordsCount,
+    };
+  }
+
+  static async getWordStatus(userId: string, wordId: string) {
+    const srsItem = await SRSItem.findOne({ user: userId, word: wordId });
+
+    if (!srsItem) {
+      return {
+        status: 'new',
+        interval: null,
+        repetition: null,
+        easeFactor: null,
+        nextReviewDate: null,
+        lastReviewed: null,
+        lapseCount: 0,
+      };
+    }
+
+    return {
+      status: srsItem.status,
+      interval: srsItem.interval,
+      repetition: srsItem.repetition,
+      easeFactor: srsItem.easeFactor,
+      nextReviewDate: srsItem.nextReviewDate,
+      lastReviewed: srsItem.lastReviewed,
+      lapseCount: srsItem.lapseCount,
+    };
+  }
+
+  static async getReviewSchedule(userId: string, days: number = 7) {
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + days);
+
+    const items = await SRSItem.find({
+      user: userId,
+      nextReviewDate: { $gte: startDate, $lte: endDate },
+      status: { $ne: SRSStatus.MASTERED },
+    })
+      .populate('word')
+      .lean();
+
+    // Group by date
+    const schedule: Record<string, { count: number; words: any[] }> = {};
+
+    items.forEach((item: any) => {
+      if (!item.nextReviewDate || !item.word) return;
+
+      const dateKey = item.nextReviewDate.toISOString().split('T')[0]; // YYYY-MM-DD
+
+      if (!schedule[dateKey]) {
+        schedule[dateKey] = { count: 0, words: [] };
+      }
+
+      schedule[dateKey].count++;
+      schedule[dateKey].words.push({
+        id: item.word._id,
+        word: item.word.word,
+        difficulty: item.word.difficulty,
+      });
+    });
+
+    return schedule;
+  }
 }

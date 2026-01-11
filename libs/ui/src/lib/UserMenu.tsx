@@ -27,22 +27,8 @@ export const UserMenu = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  useEffect(() => {
-    // Check if we just logged out via redirection
-    if (searchParams.get('logout') === 'success' && user) {
-      logout();
-      queryClient.clear();
-
-      toast({
-        title: 'Logged out successfully',
-        status: 'success',
-        duration: 2000,
-      });
-
-      // Clear the query param
-      router.replace('/');
-    }
-  }, [searchParams, user, logout, queryClient, toast, router]);
+  // Logout logic moved to parent component to prevent double toasts
+  // when UserMenu is rendered multiple times (mobile/desktop)
 
   const handleLogout = async () => {
     try {
@@ -50,6 +36,9 @@ export const UserMenu = () => {
     } catch (error) {
       console.error('Logout API call failed:', error);
     } finally {
+      // Clear the auth cookie
+      document.cookie = 'user_auth_token=; path=/; max-age=0';
+
       // Navigate to home first with a flag, forcing the protected route to unmount
       // BEFORE we actually clear the auth state.
       router.push('/?logout=success');

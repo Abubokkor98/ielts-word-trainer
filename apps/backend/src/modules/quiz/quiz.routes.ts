@@ -27,4 +27,11 @@ router.get(
   QuizAnalyticsController.getGlobalAnalytics
 );
 
+// Difficulty recommendation
+router.get(
+  '/recommend-difficulty',
+  authenticate,
+  QuizController.getRecommendedDifficulty
+);
+
 export default router;

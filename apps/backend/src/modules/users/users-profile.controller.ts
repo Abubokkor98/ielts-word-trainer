@@ -3,16 +3,18 @@ import bcrypt from 'bcryptjs';
 import { UserService } from './users.service';
 import { QuizAttemptService } from '../quiz/quiz-attempt.service';
 import { AppError } from '../../core/errors/AppError';
+import { AuthRequest } from '../auth/auth.middleware';
 
 export class UserProfileController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) throw new AppError('Unauthenticated', 401);
+      const authReq = req as AuthRequest;
+      if (!authReq.user) throw new AppError('Unauthenticated', 401);
 
-      const user = await UserService.findById(req.user.id);
+      const user = await UserService.findById(authReq.user.id);
       if (!user) throw new AppError('User not found', 404);
 
-      const stats = await QuizAttemptService.getUserStats(req.user.id);
+      const stats = await QuizAttemptService.getUserStats(authReq.user.id);
 
       res.json({
         success: true,
@@ -34,9 +36,10 @@ export class UserProfileController {
 
   static async updateProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) throw new AppError('Unauthenticated', 401);
+      const authReq = req as AuthRequest;
+      if (!authReq.user) throw new AppError('Unauthenticated', 401);
 
-      const user = await UserService.findById(req.user.id);
+      const user = await UserService.findById(authReq.user.id);
       if (!user) throw new AppError('User not found', 404);
 
       const { name } = req.body;
@@ -60,12 +63,21 @@ export class UserProfileController {
 
   static async changePassword(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) throw new AppError('Unauthenticated', 401);
+      const authReq = req as AuthRequest;
+      if (!authReq.user) throw new AppError('Unauthenticated', 401);
 
-      const user = await UserService.findById(req.user.id);
+      const user = await UserService.findById(authReq.user.id);
       if (!user) throw new AppError('User not found', 404);
 
       const { currentPassword, newPassword } = req.body;
+
+      if (
+        !newPassword ||
+        typeof newPassword !== 'string' ||
+        newPassword.length < 6
+      ) {
+        throw new AppError('Password must be at least 6 characters', 400);
+      }
 
       const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
       if (!isValid) {

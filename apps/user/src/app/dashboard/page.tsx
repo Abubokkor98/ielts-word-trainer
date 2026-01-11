@@ -18,6 +18,7 @@ import {
 } from '@chakra-ui/react';
 import { Card, CardHeader, CardContent } from '@ielts/ui';
 import Link from 'next/link';
+import { ReviewCard } from '../../components/ReviewCard';
 
 export default function UserDashboardPage() {
   const { user: localUser, isAuthenticated, hasHydrated } = useAuthStore();
@@ -48,10 +49,19 @@ export default function UserDashboardPage() {
     enabled: !!localUser && isAuthenticated,
   });
 
+  const { data: srsStats, isLoading: srsLoading } = useQuery({
+    queryKey: ['srs', 'stats'],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get('/srs/stats');
+      return data.data;
+    },
+    enabled: !!localUser && isAuthenticated,
+  });
+
   // Show loading during hydration
   if (!hasHydrated) {
     return (
-      <Box minH="100vh" bg="gray.900" py={8}>
+      <Box bg="gray.900" py={8}>
         <Container maxW="7xl">
           <VStack spacing={8} align="stretch">
             <Skeleton height="60px" />
@@ -72,9 +82,9 @@ export default function UserDashboardPage() {
     return null;
   }
 
-  if (userLoading || analyticsLoading) {
+  if (userLoading || analyticsLoading || srsLoading) {
     return (
-      <Box minH="100vh" bg="gray.900" py={8}>
+      <Box bg="gray.900" py={8}>
         <Container maxW="7xl">
           <VStack spacing={8} align="stretch">
             <Skeleton height="60px" />
@@ -101,7 +111,7 @@ export default function UserDashboardPage() {
   const lastQuiz = formatRelativeTime(lastQuizDate);
 
   return (
-    <Box minH="100vh" bg="gray.900" py={8}>
+    <Box bg="gray.900" py={8}>
       <Container maxW="7xl">
         <VStack spacing={8} align="stretch">
           <Box>
@@ -138,6 +148,9 @@ export default function UserDashboardPage() {
               color="blue.400"
             />
           </SimpleGrid>
+
+          {/* SRS Review Section */}
+          {!srsLoading && srsStats && <ReviewCard stats={srsStats} />}
 
           <Heading size="lg" color="gray.50">
             Quick Actions
@@ -184,27 +197,37 @@ interface ActionCardProps {
 }
 
 // Shared Components
-const StatCard = ({ label, value, icon, color }: StatCardProps) => (
-  <Card role="region" aria-label={`${label} statistic`}>
-    <CardContent>
-      <VStack align="start" spacing={1}>
-        <Text fontSize="sm" color="gray.400" fontWeight="600">
-          {label}
-        </Text>
-        <HStack>
-          <Heading size="2xl" color={color} aria-label={`${label}: ${value}`}>
-            {value}
-          </Heading>
-          {icon && (
-            <Text fontSize="2xl" aria-hidden="true">
-              {icon}
-            </Text>
-          )}
-        </HStack>
-      </VStack>
-    </CardContent>
-  </Card>
-);
+const StatCard = ({ label, value, icon, color }: StatCardProps) => {
+  const isLongText = String(value).length > 7;
+
+  return (
+    <Card role="region" aria-label={`${label} statistic`}>
+      <CardContent>
+        <VStack align="start" spacing={1}>
+          <Text fontSize="sm" color="gray.400" fontWeight="600">
+            {label}
+          </Text>
+          <HStack w="full" overflow="hidden">
+            <Heading
+              size={isLongText ? 'lg' : '2xl'}
+              color={color}
+              aria-label={`${label}: ${value}`}
+              noOfLines={1}
+              wordBreak="break-word"
+            >
+              {value}
+            </Heading>
+            {icon && (
+              <Text fontSize="2xl" aria-hidden="true" flexShrink={0}>
+                {icon}
+              </Text>
+            )}
+          </HStack>
+        </VStack>
+      </CardContent>
+    </Card>
+  );
+};
 
 const ActionCard = ({ href, title, description, emoji }: ActionCardProps) => (
   <Link

@@ -296,6 +296,14 @@ export class AdminController {
 
       const { currentPassword, newPassword } = req.body;
 
+      if (
+        !newPassword ||
+        typeof newPassword !== 'string' ||
+        newPassword.length < 6
+      ) {
+        throw new AppError('Password must be at least 6 characters', 400);
+      }
+
       // Get admin with password
       const admin = await AdminService.findById(adminId);
       if (!admin) {

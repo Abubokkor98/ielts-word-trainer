@@ -6,20 +6,22 @@ export function proxy(request: NextRequest) {
   const token = request.cookies.get('user_auth_token')?.value;
   const { pathname } = request.nextUrl;
 
-  // Public routes that don't require authentication
-  const publicRoutes = [
-    '/login',
-    '/register',
-    '/forgot-password',
-    '/reset-password',
-    '/',
-    '/vocabulary',
-    '/quiz',
+  // Protected routes that require authentication
+  const protectedRoutes = [
+    '/dashboard',
+    '/profile',
+    '/analytics',
+    '/review',
+    '/admin',
   ];
-  const isPublicRoute = publicRoutes.includes(pathname);
+
+  // Check if the current path starts with any of the protected routes
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
   // If accessing protected route without token, redirect to login
-  if (!isPublicRoute && !token) {
+  if (isProtectedRoute && !token) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('redirect', pathname);

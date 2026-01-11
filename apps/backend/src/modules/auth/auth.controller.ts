@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { AuthService } from './auth.service';
 import { UserService } from '../users/users.service';
 import { AppError } from '../../core/errors/AppError';
+import { AuthRequest } from './auth.middleware';
 
 export class AuthController {
   static async register(req: Request, res: Response, next: NextFunction) {
@@ -92,8 +93,9 @@ export class AuthController {
 
   static async me(req: Request, res: Response, next: NextFunction) {
     try {
-      if (!req.user) throw new AppError('Unauthenticated', 401);
-      const user = await UserService.findById(req.user.id);
+      const authReq = req as AuthRequest;
+      if (!authReq.user) throw new AppError('Unauthenticated', 401);
+      const user = await UserService.findById(authReq.user.id);
       if (!user) throw new AppError('User not found', 404);
 
       res.json({
@@ -182,8 +184,9 @@ export class AuthController {
   static async logout(req: Request, res: Response, next: NextFunction) {
     try {
       const refreshToken = req.cookies.refreshToken;
-      if (refreshToken && req.user) {
-        const user = await UserService.findById(req.user.id);
+      const authReq = req as AuthRequest;
+      if (refreshToken && authReq.user) {
+        const user = await UserService.findById(authReq.user.id);
         if (user) {
           await AuthService.logout(user, refreshToken);
         }

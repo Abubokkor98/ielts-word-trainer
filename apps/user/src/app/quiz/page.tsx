@@ -367,12 +367,12 @@ export default function QuizPage() {
   if (questions.length === 0) {
     return (
       <Box
-        minH="100vh"
         bg="gray.900"
         display="flex"
         alignItems="center"
         justifyContent="center"
         py={12}
+        flex="1"
       >
         <Container maxW="2xl">
           <VStack
@@ -442,7 +442,7 @@ export default function QuizPage() {
   if (showResult) {
     const percentage = Math.round((score / questions.length) * 100);
     return (
-      <Box minH="100vh" bg="gray.900" py={8}>
+      <Box bg="gray.900" py={8}>
         <Container maxW="6xl">
           <VStack spacing={8} align="stretch">
             {/* Top: Score Card (Home Page Style) */}
@@ -648,7 +648,7 @@ export default function QuizPage() {
   const badgeInfo = getTypeBadge(currentQuestion.type);
 
   return (
-    <Box minH="100vh" bg="gray.900" py={12}>
+    <Box bg="gray.900" py={12}>
       <Container maxW="4xl">
         <VStack spacing={8}>
           <Box w="full">
