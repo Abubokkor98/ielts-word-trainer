@@ -44,6 +44,11 @@ export function useQuizGame({
   const startQuiz = async () => {
     if (!isAuthenticated) return;
 
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+
     const result = await fetchQuiz();
 
     if (result.error) {
