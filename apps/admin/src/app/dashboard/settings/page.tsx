@@ -6,7 +6,6 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Divider,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -17,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function SettingsPage() {
@@ -53,7 +52,7 @@ export default function SettingsPage() {
       const response = await axiosInstance.patch('/admin/profile', data);
       return response.data;
     },
-    onSuccess: (response, variables) => {
+    onSuccess: (_response, variables) => {
       // Update local auth store with new user data
       if (user) {
         useAuthStore.getState().setUser({ ...user, name: variables.name });

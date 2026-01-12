@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Center, Spinner } from '@chakra-ui/react';
+import { Center, Spinner } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

@@ -149,8 +149,8 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                         Synonyms
                       </Text>
                       <Wrap spacing={1.5}>
-                        {word.synonyms.map((syn, idx) => (
-                          <WrapItem key={idx}>
+                        {word.synonyms.map((syn) => (
+                          <WrapItem key={syn}>
                             <Badge colorScheme="green" fontSize="xs" px={2} py={0.5}>
                               {syn}
                             </Badge>
@@ -172,8 +172,8 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                         Antonyms
                       </Text>
                       <Wrap spacing={1.5}>
-                        {word.antonyms.map((ant, idx) => (
-                          <WrapItem key={idx}>
+                        {word.antonyms.map((ant) => (
+                          <WrapItem key={ant}>
                             <Badge colorScheme="red" fontSize="xs" px={2} py={0.5}>
                               {ant}
                             </Badge>

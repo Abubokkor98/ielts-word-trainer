@@ -33,7 +33,6 @@ import {
   Settings,
   Shield,
   Users,
-  X,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -112,7 +111,7 @@ export const AdminSidebar = () => {
   const bgColor = useColorModeValue('white', 'gray.900');
   const pathname = usePathname();
   const toast = useToast();
-  const router = useRouter();
+  const _router = useRouter();
 
   const handleLogout = () => {
     // Clear auth cookie first

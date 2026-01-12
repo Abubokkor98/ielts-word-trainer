@@ -13,7 +13,7 @@ export class QuizController {
         userId,
         topicId as string,
         difficulty as string,
-        limit ? parseInt(limit as string) : 10,
+        limit ? parseInt(limit as string, 10) : 10,
       );
       res.json({ success: true, data: quiz });
     } catch (err) {
@@ -23,7 +23,7 @@ export class QuizController {
 
   static async getRecommendedDifficulty(req: Request, res: Response, next: NextFunction) {
     try {
-      const userId = req.user!.id;
+      const userId = req.user?.id;
       const result = await QuizAnalyticsService.getRecommendedDifficulty(userId);
       res.status(200).json({ success: true, data: result });
     } catch (err) {

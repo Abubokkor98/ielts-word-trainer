@@ -16,8 +16,6 @@ import { AdminRole } from '@ielts/shared';
 import { Card, CardContent, DashboardChart } from '@ielts/ui';
 import { useQuery } from '@tanstack/react-query';
 import { Activity, BookOpen, FileText, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
 interface StatCardProps {
   label: string;

@@ -1,4 +1,4 @@
-import { AdminRole, UserRole } from '@ielts/shared';
+import { AdminRole } from '@ielts/shared';
 import { Router } from 'express';
 import { authenticate, authorize } from '../auth/auth.middleware';
 import { TopicsController } from './topics.controller';

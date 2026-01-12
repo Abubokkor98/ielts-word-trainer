@@ -97,7 +97,7 @@ export class QuizAttemptController {
         console.log(
           '✅ User updated - XP:',
           updatedUser?.xp,
-          '(+' + xpEarned + ')',
+          `(+${xpEarned})`,
           '| Streak:',
           updatedUser?.streak,
           '🔥',
@@ -142,7 +142,7 @@ export class QuizAttemptController {
         });
       }
 
-      const limit = parseInt(req.query.limit as string) || 10;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
       const attempts = await QuizAttemptService.getUserAttempts(userId, limit);
 
       return res.status(200).json({

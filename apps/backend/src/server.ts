@@ -38,7 +38,7 @@ export const createServer = (): Express => {
   app.use(limiter);
 
   // Health Check
-  app.get('/health', (req, res) => {
+  app.get('/health', (_req, res) => {
     res.json({ status: 'ok', environment: env.NODE_ENV });
   });
 

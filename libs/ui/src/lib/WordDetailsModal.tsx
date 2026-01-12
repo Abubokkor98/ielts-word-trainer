@@ -128,8 +128,8 @@ export function WordDetailsModal({ isOpen, onClose, word }: WordDetailsModalProp
                       Synonyms
                     </Text>
                     <Wrap spacing={1.5}>
-                      {word.synonyms.map((syn, idx) => (
-                        <WrapItem key={idx}>
+                      {word.synonyms.map((syn) => (
+                        <WrapItem key={syn}>
                           <Badge colorScheme="green" fontSize="xs" px={2} py={0.5}>
                             {syn}
                           </Badge>
@@ -153,8 +153,8 @@ export function WordDetailsModal({ isOpen, onClose, word }: WordDetailsModalProp
                       Antonyms
                     </Text>
                     <Wrap spacing={1.5}>
-                      {word.antonyms.map((ant, idx) => (
-                        <WrapItem key={idx}>
+                      {word.antonyms.map((ant) => (
+                        <WrapItem key={ant}>
                           <Badge colorScheme="red" fontSize="xs" px={2} py={0.5}>
                             {ant}
                           </Badge>

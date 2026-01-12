@@ -38,7 +38,7 @@ export const protectUserRoute = <P extends object>(Component: React.ComponentTyp
         // Redirect admins to admin app
         if (typeof window !== 'undefined') {
           window.location.href = `${
-            process.env['NEXT_PUBLIC_ADMIN_APP_URL'] || 'http://localhost:3001'
+            process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'http://localhost:3001'
           }/dashboard`;
         }
       }
@@ -64,7 +64,7 @@ export const protectAdminRoute = <P extends object>(Component: React.ComponentTy
         // Redirect regular users to user app
         if (typeof window !== 'undefined') {
           window.location.href = `${
-            process.env['NEXT_PUBLIC_USER_APP_URL'] || 'http://localhost:3000'
+            process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'
           }/dashboard`;
         }
       }

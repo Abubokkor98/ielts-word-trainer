@@ -18,7 +18,7 @@ export class QuizAnalyticsController {
     }
   }
 
-  static async getGlobalAnalytics(req: Request, res: Response, next: NextFunction) {
+  static async getGlobalAnalytics(_req: Request, res: Response, next: NextFunction) {
     try {
       const analytics = await QuizAnalyticsService.getGlobalAnalytics();
 

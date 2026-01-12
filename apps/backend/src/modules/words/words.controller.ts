@@ -15,8 +15,8 @@ export class WordsController {
 
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 20;
       const result = await WordsService.findAll(req.query, page, limit);
       res.json({ success: true, data: result });
     } catch (err) {

@@ -91,6 +91,7 @@ export function Pagination({
       {pageNumbers.map((page, index) => {
         if (page === ELLIPSIS) {
           return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: Index is stable for static elements
             <Text key={`ellipsis-${index}`} color="gray.500" px={2}>
               {ELLIPSIS}
             </Text>
@@ -102,7 +103,7 @@ export function Pagination({
 
         return (
           <Button
-            key={pageNum}
+            key={page}
             onClick={() => onPageChange(pageNum)}
             variant={isActive ? 'solid' : 'outline'}
             colorScheme={isActive ? 'brand' : 'gray'}

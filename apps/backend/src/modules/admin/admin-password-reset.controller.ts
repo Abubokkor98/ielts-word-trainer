@@ -1,6 +1,6 @@
+import crypto from 'node:crypto';
 import { Logger } from '@ielts/utils';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
 import { EmailService } from '../../core/services/email.service';

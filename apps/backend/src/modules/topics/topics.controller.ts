@@ -12,7 +12,7 @@ export class TopicsController {
     }
   }
 
-  static async getAll(req: Request, res: Response, next: NextFunction) {
+  static async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const topics = await TopicsService.findAll();
       res.json({ success: true, data: topics });

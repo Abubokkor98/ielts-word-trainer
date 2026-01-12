@@ -12,12 +12,11 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalOverlay,
-  Stat,
   Text,
   useColorModeValue,
   VStack,
 } from '@chakra-ui/react';
-import { Award, Calendar, Flame, Mail, Shield, User as UserIcon } from 'lucide-react';
+import { Award, Calendar, Flame, Mail, Shield } from 'lucide-react';
 import type { User } from '../../../types/user';
 
 interface UserDetailModalProps {
@@ -31,7 +30,9 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
   const bgStats = useColorModeValue('gray.50', 'gray.700');
   const textColor = useColorModeValue('gray.600', 'gray.400');
   const headingColor = useColorModeValue('gray.800', 'white');
-
+  const dividerColor = useColorModeValue('gray.100', 'gray.700');
+  const borderColor = useColorModeValue('gray.100', 'gray.600');
+  // Reuse bgStats for statsBg since they use same colors
   if (!user) return null;
 
   return (
@@ -92,7 +93,7 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
               </HStack>
             </VStack>
 
-            <Divider borderColor={useColorModeValue('gray.100', 'gray.700')} />
+            <Divider borderColor={dividerColor} />
 
             {/* Stats Grid */}
             <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
@@ -102,7 +103,7 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
                   p={4}
                   borderRadius="xl"
                   border="1px solid"
-                  borderColor={useColorModeValue('gray.100', 'gray.600')}
+                  borderColor={borderColor}
                   textAlign="center"
                 >
                   <Icon as={Award} w={6} h={6} color="brand.500" mb={2} />
@@ -126,7 +127,7 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
                   p={4}
                   borderRadius="xl"
                   border="1px solid"
-                  borderColor={useColorModeValue('gray.100', 'gray.600')}
+                  borderColor={borderColor}
                   textAlign="center"
                 >
                   <Icon as={Flame} w={6} h={6} color="orange.400" mb={2} />
@@ -147,14 +148,7 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
             </Grid>
 
             {/* Timestamps */}
-            <VStack
-              w="full"
-              bg={useColorModeValue('gray.50', 'gray.700')}
-              p={4}
-              borderRadius="lg"
-              align="start"
-              spacing={3}
-            >
+            <VStack w="full" bg={bgStats} p={4} borderRadius="lg" align="start" spacing={3}>
               <HStack color={textColor} fontSize="sm">
                 <Icon as={Calendar} size={16} />
                 <Text fontWeight="medium">Member Since:</Text>

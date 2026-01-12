@@ -101,7 +101,7 @@ export function QuizResults({ score, questions, answers, onRestart }: QuizResult
 
                 return (
                   <Box
-                    key={idx}
+                    key={question.id}
                     bg="gray.800"
                     p={6}
                     borderRadius="lg"

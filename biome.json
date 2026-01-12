@@ -1,9 +1,9 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": true
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
   },
 
   "formatter": {
@@ -17,9 +17,16 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "complexity": {
+        "noStaticOnlyClass": "off"
+      },
+      "suspicious": {
+        "noExplicitAny": "warn",
+        "noDocumentCookie": "off",
+        "noUnknownAtRules": "off"
+      },
       "correctness": {
-        "noUnusedVariables": "warn",
-        "noUnusedImports": "warn"
+        "useHookAtTopLevel": "warn"
       }
     }
   },

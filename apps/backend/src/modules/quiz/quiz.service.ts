@@ -80,7 +80,7 @@ export class QuizService {
     });
   }
 
-  private static selectQuestionType(index: number): QuestionType {
+  private static selectQuestionType(_index: number): QuestionType {
     const rand = Math.random();
     // 40% Word -> Meaning
     // 30% Meaning -> Word

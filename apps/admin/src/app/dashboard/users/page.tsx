@@ -28,16 +28,7 @@ import {
 import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { Button, Card, CardContent, CardHeader, Input, Pagination } from '@ielts/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  Ban,
-  Calendar,
-  CheckCircle,
-  Download,
-  Eye,
-  Mail,
-  MoreVertical,
-  Search,
-} from 'lucide-react';
+import { Ban, Calendar, CheckCircle, Download, Eye, Mail, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { User } from '../../../types/user';
 import { UserDetailModal } from './UserDetailModal';
@@ -116,7 +107,7 @@ export default function UserManagementPage() {
       link.remove();
       window.URL.revokeObjectURL(url);
       toast({ title: 'Export successful', status: 'success' });
-    } catch (error) {
+    } catch (_error) {
       toast({ title: 'Export failed', status: 'error' });
     }
   };

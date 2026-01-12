@@ -30,7 +30,7 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
     try {
       await onChangePassword(passwords);
       setPasswords({ current: '', new: '', confirm: '' });
-    } catch (error) {
+    } catch (_error) {
       // Error handled by hook
     }
   };

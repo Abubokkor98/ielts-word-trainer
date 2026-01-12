@@ -29,6 +29,7 @@ export function VocabularyList({
     return (
       <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
         {[...Array(8)].map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Skeleton indices are stable
           <Skeleton key={i} height="220px" borderRadius="md" />
         ))}
       </SimpleGrid>

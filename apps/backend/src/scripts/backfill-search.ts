@@ -5,8 +5,8 @@ dotenv.config({ path: 'apps/backend/.env' });
 import mongoose from 'mongoose';
 import { Word } from '../modules/words/words.model';
 
-const MONGODB_URI = process.env['MONGODB_URI'];
-const MONGODB_DBNAME = process.env['MONGODB_DBNAME'] || 'itelts-vocabs-app';
+const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_DBNAME = process.env.MONGODB_DBNAME || 'itelts-vocabs-app';
 
 async function backfill() {
   try {

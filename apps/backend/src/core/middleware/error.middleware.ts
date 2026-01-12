@@ -3,7 +3,12 @@ import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { AppError } from '../errors/AppError';
 
-export const globalErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
+export const globalErrorHandler = (
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) => {
   Logger.error(err.message);
 
   if (err instanceof AppError) {

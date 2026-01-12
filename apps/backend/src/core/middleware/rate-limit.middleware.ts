@@ -93,7 +93,7 @@ export const createUserRateLimit = (max: number, windowMinutes = 15) => {
       if (user?.id) {
         return `user:${user.id}`;
       }
-      const clientIp = req['ip'];
+      const clientIp = req.ip;
       if (!clientIp) {
         console.warn('Rate limit key: undefined IP for unauthenticated request');
         return 'unknown';

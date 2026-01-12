@@ -1,5 +1,5 @@
+import path from 'node:path';
 import dotenv from 'dotenv';
-import path from 'path';
 
 // Load .env from backend directory
 dotenv.config({ path: path.join(process.cwd(), 'apps/backend/.env') });

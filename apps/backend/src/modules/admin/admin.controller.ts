@@ -1,5 +1,4 @@
 import { AdminRole } from '@ielts/shared';
-import bcrypt from 'bcryptjs';
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
 import type { AuthRequest } from '../auth/auth.middleware';
@@ -69,7 +68,7 @@ export class AdminController {
     }
   }
 
-  static async getAll(req: Request, res: Response, next: NextFunction) {
+  static async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const admins = await AdminService.findAll();
       res.json({
@@ -81,7 +80,7 @@ export class AdminController {
     }
   }
 
-  static async getStats(req: Request, res: Response, next: NextFunction) {
+  static async getStats(_req: Request, res: Response, next: NextFunction) {
     try {
       const stats = await AdminService.getDashboardStats();
       res.json({
@@ -95,8 +94,8 @@ export class AdminController {
 
   static async getUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
       const search = req.query.search as string;
 
       const result = await AdminService.getUsers(page, limit, search);
@@ -130,7 +129,7 @@ export class AdminController {
     }
   }
 
-  static async exportUsers(req: Request, res: Response, next: NextFunction) {
+  static async exportUsers(_req: Request, res: Response, next: NextFunction) {
     try {
       const csvContent = await CSVExportService.exportUsers();
 
@@ -207,7 +206,7 @@ export class AdminController {
 
   static async update(req: Request, res: Response, next: NextFunction) {
     try {
-      const authReq = req as AuthRequest;
+      const _authReq = req as AuthRequest;
 
       const { id } = req.params;
       const data = req.body;

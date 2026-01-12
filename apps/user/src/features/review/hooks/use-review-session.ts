@@ -64,7 +64,7 @@ export function useReviewSession() {
         } else {
           setSessionComplete(true);
         }
-      } catch (error) {
+      } catch (_error) {
         toast({
           title: 'Failed to submit review',
           status: 'error',

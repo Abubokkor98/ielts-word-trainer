@@ -62,8 +62,8 @@ export const DashboardChart = ({
           <Box fontWeight="bold" mb={2} color={textColor} fontSize="sm">
             {label}
           </Box>
-          {payload.map((entry: any, index: number) => (
-            <Box key={index} color={entry.color} fontSize="sm">
+          {payload.map((entry: any) => (
+            <Box key={`${entry.dataKey}-${entry.value}`} color={entry.color} fontSize="sm">
               {entry.name}: {entry.value}
             </Box>
           ))}
@@ -79,7 +79,7 @@ export const DashboardChart = ({
         return (
           <AreaChart {...CommonProps}>
             <defs>
-              {dataKeys.map((k, i) => (
+              {dataKeys.map((k, _i) => (
                 <linearGradient key={k.key} id={`color${k.key}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={k.color} stopOpacity={0.8} />
                   <stop offset="95%" stopColor={k.color} stopOpacity={0} />

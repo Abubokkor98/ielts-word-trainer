@@ -255,7 +255,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   {...register('word', { required: 'Word is required' })}
                   placeholder="e.g. Ephemeral"
                 />
-                <FormErrorMessage>{errors.word && errors.word.message}</FormErrorMessage>
+                <FormErrorMessage>{errors.word?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.meaning} isRequired>
@@ -264,7 +264,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   {...register('meaning', { required: 'Meaning is required' })}
                   placeholder="Definition of the word"
                 />
-                <FormErrorMessage>{errors.meaning && errors.meaning.message}</FormErrorMessage>
+                <FormErrorMessage>{errors.meaning?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.exampleSentence} isRequired>
@@ -275,9 +275,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="Use the word in a sentence"
                 />
-                <FormErrorMessage>
-                  {errors.exampleSentence && errors.exampleSentence.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.exampleSentence?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.module} isRequired>
@@ -293,7 +291,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   <option value="listening">Listening</option>
                   <option value="speaking">Speaking</option>
                 </Select>
-                <FormErrorMessage>{errors.module && errors.module.message}</FormErrorMessage>
+                <FormErrorMessage>{errors.module?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.difficulty} isRequired>
@@ -308,9 +306,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
                 </Select>
-                <FormErrorMessage>
-                  {errors.difficulty && errors.difficulty.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.difficulty?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl position="relative" isInvalid={!!errors.topic} isRequired>
@@ -338,7 +334,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                     <ChevronDown size={16} color="gray" />
                   </InputRightElement>
                 </InputGroup>
-                <FormErrorMessage>{errors.topic && errors.topic.message}</FormErrorMessage>
+                <FormErrorMessage>{errors.topic?.message}</FormErrorMessage>
 
                 {/* Topic Suggestions Dropdown */}
                 {showSuggestions && (
@@ -395,9 +391,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="e.g. Adjective"
                 />
-                <FormErrorMessage>
-                  {errors.partOfSpeech && errors.partOfSpeech.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.partOfSpeech?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.synonyms} isRequired>
@@ -408,7 +402,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="transient, fleeing, short-lived"
                 />
-                <FormErrorMessage>{errors.synonyms && errors.synonyms.message}</FormErrorMessage>
+                <FormErrorMessage>{errors.synonyms?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.antonyms} isRequired>
@@ -419,7 +413,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="permanent, long-lived"
                 />
-                <FormErrorMessage>{errors.antonyms && errors.antonyms.message}</FormErrorMessage>
+                <FormErrorMessage>{errors.antonyms?.message}</FormErrorMessage>
               </FormControl>
             </VStack>
           </ModalBody>
