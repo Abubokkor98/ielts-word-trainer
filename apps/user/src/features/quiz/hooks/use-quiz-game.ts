@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { quizApi } from '../services/quiz.api';
@@ -24,6 +24,15 @@ export function useQuizGame({
   >(new Map());
 
   const toast = useToast();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const { refetch: fetchQuiz, isLoading: isLoadingQuiz } = useQuery({
     queryKey: ['quiz', 'generate', selectedDifficulty],
@@ -110,7 +119,7 @@ export function useQuizGame({
       return newMap;
     });
 
-    setTimeout(nextQuestion, 1500);
+    timeoutRef.current = setTimeout(nextQuestion, 1500);
   };
 
   const nextQuestion = () => {
