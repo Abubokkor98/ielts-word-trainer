@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {
-  createUserRateLimit,
+  createRateLimiter,
   moderateRateLimit,
 } from '../../core/middleware/rate-limit.middleware';
 import { authenticate } from '../auth/auth.middleware';
@@ -12,7 +12,11 @@ const router = Router();
 router.use(authenticate);
 
 // Review endpoint - per-user rate limiting (write operation, 100 reviews per 10 min)
-router.post('/review', createUserRateLimit(100, 10), SRSController.review);
+router.post(
+  '/review',
+  createRateLimiter(10 * 60 * 1000, 100, 'Too many reviews'),
+  SRSController.review
+);
 
 // Read endpoints - moderate rate limiting
 router.get('/due', moderateRateLimit, SRSController.getDue);

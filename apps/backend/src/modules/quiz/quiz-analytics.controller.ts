@@ -1,9 +1,10 @@
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
+import type { AuthRequest } from '../auth/auth.middleware';
 import { QuizAnalyticsService } from './quiz-analytics.service';
 
 export class QuizAnalyticsController {
-  static async getUserAnalytics(req: Request, res: Response, next: NextFunction) {
+  static async getUserAnalytics(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       if (!req.user) throw new AppError('Unauthenticated', 401);
 

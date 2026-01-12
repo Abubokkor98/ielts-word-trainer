@@ -22,8 +22,9 @@ const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
   winston.format.colorize({ all: true }),
   winston.format.printf(
-    (info: winston.Logform.TransformableInfo) => `${info.timestamp} ${info.level}: ${info.message}`,
-  ),
+    (info: winston.Logform.TransformableInfo) =>
+      `${info['timestamp']} ${info['level']}: ${info['message']}`
+  )
 );
 
 const transports = [
@@ -34,7 +35,7 @@ const transports = [
 ];
 
 export const Logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'development' ? 'debug' : 'warn',
+  level: process.env['NODE_ENV'] === 'development' ? 'debug' : 'warn',
   levels,
   format,
   transports,

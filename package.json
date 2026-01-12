@@ -19,6 +19,9 @@
     "lint": "pnpm lint:check",
     "lint:check": "biome check .",
     "lint:fix": "biome check --write .",
+    "lint:backend": "biome check apps/backend",
+    "lint:user": "biome check apps/user",
+    "lint:admin": "biome check apps/admin",
     "test": "nx run-many --target=test --all",
     "clean": "nx reset && rm -rf dist node_modules"
   },

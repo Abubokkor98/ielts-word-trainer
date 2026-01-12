@@ -1,11 +1,12 @@
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import mongoose from 'mongoose';
+import type { AuthRequest } from '../auth/auth.middleware';
 import { User } from '../users/users.model';
 import { QuizAttemptSchema } from './quiz-attempt.schema';
 import { QuizAttemptService } from './quiz-attempt.service';
 
 export class QuizAttemptController {
-  static async create(req: Request, res: Response) {
+  static async create(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
       if (!userId) {
@@ -132,7 +133,7 @@ export class QuizAttemptController {
     }
   }
 
-  static async getUserAttempts(req: Request, res: Response) {
+  static async getUserAttempts(req: AuthRequest, res: Response) {
     try {
       const userId = req.user?.id;
       if (!userId) {
