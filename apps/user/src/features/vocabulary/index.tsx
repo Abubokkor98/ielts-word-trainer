@@ -1,11 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Container, Heading, Text, useDisclosure } from '@chakra-ui/react';
 import { Pagination, WordDetailsModal } from '@ielts/ui';
-import { useAuthStore } from '@ielts/auth'; // Assuming this stayed here
+import { useAuthStore } from '@ielts/auth';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { VocabularyFilters } from './components/vocabulary-filters';
