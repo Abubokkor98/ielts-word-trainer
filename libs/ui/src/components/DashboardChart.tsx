@@ -2,18 +2,18 @@
 
 import { Box, useColorModeValue } from '@chakra-ui/react';
 import {
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
   Area,
   AreaChart,
   Bar,
   BarChart,
+  CartesianGrid,
+  Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
 
 interface DashboardChartProps {
@@ -80,30 +80,16 @@ export const DashboardChart = ({
           <AreaChart {...CommonProps}>
             <defs>
               {dataKeys.map((k, i) => (
-                <linearGradient
-                  key={k.key}
-                  id={`color${k.key}`}
-                  x1="0"
-                  y1="0"
-                  x2="0"
-                  y2="1"
-                >
+                <linearGradient key={k.key} id={`color${k.key}`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={k.color} stopOpacity={0.8} />
                   <stop offset="95%" stopColor={k.color} stopOpacity={0} />
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={gridColor}
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
             <XAxis dataKey={xAxisKey} {...AxisProps} dy={10} />
             <YAxis {...AxisProps} dx={-10} />
-            <Tooltip
-              content={<TooltipContent />}
-              cursor={{ fill: 'transparent' }}
-            />
+            <Tooltip content={<TooltipContent />} cursor={{ fill: 'transparent' }} />
             <Legend wrapperStyle={{ paddingTop: '20px' }} />
             {dataKeys.map((k) => (
               <Area
@@ -121,17 +107,10 @@ export const DashboardChart = ({
       case 'bar':
         return (
           <BarChart {...CommonProps}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={gridColor}
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
             <XAxis dataKey={xAxisKey} {...AxisProps} dy={10} />
             <YAxis {...AxisProps} dx={-10} />
-            <Tooltip
-              content={<TooltipContent />}
-              cursor={{ fill: 'white', opacity: 0.05 }}
-            />
+            <Tooltip content={<TooltipContent />} cursor={{ fill: 'white', opacity: 0.05 }} />
             <Legend wrapperStyle={{ paddingTop: '20px' }} />
             {dataKeys.map((k) => (
               <Bar
@@ -147,11 +126,7 @@ export const DashboardChart = ({
       case 'line':
         return (
           <LineChart {...CommonProps}>
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={gridColor}
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
             <XAxis dataKey={xAxisKey} {...AxisProps} dy={10} />
             <YAxis {...AxisProps} dx={-10} />
             <Tooltip content={<TooltipContent />} />

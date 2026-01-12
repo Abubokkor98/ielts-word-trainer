@@ -28,7 +28,7 @@ export const formatDate = (date: Date | string): string => {
  */
 export function formatRelativeTime(
   date: string | Date | undefined | null,
-  skewWindow = 300000
+  skewWindow = 300000,
 ): string {
   if (!date) return 'Never';
 

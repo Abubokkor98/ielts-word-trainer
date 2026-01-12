@@ -1,5 +1,4 @@
-export const sleep = (ms: number) =>
-  new Promise((resolve) => setTimeout(resolve, ms));
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const slugify = (text: string): string => {
   return text
@@ -7,8 +6,8 @@ export const slugify = (text: string): string => {
     .toLowerCase()
     .trim()
     .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-    .replace(/\-\-+/g, '-'); // Replace multiple - with single -
+    .replace(/[^\w-]+/g, '') // Remove all non-word chars
+    .replace(/--+/g, '-'); // Replace multiple - with single -
 };
 
 export const formatDate = (date: Date | string): string => {

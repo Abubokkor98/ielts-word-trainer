@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { WordsService } from './words.service';
+import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
 import { CSVImportService } from '../admin/csv-import.service';
+import { WordsService } from './words.service';
 
 export class WordsController {
   static async create(req: Request, res: Response, next: NextFunction) {

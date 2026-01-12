@@ -1,17 +1,8 @@
 'use client';
 
-import {
-  Box,
-  Button,
-  Heading,
-  HStack,
-  SimpleGrid,
-  Skeleton,
-  Text,
-  Badge,
-} from '@chakra-ui/react';
-import { Card, CardHeader, CardContent, CardFooter } from '@ielts/ui';
-import { Word } from '../types';
+import { Badge, Box, Button, Heading, HStack, SimpleGrid, Skeleton, Text } from '@chakra-ui/react';
+import { Card, CardContent, CardFooter, CardHeader } from '@ielts/ui';
+import type { Word } from '../types';
 
 interface VocabularyListProps {
   isLoading: boolean;

@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Container,
@@ -8,10 +9,9 @@ import {
   SimpleGrid,
   Text,
   VStack,
-  Badge,
 } from '@chakra-ui/react';
 import { QuestionType } from '@ielts/shared';
-import { Question } from '../types';
+import type { Question } from '../types';
 
 interface QuizQuestionCardProps {
   question: Question;
@@ -65,12 +65,7 @@ export function QuizQuestionCard({
               </HStack>
               <Badge colorScheme="brand">{Math.round(progress)}%</Badge>
             </HStack>
-            <Progress
-              value={progress}
-              colorScheme="brand"
-              size="sm"
-              borderRadius="full"
-            />
+            <Progress value={progress} colorScheme="brand" size="sm" borderRadius="full" />
           </Box>
 
           <Box

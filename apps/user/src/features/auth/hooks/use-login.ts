@@ -1,9 +1,9 @@
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi } from '../services/auth.api';
-import { LoginCredentials } from '../types';
+import type { LoginCredentials } from '../types';
 
 export function useLogin() {
   const router = useRouter();
@@ -29,9 +29,7 @@ export function useLogin() {
 
       // Security: Ensure redirect is a relative path (not external URL or protocol-relative)
       const safeRedirect =
-        redirectTo.startsWith('/') && !redirectTo.startsWith('//')
-          ? redirectTo
-          : '/';
+        redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/';
 
       router.push(safeRedirect);
     },

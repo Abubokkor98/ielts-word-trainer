@@ -1,21 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/auth';
-import { useAuthStore } from '@ielts/auth';
-import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
   Box,
-  Text,
-  VStack,
+  Link as ChakraLink,
   FormControl,
   FormLabel,
+  Text,
   useToast,
-  Link as ChakraLink,
+  VStack,
 } from '@chakra-ui/react';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
+import { Button, Card, CardContent, CardHeader, Input } from '@ielts/ui';
+import { useMutation } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -32,7 +31,7 @@ export default function LoginPage() {
           email,
           password,
         },
-        { timeout: 10000 }
+        { timeout: 10000 },
       );
 
       if (!data || !data.accessToken || !data.data || !data.data.role) {
@@ -74,14 +73,11 @@ export default function LoginPage() {
 
       router.push('/dashboard');
     },
-    onError: (
-      error: Error | { response?: { data?: { message?: string } } }
-    ) => {
+    onError: (error: Error | { response?: { data?: { message?: string } } }) => {
       toast({
         title: 'Login failed',
         description:
-          ('response' in error && error.response?.data?.message) ||
-          'Invalid credentials',
+          ('response' in error && error.response?.data?.message) || 'Invalid credentials',
         status: 'error',
         duration: 5000,
       });
@@ -152,21 +148,14 @@ export default function LoginPage() {
                 </Box>
               </FormControl>
 
-              <Button
-                type="submit"
-                width="100%"
-                isLoading={loginMutation.isPending}
-              >
+              <Button type="submit" width="100%" isLoading={loginMutation.isPending}>
                 Admin Login
               </Button>
 
               <Text color="gray.400" textAlign="center" fontSize="sm">
                 <ChakraLink
                   as={Link}
-                  href={
-                    process.env.NEXT_PUBLIC_USER_APP_URL ||
-                    'http://localhost:3000'
-                  }
+                  href={process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'}
                   color="brand.400"
                   fontWeight="600"
                 >

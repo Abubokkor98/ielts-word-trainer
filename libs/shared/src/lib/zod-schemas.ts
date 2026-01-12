@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { UserRole, Difficulty, ModuleType } from './enums';
+import { Difficulty, ModuleType, UserRole } from './enums';
 
 // User Schemas
 export const CreateUserSchema = z.object({

@@ -1,15 +1,15 @@
-import { Card, CardHeader, CardContent } from '@ielts/ui';
 import { Heading } from '@chakra-ui/react';
+import { Card, CardContent, CardHeader } from '@ielts/ui';
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
-import { PerformanceTrend } from '../types';
+import type { PerformanceTrend } from '../types';
 
 interface PerformanceChartProps {
   data: PerformanceTrend[];
@@ -37,12 +37,7 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
                 border: '1px solid #4a5568',
               }}
             />
-            <Line
-              type="monotone"
-              dataKey="score"
-              stroke="#1e88e5"
-              strokeWidth={2}
-            />
+            <Line type="monotone" dataKey="score" stroke="#1e88e5" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>

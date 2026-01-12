@@ -1,16 +1,14 @@
 'use client';
 
+import { Link as ChakraLink, Text, VStack } from '@chakra-ui/react';
+import { Button, Card, CardContent, CardHeader } from '@ielts/ui';
 import Link from 'next/link';
-import { Text, VStack, Link as ChakraLink } from '@chakra-ui/react';
-import { Button, Card, CardHeader, CardContent } from '@ielts/ui';
 
 interface ForgotPasswordSuccessUIProps {
   email: string;
 }
 
-export function ForgotPasswordSuccessUI({
-  email,
-}: ForgotPasswordSuccessUIProps) {
+export function ForgotPasswordSuccessUI({ email }: ForgotPasswordSuccessUIProps) {
   return (
     <Card maxW="md" w="full" p={8}>
       <CardHeader>
@@ -29,24 +27,14 @@ export function ForgotPasswordSuccessUI({
       <CardContent>
         <VStack spacing={6}>
           <Text fontSize="sm" color="gray.500" textAlign="center">
-            Did not receive the email? Check your spam folder or try another
-            email address.
+            Did not receive the email? Check your spam folder or try another email address.
           </Text>
-          <Button
-            variant="outline"
-            width="100%"
-            onClick={() => window.location.reload()}
-          >
+          <Button variant="outline" width="100%" onClick={() => window.location.reload()}>
             Try again
           </Button>
           <Text color="gray.400" textAlign="center">
             Remember your password?{' '}
-            <ChakraLink
-              as={Link}
-              href="/login"
-              color="brand.400"
-              fontWeight="bold"
-            >
+            <ChakraLink as={Link} href="/login" color="brand.400" fontWeight="bold">
               Login
             </ChakraLink>
           </Text>

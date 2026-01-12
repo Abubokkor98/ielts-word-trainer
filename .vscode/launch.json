@@ -6,24 +6,15 @@
       "request": "launch",
       "name": "Debug backend with Nx",
       "runtimeExecutable": "pnpm exec",
-      "runtimeArgs": [
-        "nx",
-        "serve",
-        "backend"
-      ],
+      "runtimeArgs": ["nx", "serve", "backend"],
       "env": {
         "NODE_OPTIONS": "--inspect=9229"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "skipFiles": ["<node_internals>/**"],
       "sourceMaps": true,
-      "outFiles": [
-        "${workspaceFolder}/apps/backend/dist/**/*.(m|c|)js",
-        "!**/node_modules/**"
-      ]
+      "outFiles": ["${workspaceFolder}/apps/backend/dist/**/*.(m|c|)js", "!**/node_modules/**"]
     }
   ]
 }

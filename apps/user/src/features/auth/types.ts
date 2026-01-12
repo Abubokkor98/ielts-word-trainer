@@ -1,4 +1,4 @@
-import { User } from '@ielts/auth';
+import type { User } from '@ielts/auth';
 
 export interface LoginCredentials {
   email: string;

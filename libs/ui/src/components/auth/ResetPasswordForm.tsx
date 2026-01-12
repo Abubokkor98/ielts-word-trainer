@@ -1,18 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
+import { Box, FormControl, FormLabel, Text, useToast, VStack } from '@chakra-ui/react';
 import { axiosInstance } from '@ielts/auth';
-import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
-import {
-  Box,
-  Text,
-  VStack,
-  FormControl,
-  FormLabel,
-  useToast,
-} from '@chakra-ui/react';
+import { Button, Card, CardContent, CardHeader, Input } from '@ielts/ui';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface ResetPasswordFormProps {
   redirectPath?: string;
@@ -49,13 +42,7 @@ export function ResetPasswordForm({
   }, [searchParams, router, toast]);
 
   const resetPasswordMutation = useMutation({
-    mutationFn: async ({
-      token,
-      password,
-    }: {
-      token: string;
-      password: string;
-    }) => {
+    mutationFn: async ({ token, password }: { token: string; password: string }) => {
       const { data } = await axiosInstance.post(`${apiPrefix}/reset-password`, {
         token,
         password,
@@ -74,8 +61,7 @@ export function ResetPasswordForm({
     onError: (error: any) => {
       toast({
         title: 'Reset failed',
-        description:
-          error.response?.data?.message || 'Invalid or expired token',
+        description: error.response?.data?.message || 'Invalid or expired token',
         status: 'error',
         duration: 5000,
       });
@@ -146,11 +132,7 @@ export function ResetPasswordForm({
                 />
               </FormControl>
 
-              <Button
-                type="submit"
-                width="100%"
-                isLoading={resetPasswordMutation.isPending}
-              >
+              <Button type="submit" width="100%" isLoading={resetPasswordMutation.isPending}>
                 Reset Password
               </Button>
             </VStack>

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { env } from '../config/env';
-import { Word } from '../modules/words/words.model';
 import { Topic } from '../modules/topics/topics.model';
+import { Word } from '../modules/words/words.model';
 
 async function connectToDatabase() {
   await mongoose.connect(env.MONGODB_URI, { dbName: env.MONGODB_DBNAME });
@@ -32,9 +32,7 @@ async function fixWordTopics() {
       }
 
       const topicName = String(currentTopic);
-      console.log(
-        `Processing word "${word.word}" with legacy topic "${topicName}"`
-      );
+      console.log(`Processing word "${word.word}" with legacy topic "${topicName}"`);
 
       // Find or create topic
       let topic = await Topic.findOne({
@@ -52,9 +50,7 @@ async function fixWordTopics() {
       // Update word using updateOne to bypass schema validation of the "old" document
       await Word.updateOne({ _id: word._id }, { topic: topic._id });
 
-      console.log(
-        `Updated word "${word.word}" linked to topic "${topic.name}"`
-      );
+      console.log(`Updated word "${word.word}" linked to topic "${topic.name}"`);
     }
 
     console.log('Migration complete.');

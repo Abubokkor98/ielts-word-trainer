@@ -1,14 +1,16 @@
 import dotenv from 'dotenv';
+
 dotenv.config({ path: 'apps/backend/.env' });
-import mongoose from 'mongoose';
+
+import { AdminRole, UserRole } from '@ielts/shared';
 import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
+import { Admin } from './modules/admin/admin.model';
+import { Quiz } from './modules/quiz/quiz.entity';
+import { QuizAttempt } from './modules/quiz/quiz-attempt.model';
+import { Topic } from './modules/topics/topics.model';
 import { User } from './modules/users/users.model';
 import { Word } from './modules/words/words.model';
-import { Topic } from './modules/topics/topics.model';
-import { QuizAttempt } from './modules/quiz/quiz-attempt.model';
-import { Quiz } from './modules/quiz/quiz.entity';
-import { UserRole, AdminRole } from '@ielts/shared';
-import { Admin } from './modules/admin/admin.model';
 
 const MONGODB_URI = process.env['MONGODB_URI'];
 const MONGODB_DBNAME = process.env['MONGODB_DBNAME'] || 'itelts-vocabs-app';
@@ -73,14 +75,16 @@ async function seed() {
 
     console.log('Created topics');
 
-    const topicMap = topics.reduce((acc, topic) => {
-      acc[topic.name] = topic._id;
-      return acc;
-    }, {} as Record<string, mongoose.Types.ObjectId>);
+    const topicMap = topics.reduce(
+      (acc, topic) => {
+        acc[topic.name] = topic._id;
+        return acc;
+      },
+      {} as Record<string, mongoose.Types.ObjectId>,
+    );
 
     // Fail fast if a seed word references a missing topic key
-    if (!topicMap['General'])
-      throw new Error('Seed misconfig: missing topic "General"');
+    if (!topicMap['General']) throw new Error('Seed misconfig: missing topic "General"');
 
     // Create vocabulary words
     const words = await Word.create([
@@ -564,12 +568,7 @@ async function seed() {
           {
             wordId: words[3]._id, // innovative
             questionText: 'What is the best definition for "innovative"?',
-            options: [
-              'featuring new methods',
-              'old fashioned',
-              'boring',
-              'expensive',
-            ],
+            options: ['featuring new methods', 'old fashioned', 'boring', 'expensive'],
             correctAnswer: 'featuring new methods',
           },
         ],

@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import type { AuthRequest } from '../auth/auth.middleware';
 import { SRSService } from './srs.service';
-import { AuthRequest } from '../auth/auth.middleware';
 
 export class SRSController {
   static async review(req: Request, res: Response, next: NextFunction) {

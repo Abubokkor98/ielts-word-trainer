@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { PasswordResetController } from './password-reset.controller';
-import { validateRequest } from '../../core/middleware/validate.middleware';
-import { passwordResetRateLimit } from '../../core/middleware/rate-limit.middleware';
 import { z } from 'zod';
+import { passwordResetRateLimit } from '../../core/middleware/rate-limit.middleware';
+import { validateRequest } from '../../core/middleware/validate.middleware';
+import { PasswordResetController } from './password-reset.controller';
 
 const router = Router();
 
@@ -23,12 +23,12 @@ router.post(
   '/request-reset',
   passwordResetRateLimit,
   validateRequest(requestResetSchema),
-  PasswordResetController.requestReset
+  PasswordResetController.requestReset,
 );
 router.post(
   '/reset-password',
   validateRequest(resetPasswordSchema),
-  PasswordResetController.resetPassword
+  PasswordResetController.resetPassword,
 );
 
 export default router;

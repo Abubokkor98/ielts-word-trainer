@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { QuizService } from './quiz.service';
 import { QuizAnalyticsService } from './quiz-analytics.service';
 
@@ -13,7 +13,7 @@ export class QuizController {
         userId,
         topicId as string,
         difficulty as string,
-        limit ? parseInt(limit as string) : 10
+        limit ? parseInt(limit as string) : 10,
       );
       res.json({ success: true, data: quiz });
     } catch (err) {
@@ -21,16 +21,10 @@ export class QuizController {
     }
   }
 
-  static async getRecommendedDifficulty(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async getRecommendedDifficulty(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.user!.id;
-      const result = await QuizAnalyticsService.getRecommendedDifficulty(
-        userId
-      );
+      const result = await QuizAnalyticsService.getRecommendedDifficulty(userId);
       res.status(200).json({ success: true, data: result });
     } catch (err) {
       next(err);

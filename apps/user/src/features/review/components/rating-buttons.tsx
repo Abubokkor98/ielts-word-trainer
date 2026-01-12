@@ -1,13 +1,5 @@
-import {
-  Button,
-  Card,
-  CardBody,
-  SimpleGrid,
-  Text,
-  VStack,
-  Box,
-} from '@chakra-ui/react';
-import { QualityRating } from '../types';
+import { Box, Button, Card, CardBody, SimpleGrid, Text, VStack } from '@chakra-ui/react';
+import type { QualityRating } from '../types';
 
 interface RatingButtonsProps {
   onRating: (quality: QualityRating) => void;

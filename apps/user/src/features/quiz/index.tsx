@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@ielts/auth';
 import { useToast } from '@chakra-ui/react';
+import { useAuthStore } from '@ielts/auth';
+import { useQuizStore } from '@ielts/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { quizApi } from './services/quiz.api';
-import { useQuizGame } from './hooks/use-quiz-game';
-import { QuizStartScreen } from './components/quiz-start-screen';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import { QuizQuestionCard } from './components/quiz-question-card';
 import { QuizResults } from './components/quiz-results';
-import { QuizAttempt } from './types';
-import { useQuizStore } from '@ielts/shared';
+import { QuizStartScreen } from './components/quiz-start-screen';
+import { useQuizGame } from './hooks/use-quiz-game';
+import { quizApi } from './services/quiz.api';
+import type { QuizAttempt } from './types';
 
 export function QuizContainer() {
   const { isAuthenticated } = useAuthStore();
@@ -73,34 +73,25 @@ export function QuizContainer() {
   }, [questions]);
 
   // Derive score from answers map locally in render to be safe
-  const calculatedScore = Array.from(questionAnswers.values()).filter(
-    (a) => a.isCorrect
-  ).length;
+  const calculatedScore = Array.from(questionAnswers.values()).filter((a) => a.isCorrect).length;
 
   useEffect(() => {
-    if (
-      showResult &&
-      startTime &&
-      !hasSavedRef.current &&
-      questions.length > 0
-    ) {
+    if (showResult && startTime && !hasSavedRef.current && questions.length > 0) {
       hasSavedRef.current = true;
 
       const endTime = new Date();
       const totalTimeSpent = endTime.getTime() - startTime.getTime();
 
       const attemptData: QuizAttempt = {
-        questions: Array.from(questionAnswers.entries()).map(
-          ([idx, answer]) => ({
-            wordId: questions[idx].id,
-            selectedAnswer: answer.selected,
-            correctAnswer: answer.correct,
-            isCorrect: answer.isCorrect,
-            timeSpent: answer.timeSpentMs || 0,
-            questionType: questions[idx].type,
-            qualityRating: answer.rating,
-          })
-        ),
+        questions: Array.from(questionAnswers.entries()).map(([idx, answer]) => ({
+          wordId: questions[idx].id,
+          selectedAnswer: answer.selected,
+          correctAnswer: answer.correct,
+          isCorrect: answer.isCorrect,
+          timeSpent: answer.timeSpentMs || 0,
+          questionType: questions[idx].type,
+          qualityRating: answer.rating,
+        })),
         score: calculatedScore,
         totalQuestions: questions.length,
         startTime: startTime.toISOString(),

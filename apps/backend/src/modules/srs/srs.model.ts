@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
 import { SRSStatus } from '@ielts/shared';
+import mongoose, { type Document, Schema } from 'mongoose';
 
 export interface ISRSItem extends Document {
   user: mongoose.Types.ObjectId;
@@ -36,7 +36,7 @@ const SRSItemSchema = new Schema<ISRSItem>(
     nextReviewDate: { type: Date, default: Date.now, index: true },
     lastReviewed: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Compound index for unique word per user (already exists)

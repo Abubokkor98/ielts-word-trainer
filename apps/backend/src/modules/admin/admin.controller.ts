@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import { AdminService } from './admin.service';
-import { AuthService } from '../auth/auth.service';
-import { AppError } from '../../core/errors/AppError';
 import { AdminRole } from '@ielts/shared';
-import { AuthRequest } from '../auth/auth.middleware';
 import bcrypt from 'bcryptjs';
+import type { NextFunction, Request, Response } from 'express';
+import { AppError } from '../../core/errors/AppError';
+import type { AuthRequest } from '../auth/auth.middleware';
+import { AuthService } from '../auth/auth.service';
+import { AdminService } from './admin.service';
 import { CSVExportService } from './csv-export.service';
 
 export class AdminController {
@@ -17,18 +17,13 @@ export class AdminController {
         throw new AppError('Invalid email or password', 401);
       }
 
-      const isValid = await AuthService.validatePassword(
-        password,
-        admin.passwordHash
-      );
+      const isValid = await AuthService.validatePassword(password, admin.passwordHash);
 
       if (!isValid) {
         throw new AppError('Invalid email or password', 401);
       }
 
-      const { accessToken, refreshToken } = await AuthService.generateTokens(
-        admin
-      );
+      const { accessToken, refreshToken } = await AuthService.generateTokens(admin);
 
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -115,11 +110,7 @@ export class AdminController {
     }
   }
 
-  static async updateUserStatus(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async updateUserStatus(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       const { status } = req.body;
@@ -177,7 +168,7 @@ export class AdminController {
           name,
           role: role || AdminRole.ADMIN,
         },
-        password
+        password,
       );
 
       res.status(201).json({
@@ -296,11 +287,7 @@ export class AdminController {
 
       const { currentPassword, newPassword } = req.body;
 
-      if (
-        !newPassword ||
-        typeof newPassword !== 'string' ||
-        newPassword.length < 6
-      ) {
+      if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
         throw new AppError('Password must be at least 6 characters', 400);
       }
 
@@ -311,10 +298,7 @@ export class AdminController {
       }
 
       // Verify current password
-      const isValid = await AuthService.validatePassword(
-        currentPassword,
-        admin.passwordHash
-      );
+      const isValid = await AuthService.validatePassword(currentPassword, admin.passwordHash);
 
       if (!isValid) {
         throw new AppError('Current password is incorrect', 401);
@@ -351,10 +335,7 @@ export class AdminController {
       // Check if refresh token exists in admin's token list
       let tokenValid = false;
       for (const storedToken of admin.refreshToken) {
-        const isMatch = await AuthService.validatePassword(
-          refreshToken,
-          storedToken
-        );
+        const isMatch = await AuthService.validatePassword(refreshToken, storedToken);
         if (isMatch) {
           tokenValid = true;
           break;

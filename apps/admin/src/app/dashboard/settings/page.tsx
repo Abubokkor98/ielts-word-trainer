@@ -2,23 +2,23 @@
 
 import {
   Box,
-  Heading,
-  VStack,
-  Card,
-  CardHeader,
-  CardBody,
-  FormControl,
-  FormLabel,
-  Input,
   Button,
-  useToast,
+  Card,
+  CardBody,
+  CardHeader,
   Divider,
+  FormControl,
   FormErrorMessage,
+  FormLabel,
+  Heading,
+  Input,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { useState, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 export default function SettingsPage() {
   const { user } = useAuthStore();
@@ -143,10 +143,7 @@ export default function SettingsPage() {
                     {...registerPassword('currentPassword', { required: true })}
                   />
                 </FormControl>
-                <FormControl
-                  isRequired
-                  isInvalid={!!passwordErrors.newPassword}
-                >
+                <FormControl isRequired isInvalid={!!passwordErrors.newPassword}>
                   <FormLabel>New Password</FormLabel>
                   <Input
                     type="password"
@@ -159,18 +156,14 @@ export default function SettingsPage() {
                     {passwordErrors.newPassword?.message as string}
                   </FormErrorMessage>
                 </FormControl>
-                <FormControl
-                  isRequired
-                  isInvalid={!!passwordErrors.confirmPassword}
-                >
+                <FormControl isRequired isInvalid={!!passwordErrors.confirmPassword}>
                   <FormLabel>Confirm New Password</FormLabel>
                   <Input
                     type="password"
                     {...registerPassword('confirmPassword', {
                       required: true,
                       validate: (value, formValues) =>
-                        value === formValues.newPassword ||
-                        'Passwords do not match',
+                        value === formValues.newPassword || 'Passwords do not match',
                     })}
                   />
                   <FormErrorMessage>

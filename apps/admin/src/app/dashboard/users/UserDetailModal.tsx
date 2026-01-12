@@ -1,31 +1,24 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  ModalCloseButton,
-  VStack,
-  HStack,
-  Text,
   Avatar,
   Badge,
-  Stat,
   Box,
   Divider,
-  useColorModeValue,
   Grid,
   GridItem,
+  HStack,
   Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Stat,
+  Text,
+  useColorModeValue,
+  VStack,
 } from '@chakra-ui/react';
-import {
-  Mail,
-  Calendar,
-  Award,
-  Flame,
-  User as UserIcon,
-  Shield,
-} from 'lucide-react';
-import { User } from '../../../types/user';
+import { Award, Calendar, Flame, Mail, Shield, User as UserIcon } from 'lucide-react';
+import type { User } from '../../../types/user';
 
 interface UserDetailModalProps {
   isOpen: boolean;
@@ -33,11 +26,7 @@ interface UserDetailModalProps {
   user: User | null;
 }
 
-export function UserDetailModal({
-  isOpen,
-  onClose,
-  user,
-}: UserDetailModalProps) {
+export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps) {
   const bgCard = useColorModeValue('white', 'gray.800');
   const bgStats = useColorModeValue('gray.50', 'gray.700');
   const textColor = useColorModeValue('gray.600', 'gray.400');
@@ -48,26 +37,12 @@ export function UserDetailModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay backdropFilter="blur(8px)" />
-      <ModalContent
-        bg={bgCard}
-        borderRadius="2xl"
-        boxShadow="xl"
-        overflow="hidden"
-      >
+      <ModalContent bg={bgCard} borderRadius="2xl" boxShadow="xl" overflow="hidden">
         <ModalCloseButton zIndex={10} color="white" />
 
         {/* Helper Banner for premium feel */}
-        <Box
-          h="100px"
-          bgGradient="linear(to-r, brand.500, brand.600)"
-          position="relative"
-        >
-          <Box
-            position="absolute"
-            bottom="-40px"
-            left="50%"
-            transform="translateX(-50%)"
-          >
+        <Box h="100px" bgGradient="linear(to-r, brand.500, brand.600)" position="relative">
+          <Box position="absolute" bottom="-40px" left="50%" transform="translateX(-50%)">
             <Avatar
               size="2xl"
               name={user.name}
@@ -108,11 +83,7 @@ export function UserDetailModal({
                   py={1}
                   borderRadius="full"
                   colorScheme={
-                    user.status === 'active'
-                      ? 'green'
-                      : user.status === 'banned'
-                      ? 'red'
-                      : 'gray'
+                    user.status === 'active' ? 'green' : user.status === 'banned' ? 'red' : 'gray'
                   }
                   variant="subtle"
                 >
@@ -215,9 +186,7 @@ export function UserDetailModal({
                   textTransform="capitalize"
                   color={user.status === 'banned' ? 'red.500' : 'inherit'}
                 >
-                  {user.status === 'banned'
-                    ? 'Restricted (Banned)'
-                    : 'Good Standing'}
+                  {user.status === 'banned' ? 'Restricted (Banned)' : 'Good Standing'}
                 </Text>
               </HStack>
             </VStack>

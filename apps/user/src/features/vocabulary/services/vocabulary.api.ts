@@ -1,5 +1,5 @@
 import { axiosInstance } from '@ielts/auth';
-import { VocabularyFilters, VocabularyResponse } from '../types';
+import type { VocabularyFilters, VocabularyResponse } from '../types';
 
 export const vocabularyApi = {
   getWords: async (filters: VocabularyFilters): Promise<VocabularyResponse> => {
@@ -25,7 +25,7 @@ export const vocabularyApi = {
     }
 
     const { data } = await axiosInstance.get<{ data: VocabularyResponse }>(
-      `/words?${params.toString()}`
+      `/words?${params.toString()}`,
     );
     return data.data;
   },

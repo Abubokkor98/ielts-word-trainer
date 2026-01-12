@@ -13,7 +13,7 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import { ReviewWord } from '../types';
+import type { ReviewWord } from '../types';
 
 interface FlashcardProps {
   word: ReviewWord;
@@ -127,12 +127,7 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                   >
                     Example
                   </Text>
-                  <Text
-                    fontSize="lg"
-                    fontStyle="italic"
-                    color="gray.300"
-                    lineHeight="tall"
-                  >
+                  <Text fontSize="lg" fontStyle="italic" color="gray.300" lineHeight="tall">
                     "{word.exampleSentence}"
                   </Text>
                 </Box>
@@ -156,12 +151,7 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                       <Wrap spacing={1.5}>
                         {word.synonyms.map((syn, idx) => (
                           <WrapItem key={idx}>
-                            <Badge
-                              colorScheme="green"
-                              fontSize="xs"
-                              px={2}
-                              py={0.5}
-                            >
+                            <Badge colorScheme="green" fontSize="xs" px={2} py={0.5}>
                               {syn}
                             </Badge>
                           </WrapItem>
@@ -184,12 +174,7 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                       <Wrap spacing={1.5}>
                         {word.antonyms.map((ant, idx) => (
                           <WrapItem key={idx}>
-                            <Badge
-                              colorScheme="red"
-                              fontSize="xs"
-                              px={2}
-                              py={0.5}
-                            >
+                            <Badge colorScheme="red" fontSize="xs" px={2} py={0.5}>
                               {ant}
                             </Badge>
                           </WrapItem>

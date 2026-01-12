@@ -1,19 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
-import { QuizAnalyticsService } from './quiz-analytics.service';
+import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
+import { QuizAnalyticsService } from './quiz-analytics.service';
 
 export class QuizAnalyticsController {
-  static async getUserAnalytics(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async getUserAnalytics(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.user) throw new AppError('Unauthenticated', 401);
 
-      const analytics = await QuizAnalyticsService.getUserAnalytics(
-        req.user.id
-      );
+      const analytics = await QuizAnalyticsService.getUserAnalytics(req.user.id);
 
       res.json({
         success: true,
@@ -24,11 +18,7 @@ export class QuizAnalyticsController {
     }
   }
 
-  static async getGlobalAnalytics(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async getGlobalAnalytics(req: Request, res: Response, next: NextFunction) {
     try {
       const analytics = await QuizAnalyticsService.getGlobalAnalytics();
 

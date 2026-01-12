@@ -1,6 +1,6 @@
 import { Box, Container, VStack } from '@chakra-ui/react';
-import { HeroSection } from './components/hero-section';
 import { FeaturesSection } from './components/features-section';
+import { HeroSection } from './components/hero-section';
 
 export function LandingContainer() {
   return (

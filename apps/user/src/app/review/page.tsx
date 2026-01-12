@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { ReviewContainer } from '../../features/review';
 
 export const metadata: Metadata = {

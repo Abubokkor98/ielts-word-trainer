@@ -1,7 +1,7 @@
 'use client';
-import Link from 'next/link';
 import { Box, Button, Heading, Text, VStack } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
+import Link from 'next/link';
 
 export function HeroSection() {
   const { isAuthenticated } = useAuthStore();

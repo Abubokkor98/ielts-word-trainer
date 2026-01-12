@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Box, Container, Heading, Text, useDisclosure } from '@chakra-ui/react';
-import { Pagination, WordDetailsModal } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';
+import { Pagination, WordDetailsModal } from '@ielts/ui';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { useDebounce } from '../../hooks/use-debounce';
+import type { DifficultyLevel } from '../../types';
 import { VocabularyFilters } from './components/vocabulary-filters';
 import { VocabularyList } from './components/vocabulary-list';
-import { DifficultyLevel } from '../../types';
-import { Word } from './types';
 import { useVocabulary } from './hooks/use-vocabulary';
+import type { Word } from './types';
 
 export function VocabularyContainer() {
   const [page, setPage] = useState(1);
@@ -103,28 +103,15 @@ export function VocabularyContainer() {
           onViewDetails={handleViewDetails}
           onClearFilters={handleClearFilters}
           hasActiveFilters={
-            !!(
-              wordSearchQuery ||
-              topicSearchQuery ||
-              difficulty !== 'all' ||
-              module
-            )
+            !!(wordSearchQuery || topicSearchQuery || difficulty !== 'all' || module)
           }
         />
 
         {words.length > 0 && (
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
         )}
 
-        <WordDetailsModal
-          isOpen={isOpen}
-          onClose={onClose}
-          word={selectedWord}
-        />
+        <WordDetailsModal isOpen={isOpen} onClose={onClose} word={selectedWord} />
       </Container>
     </Box>
   );

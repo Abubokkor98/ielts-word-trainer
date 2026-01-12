@@ -1,16 +1,15 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import { env } from '../../config/env';
-import { IUser } from '../users/users.model';
-import { IAdmin } from '../admin/admin.model';
-
 import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@ielts/shared';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { env } from '../../config/env';
+import type { IAdmin } from '../admin/admin.model';
+import type { IUser } from '../users/users.model';
 
 type AuthEntity = IUser | IAdmin;
 
 export class AuthService {
   static async generateTokens(
-    user: AuthEntity
+    user: AuthEntity,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessTokenPayload = {
       id: user._id,
@@ -46,10 +45,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  static async validatePassword(
-    password: string,
-    hash: string
-  ): Promise<boolean> {
+  static async validatePassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
   }
 

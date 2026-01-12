@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
+
 dotenv.config({ path: 'apps/backend/.env' });
+
 import mongoose from 'mongoose';
 import { Word } from '../modules/words/words.model';
 

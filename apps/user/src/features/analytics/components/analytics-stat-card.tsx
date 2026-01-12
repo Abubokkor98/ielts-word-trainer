@@ -1,5 +1,5 @@
-import { Card, CardContent } from '@ielts/ui';
 import { Heading, Text, VStack } from '@chakra-ui/react';
+import { Card, CardContent } from '@ielts/ui';
 
 interface AnalyticsStatCardProps {
   label: string;
@@ -7,11 +7,7 @@ interface AnalyticsStatCardProps {
   color: string;
 }
 
-export function AnalyticsStatCard({
-  label,
-  value,
-  color,
-}: AnalyticsStatCardProps) {
+export function AnalyticsStatCard({ label, value, color }: AnalyticsStatCardProps) {
   return (
     <Card>
       <CardContent>

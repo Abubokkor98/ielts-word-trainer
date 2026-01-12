@@ -18,11 +18,7 @@ interface ReviewCompleteProps {
   onReviewMore: () => void;
 }
 
-export function ReviewComplete({
-  reviewedCount,
-  onRestart,
-  onReviewMore,
-}: ReviewCompleteProps) {
+export function ReviewComplete({ reviewedCount, onRestart, onReviewMore }: ReviewCompleteProps) {
   return (
     <Box bg="gray.900" py={8} px={4}>
       <Container maxW="800px">

@@ -2,9 +2,7 @@ import { z } from 'zod';
 
 export const QuizAttemptSchema = z.object({
   topic: z.string().optional(),
-  difficulty: z
-    .enum(['beginner', 'intermediate', 'advanced', 'mixed'])
-    .optional(),
+  difficulty: z.enum(['beginner', 'intermediate', 'advanced', 'mixed']).optional(),
   questions: z.array(
     z.object({
       wordId: z.string(),
@@ -12,7 +10,7 @@ export const QuizAttemptSchema = z.object({
       correctAnswer: z.string(),
       isCorrect: z.boolean(),
       timeSpent: z.number().min(0).optional().default(0),
-    })
+    }),
   ),
   score: z.number().min(0),
   totalQuestions: z.number().min(1),

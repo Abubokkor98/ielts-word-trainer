@@ -1,15 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { Link as ChakraLink, FormControl, FormLabel, Text, VStack } from '@chakra-ui/react';
+import { Button, Card, CardContent, CardHeader, Input } from '@ielts/ui';
 import Link from 'next/link';
-import {
-  Text,
-  VStack,
-  FormControl,
-  FormLabel,
-  Link as ChakraLink,
-} from '@chakra-ui/react';
-import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
+import { useState } from 'react';
 import { useRegister } from '../hooks/use-register';
 
 export function RegisterForm() {
@@ -74,22 +68,13 @@ export function RegisterForm() {
               />
             </FormControl>
 
-            <Button
-              type="submit"
-              width="100%"
-              isLoading={registerMutation.isPending}
-            >
+            <Button type="submit" width="100%" isLoading={registerMutation.isPending}>
               Sign Up
             </Button>
 
             <Text color="gray.400" textAlign="center">
               Already have an account?{' '}
-              <ChakraLink
-                as={Link}
-                href="/login"
-                color="brand.400"
-                fontWeight="bold"
-              >
+              <ChakraLink as={Link} href="/login" color="brand.400" fontWeight="bold">
                 Login
               </ChakraLink>
             </Text>

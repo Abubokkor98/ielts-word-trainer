@@ -16,7 +16,9 @@
     "start:user": "next start apps/user --port 3000",
     "start:admin": "next start apps/admin --port 3001",
     "seed": "npx tsx --tsconfig apps/backend/tsconfig.json apps/backend/src/seed.ts",
-    "lint": "nx run-many --target=lint --all",
+    "lint": "pnpm lint:check",
+    "lint:check": "biome check .",
+    "lint:fix": "biome check --write .",
     "test": "nx run-many --target=test --all",
     "clean": "nx reset && rm -rf dist node_modules"
   },

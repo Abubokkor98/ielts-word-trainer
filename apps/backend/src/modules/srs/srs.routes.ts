@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { SRSController } from './srs.controller';
-import { authenticate } from '../auth/auth.middleware';
 import {
   createUserRateLimit,
   moderateRateLimit,
 } from '../../core/middleware/rate-limit.middleware';
+import { authenticate } from '../auth/auth.middleware';
+import { SRSController } from './srs.controller';
 
 const router = Router();
 

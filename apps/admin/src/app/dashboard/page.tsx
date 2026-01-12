@@ -1,24 +1,23 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
-import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-import { Card, CardContent } from '@ielts/ui';
-import { DashboardChart } from '@ielts/ui';
 import {
   Box,
+  Flex,
   Heading,
-  Text,
-  VStack,
+  Icon,
   SimpleGrid,
   Skeleton,
+  Text,
   useColorModeValue,
-  Flex,
-  Icon,
+  VStack,
 } from '@chakra-ui/react';
-import { Users, BookOpen, FileText, Activity } from 'lucide-react';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { AdminRole } from '@ielts/shared';
+import { Card, CardContent, DashboardChart } from '@ielts/ui';
+import { useQuery } from '@tanstack/react-query';
+import { Activity, BookOpen, FileText, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 interface StatCardProps {
   label: string;
@@ -46,9 +45,7 @@ export default function AdminDashboardPage() {
       return data.data;
     },
     // We can assume auth is valid here due to AuthGuard, but keep enabled check for safety
-    enabled:
-      !!user &&
-      [AdminRole.ADMIN, AdminRole.SUPER_ADMIN].includes(user.role as AdminRole),
+    enabled: !!user && [AdminRole.ADMIN, AdminRole.SUPER_ADMIN].includes(user.role as AdminRole),
   });
 
   if (statsLoading) {
@@ -136,12 +133,7 @@ export default function AdminDashboardPage() {
             <Heading size="md" mb={6}>
               Metrics Overview
             </Heading>
-            <Box
-              h="300px"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
+            <Box h="300px" display="flex" alignItems="center" justifyContent="center">
               <Text color="gray.500">More analytics coming soon...</Text>
             </Box>
           </Card>

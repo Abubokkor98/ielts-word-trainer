@@ -52,6 +52,6 @@ export const useAuthStore = create<AuthState>()(
           state.hasHydrated = true;
         }
       },
-    }
-  )
+    },
+  ),
 );

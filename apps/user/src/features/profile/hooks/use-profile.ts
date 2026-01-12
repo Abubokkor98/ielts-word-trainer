@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { profileApi } from '../services/profile.api';
-import { UpdateProfileRequest, ChangePasswordRequest } from '../types';
+import type { ChangePasswordRequest, UpdateProfileRequest } from '../types';
 
 export function useProfile() {
   const queryClient = useQueryClient();
@@ -21,8 +21,7 @@ export function useProfile() {
   });
 
   const updateProfileMutation = useMutation({
-    mutationFn: (payload: UpdateProfileRequest) =>
-      profileApi.updateProfile(payload),
+    mutationFn: (payload: UpdateProfileRequest) => profileApi.updateProfile(payload),
     onSuccess: (data) => {
       queryClient.setQueryData(['user', 'profile'], data);
 
@@ -53,8 +52,7 @@ export function useProfile() {
   });
 
   const changePasswordMutation = useMutation({
-    mutationFn: (payload: ChangePasswordRequest) =>
-      profileApi.changePassword(payload),
+    mutationFn: (payload: ChangePasswordRequest) => profileApi.changePassword(payload),
     onSuccess: () => {
       toast({ title: 'Password changed successfully!', status: 'success' });
     },

@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { QuestionType } from '@ielts/shared';
+import type { QuestionType } from '@ielts/shared';
+import mongoose, { type Document, Schema } from 'mongoose';
 
 export interface IQuizAttempt extends Document {
   userId: mongoose.Types.ObjectId;
@@ -52,13 +52,10 @@ const QuizAttemptSchema = new Schema<IQuizAttempt>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 // Compound index for getUserAttempts (filter by userId, sort by createdAt descending)
 QuizAttemptSchema.index({ userId: 1, createdAt: -1 });
 
-export const QuizAttempt = mongoose.model<IQuizAttempt>(
-  'QuizAttempt',
-  QuizAttemptSchema
-);
+export const QuizAttempt = mongoose.model<IQuizAttempt>('QuizAttempt', QuizAttemptSchema);

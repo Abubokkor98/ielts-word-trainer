@@ -1,20 +1,13 @@
 'use client';
 
-import {
-  Box,
-  Container,
-  Heading,
-  SimpleGrid,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { useAnalytics } from './hooks/use-analytics';
-import { AnalyticsStatCard } from './components/analytics-stat-card';
-import { PerformanceChart } from './components/performance-chart';
-import { DifficultyChart } from './components/difficulty-chart';
-import { RecentAttemptsTable } from './components/recent-attempts-table';
-import { AnalyticsSkeleton } from './components/analytics-skeleton';
+import { Box, Container, Heading, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { AnalyticsEmptyState } from './components/analytics-empty-state';
+import { AnalyticsSkeleton } from './components/analytics-skeleton';
+import { AnalyticsStatCard } from './components/analytics-stat-card';
+import { DifficultyChart } from './components/difficulty-chart';
+import { PerformanceChart } from './components/performance-chart';
+import { RecentAttemptsTable } from './components/recent-attempts-table';
+import { useAnalytics } from './hooks/use-analytics';
 
 export function AnalyticsContainer() {
   const { data: analytics, isLoading } = useAnalytics();
@@ -29,9 +22,7 @@ export function AnalyticsContainer() {
 
   const overallAccuracy =
     analytics.totalQuestionsAnswered > 0
-      ? Math.round(
-          (analytics.correctAnswers / analytics.totalQuestionsAnswered) * 100
-        )
+      ? Math.round((analytics.correctAnswers / analytics.totalQuestionsAnswered) * 100)
       : 0;
 
   return (
@@ -63,11 +54,7 @@ export function AnalyticsContainer() {
               value={`${analytics.bestScore}%`}
               color="orange.400" // Changed from warning.400 to orange.400
             />
-            <AnalyticsStatCard
-              label="ACCURACY"
-              value={`${overallAccuracy}%`}
-              color="brand.400"
-            />
+            <AnalyticsStatCard label="ACCURACY" value={`${overallAccuracy}%`} color="brand.400" />
           </SimpleGrid>
 
           <PerformanceChart data={analytics.performanceOverTime} />

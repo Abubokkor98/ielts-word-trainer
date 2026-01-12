@@ -1,54 +1,46 @@
 'use client';
 
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Avatar,
+  Badge,
   Box,
   Heading,
   HStack,
-  VStack,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Avatar,
-  Badge,
-  Skeleton,
-  Text,
-  useToast,
-  useDisclosure,
   IconButton,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
+  Skeleton,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useDisclosure,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
+import { Button, Card, CardContent, CardHeader, Input, Pagination } from '@ielts/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  Input,
-  Pagination,
-} from '@ielts/ui';
-import { useAuthStore } from '@ielts/auth';
-import {
-  Search,
-  Mail,
+  Ban,
   Calendar,
+  CheckCircle,
   Download,
   Eye,
+  Mail,
   MoreVertical,
-  Ban,
-  CheckCircle,
+  Search,
 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/auth';
+import { useEffect, useRef, useState } from 'react';
+import type { User } from '../../../types/user';
 import { UserDetailModal } from './UserDetailModal';
-import { User } from '../../../types/user';
 
 export default function UserManagementPage() {
   const { user } = useAuthStore();
@@ -88,22 +80,14 @@ export default function UserManagementPage() {
       });
       if (debouncedSearch) params.append('search', debouncedSearch);
 
-      const { data } = await axiosInstance.get(
-        `/admin/users?${params.toString()}`
-      );
+      const { data } = await axiosInstance.get(`/admin/users?${params.toString()}`);
       return data.data;
     },
     enabled: !!user && ['admin', 'super_admin'].includes(user.role),
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({
-      userId,
-      status,
-    }: {
-      userId: string;
-      status: string;
-    }) => {
+    mutationFn: async ({ userId, status }: { userId: string; status: string }) => {
       await axiosInstance.patch(`/admin/users/${userId}/status`, { status });
     },
     onSuccess: (_, variables) => {
@@ -169,20 +153,12 @@ export default function UserManagementPage() {
       <VStack spacing={8} align="stretch">
         <HStack justify="space-between">
           <Heading size="lg">User Management</Heading>
-          <Button
-            variant="outline"
-            leftIcon={<Download size={16} />}
-            onClick={handleExport}
-          >
+          <Button variant="outline" leftIcon={<Download size={16} />} onClick={handleExport}>
             Export Users
           </Button>
         </HStack>
 
-        {isError && (
-          <Text color="red.500">
-            Failed to load users. Please try again later.
-          </Text>
-        )}
+        {isError && <Text color="red.500">Failed to load users. Please try again later.</Text>}
 
         <Card>
           <CardHeader>
@@ -231,18 +207,10 @@ export default function UserManagementPage() {
                           <Tr key={u._id}>
                             <Td>
                               <HStack>
-                                <Avatar
-                                  size="sm"
-                                  name={u.name}
-                                  src={u.avatar}
-                                />
+                                <Avatar size="sm" name={u.name} src={u.avatar} />
                                 <Box>
                                   <Text fontWeight="600">{u.name}</Text>
-                                  <HStack
-                                    spacing={1}
-                                    color="gray.500"
-                                    fontSize="xs"
-                                  >
+                                  <HStack spacing={1} color="gray.500" fontSize="xs">
                                     <Mail size={12} />
                                     <Text>{u.email}</Text>
                                   </HStack>
@@ -250,11 +218,7 @@ export default function UserManagementPage() {
                               </HStack>
                             </Td>
                             <Td>
-                              <Badge
-                                colorScheme={
-                                  u.role === 'admin' ? 'purple' : 'gray'
-                                }
-                              >
+                              <Badge colorScheme={u.role === 'admin' ? 'purple' : 'gray'}>
                                 {u.role || 'User'}
                               </Badge>
                             </Td>
@@ -265,8 +229,8 @@ export default function UserManagementPage() {
                                   u.status === 'active'
                                     ? 'green'
                                     : u.status === 'banned'
-                                    ? 'red'
-                                    : 'gray'
+                                      ? 'red'
+                                      : 'gray'
                                 }
                               >
                                 {u.status || 'Active'}
@@ -274,15 +238,9 @@ export default function UserManagementPage() {
                             </Td>
                             <Td fontWeight="bold">{u.xp || 0}</Td>
                             <Td>
-                              <HStack
-                                spacing={1}
-                                color="gray.500"
-                                fontSize="sm"
-                              >
+                              <HStack spacing={1} color="gray.500" fontSize="sm">
                                 <Calendar size={14} />
-                                <Text>
-                                  {new Date(u.createdAt).toLocaleDateString()}
-                                </Text>
+                                <Text>{new Date(u.createdAt).toLocaleDateString()}</Text>
                               </HStack>
                             </Td>
                             <Td>
@@ -301,9 +259,7 @@ export default function UserManagementPage() {
                                     size="sm"
                                     colorScheme="green"
                                     variant="ghost"
-                                    onClick={() =>
-                                      handleStatusChange(u._id, 'active')
-                                    }
+                                    onClick={() => handleStatusChange(u._id, 'active')}
                                   />
                                 ) : (
                                   <IconButton
@@ -354,21 +310,14 @@ export default function UserManagementPage() {
       >
         <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
           <AlertDialogContent borderRadius="xl" boxShadow="2xl">
-            <AlertDialogHeader
-              fontSize="lg"
-              fontWeight="bold"
-              color="red.500"
-              pt={8}
-              pb={0}
-            >
+            <AlertDialogHeader fontSize="lg" fontWeight="bold" color="red.500" pt={8} pb={0}>
               <VStack spacing={4}>
                 <Text>Ban User</Text>
               </VStack>
             </AlertDialogHeader>
 
             <AlertDialogBody textAlign="center" color="gray.500" py={6}>
-              Are you sure you want to ban <strong>{userToBan?.name}</strong>?{' '}
-              <br />
+              Are you sure you want to ban <strong>{userToBan?.name}</strong>? <br />
               They will no longer be able to log in.
             </AlertDialogBody>
 
@@ -382,12 +331,7 @@ export default function UserManagementPage() {
               >
                 Cancel
               </Button>
-              <Button
-                colorScheme="red"
-                onClick={confirmBan}
-                borderRadius="lg"
-                px={6}
-              >
+              <Button colorScheme="red" onClick={confirmBan} borderRadius="lg" px={6}>
                 Ban User
               </Button>
             </AlertDialogFooter>

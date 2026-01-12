@@ -24,6 +24,6 @@ export const useQuizStore = create<QuizState>()(
     }),
     {
       name: 'quiz-storage',
-    }
-  )
+    },
+  ),
 );

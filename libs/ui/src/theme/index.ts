@@ -48,8 +48,7 @@ const theme = extendTheme({
     },
   },
   fonts: {
-    heading:
-      'var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    heading: 'var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
     body: 'var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
   },
   styles: {

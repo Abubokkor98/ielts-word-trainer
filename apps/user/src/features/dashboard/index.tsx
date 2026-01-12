@@ -1,15 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@ielts/auth';
 import { Box, Container, Heading, Text, VStack } from '@chakra-ui/react';
+import { useAuthStore } from '@ielts/auth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { ReviewCard } from '../../components/ReviewCard';
-
-import { useDashboardData } from './hooks/use-dashboard-data';
+import { DashboardSkeleton } from './components/dashboard-skeleton';
 import { DashboardStats } from './components/dashboard-stats';
 import { QuickActions } from './components/quick-actions';
-import { DashboardSkeleton } from './components/dashboard-skeleton';
+import { useDashboardData } from './hooks/use-dashboard-data';
 
 export function DashboardContainer() {
   const { user: localUser, isAuthenticated, hasHydrated } = useAuthStore();
@@ -22,10 +21,7 @@ export function DashboardContainer() {
     }
   }, [hasHydrated, isAuthenticated, router]);
 
-  const { user, analytics, srsStats, isLoading } = useDashboardData(
-    isAuthenticated,
-    localUser
-  );
+  const { user, analytics, srsStats, isLoading } = useDashboardData(isAuthenticated, localUser);
 
   // Show loading during hydration
   if (!hasHydrated) {

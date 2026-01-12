@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
 export function proxy(request: NextRequest) {
   // Get auth token from cookies
@@ -7,18 +7,10 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protected routes that require authentication
-  const protectedRoutes = [
-    '/dashboard',
-    '/profile',
-    '/analytics',
-    '/review',
-    '/admin',
-  ];
+  const protectedRoutes = ['/dashboard', '/profile', '/analytics', '/review', '/admin'];
 
   // Check if the current path starts with any of the protected routes
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
 
   // If accessing protected route without token, redirect to login
   if (isProtectedRoute && !token) {

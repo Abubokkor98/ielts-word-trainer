@@ -1,5 +1,5 @@
-import { Card, CardContent } from '@ielts/ui';
 import { Heading, HStack, Text, VStack } from '@chakra-ui/react';
+import { Card, CardContent } from '@ielts/ui';
 
 interface StatCardProps {
   label: string;

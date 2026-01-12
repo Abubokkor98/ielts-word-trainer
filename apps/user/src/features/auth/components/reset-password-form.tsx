@@ -1,17 +1,17 @@
 'use client';
 
-import { useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import {
-  Text,
-  VStack,
+  Link as ChakraLink,
   FormControl,
   FormLabel,
-  Link as ChakraLink,
+  Text,
   useToast,
+  VStack,
 } from '@chakra-ui/react';
-import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, Input } from '@ielts/ui';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import { usePasswordRecovery } from '../hooks/use-password-recovery';
 
 export function ResetPasswordForm() {
@@ -101,22 +101,13 @@ export function ResetPasswordForm() {
               />
             </FormControl>
 
-            <Button
-              type="submit"
-              width="100%"
-              isLoading={isResetPasswordPending}
-            >
+            <Button type="submit" width="100%" isLoading={isResetPasswordPending}>
               Reset Password
             </Button>
 
             <Text color="gray.400" textAlign="center">
               Remember your password?{' '}
-              <ChakraLink
-                as={Link}
-                href="/login"
-                color="brand.400"
-                fontWeight="bold"
-              >
+              <ChakraLink as={Link} href="/login" color="brand.400" fontWeight="bold">
                 Login
               </ChakraLink>
             </Text>

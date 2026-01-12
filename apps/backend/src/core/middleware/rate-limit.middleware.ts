@@ -10,8 +10,8 @@
  * - Per-user: Custom limits per authenticated user
  */
 
-import rateLimit from 'express-rate-limit';
 import type { Request } from 'express';
+import rateLimit from 'express-rate-limit';
 
 // Note: We don't need custom IP handling - the library handles IPv6 automatically
 // We only use custom keyGenerator when we want to track by user ID instead of IP
@@ -95,9 +95,7 @@ export const createUserRateLimit = (max: number, windowMinutes = 15) => {
       }
       const clientIp = req['ip'];
       if (!clientIp) {
-        console.warn(
-          'Rate limit key: undefined IP for unauthenticated request'
-        );
+        console.warn('Rate limit key: undefined IP for unauthenticated request');
         return 'unknown';
       }
       return clientIp;
@@ -115,10 +113,7 @@ export const createUserRateLimit = (max: number, windowMinutes = 15) => {
  * Dynamic rate limiter that adjusts limits based on authentication
  * Authenticated users get higher limits
  */
-export const dynamicRateLimit = (
-  authenticatedMax: number,
-  publicMax: number
-) => {
+export const dynamicRateLimit = (authenticatedMax: number, publicMax: number) => {
   return rateLimit({
     windowMs: 60 * 1000, // 1 minute
     max: (req: Request) => {
@@ -130,9 +125,7 @@ export const dynamicRateLimit = (
       const limit = user ? authenticatedMax : publicMax;
       return {
         error: `Rate limit exceeded. Max ${limit} requests per minute`,
-        hint: user
-          ? 'Slow down a bit'
-          : 'Consider logging in for higher limits',
+        hint: user ? 'Slow down a bit' : 'Consider logging in for higher limits',
       };
     },
     standardHeaders: true,
@@ -144,9 +137,7 @@ export const dynamicRateLimit = (
         return `user:${user.id}`;
       }
       if (!req.ip) {
-        console.warn(
-          'Rate limit key: undefined IP for unauthenticated request'
-        );
+        console.warn('Rate limit key: undefined IP for unauthenticated request');
         return 'unknown';
       }
       return req.ip;

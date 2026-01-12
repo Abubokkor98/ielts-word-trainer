@@ -42,22 +42,13 @@ interface MobileNavLinkProps {
   color?: string;
 }
 
-export const MobileNavLink = ({
-  href,
-  icon,
-  children,
-  onClick,
-  color,
-}: MobileNavLinkProps) => {
+export const MobileNavLink = ({ href, icon, children, onClick, color }: MobileNavLinkProps) => {
   const pathname = usePathname();
   const isActive = href ? pathname === href : false;
 
   const content = (
     <>
-      <Box
-        fontSize="20px"
-        color={color || (isActive ? 'brand.400' : 'gray.400')}
-      >
+      <Box fontSize="20px" color={color || (isActive ? 'brand.400' : 'gray.400')}>
         {icon}
       </Box>
       <Box flex="1">{children}</Box>

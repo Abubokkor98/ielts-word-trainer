@@ -7,18 +7,16 @@
  * Usage: npx tsx scripts/backfill-searchable-text.ts
  */
 
+import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import { Word } from '../src/modules/words/words.model';
-import dotenv from 'dotenv';
 
 dotenv.config();
 
 async function backfillSearchableText() {
   try {
     if (!process.env.MONGODB_URI || !process.env.MONGODB_DBNAME) {
-      throw new Error(
-        'Missing MONGODB_URI or MONGODB_DBNAME environment variables'
-      );
+      throw new Error('Missing MONGODB_URI or MONGODB_DBNAME environment variables');
     }
 
     // Connect to MongoDB

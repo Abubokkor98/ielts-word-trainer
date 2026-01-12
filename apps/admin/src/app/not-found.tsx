@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Button, Container, Heading, Text, VStack } from '@chakra-ui/react';
 import Link from 'next/link';
 
 export default function NotFound() {

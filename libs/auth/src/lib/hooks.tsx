@@ -1,5 +1,5 @@
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from './auth.store';
 
 const { useEffect } = React;
@@ -26,9 +26,7 @@ export const useUserRole = () => {
   return user?.role || null;
 };
 
-export const protectUserRoute = <P extends object>(
-  Component: React.ComponentType<P>
-) => {
+export const protectUserRoute = <P extends object>(Component: React.ComponentType<P>) => {
   return function ProtectedUserRoute(props: P) {
     const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
@@ -54,9 +52,7 @@ export const protectUserRoute = <P extends object>(
   };
 };
 
-export const protectAdminRoute = <P extends object>(
-  Component: React.ComponentType<P>
-) => {
+export const protectAdminRoute = <P extends object>(Component: React.ComponentType<P>) => {
   return function ProtectedAdminRoute(props: P) {
     const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
@@ -74,10 +70,7 @@ export const protectAdminRoute = <P extends object>(
       }
     }, [isAuthenticated, user, router]);
 
-    if (
-      !isAuthenticated ||
-      !['admin', 'super_admin'].includes(user?.role || '')
-    ) {
+    if (!isAuthenticated || !['admin', 'super_admin'].includes(user?.role || '')) {
       return null;
     }
 

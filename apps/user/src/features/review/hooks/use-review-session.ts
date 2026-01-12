@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
 import { useToast } from '@chakra-ui/react';
 import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useState } from 'react';
 import { reviewApi } from '../services/review.api';
-import { ReviewWord, QualityRating } from '../types';
+import type { QualityRating, ReviewWord } from '../types';
 
 export function useReviewSession() {
   const [words, setWords] = useState<ReviewWord[]>([]);
@@ -74,7 +74,7 @@ export function useReviewSession() {
         setIsSubmitting(false);
       }
     },
-    [words, currentIndex, queryClient, toast, isSubmitting, sessionComplete]
+    [words, currentIndex, queryClient, toast, isSubmitting, sessionComplete],
   );
 
   const flipCard = useCallback(() => {

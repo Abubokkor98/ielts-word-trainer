@@ -1,12 +1,5 @@
-import {
-  Box,
-  Heading,
-  Text,
-  HStack,
-  SimpleGrid,
-  Button,
-} from '@chakra-ui/react';
-import { Card, CardHeader, CardContent } from '@ielts/ui';
+import { Box, Button, Heading, HStack, SimpleGrid, Text } from '@chakra-ui/react';
+import { Card, CardContent, CardHeader } from '@ielts/ui';
 import Link from 'next/link';
 
 interface ReviewCardProps {
@@ -41,9 +34,7 @@ export const ReviewCard = ({ stats }: ReviewCardProps) => {
             </HStack>
             <Text color="gray.400">
               {isDue
-                ? `You have ${stats.dueToday} word${
-                    stats.dueToday > 1 ? 's' : ''
-                  } ready to review`
+                ? `You have ${stats.dueToday} word${stats.dueToday > 1 ? 's' : ''} ready to review`
                 : 'Great job! You have no words due for review right now.'}
             </Text>
           </Box>
@@ -63,24 +54,9 @@ export const ReviewCard = ({ stats }: ReviewCardProps) => {
       </CardHeader>
       <CardContent>
         <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4} mt={2}>
-          <StatBox
-            label="Learning"
-            value={stats.learning}
-            color="blue.400"
-            bg="blue.900"
-          />
-          <StatBox
-            label="Reviewing"
-            value={stats.reviewing}
-            color="yellow.400"
-            bg="yellow.900"
-          />
-          <StatBox
-            label="Mastered"
-            value={stats.mastered}
-            color="green.400"
-            bg="green.900"
-          />
+          <StatBox label="Learning" value={stats.learning} color="blue.400" bg="blue.900" />
+          <StatBox label="Reviewing" value={stats.reviewing} color="yellow.400" bg="yellow.900" />
+          <StatBox label="Mastered" value={stats.mastered} color="green.400" bg="green.900" />
           <StatBox
             label="Total Words"
             value={stats.totalWords}
@@ -117,12 +93,7 @@ const StatBox = ({
     <Text color={color} fontSize="2xl" fontWeight="bold">
       {value || 0}
     </Text>
-    <Text
-      color="gray.400"
-      fontSize="xs"
-      fontWeight="bold"
-      textTransform="uppercase"
-    >
+    <Text color="gray.400" fontSize="xs" fontWeight="bold" textTransform="uppercase">
       {label}
     </Text>
   </Box>

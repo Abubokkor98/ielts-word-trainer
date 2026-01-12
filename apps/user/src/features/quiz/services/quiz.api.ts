@@ -1,18 +1,13 @@
 import { axiosInstance } from '@ielts/auth';
-import { QuizAttempt, Question, QuizRecommendation } from '../types';
+import type { Question, QuizAttempt, QuizRecommendation } from '../types';
 
 export const quizApi = {
-  generateQuiz: async (
-    difficulty: string = 'mixed',
-    limit: number = 10
-  ): Promise<Question[]> => {
+  generateQuiz: async (difficulty: string = 'mixed', limit: number = 10): Promise<Question[]> => {
     const params = new URLSearchParams({ limit: limit.toString() });
     if (difficulty && difficulty !== 'mixed') {
       params.append('difficulty', difficulty);
     }
-    const { data } = await axiosInstance.get<{ data: Question[] }>(
-      `/quiz/generate?${params}`
-    );
+    const { data } = await axiosInstance.get<{ data: Question[] }>(`/quiz/generate?${params}`);
     return data.data;
   },
 

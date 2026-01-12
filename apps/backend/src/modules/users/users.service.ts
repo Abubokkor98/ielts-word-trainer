@@ -1,6 +1,6 @@
-import { User, IUser } from './users.model';
-import { CreateUserInput } from '@ielts/shared';
+import type { CreateUserInput } from '@ielts/shared';
 import bcrypt from 'bcryptjs';
+import { type IUser, User } from './users.model';
 
 export class UserService {
   static async createUser(input: CreateUserInput): Promise<IUser> {

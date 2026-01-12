@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
 import { Difficulty } from '@ielts/shared';
+import mongoose, { type Document, Schema } from 'mongoose';
 
 export interface IQuiz extends Document {
   title: string;
@@ -42,7 +42,7 @@ const QuizSchema = new Schema<IQuiz>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 export const Quiz = mongoose.model<IQuiz>('Quiz', QuizSchema);

@@ -1,4 +1,4 @@
-import { HStack, Button, Text } from '@chakra-ui/react';
+import { Button, HStack, Text } from '@chakra-ui/react';
 
 interface PaginationProps {
   currentPage: number;
@@ -16,7 +16,7 @@ const ELLIPSIS = '...';
 function generatePageNumbers(
   currentPage: number,
   totalPages: number,
-  siblingCount: number = 1
+  siblingCount: number = 1,
 ): (number | string)[] {
   // If total pages is small, show all pages
   if (totalPages <= 7) {
@@ -30,10 +30,7 @@ function generatePageNumbers(
 
   // Calculate range around current page
   const leftSiblingIndex = Math.max(currentPage - siblingCount, 2);
-  const rightSiblingIndex = Math.min(
-    currentPage + siblingCount,
-    totalPages - 1
-  );
+  const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages - 1);
 
   const showLeftEllipsis = leftSiblingIndex > 2;
   const showRightEllipsis = rightSiblingIndex < totalPages - 1;
@@ -75,11 +72,7 @@ export function Pagination({
   onPageChange,
   siblingCount = 1,
 }: PaginationProps) {
-  const pageNumbers = generatePageNumbers(
-    currentPage,
-    totalPages,
-    siblingCount
-  );
+  const pageNumbers = generatePageNumbers(currentPage, totalPages, siblingCount);
 
   return (
     <HStack justify="center" spacing={2} mt={10}>
