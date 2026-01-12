@@ -1,15 +1,13 @@
-import nodemailer from 'nodemailer';
 import { Logger } from '@ielts/utils';
+import nodemailer from 'nodemailer';
 
-const smtpHost = process.env['SMTP_HOST'];
-const smtpPort = process.env['SMTP_PORT'];
-const smtpUser = process.env['SMTP_USER'];
-const smtpPass = process.env['SMTP_PASS'];
+const smtpHost = process.env.SMTP_HOST;
+const smtpPort = process.env.SMTP_PORT;
+const smtpUser = process.env.SMTP_USER;
+const smtpPass = process.env.SMTP_PASS;
 
 if (!smtpHost || !smtpUser || !smtpPass) {
-  throw new Error(
-    'SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS) must be fully configured.'
-  );
+  throw new Error('SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS) must be fully configured.');
 }
 
 const port = Number(smtpPort ?? 587);
@@ -28,18 +26,11 @@ const transporter = nodemailer.createTransport({
 });
 
 export class EmailService {
-  static async sendPasswordResetEmail(
-    email: string,
-    token: string,
-    role: string = 'user'
-  ) {
-    const baseUrl =
-      role === 'admin' ? process.env['ADMIN_URL'] : process.env['CLIENT_URL'];
+  static async sendPasswordResetEmail(email: string, token: string, role: string = 'user') {
+    const baseUrl = role === 'admin' ? process.env.ADMIN_URL : process.env.CLIENT_URL;
 
     if (!baseUrl) {
-      throw new Error(
-        `Missing base URL env for password reset email (role=${role}).`
-      );
+      throw new Error(`Missing base URL env for password reset email (role=${role}).`);
     }
 
     const resetUrl = new URL('/reset-password', baseUrl);
@@ -47,7 +38,7 @@ export class EmailService {
 
     try {
       await transporter.sendMail({
-        from: process.env['SMTP_FROM'] || 'noreply@ielts-platform.com',
+        from: process.env.SMTP_FROM || 'noreply@ielts-platform.com',
         to: email,
         subject: 'Password Reset - IELTS Vocabulary Platform',
         html: `

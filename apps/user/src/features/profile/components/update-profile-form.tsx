@@ -1,14 +1,7 @@
+import { Button, FormControl, FormLabel, Heading, Input, VStack } from '@chakra-ui/react';
+import { Card, CardContent, CardHeader } from '@ielts/ui';
 import { useState } from 'react';
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  VStack,
-} from '@chakra-ui/react';
-import { Card, CardHeader, CardContent } from '@ielts/ui';
-import { Heading } from '@chakra-ui/react';
-import { UserProfile, UpdateProfileRequest } from '../types';
+import type { UpdateProfileRequest, UserProfile } from '../types';
 
 interface UpdateProfileFormProps {
   profile: UserProfile;
@@ -16,11 +9,7 @@ interface UpdateProfileFormProps {
   isLoading: boolean;
 }
 
-export function UpdateProfileForm({
-  profile,
-  onUpdate,
-  isLoading,
-}: UpdateProfileFormProps) {
+export function UpdateProfileForm({ profile, onUpdate, isLoading }: UpdateProfileFormProps) {
   const [name, setName] = useState(profile.name);
 
   const handleSubmit = (e: React.FormEvent) => {

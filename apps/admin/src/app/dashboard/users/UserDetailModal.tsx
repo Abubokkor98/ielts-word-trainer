@@ -1,31 +1,23 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  ModalCloseButton,
-  VStack,
-  HStack,
-  Text,
   Avatar,
   Badge,
-  Stat,
   Box,
   Divider,
-  useColorModeValue,
   Grid,
   GridItem,
+  HStack,
   Icon,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalOverlay,
+  Text,
+  useColorModeValue,
+  VStack,
 } from '@chakra-ui/react';
-import {
-  Mail,
-  Calendar,
-  Award,
-  Flame,
-  User as UserIcon,
-  Shield,
-} from 'lucide-react';
-import { User } from '../../../types/user';
+import { Award, Calendar, Flame, Mail, Shield } from 'lucide-react';
+import type { User } from '../../../types/user';
 
 interface UserDetailModalProps {
   isOpen: boolean;
@@ -33,41 +25,25 @@ interface UserDetailModalProps {
   user: User | null;
 }
 
-export function UserDetailModal({
-  isOpen,
-  onClose,
-  user,
-}: UserDetailModalProps) {
+export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps) {
   const bgCard = useColorModeValue('white', 'gray.800');
   const bgStats = useColorModeValue('gray.50', 'gray.700');
   const textColor = useColorModeValue('gray.600', 'gray.400');
   const headingColor = useColorModeValue('gray.800', 'white');
-
+  const dividerColor = useColorModeValue('gray.100', 'gray.700');
+  const borderColor = useColorModeValue('gray.100', 'gray.600');
+  // Reuse bgStats for statsBg since they use same colors
   if (!user) return null;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay backdropFilter="blur(8px)" />
-      <ModalContent
-        bg={bgCard}
-        borderRadius="2xl"
-        boxShadow="xl"
-        overflow="hidden"
-      >
+      <ModalContent bg={bgCard} borderRadius="2xl" boxShadow="xl" overflow="hidden">
         <ModalCloseButton zIndex={10} color="white" />
 
         {/* Helper Banner for premium feel */}
-        <Box
-          h="100px"
-          bgGradient="linear(to-r, brand.500, brand.600)"
-          position="relative"
-        >
-          <Box
-            position="absolute"
-            bottom="-40px"
-            left="50%"
-            transform="translateX(-50%)"
-          >
+        <Box h="100px" bgGradient="linear(to-r, brand.500, brand.600)" position="relative">
+          <Box position="absolute" bottom="-40px" left="50%" transform="translateX(-50%)">
             <Avatar
               size="2xl"
               name={user.name}
@@ -108,11 +84,7 @@ export function UserDetailModal({
                   py={1}
                   borderRadius="full"
                   colorScheme={
-                    user.status === 'active'
-                      ? 'green'
-                      : user.status === 'banned'
-                      ? 'red'
-                      : 'gray'
+                    user.status === 'active' ? 'green' : user.status === 'banned' ? 'red' : 'gray'
                   }
                   variant="subtle"
                 >
@@ -121,7 +93,7 @@ export function UserDetailModal({
               </HStack>
             </VStack>
 
-            <Divider borderColor={useColorModeValue('gray.100', 'gray.700')} />
+            <Divider borderColor={dividerColor} />
 
             {/* Stats Grid */}
             <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
@@ -131,7 +103,7 @@ export function UserDetailModal({
                   p={4}
                   borderRadius="xl"
                   border="1px solid"
-                  borderColor={useColorModeValue('gray.100', 'gray.600')}
+                  borderColor={borderColor}
                   textAlign="center"
                 >
                   <Icon as={Award} w={6} h={6} color="brand.500" mb={2} />
@@ -155,7 +127,7 @@ export function UserDetailModal({
                   p={4}
                   borderRadius="xl"
                   border="1px solid"
-                  borderColor={useColorModeValue('gray.100', 'gray.600')}
+                  borderColor={borderColor}
                   textAlign="center"
                 >
                   <Icon as={Flame} w={6} h={6} color="orange.400" mb={2} />
@@ -176,14 +148,7 @@ export function UserDetailModal({
             </Grid>
 
             {/* Timestamps */}
-            <VStack
-              w="full"
-              bg={useColorModeValue('gray.50', 'gray.700')}
-              p={4}
-              borderRadius="lg"
-              align="start"
-              spacing={3}
-            >
+            <VStack w="full" bg={bgStats} p={4} borderRadius="lg" align="start" spacing={3}>
               <HStack color={textColor} fontSize="sm">
                 <Icon as={Calendar} size={16} />
                 <Text fontWeight="medium">Member Since:</Text>
@@ -215,9 +180,7 @@ export function UserDetailModal({
                   textTransform="capitalize"
                   color={user.status === 'banned' ? 'red.500' : 'inherit'}
                 >
-                  {user.status === 'banned'
-                    ? 'Restricted (Banned)'
-                    : 'Good Standing'}
+                  {user.status === 'banned' ? 'Restricted (Banned)' : 'Good Standing'}
                 </Text>
               </HStack>
             </VStack>

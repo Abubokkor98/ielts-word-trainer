@@ -10,7 +10,7 @@ import { formatDate } from './utils';
  */
 export function formatRelativeTime(
   date: string | Date | undefined | null,
-  skewWindow = 300000
+  skewWindow = 300000,
 ): string {
   if (!date) return 'Never';
 

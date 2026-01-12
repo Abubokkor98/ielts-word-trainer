@@ -1,31 +1,15 @@
 'use client';
 
-import {
-  Box,
-  Container,
-  Flex,
-  HStack,
-  Heading,
-  IconButton,
-} from '@chakra-ui/react';
-import Link from 'next/link';
+import { Box, Container, Flex, Heading, HStack, IconButton } from '@chakra-ui/react';
 import { UserMenu } from '@ielts/ui';
 import { Menu } from 'lucide-react';
-
-import { useNavbar } from './use-navbar';
+import Link from 'next/link';
 import { DesktopNav } from './desktop-nav';
 import { MobileNav } from './mobile-nav';
+import { useNavbar } from './use-navbar';
 
 export const UserNavbar = () => {
-  const {
-    isOpen,
-    onOpen,
-    onClose,
-    isAuthenticated,
-    user,
-    handleLogout,
-    dueCount,
-  } = useNavbar();
+  const { isOpen, onOpen, onClose, isAuthenticated, user, handleLogout, dueCount } = useNavbar();
 
   return (
     <>
@@ -78,10 +62,7 @@ export const UserNavbar = () => {
                 IELTS Master
               </Heading>
 
-              <DesktopNav
-                isAuthenticated={isAuthenticated}
-                dueCount={dueCount}
-              />
+              <DesktopNav isAuthenticated={isAuthenticated} dueCount={dueCount} />
             </HStack>
 
             {/* User Menu - Left Side (Mobile Only) */}

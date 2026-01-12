@@ -1,6 +1,6 @@
-import { createServer } from './server';
-import { connectToDatabase } from './config/mongo';
 import { env } from './config/env';
+import { connectToDatabase } from './config/mongo';
+import { createServer } from './server';
 
 const startServer = async () => {
   await connectToDatabase();
@@ -16,4 +16,3 @@ const startServer = async () => {
 };
 
 startServer();
- 

@@ -1,9 +1,9 @@
-import { useRouter } from 'next/navigation';
-import { useMutation } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { authApi } from '../services/auth.api';
-import { RegisterCredentials } from '../types';
+import type { RegisterCredentials } from '../types';
 
 export function useRegister() {
   const router = useRouter();
@@ -11,8 +11,7 @@ export function useRegister() {
   const { setUser, setToken } = useAuthStore();
 
   return useMutation({
-    mutationFn: (credentials: RegisterCredentials) =>
-      authApi.register(credentials),
+    mutationFn: (credentials: RegisterCredentials) => authApi.register(credentials),
     onSuccess: (data) => {
       setToken(data.accessToken);
       setUser(data.data);

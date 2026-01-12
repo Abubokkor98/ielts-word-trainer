@@ -1,34 +1,34 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
+  Box,
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
-  Select,
-  Textarea,
-  VStack,
-  useToast,
-  FormErrorMessage,
-  Box,
-  List,
-  ListItem,
-  Spinner,
   InputGroup,
   InputRightElement,
+  List,
+  ListItem,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  Spinner,
+  Textarea,
   useColorModeValue,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
-import { ChevronDown } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
-import { AxiosError } from 'axios';
-import { useEffect, useState, useRef } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
+import { ChevronDown } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 // Define Interface matching backend data
 interface Topic {
@@ -117,7 +117,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
       if (userHasTyped && currentTopicValue) {
         // User is typing -> Filter
         const filtered = topicsData.filter((t) =>
-          t.name.toLowerCase().includes(currentTopicValue.toLowerCase())
+          t.name.toLowerCase().includes(currentTopicValue.toLowerCase()),
         );
         setFilteredTopics(filtered);
       } else {
@@ -141,11 +141,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
         const initialTopic = initialData.topic;
 
         // Determine topic name
-        if (
-          typeof initialTopic === 'object' &&
-          initialTopic !== null &&
-          'name' in initialTopic
-        ) {
+        if (typeof initialTopic === 'object' && initialTopic !== null && 'name' in initialTopic) {
           // It's a populated object
           topicName = initialTopic.name;
         } else if (typeof initialTopic === 'string') {
@@ -169,9 +165,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
           topic: topicName,
           module: (() => {
             if (!initialData.module) {
-              console.warn(
-                `Word ${initialData._id} missing module field, defaulting to 'reading'`
-              );
+              console.warn(`Word ${initialData._id} missing module field, defaulting to 'reading'`);
               return 'reading';
             }
             return initialData.module;
@@ -214,10 +208,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
       };
 
       if (initialData?._id) {
-        const response = await axiosInstance.patch(
-          `/words/${initialData._id}`,
-          payload
-        );
+        const response = await axiosInstance.patch(`/words/${initialData._id}`, payload);
         return response.data;
       } else {
         const response = await axiosInstance.post('/words', payload);
@@ -226,9 +217,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
     },
     onSuccess: () => {
       toast({
-        title: initialData
-          ? 'Word updated successfully'
-          : 'Word added successfully',
+        title: initialData ? 'Word updated successfully' : 'Word added successfully',
         status: 'success',
         duration: 3000,
       });
@@ -266,9 +255,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   {...register('word', { required: 'Word is required' })}
                   placeholder="e.g. Ephemeral"
                 />
-                <FormErrorMessage>
-                  {errors.word && errors.word.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.word?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.meaning} isRequired>
@@ -277,9 +264,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   {...register('meaning', { required: 'Meaning is required' })}
                   placeholder="Definition of the word"
                 />
-                <FormErrorMessage>
-                  {errors.meaning && errors.meaning.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.meaning?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.exampleSentence} isRequired>
@@ -290,9 +275,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="Use the word in a sentence"
                 />
-                <FormErrorMessage>
-                  {errors.exampleSentence && errors.exampleSentence.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.exampleSentence?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.module} isRequired>
@@ -308,9 +291,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   <option value="listening">Listening</option>
                   <option value="speaking">Speaking</option>
                 </Select>
-                <FormErrorMessage>
-                  {errors.module && errors.module.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.module?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.difficulty} isRequired>
@@ -325,16 +306,10 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
                 </Select>
-                <FormErrorMessage>
-                  {errors.difficulty && errors.difficulty.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.difficulty?.message}</FormErrorMessage>
               </FormControl>
 
-              <FormControl
-                position="relative"
-                isInvalid={!!errors.topic}
-                isRequired
-              >
+              <FormControl position="relative" isInvalid={!!errors.topic} isRequired>
                 <FormLabel>Topic</FormLabel>
                 <InputGroup>
                   <Input
@@ -353,17 +328,13 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                       setShowSuggestions(true);
                       setUserHasTyped(false);
                     }}
-                    onBlur={() =>
-                      setTimeout(() => setShowSuggestions(false), 200)
-                    }
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                   />
                   <InputRightElement pointerEvents="none">
                     <ChevronDown size={16} color="gray" />
                   </InputRightElement>
                 </InputGroup>
-                <FormErrorMessage>
-                  {errors.topic && errors.topic.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.topic?.message}</FormErrorMessage>
 
                 {/* Topic Suggestions Dropdown */}
                 {showSuggestions && (
@@ -420,9 +391,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="e.g. Adjective"
                 />
-                <FormErrorMessage>
-                  {errors.partOfSpeech && errors.partOfSpeech.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.partOfSpeech?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.synonyms} isRequired>
@@ -433,9 +402,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="transient, fleeing, short-lived"
                 />
-                <FormErrorMessage>
-                  {errors.synonyms && errors.synonyms.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.synonyms?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.antonyms} isRequired>
@@ -446,9 +413,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="permanent, long-lived"
                 />
-                <FormErrorMessage>
-                  {errors.antonyms && errors.antonyms.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.antonyms?.message}</FormErrorMessage>
               </FormControl>
             </VStack>
           </ModalBody>
@@ -457,11 +422,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
             <Button variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button
-              colorScheme="brand"
-              type="submit"
-              isLoading={mutation.isPending}
-            >
+            <Button colorScheme="brand" type="submit" isLoading={mutation.isPending}>
               {initialData ? 'Update Word' : 'Add Word'}
             </Button>
           </ModalFooter>

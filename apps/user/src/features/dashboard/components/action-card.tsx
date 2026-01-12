@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { Card, CardHeader, CardContent } from '@ielts/ui';
 import { Heading, Text } from '@chakra-ui/react';
+import { Card, CardContent, CardHeader } from '@ielts/ui';
+import Link from 'next/link';
 
 interface ActionCardProps {
   href: string;
@@ -9,18 +9,9 @@ interface ActionCardProps {
   emoji: string;
 }
 
-export function ActionCard({
-  href,
-  title,
-  description,
-  emoji,
-}: ActionCardProps) {
+export function ActionCard({ href, title, description, emoji }: ActionCardProps) {
   return (
-    <Link
-      href={href}
-      style={{ textDecoration: 'none' }}
-      aria-label={`${title}: ${description}`}
-    >
+    <Link href={href} style={{ textDecoration: 'none' }} aria-label={`${title}: ${description}`}>
       <Card
         _hover={{ transform: 'translateY(-4px)', transition: 'all 0.2s' }}
         cursor="pointer"

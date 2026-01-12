@@ -5,15 +5,7 @@ import { ForgotPasswordForm } from '../../features/auth/components/forgot-passwo
 
 export function ForgotPasswordContent() {
   return (
-    <Flex
-      direction="column"
-      align="center"
-      justify="center"
-      flex="1"
-      bg="gray.900"
-      px={4}
-      py={12}
-    >
+    <Flex direction="column" align="center" justify="center" flex="1" bg="gray.900" px={4} py={12}>
       <ForgotPasswordForm />
     </Flex>
   );

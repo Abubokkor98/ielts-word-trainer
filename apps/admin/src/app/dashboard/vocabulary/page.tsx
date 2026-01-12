@@ -1,42 +1,35 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { useRef, useState, useEffect } from 'react';
 import {
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  Input,
-  Pagination,
-} from '@ielts/ui';
-import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Badge,
   Box,
   Heading,
   HStack,
-  VStack,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Badge,
-  Select,
-  useToast,
-  Skeleton,
-  Text,
   IconButton,
+  Select,
+  Skeleton,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
   useDisclosure,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogOverlay,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
-import { Plus, Upload, Trash2, Search, Filter, Edit2 } from 'lucide-react';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
+import { Button, Card, CardContent, CardHeader, Input, Pagination } from '@ielts/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Edit2, Filter, Plus, Search, Trash2, Upload } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { WordModal } from './WordModal';
 
 interface Word {
@@ -200,11 +193,7 @@ export default function VocabularyManagementPage() {
             >
               Import CSV
             </Button>
-            <Button
-              leftIcon={<Plus size={16} />}
-              colorScheme="brand"
-              onClick={handleAdd}
-            >
+            <Button leftIcon={<Plus size={16} />} colorScheme="brand" onClick={handleAdd}>
               Add Word
             </Button>
           </HStack>
@@ -275,8 +264,8 @@ export default function VocabularyManagementPage() {
                                 word.difficulty === 'beginner'
                                   ? 'green'
                                   : word.difficulty === 'intermediate'
-                                  ? 'blue'
-                                  : 'purple'
+                                    ? 'blue'
+                                    : 'purple'
                               }
                             >
                               {word.difficulty}
@@ -333,13 +322,7 @@ export default function VocabularyManagementPage() {
       >
         <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
           <AlertDialogContent borderRadius="xl" boxShadow="2xl">
-            <AlertDialogHeader
-              fontSize="lg"
-              color={'red.500'}
-              fontWeight="bold"
-              pt={8}
-              pb={0}
-            >
+            <AlertDialogHeader fontSize="lg" color={'red.500'} fontWeight="bold" pt={8} pb={0}>
               <VStack spacing={4}>
                 <Text>Delete Word</Text>
               </VStack>

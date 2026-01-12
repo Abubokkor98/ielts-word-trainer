@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
 import { AdminRole } from '@ielts/shared';
+import mongoose, { type Document, Schema } from 'mongoose';
 
 export interface IAdmin extends Document {
   name: string;
@@ -30,7 +30,7 @@ const AdminSchema = new Schema<IAdmin>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 export const Admin = mongoose.model<IAdmin>('Admin', AdminSchema);

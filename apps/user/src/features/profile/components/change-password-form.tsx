@@ -1,25 +1,14 @@
+import { Button, FormControl, FormLabel, Heading, Input, useToast, VStack } from '@chakra-ui/react';
+import { Card, CardContent, CardHeader } from '@ielts/ui';
 import { useState } from 'react';
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  VStack,
-  useToast,
-} from '@chakra-ui/react';
-import { Card, CardHeader, CardContent } from '@ielts/ui';
-import { Heading } from '@chakra-ui/react';
-import { ChangePasswordRequest } from '../types';
+import type { ChangePasswordRequest } from '../types';
 
 interface ChangePasswordFormProps {
   onChangePassword: (data: ChangePasswordRequest) => Promise<void>;
   isLoading: boolean;
 }
 
-export function ChangePasswordForm({
-  onChangePassword,
-  isLoading,
-}: ChangePasswordFormProps) {
+export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswordFormProps) {
   const toast = useToast();
   const [passwords, setPasswords] = useState({
     current: '',
@@ -41,7 +30,7 @@ export function ChangePasswordForm({
     try {
       await onChangePassword(passwords);
       setPasswords({ current: '', new: '', confirm: '' });
-    } catch (error) {
+    } catch (_error) {
       // Error handled by hook
     }
   };

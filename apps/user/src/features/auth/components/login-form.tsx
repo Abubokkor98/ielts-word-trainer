@@ -1,14 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { Link as ChakraLink, FormControl, FormLabel, Text, VStack } from '@chakra-ui/react';
+import { Button, Card, CardContent, CardHeader, Input } from '@ielts/ui';
 import Link from 'next/link';
-import {
-  Text,
-  VStack,
-  FormControl,
-  FormLabel,
-  Link as ChakraLink,
-} from '@chakra-ui/react';
-import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
+import { useState } from 'react';
 import { useLogin } from '../hooks/use-login';
 
 export function LoginForm() {
@@ -60,33 +54,19 @@ export function LoginForm() {
               />
             </FormControl>
 
-            <Button
-              type="submit"
-              width="100%"
-              isLoading={loginMutation.isPending}
-            >
+            <Button type="submit" width="100%" isLoading={loginMutation.isPending}>
               Login
             </Button>
 
             <Text color="gray.400" textAlign="center" fontSize="sm">
-              <ChakraLink
-                as={Link}
-                href="/forgot-password"
-                color="brand.400"
-                fontWeight="600"
-              >
+              <ChakraLink as={Link} href="/forgot-password" color="brand.400" fontWeight="600">
                 Forgot password?
               </ChakraLink>
             </Text>
 
             <Text color="gray.400" textAlign="center">
               Don't have an account?{' '}
-              <ChakraLink
-                as={Link}
-                href="/register"
-                color="brand.400"
-                fontWeight="bold"
-              >
+              <ChakraLink as={Link} href="/register" color="brand.400" fontWeight="bold">
                 Sign up
               </ChakraLink>
             </Text>

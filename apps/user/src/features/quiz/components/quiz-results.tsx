@@ -1,16 +1,7 @@
+import { Badge, Box, Button, Container, Heading, HStack, Text, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  HStack,
-  Text,
-  VStack,
-  Badge,
-} from '@chakra-ui/react';
 import { quizApi } from '../services/quiz.api';
-import { Question, QuestionAnswer, QuizRecommendation } from '../types';
+import type { Question, QuestionAnswer, QuizRecommendation } from '../types';
 
 interface QuizResultsProps {
   score: number;
@@ -19,16 +10,9 @@ interface QuizResultsProps {
   onRestart: () => void;
 }
 
-export function QuizResults({
-  score,
-  questions,
-  answers,
-  onRestart,
-}: QuizResultsProps) {
-  const percentage =
-    questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
-  const [recommendation, setRecommendation] =
-    useState<QuizRecommendation | null>(null);
+export function QuizResults({ score, questions, answers, onRestart }: QuizResultsProps) {
+  const percentage = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+  const [recommendation, setRecommendation] = useState<QuizRecommendation | null>(null);
 
   useEffect(() => {
     quizApi.getRecommendation().then(setRecommendation).catch(console.error);
@@ -117,7 +101,7 @@ export function QuizResults({
 
                 return (
                   <Box
-                    key={idx}
+                    key={question.id}
                     bg="gray.800"
                     p={6}
                     borderRadius="lg"
@@ -127,11 +111,7 @@ export function QuizResults({
                     <HStack justify="space-between" mb={4}>
                       <VStack align="start" spacing={1}>
                         <HStack>
-                          <Text
-                            fontSize="sm"
-                            fontWeight="bold"
-                            color="gray.400"
-                          >
+                          <Text fontSize="sm" fontWeight="bold" color="gray.400">
                             Q{idx + 1}
                           </Text>
                           <Badge colorScheme={isCorrect ? 'green' : 'red'}>
@@ -164,30 +144,21 @@ export function QuizResults({
                           "{wordDetails.exampleSentence}"
                         </Text>
                       </Box>
-                      {wordDetails.synonyms &&
-                        wordDetails.synonyms.length > 0 && (
-                          <Box>
-                            <Text
-                              color="gray.400"
-                              fontSize="sm"
-                              fontWeight="bold"
-                            >
-                              Synonyms
-                            </Text>
-                            <Text color="gray.400">
-                              {wordDetails.synonyms.join(', ')}
-                            </Text>
-                          </Box>
-                        )}
+                      {wordDetails.synonyms && wordDetails.synonyms.length > 0 && (
+                        <Box>
+                          <Text color="gray.400" fontSize="sm" fontWeight="bold">
+                            Synonyms
+                          </Text>
+                          <Text color="gray.400">{wordDetails.synonyms.join(', ')}</Text>
+                        </Box>
+                      )}
                       {!isCorrect && (
                         <Box mt={2} p={3} bg="red.900" borderRadius="md">
                           <Text fontSize="sm" color="red.200">
-                            <strong>You selected:</strong>{' '}
-                            {userAnswer?.selected}
+                            <strong>You selected:</strong> {userAnswer?.selected}
                           </Text>
                           <Text fontSize="sm" color="green.200" mt={1}>
-                            <strong>Correct answer:</strong>{' '}
-                            {userAnswer?.correct}
+                            <strong>Correct answer:</strong> {userAnswer?.correct}
                           </Text>
                         </Box>
                       )}

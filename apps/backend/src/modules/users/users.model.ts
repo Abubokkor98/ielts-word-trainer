@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
 import { UserRole } from '@ielts/shared';
+import mongoose, { type Document, Schema } from 'mongoose';
 
 export interface IUser extends Document {
   name: string;
@@ -42,7 +42,7 @@ const UserSchema = new Schema<IUser>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 export const User = mongoose.model<IUser>('User', UserSchema);

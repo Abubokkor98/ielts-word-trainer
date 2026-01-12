@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Button, Container, Heading, Text, VStack } from '@chakra-ui/react';
 
 interface QuizStartScreenProps {
   onStart: () => void;
@@ -21,14 +14,7 @@ export function QuizStartScreen({
   onDifficultyChange,
 }: QuizStartScreenProps) {
   return (
-    <Box
-      bg="gray.900"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      py={12}
-      flex="1"
-    >
+    <Box bg="gray.900" display="flex" alignItems="center" justifyContent="center" py={12} flex="1">
       <Container maxW="2xl">
         <VStack
           spacing={8}
@@ -43,8 +29,8 @@ export function QuizStartScreen({
             Ready to Test Your Vocabulary?
           </Heading>
           <Text fontSize="lg" color="gray.400" textAlign="center" maxW="md">
-            Challenge yourself with our interactive quiz featuring carefully
-            selected IELTS vocabulary
+            Challenge yourself with our interactive quiz featuring carefully selected IELTS
+            vocabulary
           </Text>
           <Box w="full" maxW="md">
             <Text color="gray.300" fontWeight="600" mb={2}>

@@ -1,28 +1,15 @@
+import { Button as ChakraButton, type ButtonProps as ChakraButtonProps } from '@chakra-ui/react';
 import * as React from 'react';
-import {
-  Button as ChakraButton,
-  ButtonProps as ChakraButtonProps,
-} from '@chakra-ui/react';
 
 // Map old variant/size props to Chakra for backward compatibility
-export interface ButtonProps
-  extends Omit<ChakraButtonProps, 'variant' | 'size'> {
-  variant?:
-    | 'default'
-    | 'destructive'
-    | 'outline'
-    | 'secondary'
-    | 'ghost'
-    | 'link';
+export interface ButtonProps extends Omit<ChakraButtonProps, 'variant' | 'size'> {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   asChild?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    { variant = 'default', size = 'default', asChild = false, ...props },
-    ref
-  ) => {
+  ({ variant = 'default', size = 'default', asChild = false, ...props }, ref) => {
     // Map variants
     const chakraVariant = React.useMemo(() => {
       switch (variant) {
@@ -71,7 +58,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 Button.displayName = 'Button';

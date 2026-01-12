@@ -1,42 +1,41 @@
 'use client';
 
 import {
-  Box,
-  Flex,
-  Icon,
-  Text,
-  VStack,
-  HStack,
-  Link as ChakraLink,
-  Tooltip,
   Avatar,
+  Box,
+  Link as ChakraLink,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerOverlay,
+  Flex,
+  HStack,
+  Icon,
+  IconButton,
   Menu,
   MenuButton,
-  MenuList,
   MenuItem,
-  IconButton,
-  useDisclosure,
-  Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  DrawerBody,
+  MenuList,
+  Text,
+  Tooltip,
   useColorModeValue,
+  useDisclosure,
   useToast,
+  VStack,
 } from '@chakra-ui/react';
-import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useAuthStore } from '@ielts/auth';
 import {
-  LayoutDashboard,
-  Users,
   BookOpen,
+  LayoutDashboard,
   LogOut,
   Menu as MenuIcon,
-  X,
   Settings,
   Shield,
+  Users,
 } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface SidebarItemProps {
   icon: any;
@@ -52,7 +51,7 @@ const SidebarItem = ({ icon, label, href, isCollapsed }: SidebarItemProps) => {
   // High contrast active state
   const activeBg = useColorModeValue(
     'linear-gradient(90deg, var(--chakra-colors-brand-50) 0%, transparent 100%)',
-    'linear-gradient(90deg, rgba(66, 165, 245, 0.15) 0%, transparent 100%)'
+    'linear-gradient(90deg, rgba(66, 165, 245, 0.15) 0%, transparent 100%)',
   );
   const activeColor = useColorModeValue('brand.700', 'brand.300'); // Lighter brand color for dark mode
   const hoverBg = useColorModeValue('gray.100', 'whiteAlpha.100');
@@ -94,11 +93,7 @@ const SidebarItem = ({ icon, label, href, isCollapsed }: SidebarItemProps) => {
         }
         transition="all 0.2s"
       >
-        <Icon
-          as={icon}
-          boxSize={5}
-          color={isActive ? activeColor : 'gray.500'}
-        />
+        <Icon as={icon} boxSize={5} color={isActive ? activeColor : 'gray.500'} />
         {!isCollapsed && (
           <Text ml={3} fontWeight={isActive ? 'bold' : '500'} fontSize="sm">
             {label}
@@ -116,7 +111,7 @@ export const AdminSidebar = () => {
   const bgColor = useColorModeValue('white', 'gray.900');
   const pathname = usePathname();
   const toast = useToast();
-  const router = useRouter();
+  const _router = useRouter();
 
   const handleLogout = () => {
     // Clear auth cookie first
@@ -157,11 +152,7 @@ export const AdminSidebar = () => {
     { icon: BookOpen, label: 'Vocabulary', href: '/dashboard/vocabulary' },
   ];
 
-  const SidebarContent = ({
-    isCollapsed = false,
-  }: {
-    isCollapsed?: boolean;
-  }) => (
+  const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => (
     <Flex h="full" direction="column" bg={bgColor}>
       <Flex
         h="20"
@@ -207,20 +198,10 @@ export const AdminSidebar = () => {
             alignItems="center"
           >
             <HStack spacing={3}>
-              <Avatar
-                size="sm"
-                name={user?.name || 'Admin'}
-                src={(user as any)?.avatar}
-              />
+              <Avatar size="sm" name={user?.name || 'Admin'} src={(user as any)?.avatar} />
               {!isCollapsed && (
                 <Box textAlign="left">
-                  <Text
-                    fontSize="sm"
-                    fontWeight="bold"
-                    color="white"
-                    isTruncated
-                    maxW="120px"
-                  >
+                  <Text fontSize="sm" fontWeight="bold" color="white" isTruncated maxW="120px">
                     {user?.name || 'Admin User'}
                   </Text>
                   <Text fontSize="xs" color="gray.500">

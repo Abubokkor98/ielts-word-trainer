@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { AdminController } from './admin.controller';
-import { authenticate, authorize } from '../auth/auth.middleware';
 import { AdminRole } from '@ielts/shared';
+import { Router } from 'express';
+import { authenticate, authorize } from '../auth/auth.middleware';
+import { AdminController } from './admin.controller';
 import adminPasswordResetRoutes from './admin-password-reset.routes';
 
 const router = Router();
@@ -19,53 +19,43 @@ router.get(
   '/stats',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  AdminController.getStats
+  AdminController.getStats,
 );
 
 router.get(
   '/users',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  AdminController.getUsers
+  AdminController.getUsers,
 );
 
 router.patch(
   '/users/:id/status',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  AdminController.updateUserStatus
+  AdminController.updateUserStatus,
 );
 
 router.get(
   '/users/export',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  AdminController.exportUsers
+  AdminController.exportUsers,
 );
 
 router.get(
   '/admins',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  AdminController.getAll
+  AdminController.getAll,
 );
-router.post(
-  '/admins',
-  authenticate,
-  authorize([AdminRole.SUPER_ADMIN]),
-  AdminController.create
-);
-router.put(
-  '/admins/:id',
-  authenticate,
-  authorize([AdminRole.SUPER_ADMIN]),
-  AdminController.update
-);
+router.post('/admins', authenticate, authorize([AdminRole.SUPER_ADMIN]), AdminController.create);
+router.put('/admins/:id', authenticate, authorize([AdminRole.SUPER_ADMIN]), AdminController.update);
 router.delete(
   '/admins/:id',
   authenticate,
   authorize([AdminRole.SUPER_ADMIN]),
-  AdminController.delete
+  AdminController.delete,
 );
 
 // Profile Routes
@@ -73,14 +63,14 @@ router.patch(
   '/profile',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  AdminController.updateProfile
+  AdminController.updateProfile,
 );
 
 router.post(
   '/change-password',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  AdminController.changePassword
+  AdminController.changePassword,
 );
 
 // Vocabulary Routes

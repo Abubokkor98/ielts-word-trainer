@@ -1,16 +1,15 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Box, Container, VStack } from '@chakra-ui/react';
-
-import { useReviewSession } from './hooks/use-review-session';
-import { useKeyboardShortcuts } from './hooks/use-keyboard-shortcuts';
-import { ReviewLoading } from './components/review-loading';
-import { ReviewComplete } from './components/review-complete';
-import { ReviewHeader } from './components/review-header';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Flashcard } from './components/flashcard';
 import { RatingButtons } from './components/rating-buttons';
+import { ReviewComplete } from './components/review-complete';
+import { ReviewHeader } from './components/review-header';
+import { ReviewLoading } from './components/review-loading';
+import { useKeyboardShortcuts } from './hooks/use-keyboard-shortcuts';
+import { useReviewSession } from './hooks/use-review-session';
 
 export function ReviewContainer() {
   const router = useRouter();
@@ -75,18 +74,9 @@ export function ReviewContainer() {
             onExit={handleRestart}
           />
 
-          <Flashcard
-            word={currentWord}
-            isFlipped={isFlipped}
-            onFlip={flipCard}
-          />
+          <Flashcard word={currentWord} isFlipped={isFlipped} onFlip={flipCard} />
 
-          {isFlipped && (
-            <RatingButtons
-              onRating={handleRating}
-              isSubmitting={isSubmitting}
-            />
-          )}
+          {isFlipped && <RatingButtons onRating={handleRating} isSubmitting={isSubmitting} />}
         </VStack>
       </Container>
     </Box>

@@ -5,15 +5,7 @@ import { ResetPasswordForm } from '../../features/auth/components/reset-password
 
 export function ResetPasswordContent() {
   return (
-    <Flex
-      direction="column"
-      align="center"
-      justify="center"
-      flex="1"
-      bg="gray.900"
-      px={4}
-      py={12}
-    >
+    <Flex direction="column" align="center" justify="center" flex="1" bg="gray.900" px={4} py={12}>
       <ResetPasswordForm />
     </Flex>
   );

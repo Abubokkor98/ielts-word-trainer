@@ -1,7 +1,7 @@
-import { Word } from './words.model';
-import { CreateWordInput } from '@ielts/shared';
-import { Topic } from '../topics/topics.model';
+import type { CreateWordInput } from '@ielts/shared';
 import mongoose from 'mongoose';
+import { Topic } from '../topics/topics.model';
+import { Word } from './words.model';
 
 export function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -28,7 +28,7 @@ export async function resolveTopic(topicInput: string): Promise<string> {
         {
           new: true,
           upsert: true,
-        }
+        },
       );
       return topic._id.toString();
     } catch (error: any) {
@@ -69,10 +69,7 @@ export class WordsService {
 
     // Search by topic Name
     if (query.topicName) {
-      const escapedTopicName = query.topicName.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        '\\$&'
-      );
+      const escapedTopicName = query.topicName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const topics = await Topic.find({
         name: { $regex: escapedTopicName, $options: 'i' },
       }).select('_id');

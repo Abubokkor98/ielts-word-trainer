@@ -1,10 +1,10 @@
+import { Logger } from '@ielts/utils';
 import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
-import { Word } from '../words/words.model';
-import { Topic } from '../topics/topics.model';
-import { resolveTopic } from '../words/words.service';
-import { Logger } from '@ielts/utils';
 import { AppError } from '../../core/errors/AppError';
+import { Topic } from '../topics/topics.model';
+import { Word } from '../words/words.model';
+import { resolveTopic } from '../words/words.service';
 
 const wordSchema = z.object({
   word: z.string().min(1, 'Word is required'),
@@ -43,15 +43,10 @@ export class CSVImportService {
         'antonyms',
       ];
       const firstRecord = records[0] as Record<string, unknown>;
-      const missingColumns = requiredColumns.filter(
-        (col) => !(col in firstRecord)
-      );
+      const missingColumns = requiredColumns.filter((col) => !(col in firstRecord));
 
       if (missingColumns.length > 0) {
-        throw new AppError(
-          `Missing required columns: ${missingColumns.join(', ')}`,
-          400
-        );
+        throw new AppError(`Missing required columns: ${missingColumns.join(', ')}`, 400);
       }
 
       return records;
@@ -62,7 +57,7 @@ export class CSVImportService {
   }
 
   static async importWords(csvContent: string) {
-    const records = this.validateCSVStructure(csvContent);
+    const records = CSVImportService.validateCSVStructure(csvContent);
 
     const results = {
       total: records.length,

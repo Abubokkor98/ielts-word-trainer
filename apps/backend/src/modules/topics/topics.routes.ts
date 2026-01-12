@@ -1,8 +1,7 @@
-import { Router } from 'express';
-import { TopicsController } from './topics.controller';
-import { authenticate, authorize } from '../auth/auth.middleware';
-import { UserRole } from '@ielts/shared';
 import { AdminRole } from '@ielts/shared';
+import { Router } from 'express';
+import { authenticate, authorize } from '../auth/auth.middleware';
+import { TopicsController } from './topics.controller';
 
 const router = Router();
 
@@ -11,19 +10,19 @@ router.post(
   '/',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  TopicsController.create
+  TopicsController.create,
 ); // Add validation schema if needed
 router.patch(
   '/:id',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  TopicsController.update
+  TopicsController.update,
 );
 router.delete(
   '/:id',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  TopicsController.delete
+  TopicsController.delete,
 );
 
 export default router;

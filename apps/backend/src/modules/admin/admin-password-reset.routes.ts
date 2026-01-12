@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { AdminPasswordResetController } from './admin-password-reset.controller';
-import { validateRequest } from '../../core/middleware/validate.middleware';
 import { z } from 'zod';
+import { validateRequest } from '../../core/middleware/validate.middleware';
+import { AdminPasswordResetController } from './admin-password-reset.controller';
 
 const router = Router();
 
@@ -21,12 +21,12 @@ const resetPasswordSchema = {
 router.post(
   '/request-reset',
   validateRequest(requestResetSchema),
-  AdminPasswordResetController.requestReset
+  AdminPasswordResetController.requestReset,
 );
 router.post(
   '/reset-password',
   validateRequest(resetPasswordSchema),
-  AdminPasswordResetController.resetPassword
+  AdminPasswordResetController.resetPassword,
 );
 
 export default router;

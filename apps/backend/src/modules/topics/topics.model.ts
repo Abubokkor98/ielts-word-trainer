@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { type Document, Schema } from 'mongoose';
 
 export interface ITopic extends Document {
   name: string;
@@ -14,7 +14,7 @@ const TopicSchema = new Schema<ITopic>(
     thumbnail: { type: String },
     wordCount: { type: Number, default: 0 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Topic = mongoose.model<ITopic>('Topic', TopicSchema);

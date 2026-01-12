@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import { env } from '../config/env';
 import { Word } from '../modules/words/words.model';
-import { Topic } from '../modules/topics/topics.model';
 
 async function verifyTopics() {
   await mongoose.connect(env.MONGODB_URI);
@@ -12,12 +11,7 @@ async function verifyTopics() {
     const word = await Word.findOne({ word: 'abandon' }).populate('topic');
     console.log('Word with populated topic:', JSON.stringify(word, null, 2));
 
-    if (
-      word &&
-      word.topic &&
-      typeof word.topic === 'object' &&
-      'name' in word.topic
-    ) {
+    if (word?.topic && typeof word.topic === 'object' && 'name' in word.topic) {
       console.log('SUCCESS: Topic is correctly populated as an object.');
     } else {
       console.log('FAILURE: Topic is not populated correctly.', word?.topic);

@@ -1,17 +1,17 @@
 import {
+  Badge,
   Box,
   Button,
   Container,
+  Divider,
   Heading,
+  HStack,
   Text,
   VStack,
-  Divider,
-  Badge,
-  HStack,
 } from '@chakra-ui/react';
-import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Page Not Found - IELTS Vocabs',
@@ -20,14 +20,7 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      bg="gray.900"
-      p={4}
-      flex="1"
-    >
+    <Box display="flex" alignItems="center" justifyContent="center" bg="gray.900" p={4} flex="1">
       <Container maxW="lg">
         <Box
           bg="gray.800"
@@ -42,13 +35,7 @@ export default function NotFound() {
               <Heading size="2xl" color="brand.400" fontFamily="mono">
                 404
               </Heading>
-              <Badge
-                colorScheme="red"
-                fontSize="md"
-                px={3}
-                py={1}
-                borderRadius="full"
-              >
+              <Badge colorScheme="red" fontSize="md" px={3} py={1} borderRadius="full">
                 Error
               </Badge>
             </HStack>
@@ -70,8 +57,8 @@ export default function NotFound() {
                 </Text>{' '}
                 (noun)
                 <br />
-                The digital state of being entirely lost; a webpage that has
-                vanished like a difficult vocabulary word during an exam.
+                The digital state of being entirely lost; a webpage that has vanished like a
+                difficult vocabulary word during an exam.
               </Text>
             </Box>
 

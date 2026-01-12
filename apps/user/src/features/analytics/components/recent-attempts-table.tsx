@@ -1,16 +1,6 @@
-import {
-  Box,
-  Heading,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Badge,
-} from '@chakra-ui/react';
-import { Card, CardHeader, CardContent } from '@ielts/ui';
-import { RecentAttempt } from '../types';
+import { Badge, Box, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { Card, CardContent, CardHeader } from '@ielts/ui';
+import type { RecentAttempt } from '../types';
 
 interface RecentAttemptsTableProps {
   attempts: RecentAttempt[];
@@ -41,13 +31,9 @@ export function RecentAttemptsTable({ attempts }: RecentAttemptsTableProps) {
             <Tbody>
               {attempts.map((attempt) => (
                 <Tr key={attempt._id}>
-                  <Td color="gray.300">
-                    {new Date(attempt.completedAt).toLocaleDateString()}
-                  </Td>
+                  <Td color="gray.300">{new Date(attempt.completedAt).toLocaleDateString()}</Td>
                   <Td>
-                    <Badge>
-                      {attempt.difficulty?.toUpperCase() || 'MIXED'}
-                    </Badge>
+                    <Badge>{attempt.difficulty?.toUpperCase() || 'MIXED'}</Badge>
                   </Td>
                   <Td color="gray.300" isNumeric>
                     {attempt.score}

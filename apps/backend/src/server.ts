@@ -1,25 +1,18 @@
-import express, { Express } from 'express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import express, { type Express } from 'express';
+import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import cookieParser from 'cookie-parser';
-import { env } from './config/env';
 import apiRoutes from './api.routes';
+import { env } from './config/env';
 import { globalErrorHandler } from './core/middleware/error.middleware';
-
-import rateLimit from 'express-rate-limit';
 
 export const createServer = (): Express => {
   const app = express();
-  console.log(
-    '----------------------------------------------------------------'
-  );
-  console.log(
-    'Server Request - CORS Config: http://localhost:3000, http://localhost:3001'
-  );
-  console.log(
-    '----------------------------------------------------------------'
-  );
+  console.log('----------------------------------------------------------------');
+  console.log('Server Request - CORS Config: http://localhost:3000, http://localhost:3001');
+  console.log('----------------------------------------------------------------');
 
   // Middleware
   app.use(express.json());
@@ -28,7 +21,7 @@ export const createServer = (): Express => {
     cors({
       origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow frontend & admin
       credentials: true,
-    })
+    }),
   );
   app.use(helmet());
   app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'short'));
@@ -45,7 +38,7 @@ export const createServer = (): Express => {
   app.use(limiter);
 
   // Health Check
-  app.get('/health', (req, res) => {
+  app.get('/health', (_req, res) => {
     res.json({ status: 'ok', environment: env.NODE_ENV });
   });
 

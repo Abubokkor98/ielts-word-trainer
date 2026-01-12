@@ -1,14 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 
 /**
  * Request Logger Middleware
  * Logs all incoming requests with details
  */
-export const requestLogger = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
   const startTime = Date.now();
 
   // Log request
@@ -18,9 +14,7 @@ export const requestLogger = (
   res.on('finish', () => {
     const duration = Date.now() - startTime;
     console.log(
-      `[${new Date().toISOString()}] ${req.method} ${req.path} - ${
-        res.statusCode
-      } (${duration}ms)`
+      `[${new Date().toISOString()}] ${req.method} ${req.path} - ${res.statusCode} (${duration}ms)`,
     );
   });
 

@@ -1,20 +1,20 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { AxiosError } from 'axios';
-import { useMutation } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/auth';
-import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import {
   Box,
-  Text,
-  VStack,
+  Link as ChakraLink,
   FormControl,
   FormLabel,
+  Text,
   useToast,
-  Link as ChakraLink,
+  VStack,
 } from '@chakra-ui/react';
+import { axiosInstance } from '@ielts/auth';
+import { Button, Card, CardContent, CardHeader, Input } from '@ielts/ui';
+import { useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import Link from 'next/link';
+import { type FormEvent, useState } from 'react';
 
 interface ErrorResponse {
   response?: {
@@ -31,12 +31,9 @@ export default function ForgotPasswordPage() {
 
   const forgotPasswordMutation = useMutation<{ success: boolean }, AxiosError>({
     mutationFn: async () => {
-      const { data } = await axiosInstance.post(
-        '/admin/password/request-reset',
-        {
-          email,
-        }
-      );
+      const { data } = await axiosInstance.post('/admin/password/request-reset', {
+        email,
+      });
       return data;
     },
     onSuccess: () => {
@@ -85,12 +82,7 @@ export default function ForgotPasswordPage() {
               <Text color="gray.400" textAlign="center">
                 We've sent password reset instructions to {email}
               </Text>
-              <ChakraLink
-                as={Link}
-                href="/login"
-                color="brand.400"
-                fontWeight="bold"
-              >
+              <ChakraLink as={Link} href="/login" color="brand.400" fontWeight="bold">
                 Return to login
               </ChakraLink>
             </VStack>
@@ -136,20 +128,11 @@ export default function ForgotPasswordPage() {
                 />
               </FormControl>
 
-              <Button
-                type="submit"
-                width="100%"
-                isLoading={forgotPasswordMutation.isPending}
-              >
+              <Button type="submit" width="100%" isLoading={forgotPasswordMutation.isPending}>
                 Send Reset Link
               </Button>
 
-              <ChakraLink
-                as={Link}
-                href="/login"
-                color="brand.400"
-                fontWeight="bold"
-              >
+              <ChakraLink as={Link} href="/login" color="brand.400" fontWeight="bold">
                 Back to login
               </ChakraLink>
             </VStack>

@@ -1,13 +1,13 @@
-import { Word, IWord } from '../words/words.model';
-import { AppError } from '../../core/errors/AppError';
 import { QuestionType } from '@ielts/shared';
+import { AppError } from '../../core/errors/AppError';
+import { type IWord, Word } from '../words/words.model';
 
 export class QuizService {
   static async generateQuiz(
     userId?: string, // Made optional
     topicId?: string,
     difficulty?: string,
-    limit: number = 10
+    limit: number = 10,
   ) {
     let selectedWords: IWord[] = [];
 
@@ -19,24 +19,14 @@ export class QuizService {
       // or use dynamic import inside the method.
       const { SRSService } = await import('../srs/srs.service');
 
-      const dueWords = await SRSService.getDueWords(
-        userId,
-        topicId,
-        difficulty,
-        limit
-      );
+      const dueWords = await SRSService.getDueWords(userId, topicId, difficulty, limit);
 
       selectedWords = [...dueWords];
 
       // Priority 2: Fill remaining slots with new words
       if (selectedWords.length < limit) {
         const remainingCount = limit - selectedWords.length;
-        const newWords = await SRSService.getNewWords(
-          userId,
-          topicId,
-          difficulty,
-          remainingCount
-        );
+        const newWords = await SRSService.getNewWords(userId, topicId, difficulty, remainingCount);
         selectedWords = [...selectedWords, ...newWords];
       }
     }
@@ -62,10 +52,7 @@ export class QuizService {
     }
 
     if (selectedWords.length < 4) {
-      throw new AppError(
-        'Not enough words to generate a quiz (min 4 required)',
-        400
-      );
+      throw new AppError('Not enough words to generate a quiz (min 4 required)', 400);
     }
 
     // Shuffle the final selection so due/new words are mixed
@@ -74,26 +61,26 @@ export class QuizService {
 
     return selected.map((word, index) => {
       // Determine question type based on probability
-      const type = this.selectQuestionType(index);
+      const type = QuizService.selectQuestionType(index);
 
       switch (type) {
         case QuestionType.WORD_TO_MEANING:
-          return this.generateWordToMeaning(word, selected);
+          return QuizService.generateWordToMeaning(word, selected);
         case QuestionType.MEANING_TO_WORD:
-          return this.generateMeaningToWord(word, selected);
+          return QuizService.generateMeaningToWord(word, selected);
         case QuestionType.SYNONYM_MATCH:
-          return this.generateSynonymMatch(word, selected);
+          return QuizService.generateSynonymMatch(word, selected);
         case QuestionType.ANTONYM_MATCH:
-          return this.generateAntonymMatch(word, selected);
+          return QuizService.generateAntonymMatch(word, selected);
         case QuestionType.SENTENCE_COMPLETION:
-          return this.generateSentenceCompletion(word, selected);
+          return QuizService.generateSentenceCompletion(word, selected);
         default:
-          return this.generateWordToMeaning(word, selected);
+          return QuizService.generateWordToMeaning(word, selected);
       }
     });
   }
 
-  private static selectQuestionType(index: number): QuestionType {
+  private static selectQuestionType(_index: number): QuestionType {
     const rand = Math.random();
     // 40% Word -> Meaning
     // 30% Meaning -> Word
@@ -150,7 +137,7 @@ export class QuizService {
 
   private static generateSynonymMatch(word: IWord, allWords: IWord[]) {
     if (!word.synonyms || word.synonyms.length === 0) {
-      return this.generateWordToMeaning(word, allWords);
+      return QuizService.generateWordToMeaning(word, allWords);
     }
 
     const correctSynonym = word.synonyms[0];
@@ -179,7 +166,7 @@ export class QuizService {
 
   private static generateAntonymMatch(word: IWord, allWords: IWord[]) {
     if (!word.antonyms || word.antonyms.length === 0) {
-      return this.generateWordToMeaning(word, allWords);
+      return QuizService.generateWordToMeaning(word, allWords);
     }
 
     const correctAntonym = word.antonyms[0];
@@ -211,13 +198,10 @@ export class QuizService {
       !word.exampleSentence ||
       !word.exampleSentence.toLowerCase().includes(word.word.toLowerCase())
     ) {
-      return this.generateWordToMeaning(word, allWords);
+      return QuizService.generateWordToMeaning(word, allWords);
     }
 
-    const sentence = word.exampleSentence.replace(
-      new RegExp(word.word, 'gi'),
-      '_____'
-    );
+    const sentence = word.exampleSentence.replace(new RegExp(word.word, 'gi'), '_____');
 
     const distractors = allWords
       .filter((w) => w._id.toString() !== word._id.toString())

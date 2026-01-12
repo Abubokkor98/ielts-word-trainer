@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document } from 'mongoose';
 import { Difficulty } from '@ielts/shared';
+import mongoose, { type Document, Schema } from 'mongoose';
 
 export interface IQuizResult extends Document {
   user: mongoose.Types.ObjectId;
@@ -29,10 +29,7 @@ const QuizResultSchema = new Schema<IQuizResult>(
     ],
     date: { type: Date, default: Date.now },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-export const QuizResult = mongoose.model<IQuizResult>(
-  'QuizResult',
-  QuizResultSchema
-);
+export const QuizResult = mongoose.model<IQuizResult>('QuizResult', QuizResultSchema);

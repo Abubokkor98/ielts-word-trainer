@@ -1,4 +1,4 @@
-import { QuestionType } from '@ielts/shared';
+import type { QuestionType } from '@ielts/shared';
 
 export interface Option {
   id: string;

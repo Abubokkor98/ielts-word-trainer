@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { VocabularyContainer } from '../../features/vocabulary';
 
 export const metadata: Metadata = {

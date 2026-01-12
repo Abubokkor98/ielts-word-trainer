@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { TopicsService } from './topics.service';
+import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
+import { TopicsService } from './topics.service';
 
 export class TopicsController {
   static async create(req: Request, res: Response, next: NextFunction) {
@@ -12,7 +12,7 @@ export class TopicsController {
     }
   }
 
-  static async getAll(req: Request, res: Response, next: NextFunction) {
+  static async getAll(_req: Request, res: Response, next: NextFunction) {
     try {
       const topics = await TopicsService.findAll();
       res.json({ success: true, data: topics });

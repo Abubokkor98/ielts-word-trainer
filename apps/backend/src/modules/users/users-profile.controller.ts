@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
-import { UserService } from './users.service';
-import { QuizAttemptService } from '../quiz/quiz-attempt.service';
+import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
-import { AuthRequest } from '../auth/auth.middleware';
+import type { AuthRequest } from '../auth/auth.middleware';
+import { QuizAttemptService } from '../quiz/quiz-attempt.service';
+import { UserService } from './users.service';
 
 export class UserProfileController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
@@ -71,11 +71,7 @@ export class UserProfileController {
 
       const { currentPassword, newPassword } = req.body;
 
-      if (
-        !newPassword ||
-        typeof newPassword !== 'string' ||
-        newPassword.length < 6
-      ) {
+      if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
         throw new AppError('Password must be at least 6 characters', 400);
       }
 

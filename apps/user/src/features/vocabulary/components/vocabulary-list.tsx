@@ -1,17 +1,8 @@
 'use client';
 
-import {
-  Box,
-  Button,
-  Heading,
-  HStack,
-  SimpleGrid,
-  Skeleton,
-  Text,
-  Badge,
-} from '@chakra-ui/react';
-import { Card, CardHeader, CardContent, CardFooter } from '@ielts/ui';
-import { Word } from '../types';
+import { Badge, Box, Button, Heading, HStack, SimpleGrid, Skeleton, Text } from '@chakra-ui/react';
+import { Card, CardContent, CardFooter, CardHeader } from '@ielts/ui';
+import type { Word } from '../types';
 
 interface VocabularyListProps {
   isLoading: boolean;
@@ -38,6 +29,7 @@ export function VocabularyList({
     return (
       <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
         {[...Array(8)].map((_, i) => (
+          // biome-ignore lint/suspicious/noArrayIndexKey: Skeleton indices are stable
           <Skeleton key={i} height="220px" borderRadius="md" />
         ))}
       </SimpleGrid>

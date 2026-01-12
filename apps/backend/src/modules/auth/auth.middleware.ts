@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { AdminRole, UserRole } from '@ielts/shared';
+import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
 import { AppError } from '../../core/errors/AppError';
-import { UserRole, AdminRole } from '@ielts/shared';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -11,16 +11,9 @@ export interface AuthRequest extends Request {
   };
 }
 
-const VALID_ROLES = new Set<string>([
-  ...Object.values(UserRole),
-  ...Object.values(AdminRole),
-]);
+const VALID_ROLES = new Set<string>([...Object.values(UserRole), ...Object.values(AdminRole)]);
 
-export const authenticate = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const authenticate = (req: Request, _res: Response, next: NextFunction) => {
   try {
     let token = req.headers.authorization?.replace('Bearer ', '');
 
@@ -51,13 +44,13 @@ export const authenticate = (
       role: decoded.role as UserRole | AdminRole,
     };
     next();
-  } catch (error) {
+  } catch (_error) {
     next(new AppError('Invalid token', 401));
   }
 };
 
 export const authorize = (roles: (UserRole | AdminRole)[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     const authReq = req as AuthRequest;
 
     if (!authReq.user) {

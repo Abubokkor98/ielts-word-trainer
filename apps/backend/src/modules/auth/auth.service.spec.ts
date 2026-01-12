@@ -1,5 +1,5 @@
-import { AuthService } from './auth.service';
 import jwt from 'jsonwebtoken';
+import { AuthService } from './auth.service';
 
 jest.mock('../../config/env', () => ({
   env: { JWT_SECRET: 'test-secret' },

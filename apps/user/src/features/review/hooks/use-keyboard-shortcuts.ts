@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { QualityRating } from '../types';
+import type { QualityRating } from '../types';
 
 interface UseKeyboardShortcutsProps {
   isFlipped: boolean;

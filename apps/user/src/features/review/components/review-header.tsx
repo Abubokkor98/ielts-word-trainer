@@ -1,13 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  HStack,
-  Progress,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Button, Card, CardBody, HStack, Progress, Text, VStack } from '@chakra-ui/react';
 import { ArrowLeft } from 'lucide-react';
 
 interface ReviewHeaderProps {

@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Box,
   Button,
   Flex,
   HStack,
@@ -9,9 +10,8 @@ import {
   InputLeftElement,
   InputRightElement,
   Select,
-  Box,
 } from '@chakra-ui/react';
-import { DifficultyLevel } from 'apps/user/src/types';
+import type { DifficultyLevel } from 'apps/user/src/types';
 import { Search, X } from 'lucide-react';
 
 interface VocabularyFiltersProps {
@@ -22,9 +22,7 @@ interface VocabularyFiltersProps {
   topicSearch: string;
   onTopicSearchChange: (value: string) => void;
   module: 'reading' | 'writing' | 'listening' | 'speaking' | undefined;
-  onModuleChange: (
-    value: 'reading' | 'writing' | 'listening' | 'speaking' | undefined
-  ) => void;
+  onModuleChange: (value: 'reading' | 'writing' | 'listening' | 'speaking' | undefined) => void;
 }
 
 export function VocabularyFilters({
@@ -37,12 +35,7 @@ export function VocabularyFilters({
   module,
   onModuleChange,
 }: VocabularyFiltersProps) {
-  const levels: (DifficultyLevel | 'all')[] = [
-    'all',
-    'beginner',
-    'intermediate',
-    'advanced',
-  ];
+  const levels: (DifficultyLevel | 'all')[] = ['all', 'beginner', 'intermediate', 'advanced'];
 
   return (
     <Flex
@@ -139,12 +132,7 @@ export function VocabularyFilters({
           />
           {wordSearch && (
             <InputRightElement>
-              <X
-                size={14}
-                color="gray"
-                cursor="pointer"
-                onClick={() => onWordSearchChange('')}
-              />
+              <X size={14} color="gray" cursor="pointer" onClick={() => onWordSearchChange('')} />
             </InputRightElement>
           )}
         </InputGroup>
@@ -173,12 +161,7 @@ export function VocabularyFilters({
           />
           {topicSearch && (
             <InputRightElement>
-              <X
-                size={14}
-                color="gray"
-                cursor="pointer"
-                onClick={() => onTopicSearchChange('')}
-              />
+              <X size={14} color="gray" cursor="pointer" onClick={() => onTopicSearchChange('')} />
             </InputRightElement>
           )}
         </InputGroup>

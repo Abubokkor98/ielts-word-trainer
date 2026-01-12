@@ -1,37 +1,37 @@
 'use client';
 
 import {
+  Badge,
+  Box,
+  Divider,
   Drawer,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerHeader,
   DrawerBody,
+  DrawerContent,
   DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
   Flex,
   Heading,
   IconButton,
-  VStack,
-  Divider,
   Text,
-  Badge,
-  Box,
+  VStack,
 } from '@chakra-ui/react';
+import type { User as AuthUser } from '@ielts/auth';
 import {
-  Home,
+  BarChart2,
   Book,
   HelpCircle,
+  Home,
   LayoutDashboard,
-  RotateCcw,
-  BarChart2,
-  X,
-  User,
-  Settings,
-  LogOut,
   LogIn,
+  LogOut,
+  RotateCcw,
+  Settings,
+  User,
   UserPlus,
+  X,
 } from 'lucide-react';
 import { MobileNavLink } from './nav-links';
-import { User as AuthUser } from '@ielts/auth';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -85,18 +85,10 @@ export const MobileNav = ({
             <MobileNavLink href="/" icon={<Home size={20} />} onClick={onClose}>
               Home
             </MobileNavLink>
-            <MobileNavLink
-              href="/vocabulary"
-              icon={<Book size={20} />}
-              onClick={onClose}
-            >
+            <MobileNavLink href="/vocabulary" icon={<Book size={20} />} onClick={onClose}>
               Vocabulary
             </MobileNavLink>
-            <MobileNavLink
-              href="/quiz"
-              icon={<HelpCircle size={20} />}
-              onClick={onClose}
-            >
+            <MobileNavLink href="/quiz" icon={<HelpCircle size={20} />} onClick={onClose}>
               Quiz
             </MobileNavLink>
 
@@ -123,54 +115,29 @@ export const MobileNav = ({
                 >
                   Dashboard
                 </MobileNavLink>
-                <MobileNavLink
-                  href="/profile"
-                  icon={<User size={20} />}
-                  onClick={onClose}
-                >
+                <MobileNavLink href="/profile" icon={<User size={20} />} onClick={onClose}>
                   Profile Settings
                 </MobileNavLink>
-                <MobileNavLink
-                  href="/review"
-                  icon={<RotateCcw size={20} />}
-                  onClick={onClose}
-                >
+                <MobileNavLink href="/review" icon={<RotateCcw size={20} />} onClick={onClose}>
                   <Flex justify="space-between" w="full" align="center">
                     <Text>Review</Text>
                     {dueCount > 0 && (
-                      <Badge
-                        colorScheme="red"
-                        variant="solid"
-                        borderRadius="full"
-                        fontSize="xs"
-                      >
+                      <Badge colorScheme="red" variant="solid" borderRadius="full" fontSize="xs">
                         {dueCount}
                       </Badge>
                     )}
                   </Flex>
                 </MobileNavLink>
-                <MobileNavLink
-                  href="/analytics"
-                  icon={<BarChart2 size={20} />}
-                  onClick={onClose}
-                >
+                <MobileNavLink href="/analytics" icon={<BarChart2 size={20} />} onClick={onClose}>
                   Analytics
                 </MobileNavLink>
                 {user?.role === 'admin' && (
-                  <MobileNavLink
-                    href="/admin"
-                    icon={<Settings size={20} />}
-                    onClick={onClose}
-                  >
+                  <MobileNavLink href="/admin" icon={<Settings size={20} />} onClick={onClose}>
                     Admin Panel
                   </MobileNavLink>
                 )}
                 <Divider my={2} borderColor="whiteAlpha.200" />
-                <MobileNavLink
-                  icon={<LogOut size={20} />}
-                  onClick={onLogout}
-                  color="red.400"
-                >
+                <MobileNavLink icon={<LogOut size={20} />} onClick={onLogout} color="red.400">
                   Sign Out
                 </MobileNavLink>
               </>
@@ -187,11 +154,7 @@ export const MobileNav = ({
                     Account
                   </Text>
                 </Box>
-                <MobileNavLink
-                  href="/login"
-                  icon={<LogIn size={20} />}
-                  onClick={onClose}
-                >
+                <MobileNavLink href="/login" icon={<LogIn size={20} />} onClick={onClose}>
                   Login
                 </MobileNavLink>
                 <MobileNavLink
@@ -207,11 +170,7 @@ export const MobileNav = ({
           </VStack>
         </DrawerBody>
 
-        <DrawerFooter
-          borderTopWidth="1px"
-          borderColor="whiteAlpha.200"
-          justifyContent="center"
-        >
+        <DrawerFooter borderTopWidth="1px" borderColor="whiteAlpha.200" justifyContent="center">
           <Text fontSize="xs" color="gray.500">
             IELTS Vocabulary Builder
           </Text>

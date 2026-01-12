@@ -1,9 +1,7 @@
-import { QuizAttempt, IQuizAttempt } from './quiz-attempt.model';
+import { type IQuizAttempt, QuizAttempt } from './quiz-attempt.model';
 
 export class QuizAttemptService {
-  static async createAttempt(
-    data: Partial<IQuizAttempt>
-  ): Promise<IQuizAttempt> {
+  static async createAttempt(data: Partial<IQuizAttempt>): Promise<IQuizAttempt> {
     const attempt = new QuizAttempt(data);
     await attempt.save();
 
@@ -23,10 +21,7 @@ export class QuizAttemptService {
     return attempt;
   }
 
-  static async getUserAttempts(
-    userId: string,
-    limit = 10
-  ): Promise<IQuizAttempt[]> {
+  static async getUserAttempts(userId: string, limit = 10): Promise<IQuizAttempt[]> {
     return QuizAttempt.find({ userId })
       .sort({ createdAt: -1 })
       .limit(limit)
@@ -47,13 +42,8 @@ export class QuizAttemptService {
 
     const totalScore = attempts.reduce((sum, a) => sum + a.score, 0);
     const totalTime = attempts.reduce((sum, a) => sum + a.totalTimeSpent, 0);
-    const totalQuestions = attempts.reduce(
-      (sum, a) => sum + a.totalQuestions,
-      0
-    );
-    const bestScore = Math.max(
-      ...attempts.map((a) => (a.score / a.totalQuestions) * 100)
-    );
+    const totalQuestions = attempts.reduce((sum, a) => sum + a.totalQuestions, 0);
+    const bestScore = Math.max(...attempts.map((a) => (a.score / a.totalQuestions) * 100));
 
     return {
       totalAttempts: attempts.length,

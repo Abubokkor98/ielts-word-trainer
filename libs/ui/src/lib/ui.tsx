@@ -1,6 +1,3 @@
-
-
-
 export function Ui() {
   return (
     <div>
@@ -10,6 +7,3 @@ export function Ui() {
 }
 
 export default Ui;
-
-
-

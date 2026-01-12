@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { AnalyticsContainer } from '../../features/analytics';
 
 export const metadata: Metadata = {

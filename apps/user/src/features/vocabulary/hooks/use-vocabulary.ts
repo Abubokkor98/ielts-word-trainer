@@ -1,6 +1,6 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { vocabularyApi } from '../services/vocabulary.api';
-import { VocabularyFilters } from '../types';
+import type { VocabularyFilters } from '../types';
 
 export function useVocabulary(filters: VocabularyFilters) {
   return useQuery({

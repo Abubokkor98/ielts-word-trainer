@@ -2,23 +2,22 @@
 
 import {
   Box,
-  Heading,
-  VStack,
-  Card,
-  CardHeader,
-  CardBody,
-  FormControl,
-  FormLabel,
-  Input,
   Button,
-  useToast,
-  Divider,
+  Card,
+  CardBody,
+  CardHeader,
+  FormControl,
   FormErrorMessage,
+  FormLabel,
+  Heading,
+  Input,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
-import { useForm } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { useState, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 export default function SettingsPage() {
   const { user } = useAuthStore();
@@ -53,7 +52,7 @@ export default function SettingsPage() {
       const response = await axiosInstance.patch('/admin/profile', data);
       return response.data;
     },
-    onSuccess: (response, variables) => {
+    onSuccess: (_response, variables) => {
       // Update local auth store with new user data
       if (user) {
         useAuthStore.getState().setUser({ ...user, name: variables.name });
@@ -143,10 +142,7 @@ export default function SettingsPage() {
                     {...registerPassword('currentPassword', { required: true })}
                   />
                 </FormControl>
-                <FormControl
-                  isRequired
-                  isInvalid={!!passwordErrors.newPassword}
-                >
+                <FormControl isRequired isInvalid={!!passwordErrors.newPassword}>
                   <FormLabel>New Password</FormLabel>
                   <Input
                     type="password"
@@ -159,18 +155,14 @@ export default function SettingsPage() {
                     {passwordErrors.newPassword?.message as string}
                   </FormErrorMessage>
                 </FormControl>
-                <FormControl
-                  isRequired
-                  isInvalid={!!passwordErrors.confirmPassword}
-                >
+                <FormControl isRequired isInvalid={!!passwordErrors.confirmPassword}>
                   <FormLabel>Confirm New Password</FormLabel>
                   <Input
                     type="password"
                     {...registerPassword('confirmPassword', {
                       required: true,
                       validate: (value, formValues) =>
-                        value === formValues.newPassword ||
-                        'Passwords do not match',
+                        value === formValues.newPassword || 'Passwords do not match',
                     })}
                   />
                   <FormErrorMessage>

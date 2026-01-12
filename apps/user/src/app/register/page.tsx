@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { RegisterContent } from './register-content';
 
 export const metadata: Metadata = {

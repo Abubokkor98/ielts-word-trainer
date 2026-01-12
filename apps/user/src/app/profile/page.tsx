@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { ProfileContainer } from '../../features/profile';
 
 export const metadata: Metadata = {

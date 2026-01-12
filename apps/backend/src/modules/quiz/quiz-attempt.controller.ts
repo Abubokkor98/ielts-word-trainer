@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import { QuizAttemptService } from './quiz-attempt.service';
-import { QuizAttemptSchema } from './quiz-attempt.schema';
-import { User } from '../users/users.model';
+import type { Request, Response } from 'express';
 import mongoose from 'mongoose';
+import { User } from '../users/users.model';
+import { QuizAttemptSchema } from './quiz-attempt.schema';
+import { QuizAttemptService } from './quiz-attempt.service';
 
 export class QuizAttemptController {
   static async create(req: Request, res: Response) {
@@ -17,10 +17,7 @@ export class QuizAttemptController {
 
       if (process.env.NODE_ENV !== 'production') {
         console.log('📝 Quiz attempt create - User ID:', userId);
-        console.log(
-          '📝 Quiz attempt create - Request body:',
-          JSON.stringify(req.body, null, 2)
-        );
+        console.log('📝 Quiz attempt create - Request body:', JSON.stringify(req.body, null, 2));
       }
 
       // Validate request body
@@ -50,7 +47,7 @@ export class QuizAttemptController {
           '📊 Quiz stats - Score:',
           validatedData.score,
           '/',
-          validatedData.totalQuestions
+          validatedData.totalQuestions,
         );
       }
 
@@ -93,17 +90,17 @@ export class QuizAttemptController {
             streak: newStreak,
           },
         },
-        { new: true }
+        { new: true },
       );
 
       if (process.env.NODE_ENV !== 'production') {
         console.log(
           '✅ User updated - XP:',
           updatedUser?.xp,
-          '(+' + xpEarned + ')',
+          `(+${xpEarned})`,
           '| Streak:',
           updatedUser?.streak,
-          '🔥'
+          '🔥',
         );
       }
 
@@ -119,10 +116,7 @@ export class QuizAttemptController {
       console.error('❌ Error creating quiz attempt:', error);
 
       if (error.name === 'ZodError') {
-        console.error(
-          '❌ Validation errors:',
-          JSON.stringify(error.errors, null, 2)
-        );
+        console.error('❌ Validation errors:', JSON.stringify(error.errors, null, 2));
         return res.status(400).json({
           success: false,
           message: 'Validation error',
@@ -148,7 +142,7 @@ export class QuizAttemptController {
         });
       }
 
-      const limit = parseInt(req.query.limit as string) || 10;
+      const limit = parseInt(req.query.limit as string, 10) || 10;
       const attempts = await QuizAttemptService.getUserAttempts(userId, limit);
 
       return res.status(200).json({

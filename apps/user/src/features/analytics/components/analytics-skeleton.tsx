@@ -1,4 +1,4 @@
-import { Box, Container, Skeleton, SimpleGrid, VStack } from '@chakra-ui/react';
+import { Box, Container, SimpleGrid, Skeleton, VStack } from '@chakra-ui/react';
 
 export function AnalyticsSkeleton() {
   return (

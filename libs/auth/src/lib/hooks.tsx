@@ -1,5 +1,5 @@
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useRouter, usePathname } from 'next/navigation';
 import { useAuthStore } from './auth.store';
 
 const { useEffect } = React;
@@ -26,9 +26,7 @@ export const useUserRole = () => {
   return user?.role || null;
 };
 
-export const protectUserRoute = <P extends object>(
-  Component: React.ComponentType<P>
-) => {
+export const protectUserRoute = <P extends object>(Component: React.ComponentType<P>) => {
   return function ProtectedUserRoute(props: P) {
     const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
@@ -40,7 +38,7 @@ export const protectUserRoute = <P extends object>(
         // Redirect admins to admin app
         if (typeof window !== 'undefined') {
           window.location.href = `${
-            process.env['NEXT_PUBLIC_ADMIN_APP_URL'] || 'http://localhost:3001'
+            process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'http://localhost:3001'
           }/dashboard`;
         }
       }
@@ -54,9 +52,7 @@ export const protectUserRoute = <P extends object>(
   };
 };
 
-export const protectAdminRoute = <P extends object>(
-  Component: React.ComponentType<P>
-) => {
+export const protectAdminRoute = <P extends object>(Component: React.ComponentType<P>) => {
   return function ProtectedAdminRoute(props: P) {
     const { user, isAuthenticated } = useAuthStore();
     const router = useRouter();
@@ -68,16 +64,13 @@ export const protectAdminRoute = <P extends object>(
         // Redirect regular users to user app
         if (typeof window !== 'undefined') {
           window.location.href = `${
-            process.env['NEXT_PUBLIC_USER_APP_URL'] || 'http://localhost:3000'
+            process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'
           }/dashboard`;
         }
       }
     }, [isAuthenticated, user, router]);
 
-    if (
-      !isAuthenticated ||
-      !['admin', 'super_admin'].includes(user?.role || '')
-    ) {
+    if (!isAuthenticated || !['admin', 'super_admin'].includes(user?.role || '')) {
       return null;
     }
 

@@ -5,9 +5,9 @@ import { AppError } from '../errors/AppError';
 const storage = multer.memoryStorage();
 
 const fileFilter = (
-  req: Express.Request,
+  _req: Express.Request,
   file: Express.Multer.File,
-  cb: multer.FileFilterCallback
+  cb: multer.FileFilterCallback,
 ) => {
   // Accept CSV files only
   const name = file.originalname.toLowerCase();

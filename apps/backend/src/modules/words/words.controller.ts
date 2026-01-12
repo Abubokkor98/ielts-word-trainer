@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { WordsService } from './words.service';
+import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
 import { CSVImportService } from '../admin/csv-import.service';
+import { WordsService } from './words.service';
 
 export class WordsController {
   static async create(req: Request, res: Response, next: NextFunction) {
@@ -15,8 +15,8 @@ export class WordsController {
 
   static async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 20;
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const limit = parseInt(req.query.limit as string, 10) || 20;
       const result = await WordsService.findAll(req.query, page, limit);
       res.json({ success: true, data: result });
     } catch (err) {

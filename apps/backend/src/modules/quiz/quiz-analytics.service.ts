@@ -1,5 +1,5 @@
-import { QuizAttempt } from './quiz-attempt.model';
 import mongoose from 'mongoose';
+import { QuizAttempt } from './quiz-attempt.model';
 
 export class QuizAnalyticsService {
   static async getUserAnalytics(userId: string) {
@@ -8,55 +8,54 @@ export class QuizAnalyticsService {
     }
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    const [statsResult, recentAttempts, difficultyStats, topicStats] =
-      await Promise.all([
-        // 1. Overall Stats Aggregation (Optimized)
-        QuizAttempt.aggregate([
-          { $match: { userId: userObjectId } },
-          {
-            $group: {
-              _id: null,
-              totalAttempts: { $sum: 1 },
-              totalScore: { $sum: '$score' },
-              totalQuestions: { $sum: '$totalQuestions' },
-              totalTime: { $sum: '$totalTimeSpent' },
-              maxScore: { $max: { $divide: ['$score', '$totalQuestions'] } },
-              minScore: { $min: { $divide: ['$score', '$totalQuestions'] } },
-              correctAnswers: { $sum: '$score' }, // Assuming score = correct answers count
-            },
+    const [statsResult, recentAttempts, difficultyStats, topicStats] = await Promise.all([
+      // 1. Overall Stats Aggregation (Optimized)
+      QuizAttempt.aggregate([
+        { $match: { userId: userObjectId } },
+        {
+          $group: {
+            _id: null,
+            totalAttempts: { $sum: 1 },
+            totalScore: { $sum: '$score' },
+            totalQuestions: { $sum: '$totalQuestions' },
+            totalTime: { $sum: '$totalTimeSpent' },
+            maxScore: { $max: { $divide: ['$score', '$totalQuestions'] } },
+            minScore: { $min: { $divide: ['$score', '$totalQuestions'] } },
+            correctAnswers: { $sum: '$score' }, // Assuming score = correct answers count
           },
-        ]),
+        },
+      ]),
 
-        // 2. Recent attempts (Limit 10 for trend & recent list)
-        QuizAttempt.find({ userId: userObjectId })
-          .sort({ createdAt: -1 })
-          .limit(10)
-          .lean(),
+      // 2. Recent attempts (Limit 10 for trend & recent list)
+      QuizAttempt.find({ userId: userObjectId })
+        .sort({ createdAt: -1 })
+        .limit(10)
+        .lean(),
 
-        // 3. Performance by Difficulty
-        QuizAttempt.aggregate([
-          { $match: { userId: userObjectId } },
-          {
-            $group: {
-              _id: '$difficulty',
-              avgScore: { $avg: { $divide: ['$score', '$totalQuestions'] } },
-              count: { $sum: 1 },
-            },
+      // 3. Performance by Difficulty
+      QuizAttempt.aggregate([
+        { $match: { userId: userObjectId } },
+        {
+          $group: {
+            _id: '$difficulty',
+            avgScore: { $avg: { $divide: ['$score', '$totalQuestions'] } },
+            count: { $sum: 1 },
           },
-        ]),
+        },
+      ]),
 
-        // 4. Performance by Topic
-        QuizAttempt.aggregate([
-          { $match: { userId: userObjectId } },
-          {
-            $group: {
-              _id: '$topic',
-              avgScore: { $avg: { $divide: ['$score', '$totalQuestions'] } },
-              count: { $sum: 1 },
-            },
+      // 4. Performance by Topic
+      QuizAttempt.aggregate([
+        { $match: { userId: userObjectId } },
+        {
+          $group: {
+            _id: '$topic',
+            avgScore: { $avg: { $divide: ['$score', '$totalQuestions'] } },
+            count: { $sum: 1 },
           },
-        ]),
-      ]);
+        },
+      ]),
+    ]);
 
     // Handle empty state
     if (!statsResult[0]) {
@@ -77,34 +76,37 @@ export class QuizAnalyticsService {
     }
 
     const s = statsResult[0];
-    const averageScore =
-      s.totalQuestions > 0 ? (s.totalScore / s.totalQuestions) * 100 : 0;
-    const averageTimePerQuestion =
-      s.totalQuestions > 0 ? s.totalTime / s.totalQuestions : 0;
+    const averageScore = s.totalQuestions > 0 ? (s.totalScore / s.totalQuestions) * 100 : 0;
+    const averageTimePerQuestion = s.totalQuestions > 0 ? s.totalTime / s.totalQuestions : 0;
 
     // Format Maps
-    const performanceByDifficulty = difficultyStats.reduce((acc, stat) => {
-      acc[stat._id || 'mixed'] = {
-        averageScore: (stat.avgScore * 100).toFixed(1),
-        attempts: stat.count,
-      };
-      return acc;
-    }, {} as Record<string, any>);
+    const performanceByDifficulty = difficultyStats.reduce(
+      (acc, stat) => {
+        acc[stat._id || 'mixed'] = {
+          averageScore: (stat.avgScore * 100).toFixed(1),
+          attempts: stat.count,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
 
-    const performanceByTopic = topicStats.reduce((acc, stat) => {
-      acc[stat._id || 'mixed'] = {
-        averageScore: (stat.avgScore * 100).toFixed(1),
-        attempts: stat.count,
-      };
-      return acc;
-    }, {} as Record<string, any>);
+    const performanceByTopic = topicStats.reduce(
+      (acc, stat) => {
+        acc[stat._id || 'mixed'] = {
+          averageScore: (stat.avgScore * 100).toFixed(1),
+          attempts: stat.count,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    );
 
     // Format Trend (last 10)
     const progressTrend = [...recentAttempts]
       .reverse() // Oldest to newest
       .map((attempt, index) => ({
-        attempt:
-          statsResult[0].totalAttempts - recentAttempts.length + index + 1, // Approximation for graph X-axis
+        attempt: statsResult[0].totalAttempts - recentAttempts.length + index + 1, // Approximation for graph X-axis
         score:
           attempt.totalQuestions > 0
             ? ((attempt.score / attempt.totalQuestions) * 100).toFixed(1)
@@ -144,9 +146,7 @@ export class QuizAnalyticsService {
 
   static async getGlobalAnalytics() {
     const totalAttempts = await QuizAttempt.countDocuments();
-    const totalUsers = await QuizAttempt.distinct('userId').then(
-      (users) => users.length
-    );
+    const totalUsers = await QuizAttempt.distinct('userId').then((users) => users.length);
 
     const avgScoreResult = await QuizAttempt.aggregate([
       {
@@ -158,9 +158,7 @@ export class QuizAnalyticsService {
     ]);
 
     const globalAverageScore =
-      avgScoreResult.length > 0
-        ? (avgScoreResult[0].avgScore * 100).toFixed(1)
-        : '0';
+      avgScoreResult.length > 0 ? (avgScoreResult[0].avgScore * 100).toFixed(1) : '0';
 
     // Most challenging topics
     const topicDifficulty = await QuizAttempt.aggregate([
@@ -204,8 +202,7 @@ export class QuizAnalyticsService {
     }
 
     const avgScore =
-      lastAttempts.reduce((sum, a) => sum + a.score / a.totalQuestions, 0) /
-      lastAttempts.length;
+      lastAttempts.reduce((sum, a) => sum + a.score / a.totalQuestions, 0) / lastAttempts.length;
 
     const currentDifficulty = lastAttempts[0].difficulty || 'mixed';
 

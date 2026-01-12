@@ -1,5 +1,5 @@
 import { axiosInstance } from '@ielts/auth';
-import { ReviewWord, QualityRating } from '../types';
+import type { QualityRating, ReviewWord } from '../types';
 
 export const reviewApi = {
   getDueWords: async (): Promise<ReviewWord[]> => {
@@ -10,10 +10,7 @@ export const reviewApi = {
     return data.success ? data.data : [];
   },
 
-  submitReview: async (
-    wordId: string,
-    quality: QualityRating
-  ): Promise<void> => {
+  submitReview: async (wordId: string, quality: QualityRating): Promise<void> => {
     await axiosInstance.post('/srs/review', { wordId, quality });
   },
 };

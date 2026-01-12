@@ -1,15 +1,12 @@
 import bcrypt from 'bcryptjs';
-import { Admin, IAdmin } from './admin.model';
-import { User } from '../users/users.model';
 import { AppError } from '../../core/errors/AppError';
-import { Word } from '../words/words.model';
 import { QuizAttempt } from '../quiz/quiz-attempt.model';
+import { User } from '../users/users.model';
+import { Word } from '../words/words.model';
+import { Admin, type IAdmin } from './admin.model';
 
 export class AdminService {
-  static async createAdmin(
-    data: Partial<IAdmin>,
-    password?: string
-  ): Promise<IAdmin> {
+  static async createAdmin(data: Partial<IAdmin>, password?: string): Promise<IAdmin> {
     // If password is provided as separate argument, hash it
     let passwordHash = data.passwordHash;
 
@@ -52,38 +49,30 @@ export class AdminService {
     }
   }
 
-  static async updateAdmin(
-    id: string,
-    data: Partial<IAdmin>
-  ): Promise<IAdmin | null> {
+  static async updateAdmin(id: string, data: Partial<IAdmin>): Promise<IAdmin | null> {
     return Admin.findByIdAndUpdate(id, data, { new: true });
   }
 
   static async getDashboardStats() {
-    const [
-      totalUsers,
-      totalWords,
-      totalQuizAttempts,
-      wordsByDifficulty,
-      quizStats,
-    ] = await Promise.all([
-      User.countDocuments(),
-      Word.countDocuments(),
-      QuizAttempt.countDocuments(),
-      Word.aggregate([{ $group: { _id: '$difficulty', count: { $sum: 1 } } }]),
-      QuizAttempt.aggregate([
-        {
-          $group: {
-            _id: null,
-            avgScore: {
-              $avg: {
-                $multiply: [{ $divide: ['$score', '$totalQuestions'] }, 100],
+    const [totalUsers, totalWords, totalQuizAttempts, wordsByDifficulty, quizStats] =
+      await Promise.all([
+        User.countDocuments(),
+        Word.countDocuments(),
+        QuizAttempt.countDocuments(),
+        Word.aggregate([{ $group: { _id: '$difficulty', count: { $sum: 1 } } }]),
+        QuizAttempt.aggregate([
+          {
+            $group: {
+              _id: null,
+              avgScore: {
+                $avg: {
+                  $multiply: [{ $divide: ['$score', '$totalQuestions'] }, 100],
+                },
               },
             },
           },
-        },
-      ]),
-    ]);
+        ]),
+      ]);
 
     return {
       totalUsers,

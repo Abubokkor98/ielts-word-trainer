@@ -1,19 +1,12 @@
 'use client';
 
-import {
-  Box,
-  Container,
-  Heading,
-  SimpleGrid,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { useProfile } from './hooks/use-profile';
-import { ProfileInfoCard } from './components/profile-info-card';
-import { UpdateProfileForm } from './components/update-profile-form';
+import { Box, Container, Heading, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { ChangePasswordForm } from './components/change-password-form';
-import { ProfileSkeleton } from './components/profile-skeleton';
 import { ProfileErrorState } from './components/profile-error-state';
+import { ProfileInfoCard } from './components/profile-info-card';
+import { ProfileSkeleton } from './components/profile-skeleton';
+import { UpdateProfileForm } from './components/update-profile-form';
+import { useProfile } from './hooks/use-profile';
 
 export function ProfileContainer() {
   const {

@@ -1,29 +1,28 @@
 'use client';
 
 import {
+  Badge,
   Box,
+  Button,
   Heading,
   HStack,
-  VStack,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Badge,
-  Skeleton,
-  Text,
-  useToast,
   IconButton,
-  Button,
+  Skeleton,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useToast,
+  VStack,
 } from '@chakra-ui/react';
-import { Card, CardHeader, CardContent } from '@ielts/ui';
-import { useAuthStore } from '@ielts/auth';
-import { Trash2, Plus, Shield, ShieldAlert } from 'lucide-react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { axiosInstance } from '@ielts/auth';
-import { Admin } from '../../../types/admin';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
+import { Card, CardContent } from '@ielts/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus, Shield, ShieldAlert, Trash2 } from 'lucide-react';
+import type { Admin } from '../../../types/admin';
 
 export default function AdminManagementPage() {
   const { user } = useAuthStore();
@@ -110,11 +109,7 @@ export default function AdminManagementPage() {
                         <Td fontWeight="bold">{admin.name}</Td>
                         <Td>{admin.email}</Td>
                         <Td>
-                          <Badge
-                            colorScheme={
-                              admin.role === 'super_admin' ? 'red' : 'purple'
-                            }
-                          >
+                          <Badge colorScheme={admin.role === 'super_admin' ? 'red' : 'purple'}>
                             {admin.role === 'super_admin' ? (
                               <HStack>
                                 <ShieldAlert size={12} />
@@ -128,9 +123,7 @@ export default function AdminManagementPage() {
                             )}
                           </Badge>
                         </Td>
-                        <Td>
-                          {new Date(admin.createdAt).toLocaleDateString()}
-                        </Td>
+                        <Td>{new Date(admin.createdAt).toLocaleDateString()}</Td>
                         <Td>
                           {isSuperAdmin && admin._id !== user?.id && (
                             <IconButton

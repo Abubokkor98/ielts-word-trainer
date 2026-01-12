@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
-import crypto from 'crypto';
-import bcrypt from 'bcryptjs';
-import { UserService } from '../users/users.service';
-import { EmailService } from '../../core/services/email.service';
-import { AppError } from '../../core/errors/AppError';
+import crypto from 'node:crypto';
 import { Logger } from '@ielts/utils';
+import bcrypt from 'bcryptjs';
+import type { NextFunction, Request, Response } from 'express';
+import { AppError } from '../../core/errors/AppError';
+import { EmailService } from '../../core/services/email.service';
+import { UserService } from '../users/users.service';
 
 export class PasswordResetController {
   static async requestReset(req: Request, res: Response, next: NextFunction) {
@@ -21,10 +21,7 @@ export class PasswordResetController {
       }
 
       const resetToken = crypto.randomBytes(32).toString('hex');
-      const hashedToken = crypto
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
+      const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
       user.resetPasswordToken = hashedToken;
       user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
@@ -54,10 +51,7 @@ export class PasswordResetController {
         throw new AppError('Password must be at least 6 characters', 400);
       }
 
-      const hashedToken = crypto
-        .createHash('sha256')
-        .update(token)
-        .digest('hex');
+      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
       const user = await UserService.findOne({
         resetPasswordToken: hashedToken,

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { type Document, Schema } from 'mongoose';
 
 export interface IWord extends Document {
   word: string;
@@ -45,7 +45,7 @@ const WordSchema = new Schema<IWord>(
       index: true, // For efficient search across word, synonyms, antonyms
     },
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, versionKey: false },
 );
 
 // Compound index for combined difficulty + module filtering
@@ -63,5 +63,4 @@ WordSchema.pre('save', function () {
     .toLowerCase();
 });
 
-export const Word =
-  mongoose.models.Word || mongoose.model<IWord>('Word', WordSchema);
+export const Word = mongoose.models.Word || mongoose.model<IWord>('Word', WordSchema);

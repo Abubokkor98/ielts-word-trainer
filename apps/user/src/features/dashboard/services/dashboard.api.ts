@@ -1,5 +1,5 @@
 import { axiosInstance } from '@ielts/auth';
-import { UserProfile, QuizAnalytics, SRSStats } from '../types';
+import type { QuizAnalytics, SRSStats, UserProfile } from '../types';
 
 export const dashboardApi = {
   getUser: async (): Promise<UserProfile> => {
@@ -8,9 +8,7 @@ export const dashboardApi = {
   },
 
   getAnalytics: async (): Promise<QuizAnalytics> => {
-    const { data } = await axiosInstance.get<{ data: QuizAnalytics }>(
-      '/quiz/analytics/me'
-    );
+    const { data } = await axiosInstance.get<{ data: QuizAnalytics }>('/quiz/analytics/me');
     return data.data;
   },
 

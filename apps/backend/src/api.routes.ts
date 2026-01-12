@@ -1,12 +1,12 @@
 import { Router } from 'express';
+import adminRoutes from './modules/admin/admin.routes';
 import authRoutes from './modules/auth/auth.routes';
 import passwordResetRoutes from './modules/auth/password-reset.routes';
+import quizRoutes from './modules/quiz/quiz.routes';
+import srsRoutes from './modules/srs/srs.routes';
+import topicsRoutes from './modules/topics/topics.routes';
 import userProfileRoutes from './modules/users/users-profile.routes';
 import wordsRoutes from './modules/words/words.routes';
-import topicsRoutes from './modules/topics/topics.routes';
-import quizRoutes from './modules/quiz/quiz.routes';
-import adminRoutes from './modules/admin/admin.routes';
-import srsRoutes from './modules/srs/srs.routes';
 
 const router = Router();
 
