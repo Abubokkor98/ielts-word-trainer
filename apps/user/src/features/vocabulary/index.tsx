@@ -103,7 +103,12 @@ export function VocabularyContainer() {
           onViewDetails={handleViewDetails}
           onClearFilters={handleClearFilters}
           hasActiveFilters={
-            !!(wordSearchQuery || topicSearchQuery || difficulty !== 'all')
+            !!(
+              wordSearchQuery ||
+              topicSearchQuery ||
+              difficulty !== 'all' ||
+              module
+            )
           }
         />
 

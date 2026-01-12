@@ -172,7 +172,7 @@ export class AuthController {
       // Remove old refresh token
       await AuthService.logout(user, refreshToken);
 
-      AuthController.setAuthCookies(res, accessToken, refreshToken);
+      AuthController.setAuthCookies(res, accessToken, newRefreshToken);
 
       res.json({
         success: true,

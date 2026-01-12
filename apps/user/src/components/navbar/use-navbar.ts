@@ -45,7 +45,7 @@ export function useNavbar() {
     } catch (error) {
       console.error('Logout API call failed:', error);
     } finally {
-      document.cookie = 'user_auth_token=; path=/; max-age=0';
+      document.cookie = 'accessToken=; path=/; max-age=0';
       useQuizStore.getState().reset();
       router.push('/?logout=success');
       onClose();

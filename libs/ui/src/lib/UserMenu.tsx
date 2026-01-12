@@ -11,11 +11,8 @@ import {
   Text,
   VStack,
   HStack,
-  useToast,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
+
 import Link from 'next/link';
 interface UserMenuProps {
   user: any;
