@@ -271,10 +271,31 @@ export class SRSService {
         },
       ]),
 
-      // Get new words count in parallel (not in aggregation)
-      SRSItem.distinct('word', { user: userId }).then((seenWordIds) =>
-        Word.countDocuments({ _id: { $nin: seenWordIds } })
-      ),
+      // Count new words using aggregation (avoids loading IDs into memory)
+      Word.aggregate([
+        {
+          $lookup: {
+            from: 'srsitems',
+            let: { wordId: '$_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$word', '$$wordId'] },
+                      { $eq: ['$user', new mongoose.Types.ObjectId(userId)] },
+                    ],
+                  },
+                },
+              },
+              { $limit: 1 },
+            ],
+            as: 'studied',
+          },
+        },
+        { $match: { studied: { $eq: [] } } },
+        { $count: 'total' },
+      ]).then((result) => result[0]?.total || 0),
     ]);
 
     // Process aggregation results

@@ -3,6 +3,9 @@ import mongoose from 'mongoose';
 
 export class QuizAnalyticsService {
   static async getUserAnalytics(userId: string) {
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error('Invalid user ID format');
+    }
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
     const [statsResult, recentAttempts, difficultyStats, topicStats] =
@@ -74,8 +77,10 @@ export class QuizAnalyticsService {
     }
 
     const s = statsResult[0];
-    const averageScore = (s.totalScore / s.totalQuestions) * 100;
-    const averageTimePerQuestion = s.totalTime / s.totalQuestions;
+    const averageScore =
+      s.totalQuestions > 0 ? (s.totalScore / s.totalQuestions) * 100 : 0;
+    const averageTimePerQuestion =
+      s.totalQuestions > 0 ? s.totalTime / s.totalQuestions : 0;
 
     // Format Maps
     const performanceByDifficulty = difficultyStats.reduce((acc, stat) => {
@@ -95,13 +100,16 @@ export class QuizAnalyticsService {
     }, {} as Record<string, any>);
 
     // Format Trend (last 10)
+    // Format Trend (last 10)
     const progressTrend = recentAttempts
-      .slice(0, 10)
       .reverse() // Oldest to newest
       .map((attempt, index) => ({
         attempt:
           statsResult[0].totalAttempts - recentAttempts.length + index + 1, // Approximation for graph X-axis
-        score: ((attempt.score / attempt.totalQuestions) * 100).toFixed(1),
+        score:
+          attempt.totalQuestions > 0
+            ? ((attempt.score / attempt.totalQuestions) * 100).toFixed(1)
+            : '0.0',
         date: attempt.createdAt,
       }));
 
