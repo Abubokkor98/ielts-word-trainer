@@ -39,7 +39,13 @@ const SRSItemSchema = new Schema<ISRSItem>(
   { timestamps: true }
 );
 
-// Compound index for unique word per user
+// Compound index for unique word per user (already exists)
 SRSItemSchema.index({ user: 1, word: 1 }, { unique: true });
+
+// Compound index for getStats queries (filtering by user and status)
+SRSItemSchema.index({ user: 1, status: 1 });
+
+// Compound index for getDueWords queries (user, due date, and excluding mastered)
+SRSItemSchema.index({ user: 1, nextReviewDate: 1, status: 1 });
 
 export const SRSItem = mongoose.model<ISRSItem>('SRSItem', SRSItemSchema);

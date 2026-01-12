@@ -55,6 +55,9 @@ const QuizAttemptSchema = new Schema<IQuizAttempt>(
   }
 );
 
+// Compound index for getUserAttempts (filter by userId, sort by createdAt descending)
+QuizAttemptSchema.index({ userId: 1, createdAt: -1 });
+
 export const QuizAttempt = mongoose.model<IQuizAttempt>(
   'QuizAttempt',
   QuizAttemptSchema

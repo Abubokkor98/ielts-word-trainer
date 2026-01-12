@@ -1,0 +1,121 @@
+/**
+ * Rate Limiting Middleware
+ *
+ * Provides different rate limiting tiers for endpoints based on their expense and risk
+ *
+ * Tiers:
+ * - Strict: 5 req/min - Expensive operations (quiz generation, etc.)
+ * - Moderate: 30 req/min - Normal operations (searches, lists)
+ * - Light: 100 req/min - Cached/cheap operations
+ * - Per-user: Custom limits per authenticated user
+ */
+
+import rateLimit from 'express-rate-limit';
+import type { Request } from 'express';
+
+// Note: We don't need custom IP handling - the library handles IPv6 automatically
+// We only use custom keyGenerator when we want to track by user ID instead of IP
+
+// Strict limits for expensive operations
+export const strictRateLimit = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 5, // 5 requests per minute
+  message: {
+    error: 'Too many requests from this IP, please slow down',
+    retryAfter: 60,
+  },
+  standardHeaders: true, // Return rate limit info in `RateLimit-*` headers
+  legacyHeaders: false, // Disable `X-RateLimit-*` headers
+  // Skip successful requests that hit cache
+  skipSuccessfulRequests: false,
+  // Skip failed requests (so they don't count against limit)
+  skipFailedRequests: false,
+});
+
+// Moderate limits for read operations
+export const moderateRateLimit = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 30, // 30 requests per minute
+  message: {
+    error: 'Too many requests, please try again shortly',
+    retryAfter: 60,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Light limits for cached endpoints
+export const lightRateLimit = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 100, // 100 requests per minute
+  message: {
+    error: 'Rate limit exceeded, please wait a moment',
+    retryAfter: 60,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+/**
+ * Create a per-user rate limiter (authenticated users)
+ * Falls back to IP-based limiting for unauthenticated requests
+ */
+export const createUserRateLimit = (max: number, windowMinutes = 15) => {
+  return rateLimit({
+    windowMs: windowMinutes * 60 * 1000,
+    max,
+    message: {
+      error: `Rate limit exceeded. Max ${max} requests per ${windowMinutes} minutes`,
+      retryAfter: windowMinutes * 60,
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+
+    // Only use custom key for authenticated users, otherwise let library handle IP
+    keyGenerator: (req: Request) => {
+      const user = (req as any).user;
+      // Return user ID if authenticated, undefined if not (library will use IP)
+      return user?.id ? `user:${user.id}` : undefined;
+    },
+
+    // Skip rate limiting for admins
+    skip: (req: Request) => {
+      const user = (req as any).user;
+      return user?.role === 'admin';
+    },
+  });
+};
+
+/**
+ * Dynamic rate limiter that adjusts limits based on authentication
+ * Authenticated users get higher limits
+ */
+export const dynamicRateLimit = (
+  authenticatedMax: number,
+  publicMax: number
+) => {
+  return rateLimit({
+    windowMs: 60 * 1000, // 1 minute
+    max: (req: Request) => {
+      const user = (req as any).user;
+      return user ? authenticatedMax : publicMax;
+    },
+    message: (req: Request) => {
+      const user = (req as any).user;
+      const limit = user ? authenticatedMax : publicMax;
+      return {
+        error: `Rate limit exceeded. Max ${limit} requests per minute`,
+        hint: user
+          ? 'Slow down a bit'
+          : 'Consider logging in for higher limits',
+      };
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    keyGenerator: (req: Request) => {
+      const user = (req as any).user;
+      // Return user ID if authenticated, undefined if not (library will use IP)
+      return user?.id ? `user:${user.id}` : undefined;
+    },
+  });
+};

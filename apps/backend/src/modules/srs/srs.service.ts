@@ -1,6 +1,8 @@
 import { SRSItem } from './srs.model';
 import { getNextReviewDate, calculateSM2 } from '@ielts/shared';
 import { SRSStatus } from '@ielts/shared';
+import mongoose from 'mongoose';
+import { Word } from '../words/words.model';
 
 export class SRSService {
   static async reviewWord(userId: string, wordId: string, quality: number) {
@@ -111,45 +113,53 @@ export class SRSService {
   }
 
   static async getStats(userId: string) {
-    const allItems = await SRSItem.find({ user: userId });
+    // Use MongoDB aggregation + Promise.all for maximum performance
+    // Guide version: runs aggregation and new words count in parallel
+    const [stats, newWordsCount] = await Promise.all([
+      // Single aggregation pipeline - all counting done in MongoDB
+      SRSItem.aggregate([
+        { $match: { user: new mongoose.Types.ObjectId(userId) } },
+        {
+          $facet: {
+            totalWords: [{ $count: 'count' }],
+            byStatus: [{ $group: { _id: '$status', count: { $sum: 1 } } }],
+            dueToday: [
+              {
+                $match: {
+                  nextReviewDate: { $lte: new Date() },
+                  status: { $ne: SRSStatus.MASTERED },
+                },
+              },
+              { $count: 'count' },
+            ],
+          },
+        },
+      ]),
 
-    // Get total unique words the user has encountered
-    const totalWords = allItems.length;
+      // Get new words count in parallel (not in aggregation)
+      SRSItem.distinct('word', { user: userId }).then((seenWordIds) =>
+        Word.countDocuments({ _id: { $nin: seenWordIds } })
+      ),
+    ]);
 
-    // Count by status
-    const learning = allItems.filter(
-      (item) => item.status === SRSStatus.LEARNING
-    ).length;
-    const reviewing = allItems.filter(
-      (item) => item.status === SRSStatus.REVIEWING
-    ).length;
-    const mastered = allItems.filter(
-      (item) => item.status === SRSStatus.MASTERED
-    ).length;
-
-    // Count due today (nextReviewDate <= now and not mastered)
-    const now = new Date();
-    const dueToday = allItems.filter(
-      (item) =>
-        item.nextReviewDate &&
-        item.nextReviewDate <= now &&
-        item.status !== SRSStatus.MASTERED
-    ).length;
-
-    // New words available (not in SRS yet)
-    // New words available (not in SRS yet)
-    const seenWordIds = allItems.map((item) => item.word);
-    const { Word } = await import('../words/words.model');
-    const newWordsCount = await Word.countDocuments({
-      _id: { $nin: seenWordIds },
-    });
+    // Process aggregation results
+    const statusMap = stats[0].byStatus.reduce(
+      (
+        acc: Record<string, number>,
+        { _id, count }: { _id: string; count: number }
+      ) => {
+        acc[_id] = count;
+        return acc;
+      },
+      {}
+    );
 
     return {
-      totalWords,
-      learning,
-      reviewing,
-      mastered,
-      dueToday,
+      totalWords: stats[0].totalWords[0]?.count || 0,
+      learning: statusMap[SRSStatus.LEARNING] || 0,
+      reviewing: statusMap[SRSStatus.REVIEWING] || 0,
+      mastered: statusMap[SRSStatus.MASTERED] || 0,
+      dueToday: stats[0].dueToday[0]?.count || 0,
       newToday: newWordsCount,
     };
   }
