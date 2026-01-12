@@ -1,9 +1,10 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Response } from 'express';
+import type { AuthRequest } from '../auth/auth.middleware';
 import { QuizService } from './quiz.service';
 import { QuizAnalyticsService } from './quiz-analytics.service';
 
 export class QuizController {
-  static async generate(req: Request, res: Response, next: NextFunction) {
+  static async generate(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { topicId, difficulty, limit } = req.query;
       // Expecting optional user for public generation
@@ -21,7 +22,7 @@ export class QuizController {
     }
   }
 
-  static async getRecommendedDifficulty(req: Request, res: Response, next: NextFunction) {
+  static async getRecommendedDifficulty(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const userId = req.user?.id;
       const result = await QuizAnalyticsService.getRecommendedDifficulty(userId);

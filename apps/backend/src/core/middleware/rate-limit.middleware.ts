@@ -12,6 +12,7 @@
 
 import type { Request } from 'express';
 import rateLimit from 'express-rate-limit';
+import type { AuthRequest } from '../../modules/auth/auth.middleware';
 
 // Note: We don't need custom IP handling - the library handles IPv6 automatically
 // We only use custom keyGenerator when we want to track by user ID instead of IP
@@ -69,27 +70,28 @@ export const passwordResetRateLimit = rateLimit({
 });
 
 /**
- * Create a per-user rate limiter (authenticated users)
- * Falls back to IP-based limiting for unauthenticated requests
+ * Creates a rate limiter with custom configuration
+ * Authenticated users are tracked by ID, others by IP
  */
-export const createUserRateLimit = (max: number, windowMinutes = 15) => {
+export const createRateLimiter = (
+  windowMs: number,
+  max: number,
+  message: string,
+  skipAdmin = false,
+) => {
   return rateLimit({
-    windowMs: windowMinutes * 60 * 1000,
+    windowMs,
     max,
-    message: {
-      error: `Rate limit exceeded. Max ${max} requests per ${windowMinutes} minutes`,
-      retryAfter: windowMinutes * 60,
-    },
+    message: { error: message },
     standardHeaders: true,
     legacyHeaders: false,
 
-    // Only use custom key for authenticated users, otherwise let library handle IP
     // Only use custom key for authenticated users, otherwise let library handle IP
     // Disable built-in IP validation check because we handle IP fallback manually
     // Using bracket notation req['ip'] to bypass the library's static analysis regex check
     validate: { ip: false },
     keyGenerator: (req: Request) => {
-      const user = (req as any).user;
+      const user = (req as AuthRequest).user;
       if (user?.id) {
         return `user:${user.id}`;
       }
@@ -103,7 +105,8 @@ export const createUserRateLimit = (max: number, windowMinutes = 15) => {
 
     // Skip rate limiting for admins
     skip: (req: Request) => {
-      const user = (req as any).user;
+      if (!skipAdmin) return false;
+      const user = (req as AuthRequest).user;
       return user?.role === 'admin';
     },
   });
@@ -117,11 +120,11 @@ export const dynamicRateLimit = (authenticatedMax: number, publicMax: number) =>
   return rateLimit({
     windowMs: 60 * 1000, // 1 minute
     max: (req: Request) => {
-      const user = (req as any).user;
+      const user = (req as AuthRequest).user;
       return user ? authenticatedMax : publicMax;
     },
     message: (req: Request) => {
-      const user = (req as any).user;
+      const user = (req as AuthRequest).user;
       const limit = user ? authenticatedMax : publicMax;
       return {
         error: `Rate limit exceeded. Max ${limit} requests per minute`,
@@ -132,7 +135,7 @@ export const dynamicRateLimit = (authenticatedMax: number, publicMax: number) =>
     legacyHeaders: false,
     validate: { ip: false },
     keyGenerator: (req: Request) => {
-      const user = (req as any).user;
+      const user = (req as AuthRequest).user;
       if (user?.id) {
         return `user:${user.id}`;
       }
