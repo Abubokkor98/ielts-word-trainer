@@ -14,20 +14,6 @@ export function useLogin() {
   return useMutation({
     mutationFn: (credentials: LoginCredentials) => authApi.login(credentials),
     onSuccess: (data) => {
-      // Role validation: Only allow regular users
-      if (data.data.role === 'admin') {
-        toast({
-          title: 'Access Denied',
-          description: `Admin accounts must use the Admin Portal at ${
-            process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'the admin portal'
-          }`,
-          status: 'warning',
-          duration: 6000,
-          isClosable: true,
-        });
-        return;
-      }
-
       setToken(data.accessToken);
       setUser(data.data);
 

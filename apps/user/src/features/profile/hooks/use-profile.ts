@@ -25,7 +25,15 @@ export function useProfile() {
       profileApi.updateProfile(payload),
     onSuccess: (data) => {
       queryClient.setQueryData(['user', 'profile'], data);
-      setUser(data);
+
+      // Merge with existing user to preserve role and other fields
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser) {
+        setUser({ ...currentUser, ...data });
+      } else {
+        setUser(data);
+      }
+
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       toast({ title: 'Profile updated!', status: 'success' });
     },

@@ -56,6 +56,18 @@ export const lightRateLimit = rateLimit({
   legacyHeaders: false,
 });
 
+// Password Reset limits: 3 requests per hour
+export const passwordResetRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
+  message: {
+    error: 'Too many password reset attempts. Please try again in an hour.',
+    retryAfter: 3600,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 /**
  * Create a per-user rate limiter (authenticated users)
  * Falls back to IP-based limiting for unauthenticated requests
