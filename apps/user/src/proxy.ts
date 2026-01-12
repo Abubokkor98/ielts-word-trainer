@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 export function proxy(request: NextRequest) {
   // Get auth token from cookies
-  const token = request.cookies.get('user_auth_token')?.value;
+  const token = request.cookies.get('accessToken')?.value;
   const { pathname } = request.nextUrl;
 
   // Protected routes that require authentication

@@ -17,12 +17,6 @@ export function useLogin() {
       setToken(data.accessToken);
       setUser(data.data);
 
-      // Set cookie for middleware
-      const isSecure = window.location.protocol === 'https:';
-      document.cookie = `user_auth_token=${
-        data.accessToken
-      }; path=/; max-age=604800; SameSite=Strict${isSecure ? '; Secure' : ''}`;
-
       toast({
         title: 'Login successful!',
         description: `Welcome back, ${data.data.name}!`,

@@ -104,14 +104,6 @@ axiosInstance.interceptors.response.use(
         if (accessToken) {
           useAuthStore.getState().setToken(accessToken);
 
-          // Update cookie to keep middleware in sync
-          if (typeof document !== 'undefined') {
-            const isSecure = window.location.protocol === 'https:';
-            document.cookie = `user_auth_token=${accessToken}; path=/; max-age=604800; SameSite=Strict${
-              isSecure ? '; Secure' : ''
-            }`;
-          }
-
           processQueue(null, accessToken);
 
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
