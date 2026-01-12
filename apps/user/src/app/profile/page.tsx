@@ -47,6 +47,8 @@ export default function ProfilePage() {
       const { data } = await axiosInstance.get('/users/profile');
       return data.data;
     },
+    staleTime: 5 * 60 * 1000, // Profile data doesn't change often
+    gcTime: 10 * 60 * 1000,
   });
 
   const updateProfileMutation = useMutation({

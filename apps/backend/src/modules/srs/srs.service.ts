@@ -56,32 +56,135 @@ export class SRSService {
     return srsItem.save();
   }
 
+  static async bulkReview(
+    userId: string,
+    reviews: { wordId: string; quality: number }[]
+  ) {
+    if (reviews.length === 0) return;
+
+    // 1. Fetch existing SRS items for these words
+    const wordIds = reviews.map((r) => r.wordId);
+    const existingItems = await SRSItem.find({
+      user: userId,
+      word: { $in: wordIds },
+    });
+
+    const itemMap = new Map(
+      existingItems.map((item) => [item.word.toString(), item])
+    );
+
+    // 2. Prepare bulk operations
+    const bulkOps = reviews.map(({ wordId, quality }) => {
+      const existingItem = itemMap.get(wordId);
+
+      // Default values for new items
+      const prevInterval = existingItem?.interval || 0;
+      const prevRepetitions = existingItem?.repetition || 0;
+      const prevEaseFactor = existingItem?.easeFactor || 2.5;
+
+      const { interval, repetitions, easeFactor } = calculateSM2({
+        quality,
+        prevInterval,
+        prevRepetitions,
+        prevEaseFactor,
+      });
+
+      // Determine new status
+      let status = SRSStatus.REVIEWING;
+      let lapseCount = existingItem?.lapseCount || 0;
+
+      if (quality < 3) {
+        status = SRSStatus.LEARNING;
+        lapseCount++;
+      } else if (repetitions >= 5) {
+        status = SRSStatus.MASTERED;
+      }
+
+      const nextReviewDate = getNextReviewDate(interval);
+
+      return {
+        updateOne: {
+          filter: {
+            user: new mongoose.Types.ObjectId(userId),
+            word: new mongoose.Types.ObjectId(wordId),
+          },
+          update: {
+            $set: {
+              interval,
+              repetition: repetitions,
+              easeFactor,
+              quality,
+              status,
+              lastReviewed: new Date(),
+              nextReviewDate,
+            },
+            $inc: { lapseCount: quality < 3 ? 1 : 0 },
+          },
+          upsert: true,
+        },
+      };
+    });
+
+    // 3. Execute bulk write
+    if (bulkOps.length > 0) {
+      await SRSItem.bulkWrite(bulkOps);
+    }
+  }
+
   static async getDueWords(
     userId: string,
     topicId?: string,
     difficulty?: string,
     limit: number = 20
   ) {
-    const filter: any = {
-      user: userId,
-      nextReviewDate: { $lte: new Date() },
-      status: { $ne: SRSStatus.MASTERED },
-    };
+    const pipeline: any[] = [
+      // 1. Match due SRS items
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(userId),
+          nextReviewDate: { $lte: new Date() },
+          status: { $ne: SRSStatus.MASTERED },
+        },
+      },
+      // 2. Join with Words to get details
+      {
+        $lookup: {
+          from: 'words',
+          localField: 'word',
+          foreignField: '_id',
+          as: 'wordDetails',
+        },
+      },
+      // 3. Unwind (should always be 1-to-1)
+      { $unwind: '$wordDetails' },
+    ];
 
-    const srsItems = await SRSItem.find(filter).populate('word').limit(limit);
-
-    // Filter by topic/difficulty if provided (since these are on the Word model, not SRSItem)
-    // Note: This is an in-memory filter which is not ideal for large datasets but acceptable for MVP
-    let words = srsItems.map((item) => item.word as any).filter((w) => !!w);
-
+    // 4. Apply Filters on Word fields
     if (topicId) {
-      words = words.filter((w) => w.topic?.toString() === topicId);
-    }
-    if (difficulty) {
-      words = words.filter((w) => w.difficulty === difficulty);
+      pipeline.push({
+        $match: {
+          'wordDetails.topic': new mongoose.Types.ObjectId(topicId),
+        },
+      });
     }
 
-    // Sort by due date (implied by insertion/find order usually, but effectively random bucket here is fine)
+    if (difficulty) {
+      pipeline.push({
+        $match: {
+          'wordDetails.difficulty': difficulty,
+        },
+      });
+    }
+
+    // 5. Project and Limit
+    pipeline.push(
+      {
+        $replaceRoot: { newRoot: '$wordDetails' }, // Return just the word object
+      },
+      { $limit: limit }
+    );
+
+    const words = await SRSItem.aggregate(pipeline);
     return words;
   }
 
@@ -91,25 +194,59 @@ export class SRSService {
     difficulty?: string,
     limit: number = 10
   ) {
-    // Find words user hasn't seen yet
-    const userSRSItems = await SRSItem.find({ user: userId })
-      .select('word')
-      .lean(); // Add .lean() for better performance
-    const seenWordIds = userSRSItems.map((item) => item.word);
+    // Utilize Word model to find new words via Aggregation
+    // Improved: Avoid fetching all seen IDs into memory ($nin method)
+    const pipeline: any[] = [];
 
-    const filter: any = {
-      _id: { $nin: seenWordIds },
-    };
-    if (topicId) filter.topic = topicId;
-    if (difficulty) filter.difficulty = difficulty;
+    // 1. Filter Words by Topic/Difficulty first (reduce search space)
+    const matchStage: any = {};
+    if (topicId) matchStage.topic = new mongoose.Types.ObjectId(topicId);
+    if (difficulty) matchStage.difficulty = difficulty;
 
-    // Utilize Word model to find new words
-    // We need to import Word, but avoiding circular dependency if possible.
-    // Assuming Word model is registered or we can import it.
-    // Dynamic import to avoid potential circular deps if QuizService imports SRSService
-    const { Word } = await import('../words/words.model');
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
 
-    return Word.find(filter).limit(limit).lean();
+    // 2. Lookup SRS status for this user to check if "seen"
+    // We use a correlated subquery to match ONLY this user's SRS records
+    pipeline.push({
+      $lookup: {
+        from: 'srsitems',
+        let: { wordId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ['$word', '$$wordId'] },
+                  { $eq: ['$user', new mongoose.Types.ObjectId(userId)] },
+                ],
+              },
+            },
+          },
+          { $limit: 1 }, // Optimization: We only need to know if ONE exists
+        ],
+        as: 'isStudied',
+      },
+    });
+
+    // 3. Exclude words that have an SRS entry (isStudied array is not empty)
+    pipeline.push({
+      $match: {
+        isStudied: { $eq: [] },
+      },
+    });
+
+    // 4. Sample or Limit
+    // Using $sample for randomness like "New Words" should be, strictly speaking
+    // But original code was just "find().limit()". Let's stick to simple limit for speed
+    // unless user requests randomness. Implicit natural order is fine.
+    pipeline.push(
+      { $project: { isStudied: 0 } }, // Remove temp field
+      { $limit: limit }
+    );
+
+    return Word.aggregate(pipeline);
   }
 
   static async getStats(userId: string) {

@@ -116,9 +116,10 @@ export default function QuizPage() {
         duration: 4000,
       });
 
-      // Invalidate analytics and user queries
+      // Invalidate analytics, user queries, and SRS stats
       queryClient.invalidateQueries({ queryKey: ['analytics', 'me'] });
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      queryClient.invalidateQueries({ queryKey: ['srs', 'stats'] });
     },
     onError: (error: any) => {
       console.error('Failed to save quiz attempt:', error);

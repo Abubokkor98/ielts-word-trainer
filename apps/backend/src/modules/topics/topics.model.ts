@@ -17,4 +17,7 @@ const TopicSchema = new Schema<ITopic>(
   { timestamps: true }
 );
 
+// Text index for better search
+TopicSchema.index({ name: 'text' });
+
 export const Topic = mongoose.model<ITopic>('Topic', TopicSchema);
