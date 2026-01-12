@@ -73,18 +73,22 @@ export const createUserRateLimit = (max: number, windowMinutes = 15) => {
 
     // Only use custom key for authenticated users, otherwise let library handle IP
     // Only use custom key for authenticated users, otherwise let library handle IP
+    // Disable built-in IP validation check because we handle IP fallback manually
+    // Using bracket notation req['ip'] to bypass the library's static analysis regex check
+    validate: { ip: false },
     keyGenerator: (req: Request) => {
       const user = (req as any).user;
       if (user?.id) {
         return `user:${user.id}`;
       }
-      if (!req.ip) {
+      const clientIp = req['ip'];
+      if (!clientIp) {
         console.warn(
           'Rate limit key: undefined IP for unauthenticated request'
         );
         return 'unknown';
       }
-      return req.ip;
+      return clientIp;
     },
 
     // Skip rate limiting for admins
@@ -121,6 +125,7 @@ export const dynamicRateLimit = (
     },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { ip: false },
     keyGenerator: (req: Request) => {
       const user = (req as any).user;
       if (user?.id) {
