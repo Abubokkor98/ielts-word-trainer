@@ -84,9 +84,14 @@ export const UserNavbar = () => {
               />
             </HStack>
 
+            {/* User Menu - Left Side (Mobile Only) */}
+            <Flex alignItems="center" display={{ base: 'flex', lg: 'none' }}>
+              <UserMenu user={user} onLogout={handleLogout} />
+            </Flex>
+
             {/* User Menu - Right Side (Desktop Only) */}
             <Flex alignItems="center" display={{ base: 'none', lg: 'flex' }}>
-              <UserMenu />
+              <UserMenu user={user} onLogout={handleLogout} />
             </Flex>
 
             {/* Mobile hamburger menu - Right Side */}

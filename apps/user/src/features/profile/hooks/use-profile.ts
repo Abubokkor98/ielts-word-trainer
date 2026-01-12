@@ -27,11 +27,17 @@ export function useProfile() {
       queryClient.setQueryData(['user', 'profile'], data);
 
       // Merge with existing user to preserve role and other fields
+      // Merge with existing user to preserve role and other fields
       const currentUser = useAuthStore.getState().user;
+
+      // Strip _id to match User type expected by store
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _id, ...userDataForStore } = data;
+
       if (currentUser) {
-        setUser({ ...currentUser, ...data });
+        setUser({ ...currentUser, ...userDataForStore });
       } else {
-        setUser(data);
+        setUser(userDataForStore);
       }
 
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });

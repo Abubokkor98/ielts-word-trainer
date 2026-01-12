@@ -97,17 +97,17 @@ export default function NotFound() {
               </Text>
             </Box>
 
-            <Button
-              as={Link}
-              href="/vocabulary"
-              colorScheme="brand"
-              size="lg"
-              w="full"
-              leftIcon={<ArrowLeft size={20} />}
-              mt={4}
-            >
-              Back to Learning
-            </Button>
+            <Link href="/vocabulary" style={{ width: '100%' }}>
+              <Button
+                colorScheme="brand"
+                size="lg"
+                w="full"
+                leftIcon={<ArrowLeft size={20} />}
+                mt={4}
+              >
+                Back to Learning
+              </Button>
+            </Link>
           </VStack>
         </Box>
       </Container>
