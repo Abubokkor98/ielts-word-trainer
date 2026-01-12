@@ -100,8 +100,7 @@ export class QuizAnalyticsService {
     }, {} as Record<string, any>);
 
     // Format Trend (last 10)
-    // Format Trend (last 10)
-    const progressTrend = recentAttempts
+    const progressTrend = [...recentAttempts]
       .reverse() // Oldest to newest
       .map((attempt, index) => ({
         attempt:
