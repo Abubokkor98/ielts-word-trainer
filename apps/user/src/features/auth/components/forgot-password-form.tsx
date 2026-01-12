@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import Link from 'next/link';
 import {
@@ -9,15 +11,21 @@ import {
 } from '@chakra-ui/react';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import { usePasswordRecovery } from '../hooks/use-password-recovery';
+import { ForgotPasswordSuccessUI } from './forgot-password-success';
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
-  const { forgotPassword, isForgotPasswordPending } = usePasswordRecovery();
+  const { forgotPassword, isForgotPasswordPending, isForgotPasswordSuccess } =
+    usePasswordRecovery();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     forgotPassword({ email });
   };
+
+  if (isForgotPasswordSuccess) {
+    return <ForgotPasswordSuccessUI email={email} />;
+  }
 
   return (
     <Card maxW="md" w="full" p={8}>

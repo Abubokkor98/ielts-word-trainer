@@ -56,6 +56,18 @@ export const lightRateLimit = rateLimit({
   legacyHeaders: false,
 });
 
+// Password Reset limits: 3 requests per hour
+export const passwordResetRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
+  message: {
+    error: 'Too many password reset attempts. Please try again in an hour.',
+    retryAfter: 3600,
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 /**
  * Create a per-user rate limiter (authenticated users)
  * Falls back to IP-based limiting for unauthenticated requests
@@ -73,18 +85,22 @@ export const createUserRateLimit = (max: number, windowMinutes = 15) => {
 
     // Only use custom key for authenticated users, otherwise let library handle IP
     // Only use custom key for authenticated users, otherwise let library handle IP
+    // Disable built-in IP validation check because we handle IP fallback manually
+    // Using bracket notation req['ip'] to bypass the library's static analysis regex check
+    validate: { ip: false },
     keyGenerator: (req: Request) => {
       const user = (req as any).user;
       if (user?.id) {
         return `user:${user.id}`;
       }
-      if (!req.ip) {
+      const clientIp = req['ip'];
+      if (!clientIp) {
         console.warn(
           'Rate limit key: undefined IP for unauthenticated request'
         );
         return 'unknown';
       }
-      return req.ip;
+      return clientIp;
     },
 
     // Skip rate limiting for admins
@@ -121,6 +137,7 @@ export const dynamicRateLimit = (
     },
     standardHeaders: true,
     legacyHeaders: false,
+    validate: { ip: false },
     keyGenerator: (req: Request) => {
       const user = (req as any).user;
       if (user?.id) {

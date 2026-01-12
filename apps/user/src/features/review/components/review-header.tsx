@@ -35,8 +35,9 @@ export function ReviewHeader({
               colorScheme="brand"
               leftIcon={<ArrowLeft size={20} />}
               onClick={onExit}
+              px={{ base: 2, md: 4 }}
             >
-              Dashboard
+              <Text display={{ base: 'none', md: 'inline' }}>Dashboard</Text>
             </Button>
             <VStack spacing={0}>
               <Text fontWeight="semibold" color="gray.50" fontSize="lg">
@@ -46,7 +47,8 @@ export function ReviewHeader({
                 {reviewedCount} reviewed
               </Text>
             </VStack>
-            <Box w="100px" /> {/* Spacer */}
+            <Box w={{ base: '40px', md: '120px' }} />{' '}
+            {/* Responsive Spacer matching button approx width */}
           </HStack>
           <Progress
             value={progress}

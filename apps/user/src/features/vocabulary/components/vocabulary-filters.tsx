@@ -8,6 +8,8 @@ import {
   InputGroup,
   InputLeftElement,
   InputRightElement,
+  Select,
+  Box,
 } from '@chakra-ui/react';
 import { DifficultyLevel } from 'apps/user/src/types';
 import { Search, X } from 'lucide-react';
@@ -19,6 +21,10 @@ interface VocabularyFiltersProps {
   onWordSearchChange: (value: string) => void;
   topicSearch: string;
   onTopicSearchChange: (value: string) => void;
+  module: 'reading' | 'writing' | 'listening' | 'speaking' | undefined;
+  onModuleChange: (
+    value: 'reading' | 'writing' | 'listening' | 'speaking' | undefined
+  ) => void;
 }
 
 export function VocabularyFilters({
@@ -28,6 +34,8 @@ export function VocabularyFilters({
   onWordSearchChange,
   topicSearch,
   onTopicSearchChange,
+  module,
+  onModuleChange,
 }: VocabularyFiltersProps) {
   const levels: (DifficultyLevel | 'all')[] = [
     'all',
@@ -64,18 +72,59 @@ export function VocabularyFilters({
         ))}
       </HStack>
 
-      <HStack
-        spacing={4}
-        flex={1}
-        justify={{ base: 'center', lg: 'flex-end' }}
+      <Box
         w={{ base: '100%', lg: 'auto' }}
+        flex={1}
+        display={{ base: 'grid', md: 'flex' }}
+        gridTemplateColumns={{ base: '35% 1fr', sm: '130px 1fr' }}
+        gap={3}
+        justifyContent={{ lg: 'flex-end' }}
+        alignItems="center"
       >
-        <InputGroup size="md" maxW={{ base: '100%', sm: '250px' }}>
+        <Select
+          placeholder="Module"
+          bg="gray.800"
+          border="1px"
+          borderColor="gray.700"
+          color="white"
+          size={{ base: 'sm', md: 'md' }}
+          w={{ base: '100%', md: '130px' }}
+          _focus={{
+            ring: 2,
+            ringColor: 'brand.500',
+            borderColor: 'transparent',
+          }}
+          value={module || ''}
+          onChange={(e) => {
+            const val = e.target.value;
+            onModuleChange(val ? (val as any) : undefined);
+          }}
+          gridColumn={{ base: '1 / 2', md: 'auto' }}
+        >
+          <option value="reading" style={{ background: '#1a202c' }}>
+            Reading
+          </option>
+          <option value="writing" style={{ background: '#1a202c' }}>
+            Writing
+          </option>
+          <option value="listening" style={{ background: '#1a202c' }}>
+            Listening
+          </option>
+          <option value="speaking" style={{ background: '#1a202c' }}>
+            Speaking
+          </option>
+        </Select>
+
+        <InputGroup
+          size={{ base: 'sm', md: 'md' }}
+          w={{ base: '100%', md: '250px' }}
+          gridColumn={{ base: '2 / 3', md: 'auto' }}
+        >
           <InputLeftElement pointerEvents="none">
-            <Search color="gray.500" size={16} />
+            <Search color="gray.500" size={14} />
           </InputLeftElement>
           <Input
-            placeholder="Search vocabulary..."
+            placeholder="Search vocab..."
             bg="gray.800"
             border="1px"
             borderColor="gray.700"
@@ -91,7 +140,7 @@ export function VocabularyFilters({
           {wordSearch && (
             <InputRightElement>
               <X
-                size={16}
+                size={14}
                 color="gray"
                 cursor="pointer"
                 onClick={() => onWordSearchChange('')}
@@ -100,9 +149,13 @@ export function VocabularyFilters({
           )}
         </InputGroup>
 
-        <InputGroup size="md" maxW={{ base: '100%', md: '300px' }}>
+        <InputGroup
+          size={{ base: 'sm', md: 'md' }}
+          w={{ base: '100%', md: '250px' }}
+          gridColumn={{ base: '1 / -1', md: 'auto' }}
+        >
           <InputLeftElement pointerEvents="none">
-            <Search color="gray.500" size={16} />
+            <Search color="gray.500" size={14} />
           </InputLeftElement>
           <Input
             placeholder="Search topics..."
@@ -121,7 +174,7 @@ export function VocabularyFilters({
           {topicSearch && (
             <InputRightElement>
               <X
-                size={16}
+                size={14}
                 color="gray"
                 cursor="pointer"
                 onClick={() => onTopicSearchChange('')}
@@ -129,7 +182,7 @@ export function VocabularyFilters({
             </InputRightElement>
           )}
         </InputGroup>
-      </HStack>
+      </Box>
     </Flex>
   );
 }

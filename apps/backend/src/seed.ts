@@ -83,7 +83,7 @@ async function seed() {
       throw new Error('Seed misconfig: missing topic "General"');
 
     // Create vocabulary words
-    const words = await Word.insertMany([
+    const words = await Word.create([
       // BEGINNER LEVEL WORDS (10 words)
       {
         word: 'important',

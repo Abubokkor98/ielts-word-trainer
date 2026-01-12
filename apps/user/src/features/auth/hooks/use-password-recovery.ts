@@ -13,17 +13,27 @@ export function usePasswordRecovery() {
       authApi.forgotPassword(credentials),
     onSuccess: () => {
       toast({
-        title: 'Email sent',
-        description: 'If an account exists, you will receive a reset link.',
+        title: 'Check your email',
+        description: 'We have sent you a password reset link.',
         status: 'success',
         duration: 5000,
       });
-      router.push('/login');
     },
     onError: (error: any) => {
+      // Handle Rate Limit (429) specifically if needed, or generic error structure
+      const errorMessage =
+        error.response?.status === 429
+          ? 'Too many attempts. Please try again in an hour.'
+          : error.response?.data?.message ||
+            error.response?.data?.error ||
+            'Something went wrong';
+
       toast({
-        title: 'Request failed',
-        description: error.response?.data?.message || 'Something went wrong',
+        title:
+          error.response?.status === 429
+            ? 'Rate Limit Exceeded'
+            : 'Request failed',
+        description: errorMessage,
         status: 'error',
         duration: 5000,
       });
@@ -55,6 +65,7 @@ export function usePasswordRecovery() {
   return {
     forgotPassword: forgotPasswordMutation.mutate,
     isForgotPasswordPending: forgotPasswordMutation.isPending,
+    isForgotPasswordSuccess: forgotPasswordMutation.isSuccess,
     resetPassword: resetPasswordMutation.mutate,
     isResetPasswordPending: resetPasswordMutation.isPending,
   };

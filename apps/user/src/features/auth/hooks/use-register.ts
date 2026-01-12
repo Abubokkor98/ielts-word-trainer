@@ -17,12 +17,6 @@ export function useRegister() {
       setToken(data.accessToken);
       setUser(data.data);
 
-      // Set cookie for middleware
-      const isSecure = window.location.protocol === 'https:';
-      document.cookie = `user_auth_token=${
-        data.accessToken
-      }; path=/; max-age=900; SameSite=Strict${isSecure ? '; Secure' : ''}`;
-
       toast({
         title: 'Registration successful!',
         description: 'Welcome to IELTS Word Trainer!',
@@ -30,7 +24,7 @@ export function useRegister() {
         duration: 3000,
       });
 
-      router.push('/dashboard');
+      router.push('/vocabulary');
     },
     onError: (error: any) => {
       toast({

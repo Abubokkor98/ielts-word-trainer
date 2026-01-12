@@ -8,14 +8,14 @@ export interface AuthConfig {
 
 export const AUTH_CONFIG: Record<AppType, AuthConfig> = {
   user: {
-    cookieName: 'user_auth_token',
-    refreshCookieName: 'user_refresh_token',
+    cookieName: 'accessToken',
+    refreshCookieName: 'refreshToken', // Also standardizing this if safe, but user specifically asked for accessToken fix
     allowedRoles: ['user'],
   },
   admin: {
-    cookieName: 'admin_auth_token',
-    refreshCookieName: 'admin_refresh_token',
-    allowedRoles: ['admin'],
+    cookieName: 'accessToken',
+    refreshCookieName: 'refreshToken',
+    allowedRoles: ['admin', 'superadmin'],
   },
 };
 

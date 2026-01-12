@@ -12,6 +12,7 @@ interface QuizResult {
 interface QuizState {
   lastQuizResult: QuizResult | null;
   setLastQuizResult: (result: QuizResult | null) => void;
+  reset: () => void;
 }
 
 export const useQuizStore = create<QuizState>()(
@@ -19,6 +20,7 @@ export const useQuizStore = create<QuizState>()(
     (set) => ({
       lastQuizResult: null,
       setLastQuizResult: (result) => set({ lastQuizResult: result }),
+      reset: () => set({ lastQuizResult: null }),
     }),
     {
       name: 'quiz-storage',

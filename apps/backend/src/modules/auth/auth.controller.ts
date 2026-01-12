@@ -5,6 +5,26 @@ import { AppError } from '../../core/errors/AppError';
 import { AuthRequest } from './auth.middleware';
 
 export class AuthController {
+  private static setAuthCookies(
+    res: Response,
+    accessToken: string,
+    refreshToken: string
+  ) {
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 3600000, // 7 days
+    });
+  }
+
   static async register(req: Request, res: Response, next: NextFunction) {
     try {
       const existingUser = await UserService.findByEmail(req.body.email);
@@ -17,12 +37,7 @@ export class AuthController {
         user
       );
 
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 3600000,
-      });
+      AuthController.setAuthCookies(res, accessToken, refreshToken);
 
       res.status(201).json({
         success: true,
@@ -69,12 +84,7 @@ export class AuthController {
         user
       );
 
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 3600000,
-      });
+      AuthController.setAuthCookies(res, accessToken, refreshToken);
 
       res.status(200).json({
         success: true,
@@ -162,13 +172,7 @@ export class AuthController {
       // Remove old refresh token
       await AuthService.logout(user, refreshToken);
 
-      // Set new refresh token cookie
-      res.cookie('refreshToken', newRefreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 3600000, // 7 days
-      });
+      AuthController.setAuthCookies(res, accessToken, newRefreshToken);
 
       res.json({
         success: true,
@@ -192,6 +196,7 @@ export class AuthController {
         }
       }
 
+      res.clearCookie('accessToken');
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',

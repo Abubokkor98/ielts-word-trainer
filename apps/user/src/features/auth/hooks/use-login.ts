@@ -14,28 +14,8 @@ export function useLogin() {
   return useMutation({
     mutationFn: (credentials: LoginCredentials) => authApi.login(credentials),
     onSuccess: (data) => {
-      // Role validation: Only allow regular users
-      if (data.data.role === 'admin') {
-        toast({
-          title: 'Access Denied',
-          description: `Admin accounts must use the Admin Portal at ${
-            process.env.NEXT_PUBLIC_ADMIN_APP_URL || 'the admin portal'
-          }`,
-          status: 'warning',
-          duration: 6000,
-          isClosable: true,
-        });
-        return;
-      }
-
       setToken(data.accessToken);
       setUser(data.data);
-
-      // Set cookie for middleware
-      const isSecure = window.location.protocol === 'https:';
-      document.cookie = `user_auth_token=${
-        data.accessToken
-      }; path=/; max-age=900; SameSite=Strict${isSecure ? '; Secure' : ''}`;
 
       toast({
         title: 'Login successful!',

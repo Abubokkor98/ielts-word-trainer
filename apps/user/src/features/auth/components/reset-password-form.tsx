@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -23,6 +25,17 @@ export function ResetPasswordForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password.length < 6) {
+      toast({
+        title: 'Password too short',
+        description: 'Password must be at least 6 characters long',
+        status: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
     if (password !== confirmPassword) {
       toast({
         title: 'Passwords do not match',

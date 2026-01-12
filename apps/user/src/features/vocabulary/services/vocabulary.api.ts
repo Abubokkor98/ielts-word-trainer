@@ -20,6 +20,10 @@ export const vocabularyApi = {
       params.append('topicName', filters.topic);
     }
 
+    if (filters.module) {
+      params.append('module', filters.module);
+    }
+
     const { data } = await axiosInstance.get<{ data: VocabularyResponse }>(
       `/words?${params.toString()}`
     );

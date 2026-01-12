@@ -11,40 +11,15 @@ import {
   Text,
   VStack,
   HStack,
-  useToast,
 } from '@chakra-ui/react';
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
+
 import Link from 'next/link';
-import { useAuthStore } from '@ielts/auth';
-import { axiosInstance } from '@ielts/auth';
+interface UserMenuProps {
+  user: any;
+  onLogout: () => void;
+}
 
-export const UserMenu = () => {
-  const { user, logout } = useAuthStore();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
-  const toast = useToast();
-
-  // Logout logic moved to parent component to prevent double toasts
-  // when UserMenu is rendered multiple times (mobile/desktop)
-
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post('/auth/logout');
-    } catch (error) {
-      console.error('Logout API call failed:', error);
-    } finally {
-      // Clear the auth cookie
-      document.cookie = 'user_auth_token=; path=/; max-age=0';
-
-      // Navigate to home first with a flag, forcing the protected route to unmount
-      // BEFORE we actually clear the auth state.
-      router.push('/?logout=success');
-    }
-  };
-
+export const UserMenu = ({ user, onLogout }: UserMenuProps) => {
   if (!user) {
     return (
       <HStack spacing={3}>
@@ -124,7 +99,7 @@ export const UserMenu = () => {
 
         <MenuDivider borderColor="gray.700" />
         <MenuItem
-          onClick={handleLogout}
+          onClick={onLogout}
           bg="gray.800"
           _hover={{ bg: 'gray.700' }}
           color="red.400"
