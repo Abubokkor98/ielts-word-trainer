@@ -5,6 +5,7 @@ import {
   SimpleGrid,
   Text,
   VStack,
+  Box,
 } from '@chakra-ui/react';
 import { QualityRating } from '../types';
 
@@ -14,90 +15,89 @@ interface RatingButtonsProps {
 }
 
 export function RatingButtons({ onRating, isSubmitting }: RatingButtonsProps) {
+  const buttons = [
+    {
+      label: 'Forgot',
+      rating: 0,
+      color: 'red',
+      shortcut: '1',
+    },
+    {
+      label: 'Struggled',
+      rating: 3,
+      color: 'orange',
+      shortcut: '2',
+    },
+    {
+      label: 'Knew It',
+      rating: 4,
+      color: 'green',
+      shortcut: '3',
+    },
+    {
+      label: 'Mastered',
+      rating: 5,
+      color: 'blue',
+      shortcut: '4',
+    },
+  ];
+
   return (
     <Card bg="gray.800" borderColor="gray.700" borderWidth="1px" w="full">
-      <CardBody>
-        <VStack spacing={4}>
-          <Text fontWeight="semibold" color="gray.300" fontSize="lg">
+      <CardBody p={4}>
+        <VStack spacing={3}>
+          <Text fontWeight="medium" color="gray.400" fontSize="sm">
             How well did you know this word?
           </Text>
-          <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4} w="full">
-            <Button
-              colorScheme="red"
-              onClick={() => onRating(0)}
-              size="lg"
-              h="auto"
-              py={4}
-              flexDir="column"
-              isDisabled={isSubmitting}
-            >
-              <Text fontWeight="bold" fontSize="lg">
-                Again
-              </Text>
-              <Text fontSize="xs" opacity={0.8}>
-                Press 1
-              </Text>
-              <Text fontSize="xs" opacity={0.7} mt={1}>
-                {'<1d'}
-              </Text>
-            </Button>
-            <Button
-              colorScheme="orange"
-              onClick={() => onRating(3)}
-              size="lg"
-              h="auto"
-              py={4}
-              flexDir="column"
-              isDisabled={isSubmitting}
-            >
-              <Text fontWeight="bold" fontSize="lg">
-                Hard
-              </Text>
-              <Text fontSize="xs" opacity={0.8}>
-                Press 2
-              </Text>
-              <Text fontSize="xs" opacity={0.7} mt={1}>
-                {'~1d'}
-              </Text>
-            </Button>
-            <Button
-              colorScheme="green"
-              onClick={() => onRating(4)}
-              size="lg"
-              h="auto"
-              py={4}
-              flexDir="column"
-              isDisabled={isSubmitting}
-            >
-              <Text fontWeight="bold" fontSize="lg">
-                Good
-              </Text>
-              <Text fontSize="xs" opacity={0.8}>
-                Press 3
-              </Text>
-              <Text fontSize="xs" opacity={0.7} mt={1}>
-                {'~3d'}
-              </Text>
-            </Button>
-            <Button
-              colorScheme="blue"
-              onClick={() => onRating(5)}
-              size="lg"
-              h="auto"
-              py={4}
-              flexDir="column"
-              isDisabled={isSubmitting}
-            >
-              <Text fontWeight="bold" fontSize="lg">
-                Easy
-              </Text>
-              <Text fontSize="xs" opacity={0.8}>
-                Press 4
-              </Text>
-              <Text fontSize="xs" opacity={0.7} mt={1}>
-                {'~7d'}
-              </Text>
-            </Button>
+          <SimpleGrid columns={{ base: 2, sm: 4 }} spacing={3} w="full">
+            {buttons.map((btn) => (
+              <Button
+                key={btn.rating}
+                colorScheme={btn.color}
+                onClick={() => onRating(btn.rating as QualityRating)}
+                size="lg"
+                h="auto"
+                py={4}
+                flexDir="column"
+                isDisabled={isSubmitting}
+                variant="outline"
+                position="relative"
+                _hover={{
+                  bg: `${btn.color}.500`,
+                  color: 'white',
+                  borderColor: `${btn.color}.500`,
+                  '& .shortcut-badge': {
+                    color: 'white',
+                    borderColor: 'white',
+                  },
+                }}
+                transition="all 0.2s"
+              >
+                <Box
+                  className="shortcut-badge"
+                  position="absolute"
+                  top={2}
+                  right={2}
+                  fontSize="xs"
+                  fontWeight="bold"
+                  opacity={0.6}
+                  border="1px solid"
+                  borderColor="currentColor"
+                  borderRadius="md"
+                  w="20px"
+                  h="20px"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  transition="all 0.2s"
+                >
+                  {btn.shortcut}
+                </Box>
+                <Text fontWeight="bold" fontSize="md">
+                  {btn.label}
+                </Text>
+              </Button>
+            ))}
           </SimpleGrid>
         </VStack>
       </CardBody>
