@@ -121,10 +121,13 @@ export class WordsService {
       updateDoc.topic = await resolveTopic(updateDoc.topic);
     }
 
-    return Word.findByIdAndUpdate(id, updateDoc, {
-      new: true,
-      runValidators: true,
-    });
+    const word = await Word.findById(id);
+    if (!word) {
+      throw new Error('Word not found');
+    }
+
+    Object.assign(word, updateDoc);
+    return word.save();
   }
 
   static async delete(id: string) {

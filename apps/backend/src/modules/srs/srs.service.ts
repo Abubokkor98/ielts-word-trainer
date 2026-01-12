@@ -91,11 +91,9 @@ export class SRSService {
 
       // Determine new status
       let status = SRSStatus.REVIEWING;
-      let lapseCount = existingItem?.lapseCount || 0;
 
       if (quality < 3) {
         status = SRSStatus.LEARNING;
-        lapseCount++;
       } else if (repetitions >= 5) {
         status = SRSStatus.MASTERED;
       }

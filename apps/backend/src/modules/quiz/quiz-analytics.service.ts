@@ -25,7 +25,10 @@ export class QuizAnalyticsService {
         ]),
 
         // 2. Recent attempts (Limit 10 for trend & recent list)
-        QuizAttempt.find({ userId }).sort({ createdAt: -1 }).limit(10).lean(),
+        QuizAttempt.find({ userId: userObjectId })
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .lean(),
 
         // 3. Performance by Difficulty
         QuizAttempt.aggregate([

@@ -74,8 +74,8 @@ export const createUserRateLimit = (max: number, windowMinutes = 15) => {
     // Only use custom key for authenticated users, otherwise let library handle IP
     keyGenerator: (req: Request) => {
       const user = (req as any).user;
-      // Return user ID if authenticated, undefined if not (library will use IP)
-      return user?.id ? `user:${user.id}` : undefined;
+      // Return user ID if authenticated, otherwise fall back to IP
+      return user?.id ? `user:${user.id}` : req.ip || 'unknown';
     },
 
     // Skip rate limiting for admins
@@ -114,8 +114,8 @@ export const dynamicRateLimit = (
     legacyHeaders: false,
     keyGenerator: (req: Request) => {
       const user = (req as any).user;
-      // Return user ID if authenticated, undefined if not (library will use IP)
-      return user?.id ? `user:${user.id}` : undefined;
+      // Return user ID if authenticated, otherwise fall back to IP
+      return user?.id ? `user:${user.id}` : req.ip || 'unknown';
     },
   });
 };
