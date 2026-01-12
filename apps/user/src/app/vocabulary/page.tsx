@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
 import { useAuthStore } from '@ielts/auth';
 import { useRouter } from 'next/navigation';
@@ -98,6 +98,9 @@ export default function VocabularyPage() {
       const { data } = await axiosInstance.get(`/words?${params.toString()}`);
       return data.data;
     },
+    placeholderData: keepPreviousData, // Smooth transitions between pages/filters
+    staleTime: 5 * 60 * 1000, // Word list is mostly static - 5 min cache
+    gcTime: 30 * 60 * 1000, // Keep in memory for 30 min
   });
 
   const words = data?.words || [];

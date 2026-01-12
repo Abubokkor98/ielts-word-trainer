@@ -3,13 +3,15 @@ import { QuizController } from './quiz.controller';
 import { QuizAnalyticsController } from './quiz-analytics.controller';
 import { QuizAttemptController } from './quiz-attempt.controller';
 import { authenticate, authorize } from '../auth/auth.middleware';
-import { UserRole } from '@ielts/shared';
 import { AdminRole } from '@ielts/shared';
+import {
+  strictRateLimit,
+} from '../../core/middleware/rate-limit.middleware';
 
 const router = Router();
 
-// Public endpoint - no auth required for quiz generation
-router.get('/generate', QuizController.generate);
+// Quiz generation - strict rate limiting (expensive operation)
+router.get('/generate', authenticate, strictRateLimit, QuizController.generate);
 
 // Quiz attempts
 router.post('/attempts', authenticate, QuizAttemptController.create);

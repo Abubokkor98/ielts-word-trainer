@@ -4,11 +4,16 @@ import { authenticate, authorize } from '../auth/auth.middleware';
 import { validateRequest } from '../../core/middleware/validate.middleware';
 import { CreateWordSchema, AdminRole } from '@ielts/shared';
 import { upload } from '../../core/middleware/upload.middleware';
+import {
+  moderateRateLimit,
+  lightRateLimit,
+} from '../../core/middleware/rate-limit.middleware';
 
 const router = Router();
 
-router.get('/', WordsController.getAll);
-router.get('/:id', WordsController.getOne);
+// Public endpoints with rate limiting
+router.get('/', moderateRateLimit, WordsController.getAll); // 30 req/min for searches
+router.get('/:id', lightRateLimit, WordsController.getOne); // 100 req/min for single word
 
 // Admin only
 router.post(

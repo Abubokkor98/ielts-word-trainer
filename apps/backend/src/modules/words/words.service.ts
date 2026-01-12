@@ -90,16 +90,12 @@ export class WordsService {
       }
     }
 
-    // General Word Search (Word, Synonyms, Antonyms)
+    // Search across word, meaning, synonyms, and antonyms using indexed searchableText
     if (query.search) {
-      const escapedSearch = query.search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const searchRegex = { $regex: escapedSearch, $options: 'i' };
+      const searchLower = query.search.toLowerCase();
+      const escapedSearch = searchLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       andConditions.push({
-        $or: [
-          { word: searchRegex },
-          { synonyms: searchRegex },
-          { antonyms: searchRegex },
-        ],
+        searchableText: { $regex: escapedSearch, $options: 'i' },
       });
     }
 
@@ -125,10 +121,13 @@ export class WordsService {
       updateDoc.topic = await resolveTopic(updateDoc.topic);
     }
 
-    return Word.findByIdAndUpdate(id, updateDoc, {
-      new: true,
-      runValidators: true,
-    });
+    const word = await Word.findById(id);
+    if (!word) {
+      throw new Error('Word not found');
+    }
+
+    Object.assign(word, updateDoc);
+    return word.save();
   }
 
   static async delete(id: string) {

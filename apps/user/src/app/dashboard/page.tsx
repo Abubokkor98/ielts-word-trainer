@@ -38,6 +38,9 @@ export default function UserDashboardPage() {
       return data.data;
     },
     enabled: !!localUser && isAuthenticated,
+    staleTime: 5 * 60 * 1000, // Data fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    refetchOnWindowFocus: false, // Don't refetch on tab switch
   });
 
   const { data: analytics, isLoading: analyticsLoading } = useQuery({
@@ -47,6 +50,9 @@ export default function UserDashboardPage() {
       return data.data;
     },
     enabled: !!localUser && isAuthenticated,
+    staleTime: 10 * 60 * 1000, // Analytics rarely change - 10 min
+    gcTime: 30 * 60 * 1000, // Keep for 30 min
+    refetchOnWindowFocus: false,
   });
 
   const { data: srsStats, isLoading: srsLoading } = useQuery({
@@ -56,6 +62,9 @@ export default function UserDashboardPage() {
       return data.data;
     },
     enabled: !!localUser && isAuthenticated,
+    staleTime: 2 * 60 * 1000, // SRS stats fresh for 2 minutes
+    gcTime: 5 * 60 * 1000, // Cache for 5 minutes
+    refetchOnWindowFocus: false,
   });
 
   // Show loading during hydration

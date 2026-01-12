@@ -11,17 +11,13 @@ export class QuizAttemptService {
     const { SRSService } = await import('../srs/srs.service');
 
     if (data.questions && data.userId) {
-      for (const question of data.questions) {
-        // Use quality rating from frontend (speed-based: 0, 3, 4, 5)
-        // If not provided, fall back to simple logic: Correct = 3, Incorrect = 0
-        const quality = question.qualityRating ?? (question.isCorrect ? 3 : 0);
+      // Optimize: Use bulk review instead of loop
+      const reviews = data.questions.map((q) => ({
+        wordId: q.wordId.toString(),
+        quality: q.qualityRating ?? (q.isCorrect ? 3 : 0),
+      }));
 
-        await SRSService.reviewWord(
-          data.userId.toString(),
-          question.wordId.toString(),
-          quality
-        );
-      }
+      await SRSService.bulkReview(data.userId.toString(), reviews);
     }
 
     return attempt;

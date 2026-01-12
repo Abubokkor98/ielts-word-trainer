@@ -3,12 +3,66 @@ import mongoose from 'mongoose';
 
 export class QuizAnalyticsService {
   static async getUserAnalytics(userId: string) {
-    const attempts = await QuizAttempt.find({ userId }).sort({ createdAt: -1 });
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      throw new Error('Invalid user ID format');
+    }
+    const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    if (attempts.length === 0) {
+    const [statsResult, recentAttempts, difficultyStats, topicStats] =
+      await Promise.all([
+        // 1. Overall Stats Aggregation (Optimized)
+        QuizAttempt.aggregate([
+          { $match: { userId: userObjectId } },
+          {
+            $group: {
+              _id: null,
+              totalAttempts: { $sum: 1 },
+              totalScore: { $sum: '$score' },
+              totalQuestions: { $sum: '$totalQuestions' },
+              totalTime: { $sum: '$totalTimeSpent' },
+              maxScore: { $max: { $divide: ['$score', '$totalQuestions'] } },
+              minScore: { $min: { $divide: ['$score', '$totalQuestions'] } },
+              correctAnswers: { $sum: '$score' }, // Assuming score = correct answers count
+            },
+          },
+        ]),
+
+        // 2. Recent attempts (Limit 10 for trend & recent list)
+        QuizAttempt.find({ userId: userObjectId })
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .lean(),
+
+        // 3. Performance by Difficulty
+        QuizAttempt.aggregate([
+          { $match: { userId: userObjectId } },
+          {
+            $group: {
+              _id: '$difficulty',
+              avgScore: { $avg: { $divide: ['$score', '$totalQuestions'] } },
+              count: { $sum: 1 },
+            },
+          },
+        ]),
+
+        // 4. Performance by Topic
+        QuizAttempt.aggregate([
+          { $match: { userId: userObjectId } },
+          {
+            $group: {
+              _id: '$topic',
+              avgScore: { $avg: { $divide: ['$score', '$totalQuestions'] } },
+              count: { $sum: 1 },
+            },
+          },
+        ]),
+      ]);
+
+    // Handle empty state
+    if (!statsResult[0]) {
       return {
         totalAttempts: 0,
-        totalQuizzes: 0, // Same as totalAttempts, for frontend consistency
+        totalQuizzes: 0,
         totalQuestionsAnswered: 0,
         correctAnswers: 0,
         averageScore: 0,
@@ -22,35 +76,13 @@ export class QuizAnalyticsService {
       };
     }
 
-    // Calculate basic stats
-    const scores = attempts.map((a) => (a.score / a.totalQuestions) * 100);
-    const averageScore = scores.reduce((sum, s) => sum + s, 0) / scores.length;
-    const bestScore = Math.max(...scores);
-    const worstScore = Math.min(...scores);
+    const s = statsResult[0];
+    const averageScore =
+      s.totalQuestions > 0 ? (s.totalScore / s.totalQuestions) * 100 : 0;
+    const averageTimePerQuestion =
+      s.totalQuestions > 0 ? s.totalTime / s.totalQuestions : 0;
 
-    const totalTime = attempts.reduce((sum, a) => sum + a.totalTimeSpent, 0);
-    const totalQuestions = attempts.reduce(
-      (sum, a) => sum + a.totalQuestions,
-      0
-    );
-    const averageTimePerQuestion = totalTime / totalQuestions;
-
-    // Calculate total questions answered and correct answers for accuracy metric
-    const totalQuestionsAnswered = totalQuestions;
-    const totalCorrectAnswers = attempts.reduce((sum, a) => sum + a.score, 0);
-
-    // Performance by difficulty
-    const difficultyStats = await QuizAttempt.aggregate([
-      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-      {
-        $group: {
-          _id: '$difficulty',
-          avgScore: { $avg: { $divide: ['$score', '$totalQuestions'] } },
-          count: { $sum: 1 },
-        },
-      },
-    ]);
-
+    // Format Maps
     const performanceByDifficulty = difficultyStats.reduce((acc, stat) => {
       acc[stat._id || 'mixed'] = {
         averageScore: (stat.avgScore * 100).toFixed(1),
@@ -58,18 +90,6 @@ export class QuizAnalyticsService {
       };
       return acc;
     }, {} as Record<string, any>);
-
-    // Performance by topic
-    const topicStats = await QuizAttempt.aggregate([
-      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-      {
-        $group: {
-          _id: '$topic',
-          avgScore: { $avg: { $divide: ['$score', '$totalQuestions'] } },
-          count: { $sum: 1 },
-        },
-      },
-    ]);
 
     const performanceByTopic = topicStats.reduce((acc, stat) => {
       acc[stat._id || 'mixed'] = {
@@ -79,19 +99,24 @@ export class QuizAnalyticsService {
       return acc;
     }, {} as Record<string, any>);
 
-    // Progress trend (last 10 attempts)
-    const progressTrend = attempts
-      .slice(0, 10)
-      .reverse()
+    // Format Trend (last 10)
+    const progressTrend = [...recentAttempts]
+      .reverse() // Oldest to newest
       .map((attempt, index) => ({
-        attempt: index + 1,
-        score: ((attempt.score / attempt.totalQuestions) * 100).toFixed(1),
+        attempt:
+          statsResult[0].totalAttempts - recentAttempts.length + index + 1, // Approximation for graph X-axis
+        score:
+          attempt.totalQuestions > 0
+            ? ((attempt.score / attempt.totalQuestions) * 100).toFixed(1)
+            : '0.0',
         date: attempt.createdAt,
       }));
 
-    // Recent attempts details
-    const recentAttempts = attempts.slice(0, 5).map((a) => ({
-      id: a._id,
+    // Format Recent (last 5)
+    // Map the lean objects (which have _id as ObjectId) to string ID if needed, or keeping it as is
+    // since frontend likely handles it. But explicit mapping is safer.
+    const formattedRecentAttempts = recentAttempts.slice(0, 5).map((a) => ({
+      id: a._id.toString(),
       score: a.score,
       totalQuestions: a.totalQuestions,
       percentage: ((a.score / a.totalQuestions) * 100).toFixed(1),
@@ -102,17 +127,17 @@ export class QuizAnalyticsService {
     }));
 
     return {
-      totalAttempts: attempts.length,
-      totalQuizzes: attempts.length, // Same as totalAttempts, for frontend consistency
-      totalQuestionsAnswered,
-      correctAnswers: totalCorrectAnswers,
+      totalAttempts: s.totalAttempts,
+      totalQuizzes: s.totalAttempts,
+      totalQuestionsAnswered: s.totalQuestions,
+      correctAnswers: s.correctAnswers,
       averageScore: averageScore.toFixed(1),
-      bestScore: bestScore.toFixed(1),
-      worstScore: worstScore.toFixed(1),
-      averageTimePerQuestion: (averageTimePerQuestion / 1000).toFixed(1), // Convert to seconds
+      bestScore: (s.maxScore * 100).toFixed(1),
+      worstScore: (s.minScore * 100).toFixed(1),
+      averageTimePerQuestion: (averageTimePerQuestion / 1000).toFixed(1),
       performanceByDifficulty,
       performanceByTopic,
-      recentAttempts,
+      recentAttempts: formattedRecentAttempts,
       progressTrend,
     };
   }
