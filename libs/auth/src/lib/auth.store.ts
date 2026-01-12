@@ -8,6 +8,7 @@ export interface User {
   role: string;
   xp: number;
   streak: number;
+  lastQuizDate?: string;
 }
 
 interface AuthState {

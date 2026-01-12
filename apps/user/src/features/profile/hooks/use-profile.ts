@@ -1,0 +1,65 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useToast } from '@chakra-ui/react';
+import { useAuthStore } from '@ielts/auth';
+import { profileApi } from '../services/profile.api';
+import { UpdateProfileRequest, ChangePasswordRequest } from '../types';
+
+export function useProfile() {
+  const queryClient = useQueryClient();
+  const toast = useToast();
+  const { setUser } = useAuthStore();
+
+  const {
+    data: profile,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['user', 'profile'],
+    queryFn: profileApi.getProfile,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: (payload: UpdateProfileRequest) =>
+      profileApi.updateProfile(payload),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['user', 'profile'], data);
+      setUser(data);
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      toast({ title: 'Profile updated!', status: 'success' });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Update failed',
+        description: err.response?.data?.message || 'Something went wrong',
+        status: 'error',
+      });
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: (payload: ChangePasswordRequest) =>
+      profileApi.changePassword(payload),
+    onSuccess: () => {
+      toast({ title: 'Password changed successfully!', status: 'success' });
+    },
+    onError: (err: any) => {
+      toast({
+        title: 'Password change failed',
+        description: err.response?.data?.message || 'Something went wrong',
+        status: 'error',
+      });
+    },
+  });
+
+  return {
+    profile,
+    isLoading,
+    isError,
+    updateProfile: updateProfileMutation.mutate,
+    isUpdatingProfile: updateProfileMutation.isPending,
+    changePassword: changePasswordMutation.mutateAsync,
+    isChangingPassword: changePasswordMutation.isPending,
+  };
+}
