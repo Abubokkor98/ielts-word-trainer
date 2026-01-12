@@ -6,10 +6,14 @@ export interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: DifficultyLevel;
-  topic?: string;
-  pronunciation?: string; // Assuming this might exist or be added
-  synonyms?: string[];
-  antonyms?: string[];
+  topic: {
+    _id: string;
+    name: string;
+  };
+  partOfSpeech: string;
+  module: 'reading' | 'writing' | 'listening' | 'speaking';
+  synonyms: string[];
+  antonyms: string[];
 }
 
 export interface VocabularyResponse {
@@ -25,4 +29,5 @@ export interface VocabularyFilters {
   difficulty: DifficultyLevel | 'all';
   search?: string;
   topic?: string;
+  module?: 'reading' | 'writing' | 'listening' | 'speaking';
 }

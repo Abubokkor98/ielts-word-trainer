@@ -16,6 +16,9 @@ import { useVocabulary } from './hooks/use-vocabulary';
 export function VocabularyContainer() {
   const [page, setPage] = useState(1);
   const [difficulty, setDifficulty] = useState<DifficultyLevel | 'all'>('all');
+  const [module, setModule] = useState<
+    'reading' | 'writing' | 'listening' | 'speaking' | undefined
+  >(undefined);
   const [wordSearchQuery, setWordSearchQuery] = useState('');
   const [topicSearchQuery, setTopicSearchQuery] = useState('');
 
@@ -38,6 +41,7 @@ export function VocabularyContainer() {
   const { data, isLoading } = useVocabulary({
     page,
     difficulty,
+    module,
     search: debouncedWordSearch,
     topic: debouncedTopicSearch,
   });
@@ -54,6 +58,7 @@ export function VocabularyContainer() {
     setWordSearchQuery('');
     setTopicSearchQuery('');
     setDifficulty('all');
+    setModule(undefined);
     setPage(1);
   };
 
@@ -82,6 +87,11 @@ export function VocabularyContainer() {
             topicSearch={topicSearchQuery}
             onTopicSearchChange={(val) => {
               setTopicSearchQuery(val);
+              setPage(1);
+            }}
+            module={module}
+            onModuleChange={(val) => {
+              setModule(val);
               setPage(1);
             }}
           />

@@ -11,6 +11,7 @@ export function useVocabulary(filters: VocabularyFilters) {
       filters.difficulty,
       filters.search,
       filters.topic,
+      filters.module,
     ],
     queryFn: () => vocabularyApi.getWords(filters),
     placeholderData: keepPreviousData,

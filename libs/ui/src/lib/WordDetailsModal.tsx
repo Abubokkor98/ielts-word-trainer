@@ -31,7 +31,7 @@ interface WordDetailsModalProps {
     partOfSpeech?: string;
     synonyms?: string[];
     antonyms?: string[];
-    topic?: string;
+    topic?: string | { _id: string; name: string };
   } | null;
 }
 
