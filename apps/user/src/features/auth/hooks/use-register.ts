@@ -30,7 +30,7 @@ export function useRegister() {
         duration: 3000,
       });
 
-      router.push('/dashboard');
+      router.push('/vocabulary');
     },
     onError: (error: any) => {
       toast({

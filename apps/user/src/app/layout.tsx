@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 export const metadata = {
   title: {
     default: 'IELTS Vocabulary Builder',
-    template: '%s | IELTS Vocabulary Builder',
+    template: '%s',
   },
   description:
     'Master IELTS vocabulary with spaced repetition and adaptive quizzes',

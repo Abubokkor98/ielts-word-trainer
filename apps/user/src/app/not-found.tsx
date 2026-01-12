@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Box,
   Button,
@@ -13,6 +11,12 @@ import {
 } from '@chakra-ui/react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Page Not Found - IELTS Vocabs',
+  description: 'The requested page could not be found.',
+};
 
 export default function NotFound() {
   return (

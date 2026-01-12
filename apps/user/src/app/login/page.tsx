@@ -1,8 +1,12 @@
-'use client';
-
+import { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Flex } from '@chakra-ui/react';
 import { LoginForm } from '../../features/auth/components/login-form';
+
+export const metadata: Metadata = {
+  title: 'Login - IELTS Vocabs',
+  description: 'Access your vocabulary learning dashboard.',
+};
 
 function LoginPageContent() {
   return (
