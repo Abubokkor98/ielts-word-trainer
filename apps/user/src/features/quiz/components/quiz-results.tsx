@@ -25,7 +25,8 @@ export function QuizResults({
   answers,
   onRestart,
 }: QuizResultsProps) {
-  const percentage = Math.round((score / questions.length) * 100);
+  const percentage =
+    questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
   const [recommendation, setRecommendation] =
     useState<QuizRecommendation | null>(null);
 

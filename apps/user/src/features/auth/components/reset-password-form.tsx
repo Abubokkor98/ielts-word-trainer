@@ -7,6 +7,7 @@ import {
   FormControl,
   FormLabel,
   Link as ChakraLink,
+  useToast,
 } from '@chakra-ui/react';
 import { Button, Input, Card, CardHeader, CardContent } from '@ielts/ui';
 import { usePasswordRecovery } from '../hooks/use-password-recovery';
@@ -15,6 +16,7 @@ export function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const searchParams = useSearchParams();
+  const toast = useToast();
   const token = searchParams.get('token') || '';
 
   const { resetPassword, isResetPasswordPending } = usePasswordRecovery();
@@ -22,7 +24,11 @@ export function ResetPasswordForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      // You might want to handle this validation better or use the hook
+      toast({
+        title: 'Passwords do not match',
+        status: 'error',
+        duration: 3000,
+      });
       return;
     }
     resetPassword({ token, password });

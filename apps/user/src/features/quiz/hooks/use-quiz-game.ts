@@ -35,23 +35,14 @@ export function useQuizGame({
   const startQuiz = async () => {
     if (!isAuthenticated) return;
 
-    try {
-      const result = await fetchQuiz();
-      if (result.data) {
-        setQuestions(result.data);
-        setCurrentIdx(0);
-        setShowResult(false);
-        setSelectedAnswer(null);
-        setStartTime(new Date());
-        setQuestionStartTime(new Date());
-        setQuestionAnswers(new Map());
-      }
-    } catch (error: any) {
+    const result = await fetchQuiz();
+
+    if (result.error) {
+      const error = result.error as any;
       if (
         error.response?.status === 400 &&
         error.response?.data?.message?.includes('Not enough words')
       ) {
-        // Let component handle difficult switch UI
         throw new Error('NOT_ENOUGH_WORDS');
       } else {
         toast({
@@ -61,6 +52,17 @@ export function useQuizGame({
           duration: 4000,
         });
       }
+      return;
+    }
+
+    if (result.data) {
+      setQuestions(result.data);
+      setCurrentIdx(0);
+      setShowResult(false);
+      setSelectedAnswer(null);
+      setStartTime(new Date());
+      setQuestionStartTime(new Date());
+      setQuestionAnswers(new Map());
     }
   };
 

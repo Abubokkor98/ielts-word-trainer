@@ -7,6 +7,7 @@ export function useVocabulary(filters: VocabularyFilters) {
     queryKey: [
       'words',
       filters.page,
+      filters.limit,
       filters.difficulty,
       filters.search,
       filters.topic,

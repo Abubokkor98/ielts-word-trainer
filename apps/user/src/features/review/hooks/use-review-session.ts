@@ -46,11 +46,13 @@ export function useReviewSession() {
 
   const handleRating = useCallback(
     async (quality: QualityRating) => {
-      if (isSubmitting) return;
+      if (isSubmitting || sessionComplete || words.length === 0) return;
+
+      const word = words[currentIndex];
+      if (!word) return;
 
       try {
         setIsSubmitting(true);
-        const word = words[currentIndex];
         await reviewApi.submitReview(word._id, quality);
 
         setReviewedCount((prev) => prev + 1);
@@ -76,10 +78,10 @@ export function useReviewSession() {
   );
 
   const flipCard = useCallback(() => {
-    if (!isFlipped && !sessionComplete && !isSubmitting) {
+    if (!isFlipped && !isLoading && !sessionComplete && !isSubmitting) {
       setIsFlipped(true);
     }
-  }, [isFlipped, sessionComplete, isSubmitting]);
+  }, [isFlipped, isLoading, sessionComplete, isSubmitting]);
 
   return {
     words,

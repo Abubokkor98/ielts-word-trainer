@@ -47,8 +47,11 @@ export function useLogin() {
       // Get redirect URL from query params, default to home page
       const redirectTo = searchParams.get('redirect') || '/';
 
-      // Security: Ensure redirect is a relative path (not external URL)
-      const safeRedirect = redirectTo.startsWith('/') ? redirectTo : '/';
+      // Security: Ensure redirect is a relative path (not external URL or protocol-relative)
+      const safeRedirect =
+        redirectTo.startsWith('/') && !redirectTo.startsWith('//')
+          ? redirectTo
+          : '/';
 
       router.push(safeRedirect);
     },

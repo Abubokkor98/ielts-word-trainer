@@ -68,7 +68,7 @@ export function RegisterForm() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min  6 characters"
+                placeholder="Min 6 characters"
               />
             </FormControl>
 
