@@ -21,7 +21,7 @@ export function useLogin() {
       const isSecure = window.location.protocol === 'https:';
       document.cookie = `user_auth_token=${
         data.accessToken
-      }; path=/; max-age=900; SameSite=Strict${isSecure ? '; Secure' : ''}`;
+      }; path=/; max-age=604800; SameSite=Strict${isSecure ? '; Secure' : ''}`;
 
       toast({
         title: 'Login successful!',

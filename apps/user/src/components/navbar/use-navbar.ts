@@ -3,6 +3,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useDisclosure, useToast } from '@chakra-ui/react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore, axiosInstance } from '@ielts/auth';
+import { useQuizStore } from '@ielts/shared';
 
 interface SrsStats {
   totalWords: number;
@@ -45,6 +46,7 @@ export function useNavbar() {
       console.error('Logout API call failed:', error);
     } finally {
       document.cookie = 'user_auth_token=; path=/; max-age=0';
+      useQuizStore.getState().reset();
       router.push('/?logout=success');
       onClose();
     }
