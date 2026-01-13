@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { useAuthStore } from './auth.store';
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
+const baseURL =
+  process.env['NEXT_PUBLIC_API_URL'] || 'http://localhost:3333/api/v1';
 
 export const axiosInstance = axios.create({
   baseURL,
@@ -20,7 +21,7 @@ axiosInstance.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
 // Queue to store pending requests during refresh
@@ -58,9 +59,15 @@ axiosInstance.interceptors.response.use(
       '/auth/logout',
     ];
 
-    const shouldSkipRefresh = skipRefreshPaths.some((path) => originalRequest.url?.includes(path));
+    const shouldSkipRefresh = skipRefreshPaths.some((path) =>
+      originalRequest.url?.includes(path)
+    );
 
-    if (error.response?.status === 401 && !originalRequest._retry && !shouldSkipRefresh) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !shouldSkipRefresh
+    ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
@@ -81,13 +88,15 @@ axiosInstance.interceptors.response.use(
       try {
         // Determine which refresh endpoint to use based on current path
         const isAdminPath = originalRequest.url?.includes('/admin');
-        const refreshEndpoint = isAdminPath ? '/admin/refresh' : '/auth/refresh';
+        const refreshEndpoint = isAdminPath
+          ? '/admin/refresh'
+          : '/auth/refresh';
 
         // Attempt to refresh token
         const response = await axios.post(
           `${baseURL}${refreshEndpoint}`,
           {},
-          { withCredentials: true },
+          { withCredentials: true }
         );
 
         const { accessToken } = response.data;
@@ -124,7 +133,9 @@ axiosInstance.interceptors.response.use(
           // We use simple matching here. For exact routes like '/', we match exactly.
           // For nested routes like '/vocabulary', we check startWith.
           const isPublic = publicRoutes.some((route) =>
-            route === '/' ? currentPath === route : currentPath.startsWith(route),
+            route === '/'
+              ? currentPath === route
+              : currentPath.startsWith(route)
           );
 
           if (!isPublic) {
@@ -138,7 +149,7 @@ axiosInstance.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 export const api = axiosInstance;

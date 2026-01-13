@@ -76,7 +76,7 @@ export function useReviewSession() {
         setIsSubmitting(false);
       }
     },
-    [words, currentIndex, queryClient, toast, isSubmitting, sessionComplete]
+    [words, currentIndex, queryClient, toast, isSubmitting, sessionComplete],
   );
 
   const flipCard = useCallback(() => {

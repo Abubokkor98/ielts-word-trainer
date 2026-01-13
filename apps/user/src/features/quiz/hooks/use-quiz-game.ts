@@ -1,5 +1,6 @@
 import { useToast } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { quizApi } from '../services/quiz.api';
 import type { Question, QuestionAnswer } from '../types';
@@ -47,7 +48,7 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
     const result = await fetchQuiz();
 
     if (result.error) {
-      const error = result.error as any;
+      const error = result.error as AxiosError<{ message: string }>;
       if (
         error.response?.status === 400 &&
         error.response?.data?.message?.includes('Not enough words')

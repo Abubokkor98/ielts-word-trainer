@@ -1,6 +1,7 @@
 import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { authApi } from '../services/auth.api';
 import type { RegisterCredentials } from '../types';
@@ -25,7 +26,7 @@ export function useRegister() {
 
       router.push('/vocabulary');
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       toast({
         title: 'Registration failed',
         description: error.response?.data?.message || 'Something went wrong',

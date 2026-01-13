@@ -1,5 +1,6 @@
 import { useToast } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { authApi } from '../services/auth.api';
 import type { ForgotPasswordCredentials, ResetPasswordCredentials } from '../types';
@@ -18,7 +19,7 @@ export function usePasswordRecovery() {
         duration: 5000,
       });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string; error?: string }>) => {
       // Handle Rate Limit (429) specifically if needed, or generic error structure
       const errorMessage =
         error.response?.status === 429
@@ -45,7 +46,7 @@ export function usePasswordRecovery() {
       });
       router.push('/login');
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ message: string }>) => {
       toast({
         title: 'Reset failed',
         description: error.response?.data?.message || 'Something went wrong',
