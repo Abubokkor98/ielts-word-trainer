@@ -10,18 +10,24 @@ import { globalErrorHandler } from './core/middleware/error.middleware';
 
 export const createServer = (): Express => {
   const app = express();
-  console.log('----------------------------------------------------------------');
-  console.log('Server Request - CORS Config: http://localhost:3000, http://localhost:3001');
-  console.log('----------------------------------------------------------------');
+  console.log(
+    '----------------------------------------------------------------'
+  );
+  console.log(
+    'Server Request - CORS Config: http://localhost:3000, http://localhost:3001'
+  );
+  console.log(
+    '----------------------------------------------------------------'
+  );
 
   // Middleware
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(
     cors({
-      origin: ['http://localhost:3000', 'http://localhost:3001'], // Allow frontend & admin
+      origin: env.CORS_ORIGINS.split(','), // Allow multiple origins from env
       credentials: true,
-    }),
+    })
   );
   app.use(helmet());
   app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'short'));

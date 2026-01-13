@@ -12,4 +12,6 @@ export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   CLIENT_URL: process.env.CLIENT_URL || 'http://localhost:3000',
   SERVER_URL: process.env.SERVER_URL || 'http://localhost:3333',
+  CORS_ORIGINS:
+    process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:3001',
 };
