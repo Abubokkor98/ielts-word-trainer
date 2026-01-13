@@ -19,7 +19,21 @@ export class SRSController {
     try {
       const authReq = req as AuthRequest;
       const userId = authReq.user?.id;
-      const items = await SRSService.getDueWords(userId);
+      // Default to 50 due words per session unless client requests specific limit
+      // If limit is 0, it means "Fetch All" (MongoDB behavior for $limit: 0)
+      const queryLimit =
+        req.query.limit !== undefined
+          ? parseInt(req.query.limit as string)
+          : 50;
+      const topicId = req.query.topicId as string;
+      const difficulty = req.query.difficulty as string;
+
+      const items = await SRSService.getDueWords({
+        userId,
+        topicId,
+        difficulty,
+        limit: queryLimit,
+      });
       res.json({ success: true, data: items });
     } catch (err) {
       next(err);

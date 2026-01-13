@@ -24,7 +24,9 @@ export function useReviewSession() {
       setCurrentIndex(0);
       setReviewedCount(0);
 
-      const dueWords = await reviewApi.getDueWords();
+      // Best Practice: Fetch in batches (Sessions) to avoid overloading the UI/Network if user has 2000+ due.
+      // 50 is a reasonable default session size.
+      const dueWords = await reviewApi.getDueWords({ limit: 50 });
 
       if (dueWords.length > 0) {
         setWords(dueWords);
@@ -74,7 +76,7 @@ export function useReviewSession() {
         setIsSubmitting(false);
       }
     },
-    [words, currentIndex, queryClient, toast, isSubmitting, sessionComplete],
+    [words, currentIndex, queryClient, toast, isSubmitting, sessionComplete]
   );
 
   const flipCard = useCallback(() => {
