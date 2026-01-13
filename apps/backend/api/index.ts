@@ -1,5 +1,5 @@
-import { connectToDatabase } from './config/mongo';
-import { createServer } from './server';
+import { connectToDatabase } from '../src/config/mongo';
+import { createServer } from '../src/server';
 
 const app = createServer();
 
