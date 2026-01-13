@@ -1,7 +1,6 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { type Express } from 'express';
-import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import apiRoutes from './api.routes';
@@ -34,14 +33,14 @@ export const createServer = (): Express => {
   app.use(cookieParser());
 
   // Rate Limiting
-  const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again later.',
-    standardHeaders: true,
-    legacyHeaders: false,
-  });
-  app.use(limiter);
+  // const limiter = rateLimit({
+  //   windowMs: 15 * 60 * 1000, // 15 minutes
+  //   max: 100, // limit each IP to 100 requests per windowMs
+  //   message: 'Too many requests from this IP, please try again later.',
+  //   standardHeaders: true,
+  //   legacyHeaders: false,
+  // });
+  // app.use(limiter);
 
   // Health Check
   app.get('/health', (_req, res) => {
