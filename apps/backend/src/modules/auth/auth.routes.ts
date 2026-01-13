@@ -15,11 +15,11 @@ router.post(
 );
 router.post(
   '/login',
-  strictRateLimit,
+  // strictRateLimit,
   validateRequest(loginSchema),
   AuthController.login
 );
-router.post('/refresh', strictRateLimit, AuthController.refresh);
+router.post('/refresh', AuthController.refresh);
 router.get('/me', authenticate, AuthController.me);
 router.post('/logout', authenticate, AuthController.logout);
 
