@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import type { DailyActiveUser } from '../../types/dashboard';
+import type { DailyActiveUser } from '../types';
 
 interface DAUTrendChartProps {
   data: DailyActiveUser[];

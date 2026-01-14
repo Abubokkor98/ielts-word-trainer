@@ -1,3 +1,4 @@
+// Types from shared types/dashboard.ts - duplicated here for feature isolation
 export enum AlertSeverity {
   CRITICAL = 'critical',
   WARNING = 'warning',
@@ -45,7 +46,7 @@ export interface ProblemWord {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   accuracy: number;
   attempts: number;
-  lastUpdated?: string; // Date string from API
+  lastUpdated?: string;
 }
 
 export interface DashboardMetricsResponse {

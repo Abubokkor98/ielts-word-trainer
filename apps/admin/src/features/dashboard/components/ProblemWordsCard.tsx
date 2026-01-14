@@ -12,8 +12,8 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
-import { useProblemWords } from '../../hooks/use-dashboard-metrics';
-import { Button, Card, CardContent } from '../../../../../libs/ui/src';
+import { useProblemWords } from '../hooks/use-dashboard-metrics';
+import { Button, Card, CardContent } from '@ielts/ui';
 
 export const ProblemWordsCard = () => {
   const router = useRouter();

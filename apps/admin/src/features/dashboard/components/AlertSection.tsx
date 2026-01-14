@@ -7,7 +7,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Card, CardContent } from '@ielts/ui';
-import { AlertSeverity, type DashboardAlert } from '../../types/dashboard';
+import { AlertSeverity, type DashboardAlert } from '../types';
 
 interface AlertSectionProps {
   alerts: DashboardAlert[];
