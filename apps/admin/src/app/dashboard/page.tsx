@@ -1,171 +1,98 @@
 'use client';
 
-import {
-  Box,
-  Flex,
-  Heading,
-  Icon,
-  SimpleGrid,
-  Skeleton,
-  Text,
-  useColorModeValue,
-  VStack,
-} from '@chakra-ui/react';
-import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { AdminRole } from '@ielts/shared';
-import { Card, CardContent, DashboardChart } from '@ielts/ui';
-import { useQuery } from '@tanstack/react-query';
-import { Activity, BookOpen, FileText, Users } from 'lucide-react';
-
-interface StatCardProps {
-  label: string;
-  value: string | number;
-  icon: any;
-  color: string;
-  bg: string;
-}
-
-interface WordDifficulty {
-  _id: string;
-  count: number;
-}
+import { Box, Flex, Heading, SimpleGrid, VStack } from '@chakra-ui/react';
+import { Activity, BookOpen, TrendingUp, Users } from 'lucide-react';
+import { AlertSection } from '../../components/dashboard/AlertSection';
+import { DAUTrendChart } from '../../components/dashboard/DAUTrendChart';
+import { MetricCard } from '../../components/dashboard/MetricCard';
+import { QuickActions } from '../../components/dashboard/QuickActions';
+import { ProblemWordsCard } from '../../components/dashboard/ProblemWordsCard';
+import { useDashboardMetrics } from '../../hooks/use-dashboard-metrics';
 
 export default function AdminDashboardPage() {
-  const { user, isAuthenticated } = useAuthStore();
-  const cardBg = useColorModeValue('white', 'gray.800');
+  const { data: metrics, isLoading, isError } = useDashboardMetrics('7d');
 
-  // Auth checks handled by DashboardLayout
-
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ['admin', 'stats'],
-    queryFn: async () => {
-      const { data } = await axiosInstance.get('/admin/stats');
-      return data.data;
-    },
-    // We can assume auth is valid here due to AuthGuard, but keep enabled check for safety
-    enabled: !!user && [AdminRole.ADMIN, AdminRole.SUPER_ADMIN].includes(user.role as AdminRole),
-  });
-
-  if (statsLoading) {
-    return (
-      <Box minH="100vh" py={8}>
-        <VStack spacing={8} align="stretch">
-          <Skeleton height="60px" />
-          <SimpleGrid columns={{ base: 1, md: 4 }} spacing={6}>
-            {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} height="120px" borderRadius="xl" />
-            ))}
-          </SimpleGrid>
-        </VStack>
-      </Box>
-    );
+  if (isLoading) {
+    return <Box p={4}>Loading dashboard...</Box>;
   }
 
-  // Transform wordsByDifficulty for chart
-  const difficultyData =
-    stats?.wordsByDifficulty?.map((item: WordDifficulty) => ({
-      name: item._id.charAt(0).toUpperCase() + item._id.slice(1),
-      count: item.count,
-    })) || [];
+  if (isError || !metrics) {
+    return <Box p={4}>Error loading dashboard data.</Box>;
+  }
 
   return (
-    <Box minH="100vh" py={4}>
+    <Box py={6} px={4}>
       <VStack spacing={8} align="stretch">
-        <Box>
-          <Heading as="h1" size="xl" mb={2}>
-            Dashboard Overview
-          </Heading>
-          <Text fontSize="lg" color="gray.500">
-            Welcome back, {user?.name}
-          </Text>
-        </Box>
+        {/* Header */}
+        <Flex justify="space-between" align="center">
+          <Heading size="lg">Dashboard Overview</Heading>
+        </Flex>
 
-        <SimpleGrid columns={{ base: 1, md: 4 }} spacing={6}>
-          <StatCard
-            label="Total Users"
-            value={stats?.totalUsers || 0}
+        {/* Platform Health Cards */}
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 5 }} spacing={6}>
+          <MetricCard
+            label="Active Users"
+            sublabel="Login Activity"
+            value={metrics.activeUsers.current}
+            change={metrics.activeUsers.percentChange}
             icon={Users}
             color="blue.500"
-            bg={cardBg}
           />
-          <StatCard
-            label="Total Vocabulary"
-            value={stats?.totalWords || 0}
+          <MetricCard
+            label="Active Learners"
+            sublabel="Took a Quiz"
+            value={metrics.activeLearners.current}
+            change={metrics.activeLearners.percentChange}
             icon={BookOpen}
             color="purple.500"
-            bg={cardBg}
           />
-          <StatCard
-            label="Quiz Attempts"
-            value={stats?.totalQuizAttempts || 0}
-            icon={FileText}
+          <MetricCard
+            label="New Users"
+            sublabel="This Week"
+            value={metrics.newUsers.current}
+            change={metrics.newUsers.percentChange}
+            icon={TrendingUp}
             color="green.500"
-            bg={cardBg}
           />
-          <StatCard
-            label="Avg Quiz Score"
-            value={`${Math.round(stats?.quizStats?.avgScore || 0)}%`}
+          <MetricCard
+            label="Completion"
+            sublabel="Quiz Finish Rate"
+            value={`${metrics.quizCompletionRate.current.toFixed(0)}%`}
+            change={metrics.quizCompletionRate.percentChange}
             icon={Activity}
             color="orange.500"
-            bg={cardBg}
+          />
+          <MetricCard
+            label="Avg Score"
+            sublabel="Overall"
+            value={`${metrics.avgQuizScore.current.toFixed(0)}%`}
+            change={metrics.avgQuizScore.percentChange}
+            icon={BookOpen}
+            color="red.500"
           />
         </SimpleGrid>
 
-        {/* Charts Section */}
-        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8}>
-          <Card className="p-6">
-            <Heading size="md" mb={6}>
-              Vocabulary Distribution
-            </Heading>
-            <Box h="300px">
-              <DashboardChart
-                type="bar"
-                data={difficultyData}
-                xAxisKey="name"
-                dataKeys={[{ key: 'count', color: '#805AD5', name: 'Words' }]}
-              />
-            </Box>
-          </Card>
+        {/* Alerts Section */}
+        <AlertSection alerts={metrics.alerts} />
 
-          <Card className="p-6">
-            <Heading size="md" mb={6}>
-              Metrics Overview
-            </Heading>
-            <Box h="300px" display="flex" alignItems="center" justifyContent="center">
-              <Text color="gray.500">More analytics coming soon...</Text>
-            </Box>
-          </Card>
+        {/* Charts & Actions Grid */}
+        <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
+          {/* DAU Chart (Takes 2 columns) */}
+          <Box gridColumn={{ lg: 'span 2' }}>
+            <DAUTrendChart data={metrics.dailyActiveUsers} />
+          </Box>
+
+          {/* Quick Actions (Takes 1 column) */}
+          <Box>
+            <QuickActions />
+          </Box>
         </SimpleGrid>
+
+        {/* Problem Words Section */}
+        <Box>
+          <ProblemWordsCard />
+        </Box>
       </VStack>
     </Box>
   );
 }
-
-// Shared Component
-const StatCard = ({ label, value, icon, color, bg }: StatCardProps) => (
-  <Card
-    className="overflow-hidden border-none shadow-sm transition-all hover:shadow-md"
-    style={{ backgroundColor: bg }}
-  >
-    <CardContent className="p-6">
-      <Flex justify="space-between" align="center">
-        <Box>
-          <Text fontSize="sm" color="gray.500" fontWeight="600" mb={1}>
-            {label}
-          </Text>
-          <Heading size="xl" color={color}>
-            {value}
-          </Heading>
-        </Box>
-        <Box
-          p={3}
-          bg={color.includes('.') ? `${color.split('.')[0]}.50` : `${color}50`}
-          borderRadius="xl"
-          color={color}
-        >
-          <Icon as={icon} boxSize={6} />
-        </Box>
-      </Flex>
-    </CardContent>
-  </Card>
-);
