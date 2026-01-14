@@ -135,7 +135,7 @@ axiosInstance.interceptors.response.use(
           const isPublic = publicRoutes.some((route) =>
             route === '/'
               ? currentPath === route
-              : currentPath.startsWith(route)
+              : currentPath === route || currentPath.startsWith(`${route}/`)
           );
 
           if (!isPublic) {

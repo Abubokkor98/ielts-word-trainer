@@ -34,8 +34,10 @@ export default async (req: any, res: any) => {
     try {
       res.status(500).json({
         error: 'Serverless Function Crashed',
-        details: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
+        ...(process.env.NODE_ENV !== 'production' && {
+          details: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        }),
       });
     } catch (innerError) {
       console.error('Failed to send error response:', innerError);

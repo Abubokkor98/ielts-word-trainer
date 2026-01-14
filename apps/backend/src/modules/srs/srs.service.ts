@@ -179,12 +179,13 @@ export class SRSService {
     }
 
     // 5. Project and Limit
-    pipeline.push(
-      {
-        $replaceRoot: { newRoot: '$wordDetails' }, // Return just the word object
-      },
-      { $limit: limit }
-    );
+    pipeline.push({
+      $replaceRoot: { newRoot: '$wordDetails' }, // Return just the word object
+    });
+
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
 
     const words = await SRSItem.aggregate(pipeline);
     return words;

@@ -15,7 +15,7 @@ router.post(
 );
 router.post(
   '/login',
-  // strictRateLimit,
+  strictRateLimit,
   validateRequest(loginSchema),
   AuthController.login
 );
