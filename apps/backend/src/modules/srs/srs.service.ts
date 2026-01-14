@@ -55,7 +55,10 @@ export class SRSService {
     return srsItem.save();
   }
 
-  static async bulkReview(userId: string, reviews: { wordId: string; quality: number }[]) {
+  static async bulkReview(
+    userId: string,
+    reviews: { wordId: string; quality: number }[]
+  ) {
     if (reviews.length === 0) return;
 
     // 1. Fetch existing SRS items for these words
@@ -65,7 +68,9 @@ export class SRSService {
       word: { $in: wordIds },
     });
 
-    const itemMap = new Map(existingItems.map((item) => [item.word.toString(), item]));
+    const itemMap = new Map(
+      existingItems.map((item) => [item.word.toString(), item])
+    );
 
     // 2. Prepare bulk operations
     const bulkOps = reviews.map(({ wordId, quality }) => {
@@ -123,12 +128,17 @@ export class SRSService {
     }
   }
 
-  static async getDueWords(
-    userId: string,
-    topicId?: string,
-    difficulty?: string,
-    limit: number = 20,
-  ) {
+  static async getDueWords({
+    userId,
+    topicId,
+    difficulty,
+    limit = 20,
+  }: {
+    userId: string;
+    topicId?: string;
+    difficulty?: string;
+    limit?: number;
+  }) {
     const pipeline: any[] = [
       // 1. Match due SRS items
       {
@@ -169,12 +179,13 @@ export class SRSService {
     }
 
     // 5. Project and Limit
-    pipeline.push(
-      {
-        $replaceRoot: { newRoot: '$wordDetails' }, // Return just the word object
-      },
-      { $limit: limit },
-    );
+    pipeline.push({
+      $replaceRoot: { newRoot: '$wordDetails' }, // Return just the word object
+    });
+
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
 
     const words = await SRSItem.aggregate(pipeline);
     return words;
@@ -184,7 +195,7 @@ export class SRSService {
     userId: string,
     topicId?: string,
     difficulty?: string,
-    limit: number = 10,
+    limit: number = 10
   ) {
     // Utilize Word model to find new words via Aggregation
     // Improved: Avoid fetching all seen IDs into memory ($nin method)
@@ -235,7 +246,7 @@ export class SRSService {
     // unless user requests randomness. Implicit natural order is fine.
     pipeline.push(
       { $project: { isStudied: 0 } }, // Remove temp field
-      { $limit: limit },
+      { $limit: limit }
     );
 
     return Word.aggregate(pipeline);
@@ -294,11 +305,14 @@ export class SRSService {
 
     // Process aggregation results
     const statusMap = stats[0].byStatus.reduce(
-      (acc: Record<string, number>, { _id, count }: { _id: string; count: number }) => {
+      (
+        acc: Record<string, number>,
+        { _id, count }: { _id: string; count: number }
+      ) => {
         acc[_id] = count;
         return acc;
       },
-      {},
+      {}
     );
 
     return {

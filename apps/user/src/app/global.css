@@ -1,11 +1,7 @@
-/* biome-ignore lint/suspicious/noUnknownAtRules: tailwind directives */
 @tailwind base;
-/* biome-ignore lint/suspicious/noUnknownAtRules: tailwind directives */
 @tailwind components;
-/* biome-ignore lint/suspicious/noUnknownAtRules: tailwind directives */
 @tailwind utilities;
 
-/* biome-ignore lint/suspicious/noUnknownAtRules: tailwind directives */
 @layer base {
   :root {
     --background: 0 0% 100%;

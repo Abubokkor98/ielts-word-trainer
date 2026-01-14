@@ -4,6 +4,7 @@ import { useQuizStore } from '@ielts/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import { authApi } from '../../features/auth/services/auth.api';
 
 interface SrsStats {
   totalWords: number;
@@ -16,11 +17,27 @@ interface SrsStats {
 
 export function useNavbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, logout, setUser, hasHydrated } =
+    useAuthStore();
   const searchParams = useSearchParams();
   const router = useRouter();
   const toast = useToast();
   const queryClient = useQueryClient();
+
+  // Session restoration
+  const { data: restoredUser } = useQuery({
+    queryKey: ['auth', 'restore'],
+    queryFn: () => authApi.getMe(),
+    enabled: hasHydrated && !isAuthenticated,
+    retry: false,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (restoredUser && !isAuthenticated) {
+      setUser(restoredUser);
+    }
+  }, [restoredUser, isAuthenticated, setUser]);
 
   useEffect(() => {
     // Check if we just logged out via redirection
