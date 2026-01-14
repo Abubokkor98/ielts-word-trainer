@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { validateRequest } from '../../core/middleware/validate.middleware';
-import { strictRateLimit } from '../../core/middleware/rate-limit.middleware';
+import {
+  moderateRateLimit,
+  strictRateLimit,
+} from '../../core/middleware/rate-limit.middleware';
 import { AuthController } from './auth.controller';
 import { authenticate } from './auth.middleware';
 import { loginSchema, registerSchema } from './auth.validation';
@@ -19,7 +22,7 @@ router.post(
   validateRequest(loginSchema),
   AuthController.login
 );
-router.post('/refresh', AuthController.refresh);
+router.post('/refresh', moderateRateLimit, AuthController.refresh);
 router.get('/me', authenticate, AuthController.me);
 router.post('/logout', authenticate, AuthController.logout);
 

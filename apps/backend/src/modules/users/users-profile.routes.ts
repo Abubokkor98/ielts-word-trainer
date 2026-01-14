@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import { strictRateLimit } from '../../core/middleware/rate-limit.middleware';
 import { validateRequest } from '../../core/middleware/validate.middleware';
 import { authenticate } from '../auth/auth.middleware';
 import { UserProfileController } from './users-profile.controller';
@@ -24,13 +25,14 @@ router.patch(
   '/profile',
   authenticate,
   validateRequest(updateProfileSchema),
-  UserProfileController.updateProfile,
+  UserProfileController.updateProfile
 );
 router.post(
   '/change-password',
   authenticate,
+  strictRateLimit,
   validateRequest(changePasswordSchema),
-  UserProfileController.changePassword,
+  UserProfileController.changePassword
 );
 
 export default router;
