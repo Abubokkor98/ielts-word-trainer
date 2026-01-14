@@ -21,8 +21,8 @@ import {
 import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { Card, CardContent } from '@ielts/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { Admin } from 'apps/admin/src/types/admin';
 import { Plus, Shield, ShieldAlert, Trash2 } from 'lucide-react';
-import type { Admin } from '../../../types/admin';
 
 export default function AdminManagementPage() {
   const { user } = useAuthStore();

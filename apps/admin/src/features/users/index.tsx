@@ -24,23 +24,8 @@ import {
   useDisclosure,
   VStack,
 } from '@chakra-ui/react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Input,
-  Pagination,
-} from '@ielts/ui';
-import {
-  Ban,
-  Calendar,
-  CheckCircle,
-  Download,
-  Eye,
-  Mail,
-  Search,
-} from 'lucide-react';
+import { Button, Card, CardContent, CardHeader, Input, Pagination } from '@ielts/ui';
+import { Ban, Calendar, CheckCircle, Download, Eye, Mail, Search } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { UserDetailModal } from './components/UserDetailModal';
 import { useUserManagement, useUsers } from './hooks/use-users';
@@ -88,7 +73,7 @@ export function UsersContainer() {
     onOpen();
   };
 
-  const handleStatusChange = (userId: string, newStatus: string) => {
+  const handleStatusChange = (userId: string, newStatus: 'active' | 'banned') => {
     updateStatus.mutate({ userId, status: newStatus });
   };
 
@@ -115,20 +100,12 @@ export function UsersContainer() {
       <VStack spacing={8} align="stretch">
         <HStack justify="space-between">
           <Heading size="lg">User Management</Heading>
-          <Button
-            variant="outline"
-            leftIcon={<Download size={16} />}
-            onClick={exportUsers}
-          >
+          <Button variant="outline" leftIcon={<Download size={16} />} onClick={exportUsers}>
             Export Users
           </Button>
         </HStack>
 
-        {isError && (
-          <Text color="red.500">
-            Failed to load users. Please try again later.
-          </Text>
-        )}
+        {isError && <Text color="red.500">Failed to load users. Please try again later.</Text>}
 
         <Card>
           <CardHeader>
@@ -164,7 +141,6 @@ export function UsersContainer() {
                     <Thead>
                       <Tr>
                         <Th>User</Th>
-                        <Th>Role</Th>
                         <Th>Status</Th>
                         <Th>XP</Th>
                         <Th>Joined</Th>
@@ -177,33 +153,17 @@ export function UsersContainer() {
                           <Tr key={u._id}>
                             <Td>
                               <HStack>
-                                <Avatar
-                                  size="sm"
-                                  name={u.name}
-                                  src={u.avatar}
-                                />
+                                <Avatar size="sm" name={u.name} />
                                 <Box>
                                   <Text fontWeight="600">{u.name}</Text>
-                                  <HStack
-                                    spacing={1}
-                                    color="gray.500"
-                                    fontSize="xs"
-                                  >
+                                  <HStack spacing={1} color="gray.500" fontSize="xs">
                                     <Mail size={12} />
                                     <Text>{u.email}</Text>
                                   </HStack>
                                 </Box>
                               </HStack>
                             </Td>
-                            <Td>
-                              <Badge
-                                colorScheme={
-                                  u.role === 'admin' ? 'purple' : 'gray'
-                                }
-                              >
-                                {u.role || 'User'}
-                              </Badge>
-                            </Td>
+
                             <Td>
                               <Badge
                                 variant="subtle"
@@ -211,8 +171,8 @@ export function UsersContainer() {
                                   u.status === 'active'
                                     ? 'green'
                                     : u.status === 'banned'
-                                    ? 'red'
-                                    : 'gray'
+                                      ? 'red'
+                                      : 'gray'
                                 }
                               >
                                 {u.status || 'Active'}
@@ -220,15 +180,9 @@ export function UsersContainer() {
                             </Td>
                             <Td fontWeight="bold">{u.xp || 0}</Td>
                             <Td>
-                              <HStack
-                                spacing={1}
-                                color="gray.500"
-                                fontSize="sm"
-                              >
+                              <HStack spacing={1} color="gray.500" fontSize="sm">
                                 <Calendar size={14} />
-                                <Text>
-                                  {new Date(u.createdAt).toLocaleDateString()}
-                                </Text>
+                                <Text>{new Date(u.createdAt).toLocaleDateString()}</Text>
                               </HStack>
                             </Td>
                             <Td>
@@ -247,9 +201,7 @@ export function UsersContainer() {
                                     size="sm"
                                     colorScheme="green"
                                     variant="ghost"
-                                    onClick={() =>
-                                      handleStatusChange(u._id, 'active')
-                                    }
+                                    onClick={() => handleStatusChange(u._id, 'active')}
                                   />
                                 ) : (
                                   <IconButton
@@ -267,7 +219,7 @@ export function UsersContainer() {
                         ))
                       ) : (
                         <Tr>
-                          <Td colSpan={6} textAlign="center" py={8}>
+                          <Td colSpan={5} textAlign="center" py={8}>
                             <Text color="gray.500">No users found</Text>
                           </Td>
                         </Tr>
@@ -300,21 +252,14 @@ export function UsersContainer() {
       >
         <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
           <AlertDialogContent borderRadius="xl" boxShadow="2xl">
-            <AlertDialogHeader
-              fontSize="lg"
-              fontWeight="bold"
-              color="red.500"
-              pt={8}
-              pb={0}
-            >
+            <AlertDialogHeader fontSize="lg" fontWeight="bold" color="red.500" pt={8} pb={0}>
               <VStack spacing={4}>
                 <Text>Ban User</Text>
               </VStack>
             </AlertDialogHeader>
 
             <AlertDialogBody textAlign="center" color="gray.500" py={6}>
-              Are you sure you want to ban <strong>{userToBan?.name}</strong>?{' '}
-              <br />
+              Are you sure you want to ban <strong>{userToBan?.name}</strong>? <br />
               They will no longer be able to log in.
             </AlertDialogBody>
 
@@ -328,12 +273,7 @@ export function UsersContainer() {
               >
                 Cancel
               </Button>
-              <Button
-                colorScheme="red"
-                onClick={confirmBan}
-                borderRadius="lg"
-                px={6}
-              >
+              <Button colorScheme="red" onClick={confirmBan} borderRadius="lg" px={6}>
                 Ban User
               </Button>
             </AlertDialogFooter>

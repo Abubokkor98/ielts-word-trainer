@@ -1,19 +1,7 @@
-import {
-  Badge,
-  Box,
-  Flex,
-  Heading,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react';
+import { Badge, Box, Flex, Heading, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
+import { Button, Card, CardContent } from '@ielts/ui';
 import { useRouter } from 'next/navigation';
 import { useProblemWords } from '../hooks/use-dashboard-metrics';
-import { Button, Card, CardContent } from '@ielts/ui';
 
 export const ProblemWordsCard = () => {
   const router = useRouter();
@@ -39,8 +27,7 @@ export const ProblemWordsCard = () => {
             Problem Words
           </Heading>
           <Text color="gray.500">
-            No words currently meet the criteria for "Problem Words" (&lt;40%
-            accuracy).
+            No words currently meet the criteria for "Problem Words" (&lt;40% accuracy).
           </Text>
         </CardContent>
       </Card>
@@ -57,11 +44,7 @@ export const ProblemWordsCard = () => {
               Lowest accuracy words (Top 5)
             </Text>
           </Box>
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => router.push('/dashboard/problem-words')}
-          >
+          <Button size="sm" variant="ghost" onClick={() => router.push('/dashboard/problem-words')}>
             View All
           </Button>
         </Flex>
@@ -91,8 +74,8 @@ export const ProblemWordsCard = () => {
                         pw.difficulty === 'beginner'
                           ? 'green'
                           : pw.difficulty === 'intermediate'
-                          ? 'yellow'
-                          : 'red'
+                            ? 'yellow'
+                            : 'red'
                       }
                       fontSize="xs"
                     >

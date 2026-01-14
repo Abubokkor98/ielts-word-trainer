@@ -1,8 +1,8 @@
-import { Heading, VStack, useToast, Text } from '@chakra-ui/react';
-import { Button, Card, CardContent } from '@ielts/ui';
-import { useState } from 'react';
+import { Heading, Text, useToast, VStack } from '@chakra-ui/react';
 import { axiosInstance } from '@ielts/auth';
+import { Button, Card, CardContent } from '@ielts/ui';
 import { Download } from 'lucide-react';
+import { useState } from 'react';
 
 export const QuickActions = () => {
   const toast = useToast();
@@ -18,10 +18,7 @@ export const QuickActions = () => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute(
-        'download',
-        `users-export-${new Date().toISOString().split('T')[0]}.csv`
-      );
+      link.setAttribute('download', `users-export-${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       link.remove();

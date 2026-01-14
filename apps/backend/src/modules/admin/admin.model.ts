@@ -32,7 +32,7 @@ const AdminSchema = new Schema<IAdmin>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 export const Admin = mongoose.model<IAdmin>('Admin', AdminSchema);

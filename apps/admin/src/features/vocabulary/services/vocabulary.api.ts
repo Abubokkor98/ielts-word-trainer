@@ -16,9 +16,7 @@ export const vocabularyApi = {
       searchParams.append('difficulty', params.difficulty);
     }
 
-    const { data } = await axiosInstance.get(
-      `/words?${searchParams.toString()}`
-    );
+    const { data } = await axiosInstance.get(`/words?${searchParams.toString()}`);
     return data.data;
   },
 

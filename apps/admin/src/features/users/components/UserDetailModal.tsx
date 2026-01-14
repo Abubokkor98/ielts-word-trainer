@@ -25,11 +25,7 @@ interface UserDetailModalProps {
   user: User | null;
 }
 
-export function UserDetailModal({
-  isOpen,
-  onClose,
-  user,
-}: UserDetailModalProps) {
+export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps) {
   const bgCard = useColorModeValue('white', 'gray.800');
   const bgStats = useColorModeValue('gray.50', 'gray.700');
   const textColor = useColorModeValue('gray.600', 'gray.400');
@@ -42,30 +38,15 @@ export function UserDetailModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay backdropFilter="blur(8px)" />
-      <ModalContent
-        bg={bgCard}
-        borderRadius="2xl"
-        boxShadow="xl"
-        overflow="hidden"
-      >
+      <ModalContent bg={bgCard} borderRadius="2xl" boxShadow="xl" overflow="hidden">
         <ModalCloseButton zIndex={10} color="white" />
 
         {/* Helper Banner for premium feel */}
-        <Box
-          h="100px"
-          bgGradient="linear(to-r, brand.500, brand.600)"
-          position="relative"
-        >
-          <Box
-            position="absolute"
-            bottom="-40px"
-            left="50%"
-            transform="translateX(-50%)"
-          >
+        <Box h="100px" bgGradient="linear(to-r, brand.500, brand.600)" position="relative">
+          <Box position="absolute" bottom="-40px" left="50%" transform="translateX(-50%)">
             <Avatar
               size="2xl"
               name={user.name}
-              src={user.avatar}
               border="4px solid"
               borderColor={bgCard}
               bg="brand.500"
@@ -88,13 +69,7 @@ export function UserDetailModal({
               </HStack>
 
               <HStack spacing={2} mt={2}>
-                <Badge
-                  px={3}
-                  py={1}
-                  borderRadius="full"
-                  colorScheme={user.role === 'admin' ? 'purple' : 'blue'}
-                  variant="subtle"
-                >
+                <Badge px={3} py={1} borderRadius="full" colorScheme="blue" variant="subtle">
                   {user.role || 'USER'}
                 </Badge>
                 <Badge
@@ -102,11 +77,7 @@ export function UserDetailModal({
                   py={1}
                   borderRadius="full"
                   colorScheme={
-                    user.status === 'active'
-                      ? 'green'
-                      : user.status === 'banned'
-                      ? 'red'
-                      : 'gray'
+                    user.status === 'active' ? 'green' : user.status === 'banned' ? 'red' : 'gray'
                   }
                   variant="subtle"
                 >
@@ -170,14 +141,7 @@ export function UserDetailModal({
             </Grid>
 
             {/* Timestamps */}
-            <VStack
-              w="full"
-              bg={bgStats}
-              p={4}
-              borderRadius="lg"
-              align="start"
-              spacing={3}
-            >
+            <VStack w="full" bg={bgStats} p={4} borderRadius="lg" align="start" spacing={3}>
               <HStack color={textColor} fontSize="sm">
                 <Icon as={Calendar} size={16} />
                 <Text fontWeight="medium">Member Since:</Text>
@@ -209,9 +173,7 @@ export function UserDetailModal({
                   textTransform="capitalize"
                   color={user.status === 'banned' ? 'red.500' : 'inherit'}
                 >
-                  {user.status === 'banned'
-                    ? 'Restricted (Banned)'
-                    : 'Good Standing'}
+                  {user.status === 'banned' ? 'Restricted (Banned)' : 'Good Standing'}
                 </Text>
               </HStack>
             </VStack>

@@ -19,10 +19,7 @@ export const usersApi = {
   /**
    * Update user status (ban/activate)
    */
-  updateUserStatus: async (
-    userId: string,
-    status: 'active' | 'banned'
-  ): Promise<void> => {
+  updateUserStatus: async (userId: string, status: 'active' | 'banned'): Promise<void> => {
     await axiosInstance.patch(`/admin/users/${userId}/status`, { status });
   },
 

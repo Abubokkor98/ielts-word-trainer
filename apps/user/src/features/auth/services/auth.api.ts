@@ -9,30 +9,20 @@ import type {
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const { data } = await axiosInstance.post<AuthResponse>(
-      '/auth/login',
-      credentials
-    );
+    const { data } = await axiosInstance.post<AuthResponse>('/auth/login', credentials);
     return data;
   },
 
   register: async (credentials: RegisterCredentials): Promise<AuthResponse> => {
-    const { data } = await axiosInstance.post<AuthResponse>(
-      '/auth/register',
-      credentials
-    );
+    const { data } = await axiosInstance.post<AuthResponse>('/auth/register', credentials);
     return data;
   },
 
-  forgotPassword: async (
-    credentials: ForgotPasswordCredentials
-  ): Promise<void> => {
+  forgotPassword: async (credentials: ForgotPasswordCredentials): Promise<void> => {
     await axiosInstance.post('/password/request-reset', credentials);
   },
 
-  resetPassword: async (
-    credentials: ResetPasswordCredentials
-  ): Promise<void> => {
+  resetPassword: async (credentials: ResetPasswordCredentials): Promise<void> => {
     await axiosInstance.post('/password/reset-password', {
       token: credentials.token,
       password: credentials.password,

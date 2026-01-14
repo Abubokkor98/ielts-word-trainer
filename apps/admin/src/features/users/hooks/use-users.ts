@@ -1,8 +1,8 @@
 import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { UsersQueryParams, UsersResponse } from '../types';
 import { usersApi } from '../services/users.api';
+import type { UsersQueryParams, UsersResponse } from '../types';
 
 export function useUsers(params: UsersQueryParams) {
   const { user } = useAuthStore();
@@ -19,13 +19,8 @@ export function useUserManagement() {
   const queryClient = useQueryClient();
 
   const updateStatus = useMutation({
-    mutationFn: ({
-      userId,
-      status,
-    }: {
-      userId: string;
-      status: 'active' | 'banned';
-    }) => usersApi.updateUserStatus(userId, status),
+    mutationFn: ({ userId, status }: { userId: string; status: 'active' | 'banned' }) =>
+      usersApi.updateUserStatus(userId, status),
     onSuccess: (_, variables) => {
       toast({
         title: `User ${variables.status === 'banned' ? 'banned' : 'activated'}`,

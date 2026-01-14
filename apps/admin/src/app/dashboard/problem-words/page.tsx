@@ -30,8 +30,7 @@ export default function ProblemWordsPage() {
           <Box>
             <Heading size="lg">Problem Words</Heading>
             <Text color="gray.500">
-              Detailed analysis of words with low accuracy (&lt;40%) and high
-              attempts
+              Detailed analysis of words with low accuracy (&lt;40%) and high attempts
             </Text>
           </Box>
         </Flex>
@@ -50,8 +49,8 @@ export default function ProblemWordsPage() {
                 No Problem Words Found
               </Heading>
               <Text color="gray.500">
-                Great job! There are no words matching the criteria for "Problem
-                Words" at this time.
+                Great job! There are no words matching the criteria for "Problem Words" at this
+                time.
               </Text>
             </CardContent>
           </Card>
@@ -78,11 +77,7 @@ export default function ProblemWordsPage() {
                           {pw.meaning}
                         </Td>
                         <Td>
-                          <Badge
-                            colorScheme={getDifficultyColorScheme(
-                              pw.difficulty
-                            )}
-                          >
+                          <Badge colorScheme={getDifficultyColorScheme(pw.difficulty)}>
                             {pw.difficulty}
                           </Badge>
                         </Td>
@@ -95,9 +90,7 @@ export default function ProblemWordsPage() {
                           {pw.attempts}
                         </Td>
                         <Td fontSize="sm" color="gray.500">
-                          {pw.lastUpdated
-                            ? new Date(pw.lastUpdated).toLocaleDateString()
-                            : '-'}
+                          {pw.lastUpdated ? new Date(pw.lastUpdated).toLocaleDateString() : '-'}
                         </Td>
                       </Tr>
                     ))}

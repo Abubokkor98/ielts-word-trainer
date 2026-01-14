@@ -29,7 +29,7 @@ export function HeroSection() {
 
       {!isAuthenticated ? (
         <VStack spacing={4}>
-          <Link href="/register">
+          <Link href="/login">
             <Button size={{ base: 'md', md: 'lg' }} colorScheme="blue" px={8}>
               Get Started Free
             </Button>
