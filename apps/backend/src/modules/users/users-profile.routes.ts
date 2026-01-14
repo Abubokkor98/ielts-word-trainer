@@ -29,8 +29,8 @@ router.patch(
 );
 router.post(
   '/change-password',
-  authenticate,
   strictRateLimit,
+  authenticate,
   validateRequest(changePasswordSchema),
   UserProfileController.changePassword
 );

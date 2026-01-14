@@ -108,6 +108,14 @@ axiosInstance.interceptors.response.use(
 
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           return axiosInstance(originalRequest);
+        } else {
+          // Refresh succeeded but no token returned - treat as failure
+          const noTokenError = new Error(
+            'Token refresh returned no access token'
+          );
+          processQueue(noTokenError, null);
+          useAuthStore.getState().logout();
+          return Promise.reject(noTokenError);
         }
       } catch (refreshError) {
         processQueue(refreshError, null);

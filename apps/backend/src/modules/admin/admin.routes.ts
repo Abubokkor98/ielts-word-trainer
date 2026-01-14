@@ -82,9 +82,9 @@ router.patch(
 
 router.post(
   '/change-password',
+  strictRateLimit,
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  strictRateLimit,
   AdminController.changePassword
 );
 
