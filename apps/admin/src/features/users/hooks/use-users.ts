@@ -19,8 +19,13 @@ export function useUserManagement() {
   const queryClient = useQueryClient();
 
   const updateStatus = useMutation({
-    mutationFn: ({ userId, status }: { userId: string; status: 'active' | 'banned' }) =>
-      usersApi.updateUserStatus(userId, status),
+    mutationFn: ({
+      userId,
+      status,
+    }: {
+      userId: string;
+      status: 'active' | 'banned';
+    }) => usersApi.updateUserStatus(userId, status),
     onSuccess: (_, variables) => {
       toast({
         title: `User ${variables.status === 'banned' ? 'banned' : 'activated'}`,
@@ -36,7 +41,7 @@ export function useUserManagement() {
   const exportUsers = async () => {
     try {
       const blob = await usersApi.exportUsers();
-      const url = window.URL.createObjectURL(new Blob([blob]));
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'users.csv');
