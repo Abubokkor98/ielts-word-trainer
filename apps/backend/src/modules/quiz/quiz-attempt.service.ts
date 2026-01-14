@@ -97,13 +97,16 @@ export class QuizAttemptService {
       0
     );
     const bestScore = Math.max(
-      ...attempts.map((a) => (a.score / a.totalQuestions) * 100)
+      ...attempts.map((a) =>
+        a.totalQuestions > 0 ? (a.score / a.totalQuestions) * 100 : 0
+      )
     );
 
     return {
       totalAttempts: attempts.length,
       averageScore: totalScore / attempts.length,
-      averageTimePerQuestion: totalTime / totalQuestions,
+      averageTimePerQuestion:
+        totalQuestions > 0 ? totalTime / totalQuestions : 0,
       bestScore,
     };
   }

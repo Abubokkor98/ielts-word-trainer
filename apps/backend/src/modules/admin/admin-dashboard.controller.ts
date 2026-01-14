@@ -36,9 +36,11 @@ export class AdminDashboardController {
     next: NextFunction
   ) {
     try {
-      const limit = req.query.limit
+      const parsedLimit = req.query.limit
         ? Number.parseInt(req.query.limit as string, 10)
         : 20;
+      const limit =
+        Number.isNaN(parsedLimit) || parsedLimit <= 0 ? 20 : parsedLimit;
 
       const words = await AdminService.getProblemWords(limit);
 

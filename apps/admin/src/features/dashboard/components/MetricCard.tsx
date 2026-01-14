@@ -1,13 +1,4 @@
-import {
-  Box,
-  Flex,
-  Heading,
-  Icon,
-  StatArrow,
-  Stat,
-  Text,
-  HStack,
-} from '@chakra-ui/react';
+import { Box, Flex, Heading, HStack, Icon, Stat, StatArrow, Text } from '@chakra-ui/react';
 import { Card, CardContent } from '@ielts/ui';
 import type { LucideIcon } from 'lucide-react';
 
@@ -20,14 +11,7 @@ interface MetricCardProps {
   color: string;
 }
 
-export const MetricCard = ({
-  label,
-  sublabel,
-  value,
-  change,
-  icon,
-  color,
-}: MetricCardProps) => {
+export const MetricCard = ({ label, sublabel, value, change, icon, color }: MetricCardProps) => {
   const isPositive = (change ?? 0) >= 0;
   // Neutral usually means small variation, e.g. < 5% or 0% depending on metric
   // Here we just color positive/negative
@@ -53,11 +37,7 @@ export const MetricCard = ({
               <Stat mt={2}>
                 <HStack spacing={1}>
                   <StatArrow type={isPositive ? 'increase' : 'decrease'} />
-                  <Text
-                    fontSize="sm"
-                    fontWeight="600"
-                    color={isPositive ? 'green.500' : 'red.500'}
-                  >
+                  <Text fontSize="sm" fontWeight="600" color={isPositive ? 'green.500' : 'red.500'}>
                     {Math.abs(change).toFixed(1)}%
                   </Text>
                 </HStack>

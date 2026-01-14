@@ -25,14 +25,14 @@ router.patch(
   '/profile',
   authenticate,
   validateRequest(updateProfileSchema),
-  UserProfileController.updateProfile
+  UserProfileController.updateProfile,
 );
 router.post(
   '/change-password',
   strictRateLimit,
   authenticate,
   validateRequest(changePasswordSchema),
-  UserProfileController.changePassword
+  UserProfileController.changePassword,
 );
 
 export default router;

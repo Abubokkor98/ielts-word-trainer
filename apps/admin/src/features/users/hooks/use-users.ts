@@ -1,8 +1,8 @@
 import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { UsersQueryParams, UsersResponse } from '../types';
 import { usersApi } from '../services/users.api';
+import type { UsersQueryParams, UsersResponse } from '../types';
 
 export function useUsers(params: UsersQueryParams) {
   const { user } = useAuthStore();
@@ -41,7 +41,7 @@ export function useUserManagement() {
   const exportUsers = async () => {
     try {
       const blob = await usersApi.exportUsers();
-      const url = window.URL.createObjectURL(new Blob([blob]));
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'users.csv');

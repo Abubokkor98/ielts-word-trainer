@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import type { DashboardMetrics, ProblemWord } from '../types';
 import { dashboardApi } from '../services/dashboard.api';
+import type { DashboardMetrics, ProblemWord } from '../types';
 
 export const useDashboardMetrics = (timeRange: '7d' | '30d' = '7d') => {
   return useQuery<DashboardMetrics>({

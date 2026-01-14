@@ -1,13 +1,11 @@
 // Re-export shared types
-export type { DifficultyLevel } from '../../../types';
-
 export interface Word {
   _id: string;
   word: string;
   meaning: string;
   exampleSentence: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  module: string;
+  module: 'reading' | 'writing' | 'listening' | 'speaking';
   partOfSpeech: string;
   topic: any;
   synonyms: string[];

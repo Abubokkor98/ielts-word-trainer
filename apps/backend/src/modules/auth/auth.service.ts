@@ -9,7 +9,7 @@ type AuthEntity = IUser | IAdmin;
 
 export class AuthService {
   static async generateTokens(
-    user: AuthEntity
+    user: AuthEntity,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const accessTokenPayload = {
       id: user._id,
@@ -49,10 +49,7 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  static async validatePassword(
-    password: string,
-    hash: string
-  ): Promise<boolean> {
+  static async validatePassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
   }
 

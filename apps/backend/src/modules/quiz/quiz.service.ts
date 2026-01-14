@@ -19,7 +19,12 @@ export class QuizService {
       // or use dynamic import inside the method.
       const { SRSService } = await import('../srs/srs.service');
 
-      const dueWords = await SRSService.getDueWords(userId, topicId, difficulty, limit);
+      const dueWords = await SRSService.getDueWords({
+        userId,
+        topicId,
+        difficulty,
+        limit,
+      });
 
       selectedWords = [...dueWords];
 

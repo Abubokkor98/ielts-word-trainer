@@ -42,7 +42,7 @@ interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: string;
-  module: string;
+  module: 'reading' | 'writing' | 'listening' | 'speaking';
   partOfSpeech: string;
   topic: Topic | string; // Can be populated object or ID string
   synonyms: string[];
@@ -60,7 +60,7 @@ interface WordFormData {
   meaning: string;
   exampleSentence: string;
   difficulty: string;
-  module: string;
+  module: 'reading' | 'writing' | 'listening' | 'speaking';
   partOfSpeech: string;
   topic: string;
   synonyms: string;
@@ -117,7 +117,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
       if (userHasTyped && currentTopicValue) {
         // User is typing -> Filter
         const filtered = topicsData.filter((t) =>
-          t.name.toLowerCase().includes(currentTopicValue.toLowerCase()),
+          t.name.toLowerCase().includes(currentTopicValue.toLowerCase())
         );
         setFilteredTopics(filtered);
       } else {
@@ -141,7 +141,11 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
         const initialTopic = initialData.topic;
 
         // Determine topic name
-        if (typeof initialTopic === 'object' && initialTopic !== null && 'name' in initialTopic) {
+        if (
+          typeof initialTopic === 'object' &&
+          initialTopic !== null &&
+          'name' in initialTopic
+        ) {
           // It's a populated object
           topicName = initialTopic.name;
         } else if (typeof initialTopic === 'string') {
@@ -165,7 +169,9 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
           topic: topicName,
           module: (() => {
             if (!initialData.module) {
-              console.warn(`Word ${initialData._id} missing module field, defaulting to 'reading'`);
+              console.warn(
+                `Word ${initialData._id} missing module field, defaulting to 'reading'`
+              );
               return 'reading';
             }
             return initialData.module;
@@ -208,7 +214,10 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
       };
 
       if (initialData?._id) {
-        const response = await axiosInstance.patch(`/words/${initialData._id}`, payload);
+        const response = await axiosInstance.patch(
+          `/words/${initialData._id}`,
+          payload
+        );
         return response.data;
       } else {
         const response = await axiosInstance.post('/words', payload);
@@ -217,7 +226,9 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
     },
     onSuccess: () => {
       toast({
-        title: initialData ? 'Word updated successfully' : 'Word added successfully',
+        title: initialData
+          ? 'Word updated successfully'
+          : 'Word added successfully',
         status: 'success',
         duration: 3000,
       });
@@ -275,7 +286,9 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="Use the word in a sentence"
                 />
-                <FormErrorMessage>{errors.exampleSentence?.message}</FormErrorMessage>
+                <FormErrorMessage>
+                  {errors.exampleSentence?.message}
+                </FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.module} isRequired>
@@ -306,10 +319,16 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
                 </Select>
-                <FormErrorMessage>{errors.difficulty?.message}</FormErrorMessage>
+                <FormErrorMessage>
+                  {errors.difficulty?.message}
+                </FormErrorMessage>
               </FormControl>
 
-              <FormControl position="relative" isInvalid={!!errors.topic} isRequired>
+              <FormControl
+                position="relative"
+                isInvalid={!!errors.topic}
+                isRequired
+              >
                 <FormLabel>Topic</FormLabel>
                 <InputGroup>
                   <Input
@@ -328,7 +347,9 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                       setShowSuggestions(true);
                       setUserHasTyped(false);
                     }}
-                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                    onBlur={() =>
+                      setTimeout(() => setShowSuggestions(false), 200)
+                    }
                   />
                   <InputRightElement pointerEvents="none">
                     <ChevronDown size={16} color="gray" />
@@ -391,7 +412,9 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="e.g. Adjective"
                 />
-                <FormErrorMessage>{errors.partOfSpeech?.message}</FormErrorMessage>
+                <FormErrorMessage>
+                  {errors.partOfSpeech?.message}
+                </FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.synonyms} isRequired>
@@ -422,7 +445,11 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
             <Button variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button colorScheme="brand" type="submit" isLoading={mutation.isPending}>
+            <Button
+              colorScheme="brand"
+              type="submit"
+              isLoading={mutation.isPending}
+            >
               {initialData ? 'Update Word' : 'Add Word'}
             </Button>
           </ModalFooter>

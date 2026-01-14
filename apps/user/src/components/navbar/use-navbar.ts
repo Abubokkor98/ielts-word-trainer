@@ -17,8 +17,7 @@ interface SrsStats {
 
 export function useNavbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isAuthenticated, user, logout, setUser, hasHydrated } =
-    useAuthStore();
+  const { isAuthenticated, user, logout, setUser, hasHydrated } = useAuthStore();
   const searchParams = useSearchParams();
   const router = useRouter();
   const toast = useToast();

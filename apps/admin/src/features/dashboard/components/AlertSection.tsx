@@ -1,11 +1,4 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Box,
-  Heading,
-  VStack,
-} from '@chakra-ui/react';
+import { Alert, AlertDescription, AlertIcon, Box, Heading, VStack } from '@chakra-ui/react';
 import { Card, CardContent } from '@ielts/ui';
 import { AlertSeverity, type DashboardAlert } from '../types';
 
@@ -27,9 +20,7 @@ export const AlertSection = ({ alerts }: AlertSectionProps) => {
             <Alert
               // biome-ignore lint/suspicious/noArrayIndexKey: Order doesn't matter for read-only keys
               key={idx}
-              status={
-                alert.severity === AlertSeverity.CRITICAL ? 'error' : 'warning'
-              }
+              status={alert.severity === AlertSeverity.CRITICAL ? 'error' : 'warning'}
               borderRadius="md"
             >
               <AlertIcon />

@@ -1,6 +1,18 @@
-import type { User } from '../../../types/user';
+import type { UserRole } from '@ielts/shared';
 
-export type { User };
+export interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  status: 'active' | 'inactive' | 'banned';
+  xp: number;
+  streak: number;
+  lastLoginAt?: string;
+  lastQuizDate?: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface UsersQueryParams {
   page: number;

@@ -13,10 +13,7 @@ import {
 } from './admin.types';
 
 export class AdminService {
-  static async createAdmin(
-    data: Partial<IAdmin>,
-    password?: string
-  ): Promise<IAdmin> {
+  static async createAdmin(data: Partial<IAdmin>, password?: string): Promise<IAdmin> {
     // If password is provided as separate argument, hash it
     let passwordHash = data.passwordHash;
 
@@ -59,38 +56,30 @@ export class AdminService {
     }
   }
 
-  static async updateAdmin(
-    id: string,
-    data: Partial<IAdmin>
-  ): Promise<IAdmin | null> {
+  static async updateAdmin(id: string, data: Partial<IAdmin>): Promise<IAdmin | null> {
     return Admin.findByIdAndUpdate(id, data, { new: true });
   }
 
   static async getDashboardStats() {
-    const [
-      totalUsers,
-      totalWords,
-      totalQuizAttempts,
-      wordsByDifficulty,
-      quizStats,
-    ] = await Promise.all([
-      User.countDocuments(),
-      Word.countDocuments(),
-      QuizAttempt.countDocuments(),
-      Word.aggregate([{ $group: { _id: '$difficulty', count: { $sum: 1 } } }]),
-      QuizAttempt.aggregate([
-        {
-          $group: {
-            _id: null,
-            avgScore: {
-              $avg: {
-                $multiply: [{ $divide: ['$score', '$totalQuestions'] }, 100],
+    const [totalUsers, totalWords, totalQuizAttempts, wordsByDifficulty, quizStats] =
+      await Promise.all([
+        User.countDocuments(),
+        Word.countDocuments(),
+        QuizAttempt.countDocuments(),
+        Word.aggregate([{ $group: { _id: '$difficulty', count: { $sum: 1 } } }]),
+        QuizAttempt.aggregate([
+          {
+            $group: {
+              _id: null,
+              avgScore: {
+                $avg: {
+                  $multiply: [{ $divide: ['$score', '$totalQuestions'] }, 100],
+                },
               },
             },
           },
-        },
-      ]),
-    ]);
+        ]),
+      ]);
 
     return {
       totalUsers,
@@ -147,9 +136,7 @@ export class AdminService {
    * Get dashboard metrics with week-over-week comparison
    * Uses MongoDB aggregations for optimal performance
    */
-  static async getDashboardMetrics(
-    timeRange: '7d' | '30d' = '7d'
-  ): Promise<DashboardMetrics> {
+  static async getDashboardMetrics(timeRange: '7d' | '30d' = '7d'): Promise<DashboardMetrics> {
     const daysAgo = timeRange === '7d' ? 7 : 30;
     const currentStart = new Date();
     currentStart.setDate(currentStart.getDate() - daysAgo);
@@ -263,14 +250,11 @@ export class AdminService {
         : 0;
     const previousAvgScore =
       previousQuizStats.totalQuestions > 0
-        ? (previousQuizStats.totalScore / previousQuizStats.totalQuestions) *
-          100
+        ? (previousQuizStats.totalScore / previousQuizStats.totalQuestions) * 100
         : 0;
 
     const currentCompletionRate =
-      currentQuizStats.total > 0
-        ? (currentQuizStats.completed / currentQuizStats.total) * 100
-        : 0;
+      currentQuizStats.total > 0 ? (currentQuizStats.completed / currentQuizStats.total) * 100 : 0;
     const previousCompletionRate =
       previousQuizStats.total > 0
         ? (previousQuizStats.completed / previousQuizStats.total) * 100
@@ -281,42 +265,27 @@ export class AdminService {
       activeUsers: {
         current: activeUsersCurrent,
         previous: activeUsersPrevious,
-        percentChange: calculatePercentChange(
-          activeUsersCurrent,
-          activeUsersPrevious
-        ),
+        percentChange: calculatePercentChange(activeUsersCurrent, activeUsersPrevious),
       },
       activeLearners: {
         current: activeLearnersCurrent,
         previous: activeLearnersPrevious,
-        percentChange: calculatePercentChange(
-          activeLearnersCurrent,
-          activeLearnersPrevious
-        ),
+        percentChange: calculatePercentChange(activeLearnersCurrent, activeLearnersPrevious),
       },
       newUsers: {
         current: newUsersCurrent,
         previous: newUsersPrevious,
-        percentChange: calculatePercentChange(
-          newUsersCurrent,
-          newUsersPrevious
-        ),
+        percentChange: calculatePercentChange(newUsersCurrent, newUsersPrevious),
       },
       quizCompletionRate: {
         current: currentCompletionRate,
         previous: previousCompletionRate,
-        percentChange: calculatePercentChange(
-          currentCompletionRate,
-          previousCompletionRate
-        ),
+        percentChange: calculatePercentChange(currentCompletionRate, previousCompletionRate),
       },
       avgQuizScore: {
         current: currentAvgScore,
         previous: previousAvgScore,
-        percentChange: calculatePercentChange(
-          currentAvgScore,
-          previousAvgScore
-        ),
+        percentChange: calculatePercentChange(currentAvgScore, previousAvgScore),
       },
       dailyActiveUsers: dailyActiveUsers.map((d) => ({
         date: d.date,
@@ -351,7 +320,7 @@ export class AdminService {
       alerts.push({
         severity: AlertSeverity.WARNING,
         message: `Quiz completion dropped ${Math.abs(
-          metrics.quizCompletionRate.percentChange
+          metrics.quizCompletionRate.percentChange,
         ).toFixed(1)}% - investigate dropout`,
         action: AlertAction.CHECK_QUIZ_UX,
       });
@@ -376,9 +345,7 @@ export class AdminService {
     } else if (metrics.activeUsers.percentChange < -20) {
       alerts.push({
         severity: AlertSeverity.WARNING,
-        message: `Active users dropped ${Math.abs(
-          metrics.activeUsers.percentChange
-        ).toFixed(1)}%`,
+        message: `Active users dropped ${Math.abs(metrics.activeUsers.percentChange).toFixed(1)}%`,
         action: AlertAction.REVIEW_RETENTION,
       });
     }

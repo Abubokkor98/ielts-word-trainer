@@ -17,10 +17,7 @@ export class QuizAttemptController {
 
       if (process.env.NODE_ENV !== 'production') {
         console.log('📝 Quiz attempt create - User ID:', userId);
-        console.log(
-          '📝 Quiz attempt create - Request body:',
-          JSON.stringify(req.body, null, 2)
-        );
+        console.log('📝 Quiz attempt create - Request body:', JSON.stringify(req.body, null, 2));
       }
 
       // Validate request body
@@ -50,7 +47,7 @@ export class QuizAttemptController {
           '📊 Quiz stats - Score:',
           validatedData.score,
           '/',
-          validatedData.totalQuestions
+          validatedData.totalQuestions,
         );
       }
 
@@ -73,10 +70,7 @@ export class QuizAttemptController {
       console.error('❌ Error creating quiz attempt:', error);
 
       if (error.name === 'ZodError') {
-        console.error(
-          '❌ Validation errors:',
-          JSON.stringify(error.errors, null, 2)
-        );
+        console.error('❌ Validation errors:', JSON.stringify(error.errors, null, 2));
         return res.status(400).json({
           success: false,
           message: 'Validation error',

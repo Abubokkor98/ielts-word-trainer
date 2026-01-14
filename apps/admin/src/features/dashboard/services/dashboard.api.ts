@@ -37,6 +37,9 @@ export const dashboardApi = {
         params: { limit },
       }
     );
+    if (!data.success) {
+      throw new Error('Failed to fetch problem words');
+    }
     return data.data;
   },
 };

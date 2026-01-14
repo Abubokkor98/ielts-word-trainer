@@ -44,7 +44,7 @@ const UserSchema = new Schema<IUser>(
   {
     timestamps: true,
     versionKey: false,
-  }
+  },
 );
 
 export const User = mongoose.model<IUser>('User', UserSchema);

@@ -1,5 +1,5 @@
 export const getDifficultyColorScheme = (
-  difficulty: 'beginner' | 'intermediate' | 'advanced' | string
+  difficulty: 'beginner' | 'intermediate' | 'advanced' | string,
 ): string => {
   switch (difficulty) {
     case 'beginner':

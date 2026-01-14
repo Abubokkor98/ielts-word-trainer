@@ -7,13 +7,7 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Protected routes that require authentication
-  const protectedRoutes = [
-    '/dashboard',
-    '/profile',
-    '/analytics',
-    '/review',
-    '/admin',
-  ];
+  const protectedRoutes = ['/dashboard', '/profile', '/analytics', '/review'];
 
   // Auth routes that should not be accessible if already authenticated
   const authRoutes = [

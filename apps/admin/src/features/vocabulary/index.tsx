@@ -25,14 +25,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Input,
-  Pagination,
-} from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, Input, Pagination } from '@ielts/ui';
 import { Edit2, Filter, Plus, Search, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { WordModal } from './components/WordModal';
@@ -43,9 +36,9 @@ export function VocabularyContainer() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [difficulty, setDifficulty] = useState<
-    'all' | 'beginner' | 'intermediate' | 'advanced'
-  >('all');
+  const [difficulty, setDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>(
+    'all',
+  );
   const toast = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -155,11 +148,7 @@ export function VocabularyContainer() {
             >
               Import CSV
             </Button>
-            <Button
-              leftIcon={<Plus size={16} />}
-              colorScheme="brand"
-              onClick={handleAdd}
-            >
+            <Button leftIcon={<Plus size={16} />} colorScheme="brand" onClick={handleAdd}>
               Add Word
             </Button>
           </HStack>
@@ -230,8 +219,8 @@ export function VocabularyContainer() {
                                 word.difficulty === 'beginner'
                                   ? 'green'
                                   : word.difficulty === 'intermediate'
-                                  ? 'blue'
-                                  : 'purple'
+                                    ? 'blue'
+                                    : 'purple'
                               }
                             >
                               {word.difficulty}
@@ -288,13 +277,7 @@ export function VocabularyContainer() {
       >
         <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
           <AlertDialogContent borderRadius="xl" boxShadow="2xl">
-            <AlertDialogHeader
-              fontSize="lg"
-              color={'red.500'}
-              fontWeight="bold"
-              pt={8}
-              pb={0}
-            >
+            <AlertDialogHeader fontSize="lg" color={'red.500'} fontWeight="bold" pt={8} pb={0}>
               <VStack spacing={4}>
                 <Text>Delete Word</Text>
               </VStack>
