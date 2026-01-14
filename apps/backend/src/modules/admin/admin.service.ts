@@ -4,6 +4,13 @@ import { QuizAttempt } from '../quiz/quiz-attempt.model';
 import { User } from '../users/users.model';
 import { Word } from '../words/words.model';
 import { Admin, type IAdmin } from './admin.model';
+import {
+  AlertAction,
+  AlertSeverity,
+  type DashboardAlert,
+  type DashboardMetrics,
+  type ProblemWord,
+} from './admin.types';
 
 export class AdminService {
   static async createAdmin(
@@ -142,7 +149,7 @@ export class AdminService {
    */
   static async getDashboardMetrics(
     timeRange: '7d' | '30d' = '7d'
-  ): Promise<import('./admin.types').DashboardMetrics> {
+  ): Promise<DashboardMetrics> {
     const daysAgo = timeRange === '7d' ? 7 : 30;
     const currentStart = new Date();
     currentStart.setDate(currentStart.getDate() - daysAgo);
@@ -270,7 +277,7 @@ export class AdminService {
         : 0;
 
     // Construct Response
-    const metrics: import('./admin.types').DashboardMetrics = {
+    const metrics: DashboardMetrics = {
       activeUsers: {
         current: activeUsersCurrent,
         previous: activeUsersPrevious,
@@ -325,58 +332,10 @@ export class AdminService {
   }
 
   /**
-   * Calculate percent change between two numbers
-   */
-  private static calculatePercentChange(
-    current: number,
-    previous: number
-  ): number {
-    if (previous === 0) return current > 0 ? 100 : 0;
-    return ((current - previous) / previous) * 100;
-  }
-
-  /**
-   * Get daily active users for the last N days
-   */
-  private static async getDailyActiveUsers(
-    days: number
-  ): Promise<import('./admin.types').DailyActiveUser[]> {
-    const result: import('./admin.types').DailyActiveUser[] = [];
-
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(date.setHours(23, 59, 59, 999));
-
-      const count = await User.countDocuments({
-        $or: [
-          {
-            lastQuizDate: { $gte: startOfDay, $lte: endOfDay },
-          },
-          {
-            updatedAt: { $gte: startOfDay, $lte: endOfDay },
-          },
-        ],
-      });
-
-      result.push({
-        date: startOfDay.toISOString().split('T')[0],
-        count,
-      });
-    }
-
-    return result;
-  }
-
-  /**
    * Generate alerts based on metric thresholds
    */
-  private static generateAlerts(
-    metrics: import('./admin.types').DashboardMetrics
-  ): import('./admin.types').DashboardAlert[] {
-    const alerts: import('./admin.types').DashboardAlert[] = [];
-    const { AlertSeverity, AlertAction } = require('./admin.types');
+  private static generateAlerts(metrics: DashboardMetrics): DashboardAlert[] {
+    const alerts: DashboardAlert[] = [];
 
     // Alert: Quiz completion rate issues
     if (metrics.quizCompletionRate.current < 50) {
@@ -431,9 +390,7 @@ export class AdminService {
    * Get words with low quiz accuracy (<40%)
    * Uses aggregation pipeline for optimal performance
    */
-  static async getProblemWords(
-    limit = 20
-  ): Promise<import('./admin.types').ProblemWord[]> {
+  static async getProblemWords(limit = 20): Promise<ProblemWord[]> {
     // Aggregate quiz attempts to find words with low accuracy
     const problemWordsAggregation = await QuizAttempt.aggregate([
       // Unwind questions array to process each question separately
@@ -504,7 +461,7 @@ export class AdminService {
         accuracy: Math.round(pw.accuracy * 10) / 10, // Round to 1 decimal
         attempts: pw.attempts,
         lastUpdated: word?.updatedAt,
-      } as import('./admin.types').ProblemWord;
+      } as ProblemWord;
     });
   }
 }

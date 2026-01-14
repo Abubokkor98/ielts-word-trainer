@@ -20,11 +20,10 @@ export class SRSController {
       const authReq = req as AuthRequest;
       const userId = authReq.user?.id;
       // Default to 50 due words per session unless client requests specific limit
-      // If limit is 0, the service will return all matching words (no limit applied)
       const parsedLimit = parseInt(req.query.limit as string, 10);
       const queryLimit =
         req.query.limit !== undefined && !Number.isNaN(parsedLimit)
-          ? parsedLimit
+          ? Math.max(0, parsedLimit) // Ensure non-negative
           : 50;
       const topicId = req.query.topicId as string;
       const difficulty = req.query.difficulty as string;

@@ -17,7 +17,25 @@ export function DashboardContainer() {
   }
 
   if (isError || !metrics) {
-    return <Box p={4}>Error loading dashboard data.</Box>;
+    return (
+      <Box p={4}>
+        <Heading size="md" color="red.500" mb={2}>
+          Error loading dashboard data.
+        </Heading>
+        <Box
+          as="button"
+          px={4}
+          py={2}
+          bg="blue.500"
+          color="white"
+          borderRadius="md"
+          _hover={{ bg: 'blue.600' }}
+          onClick={() => window.location.reload()}
+        >
+          Retry
+        </Box>
+      </Box>
+    );
   }
 
   return (

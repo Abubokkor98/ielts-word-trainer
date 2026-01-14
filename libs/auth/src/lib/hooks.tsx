@@ -36,8 +36,8 @@ export const protectUserRoute = <P extends object>(
     useEffect(() => {
       if (!isAuthenticated) {
         router.push('/login');
-      } else if (user?.role === 'admin') {
-        // Redirect admins to admin app
+      } else if (user?.role === 'admin' || user?.role === 'super_admin') {
+        // Redirect admins/super_admins to admin app
         if (typeof window !== 'undefined') {
           window.location.href = `${
             process.env['NEXT_PUBLIC_ADMIN_APP_URL'] || 'http://localhost:3001'

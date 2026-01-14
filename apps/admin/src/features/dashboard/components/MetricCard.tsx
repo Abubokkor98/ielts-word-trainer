@@ -28,7 +28,7 @@ export const MetricCard = ({
   icon,
   color,
 }: MetricCardProps) => {
-  const isPositive = (change || 0) >= 0;
+  const isPositive = (change ?? 0) >= 0;
   // Neutral usually means small variation, e.g. < 5% or 0% depending on metric
   // Here we just color positive/negative
 

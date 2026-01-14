@@ -12,7 +12,8 @@ export class AdminDashboardController {
     next: NextFunction
   ) {
     try {
-      const timeRange = (req.query.timeRange as '7d' | '30d') || '7d';
+      const rawTimeRange = req.query.timeRange as string;
+      const timeRange: '7d' | '30d' = rawTimeRange === '30d' ? '30d' : '7d';
 
       const metrics = await AdminService.getDashboardMetrics(timeRange);
 

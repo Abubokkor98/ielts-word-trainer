@@ -35,10 +35,6 @@ export const vocabularyApi = {
   uploadCSV: async (file: File): Promise<void> => {
     const formData = new FormData();
     formData.append('file', file);
-    await axiosInstance.post('/words/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    await axiosInstance.post('/words/upload', formData);
   },
 };

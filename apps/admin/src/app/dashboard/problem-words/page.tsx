@@ -15,7 +15,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Card, CardContent } from '@ielts/ui';
-import { useProblemWords } from '../../../hooks/use-dashboard-metrics';
+import { useProblemWords } from 'apps/admin/src/features/dashboard/hooks/use-dashboard-metrics';
+import { getDifficultyColorScheme } from 'apps/admin/src/features/dashboard/utils/difficulty';
 
 export default function ProblemWordsPage() {
   // Fetch up to 100 words for the detailed view
@@ -78,13 +79,9 @@ export default function ProblemWordsPage() {
                         </Td>
                         <Td>
                           <Badge
-                            colorScheme={
-                              pw.difficulty === 'beginner'
-                                ? 'green'
-                                : pw.difficulty === 'intermediate'
-                                ? 'yellow'
-                                : 'red'
-                            }
+                            colorScheme={getDifficultyColorScheme(
+                              pw.difficulty
+                            )}
                           >
                             {pw.difficulty}
                           </Badge>

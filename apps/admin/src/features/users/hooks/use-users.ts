@@ -8,7 +8,7 @@ export function useUsers(params: UsersQueryParams) {
   const { user } = useAuthStore();
 
   return useQuery<UsersResponse, Error>({
-    queryKey: ['admin', 'users', params.page, params.search],
+    queryKey: ['admin', 'users', params.page, params.limit, params.search],
     queryFn: () => usersApi.getUsers(params),
     enabled: !!user && ['admin', 'super_admin'].includes(user.role),
   });
@@ -19,8 +19,13 @@ export function useUserManagement() {
   const queryClient = useQueryClient();
 
   const updateStatus = useMutation({
-    mutationFn: ({ userId, status }: { userId: string; status: string }) =>
-      usersApi.updateUserStatus(userId, status),
+    mutationFn: ({
+      userId,
+      status,
+    }: {
+      userId: string;
+      status: 'active' | 'banned';
+    }) => usersApi.updateUserStatus(userId, status),
     onSuccess: (_, variables) => {
       toast({
         title: `User ${variables.status === 'banned' ? 'banned' : 'activated'}`,

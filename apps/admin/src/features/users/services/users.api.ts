@@ -6,22 +6,23 @@ export const usersApi = {
    * Fetch users with pagination and search
    */
   getUsers: async (params: UsersQueryParams): Promise<UsersResponse> => {
-    const searchParams = new URLSearchParams({
-      page: params.page.toString(),
-      limit: params.limit.toString(),
+    const { data } = await axiosInstance.get('/admin/users', {
+      params: {
+        page: params.page,
+        limit: params.limit,
+        ...(params.search && { search: params.search }),
+      },
     });
-    if (params.search) searchParams.append('search', params.search);
-
-    const { data } = await axiosInstance.get(
-      `/admin/users?${searchParams.toString()}`
-    );
     return data.data;
   },
 
   /**
    * Update user status (ban/activate)
    */
-  updateUserStatus: async (userId: string, status: string): Promise<void> => {
+  updateUserStatus: async (
+    userId: string,
+    status: 'active' | 'banned'
+  ): Promise<void> => {
     await axiosInstance.patch(`/admin/users/${userId}/status`, { status });
   },
 

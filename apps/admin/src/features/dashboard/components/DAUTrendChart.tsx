@@ -18,6 +18,8 @@ interface DAUTrendChartProps {
 export const DAUTrendChart = ({ data }: DAUTrendChartProps) => {
   const lineColor = useColorModeValue('#3182CE', '#63B3ED');
   const axisColor = useColorModeValue('#718096', '#A0AEC0');
+  const gridColor = useColorModeValue('#E2E8F0', '#4A5568');
+  const tooltipBg = useColorModeValue('white', '#2D3748');
 
   return (
     <Card>
@@ -34,7 +36,7 @@ export const DAUTrendChart = ({ data }: DAUTrendChartProps) => {
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#E2E8F0"
+                stroke={gridColor}
               />
               <XAxis
                 dataKey="date"
@@ -57,7 +59,7 @@ export const DAUTrendChart = ({ data }: DAUTrendChartProps) => {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'white',
+                  backgroundColor: tooltipBg,
                   borderRadius: '8px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
                   border: 'none',

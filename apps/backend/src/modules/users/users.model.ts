@@ -37,7 +37,7 @@ const UserSchema = new Schema<IUser>(
     xp: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
     lastQuizDate: { type: Date },
-    lastLoginAt: { type: Date, default: Date.now },
+    lastLoginAt: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
   },

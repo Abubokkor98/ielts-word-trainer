@@ -1,7 +1,7 @@
 import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Word, WordsQueryParams, WordsResponse } from '../types';
+import type { WordsQueryParams, WordsResponse } from '../types';
 import { vocabularyApi } from '../services/vocabulary.api';
 
 export function useVocabulary(params: WordsQueryParams) {

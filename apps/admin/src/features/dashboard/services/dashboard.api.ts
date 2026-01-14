@@ -19,6 +19,9 @@ export const dashboardApi = {
         params: { timeRange },
       }
     );
+    if (!data.success) {
+      throw new Error('Failed to fetch dashboard metrics');
+    }
     return data.data;
   },
 
