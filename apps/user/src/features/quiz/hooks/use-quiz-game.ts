@@ -10,14 +10,19 @@ interface UseQuizGameProps {
   selectedDifficulty: string;
 }
 
-export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGameProps) {
+export function useQuizGame({
+  isAuthenticated,
+  selectedDifficulty,
+}: UseQuizGameProps) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showResult, setShowResult] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [questionStartTime, setQuestionStartTime] = useState<Date | null>(null);
-  const [questionAnswers, setQuestionAnswers] = useState<Map<number, QuestionAnswer>>(new Map());
+  const [questionAnswers, setQuestionAnswers] = useState<
+    Map<number, QuestionAnswer>
+  >(new Map());
 
   const toast = useToast();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -53,7 +58,13 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
         error.response?.status === 400 &&
         error.response?.data?.message?.includes('Not enough words')
       ) {
-        throw new Error('NOT_ENOUGH_WORDS');
+        toast({
+          title: 'Not Enough Words',
+          description:
+            'You need to learn more vocabulary before taking a quiz.',
+          status: 'info',
+          duration: 4000,
+        });
       } else {
         toast({
           title: 'Failed to Generate Quiz',
@@ -97,12 +108,16 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
       toast({ title: 'Correct!', status: 'success', duration: 1500 });
     }
 
-    const timeSpentMs = questionStartTime ? Date.now() - questionStartTime.getTime() : 0;
+    const timeSpentMs = questionStartTime
+      ? Date.now() - questionStartTime.getTime()
+      : 0;
 
     const selectedOptionText =
       currentQuestion.options.find((opt) => opt.id === optionId)?.text || '';
     const correctOptionText =
-      currentQuestion.options.find((opt) => opt.id === currentQuestion.correctAnswer)?.text || '';
+      currentQuestion.options.find(
+        (opt) => opt.id === currentQuestion.correctAnswer
+      )?.text || '';
 
     setQuestionAnswers((prev) => {
       const newMap = new Map(prev);

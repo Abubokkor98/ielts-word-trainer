@@ -1,5 +1,9 @@
 import { AdminRole } from '@ielts/shared';
 import { Router } from 'express';
+import {
+  moderateRateLimit,
+  strictRateLimit,
+} from '../../core/middleware/rate-limit.middleware';
 import { authenticate, authorize } from '../auth/auth.middleware';
 import { AdminController } from './admin.controller';
 import { AdminDashboardController } from './admin-dashboard.controller';
@@ -8,8 +12,8 @@ import adminPasswordResetRoutes from './admin-password-reset.routes';
 const router = Router();
 
 // Auth Routes
-router.post('/login', AdminController.login);
-router.post('/refresh', AdminController.refresh);
+router.post('/login', strictRateLimit, AdminController.login);
+router.post('/refresh', moderateRateLimit, AdminController.refresh);
 router.get('/me', authenticate, AdminController.me);
 
 // Password Reset Routes
@@ -80,6 +84,7 @@ router.patch(
 
 router.post(
   '/change-password',
+  strictRateLimit,
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
   AdminController.changePassword

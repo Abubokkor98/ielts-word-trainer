@@ -1,5 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
+import {
+  passwordResetRateLimit,
+  strictRateLimit,
+} from '../../core/middleware/rate-limit.middleware';
 import { validateRequest } from '../../core/middleware/validate.middleware';
 import { AdminPasswordResetController } from './admin-password-reset.controller';
 
@@ -20,13 +24,15 @@ const resetPasswordSchema = {
 
 router.post(
   '/request-reset',
+  passwordResetRateLimit,
   validateRequest(requestResetSchema),
-  AdminPasswordResetController.requestReset,
+  AdminPasswordResetController.requestReset
 );
 router.post(
   '/reset-password',
+  strictRateLimit,
   validateRequest(resetPasswordSchema),
-  AdminPasswordResetController.resetPassword,
+  AdminPasswordResetController.resetPassword
 );
 
 export default router;
