@@ -87,7 +87,9 @@ axiosInstance.interceptors.response.use(
 
       try {
         // Determine which refresh endpoint to use based on current path
-        const isAdminPath = originalRequest.url?.includes('/admin');
+        const isAdminPath =
+          originalRequest.url?.startsWith('/admin/') ||
+          originalRequest.url === '/admin';
         const refreshEndpoint = isAdminPath
           ? '/admin/refresh'
           : '/auth/refresh';

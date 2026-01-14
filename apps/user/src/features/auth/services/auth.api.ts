@@ -40,9 +40,10 @@ export const authApi = {
   },
 
   getMe: async (): Promise<AuthResponse['data']> => {
-    const { data } = await axiosInstance.get<{ data: AuthResponse['data'] }>(
-      '/auth/me'
-    );
+    const { data } = await axiosInstance.get<{
+      success: boolean;
+      data: AuthResponse['data'];
+    }>('/auth/me');
     return data.data;
   },
 };

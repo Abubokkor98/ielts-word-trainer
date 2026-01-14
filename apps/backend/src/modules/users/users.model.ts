@@ -11,6 +11,7 @@ export interface IUser extends Document {
   xp: number;
   streak: number;
   lastQuizDate?: Date;
+  lastLoginAt?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   createdAt: Date;
@@ -36,13 +37,14 @@ const UserSchema = new Schema<IUser>(
     xp: { type: Number, default: 0 },
     streak: { type: Number, default: 0 },
     lastQuizDate: { type: Date },
+    lastLoginAt: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
   },
   {
     timestamps: true,
     versionKey: false,
-  },
+  }
 );
 
 export const User = mongoose.model<IUser>('User', UserSchema);

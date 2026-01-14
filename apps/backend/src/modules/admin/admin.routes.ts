@@ -6,6 +6,7 @@ import {
 } from '../../core/middleware/rate-limit.middleware';
 import { authenticate, authorize } from '../auth/auth.middleware';
 import { AdminController } from './admin.controller';
+import { AdminDashboardController } from './admin-dashboard.controller';
 import adminPasswordResetRoutes from './admin-password-reset.routes';
 
 const router = Router();
@@ -17,6 +18,7 @@ router.get('/me', authenticate, AdminController.me);
 
 // Password Reset Routes
 router.use('/password', adminPasswordResetRoutes);
+// Force reload trigger
 
 // Management Routes
 router.get(
@@ -86,6 +88,21 @@ router.post(
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
   AdminController.changePassword
+);
+
+// Dashboard Analytics Routes
+router.get(
+  '/dashboard-metrics',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminDashboardController.getDashboardMetrics
+);
+
+router.get(
+  '/problem-words',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminDashboardController.getProblemWords
 );
 
 // Vocabulary Routes

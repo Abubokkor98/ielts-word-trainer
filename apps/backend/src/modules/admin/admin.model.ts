@@ -9,6 +9,7 @@ export interface IAdmin extends Document {
   refreshToken: string[];
   createdAt: Date;
   updatedAt: Date;
+  lastLoginAt?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
 }
@@ -24,13 +25,14 @@ const AdminSchema = new Schema<IAdmin>(
       default: AdminRole.ADMIN,
     },
     refreshToken: { type: [String], default: [] },
+    lastLoginAt: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
   },
   {
     timestamps: true,
     versionKey: false,
-  },
+  }
 );
 
 export const Admin = mongoose.model<IAdmin>('Admin', AdminSchema);
