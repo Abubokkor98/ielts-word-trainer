@@ -1,0 +1,285 @@
+'use client';
+
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Avatar,
+  Badge,
+  Box,
+  Heading,
+  HStack,
+  IconButton,
+  Skeleton,
+  Table,
+  Tbody,
+  Td,
+  Text,
+  Th,
+  Thead,
+  Tr,
+  useDisclosure,
+  VStack,
+} from '@chakra-ui/react';
+import { Button, Card, CardContent, CardHeader, Input, Pagination } from '@ielts/ui';
+import { Ban, Calendar, CheckCircle, Download, Eye, Mail, Search } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { UserDetailModal } from './components/UserDetailModal';
+import { useUserManagement, useUsers } from './hooks/use-users';
+import type { User } from './types';
+
+export function UsersContainer() {
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Modal State
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  // Ban Confirmation State
+  const [isBanAlertOpen, setIsBanAlertOpen] = useState(false);
+  const [userToBan, setUserToBan] = useState<User | null>(null);
+  const banCancelRef = useRef<HTMLButtonElement>(null);
+
+  // Debounce search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Fetch users
+  const {
+    data: usersData,
+    isLoading,
+    isError,
+  } = useUsers({
+    page,
+    limit: 10,
+    search: debouncedSearch,
+  });
+
+  // User management
+  const { updateStatus, exportUsers } = useUserManagement();
+
+  const handleViewUser = (user: User) => {
+    setSelectedUser(user);
+    onOpen();
+  };
+
+  const handleStatusChange = (userId: string, newStatus: 'active' | 'banned') => {
+    updateStatus.mutate({ userId, status: newStatus });
+  };
+
+  const handleBanUser = (user: User) => {
+    setUserToBan(user);
+    setIsBanAlertOpen(true);
+  };
+
+  const confirmBan = () => {
+    if (userToBan) {
+      handleStatusChange(userToBan._id, 'banned');
+      setIsBanAlertOpen(false);
+      setUserToBan(null);
+    }
+  };
+
+  const closeBanAlert = () => {
+    setIsBanAlertOpen(false);
+    setUserToBan(null);
+  };
+
+  return (
+    <Box>
+      <VStack spacing={8} align="stretch">
+        <HStack justify="space-between">
+          <Heading size="lg">User Management</Heading>
+          <Button variant="outline" leftIcon={<Download size={16} />} onClick={exportUsers}>
+            Export Users
+          </Button>
+        </HStack>
+
+        {isError && <Text color="red.500">Failed to load users. Please try again later.</Text>}
+
+        <Card>
+          <CardHeader>
+            <Box position="relative" maxW="400px">
+              <Input
+                placeholder="Search users..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                pl={10}
+              />
+              <Box
+                position="absolute"
+                left={3}
+                top="50%"
+                transform="translateY(-50%)"
+                color="gray.400"
+              >
+                <Search size={16} />
+              </Box>
+            </Box>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <VStack spacing={2}>
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} height="60px" />
+                ))}
+              </VStack>
+            ) : (
+              <>
+                <Box overflowX="auto" pb={4}>
+                  <Table variant="simple">
+                    <Thead>
+                      <Tr>
+                        <Th>User</Th>
+                        <Th>Status</Th>
+                        <Th>XP</Th>
+                        <Th>Joined</Th>
+                        <Th>Action</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {usersData?.users?.length ? (
+                        usersData.users.map((u: User) => (
+                          <Tr key={u._id}>
+                            <Td>
+                              <HStack>
+                                <Avatar size="sm" name={u.name} />
+                                <Box>
+                                  <Text fontWeight="600">{u.name}</Text>
+                                  <HStack spacing={1} color="gray.500" fontSize="xs">
+                                    <Mail size={12} />
+                                    <Text>{u.email}</Text>
+                                  </HStack>
+                                </Box>
+                              </HStack>
+                            </Td>
+
+                            <Td>
+                              <Badge
+                                variant="subtle"
+                                colorScheme={
+                                  u.status === 'active'
+                                    ? 'green'
+                                    : u.status === 'banned'
+                                      ? 'red'
+                                      : 'gray'
+                                }
+                              >
+                                {u.status || 'Active'}
+                              </Badge>
+                            </Td>
+                            <Td fontWeight="bold">{u.xp || 0}</Td>
+                            <Td>
+                              <HStack spacing={1} color="gray.500" fontSize="sm">
+                                <Calendar size={14} />
+                                <Text>{new Date(u.createdAt).toLocaleDateString()}</Text>
+                              </HStack>
+                            </Td>
+                            <Td>
+                              <HStack spacing={2}>
+                                <IconButton
+                                  aria-label="View user details"
+                                  icon={<Eye size={16} />}
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleViewUser(u)}
+                                />
+                                {u.status === 'banned' ? (
+                                  <IconButton
+                                    aria-label="Activate user"
+                                    icon={<CheckCircle size={16} />}
+                                    size="sm"
+                                    colorScheme="green"
+                                    variant="ghost"
+                                    onClick={() => handleStatusChange(u._id, 'active')}
+                                  />
+                                ) : (
+                                  <IconButton
+                                    aria-label="Ban user"
+                                    icon={<Ban size={16} />}
+                                    size="sm"
+                                    colorScheme="red"
+                                    variant="ghost"
+                                    onClick={() => handleBanUser(u)}
+                                  />
+                                )}
+                              </HStack>
+                            </Td>
+                          </Tr>
+                        ))
+                      ) : (
+                        <Tr>
+                          <Td colSpan={5} textAlign="center" py={8}>
+                            <Text color="gray.500">No users found</Text>
+                          </Td>
+                        </Tr>
+                      )}
+                    </Tbody>
+                  </Table>
+                </Box>
+
+                <Pagination
+                  currentPage={page}
+                  totalPages={usersData?.pagination.totalPages || 1}
+                  onPageChange={setPage}
+                />
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </VStack>
+
+      {/* User Detail Modal */}
+      <UserDetailModal isOpen={isOpen} onClose={onClose} user={selectedUser} />
+
+      {/* Ban Confirmation Dialog */}
+      <AlertDialog
+        isOpen={isBanAlertOpen}
+        leastDestructiveRef={banCancelRef}
+        onClose={closeBanAlert}
+        isCentered
+        motionPreset="slideInBottom"
+      >
+        <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
+          <AlertDialogContent borderRadius="xl" boxShadow="2xl">
+            <AlertDialogHeader fontSize="lg" fontWeight="bold" color="red.500" pt={8} pb={0}>
+              <VStack spacing={4}>
+                <Text>Ban User</Text>
+              </VStack>
+            </AlertDialogHeader>
+
+            <AlertDialogBody textAlign="center" color="gray.500" py={6}>
+              Are you sure you want to ban <strong>{userToBan?.name}</strong>? <br />
+              They will no longer be able to log in.
+            </AlertDialogBody>
+
+            <AlertDialogFooter justifyContent="center" pb={8} gap={3}>
+              <Button
+                ref={banCancelRef}
+                onClick={closeBanAlert}
+                variant="outline"
+                borderRadius="lg"
+                px={6}
+              >
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={confirmBan} borderRadius="lg" px={6}>
+                Ban User
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </Box>
+  );
+}

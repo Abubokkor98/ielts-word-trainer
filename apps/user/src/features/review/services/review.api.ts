@@ -2,11 +2,15 @@ import { axiosInstance } from '@ielts/auth';
 import type { QualityRating, ReviewWord } from '../types';
 
 export const reviewApi = {
-  getDueWords: async (): Promise<ReviewWord[]> => {
+  getDueWords: async (options?: {
+    limit?: number;
+    topicId?: string;
+    difficulty?: 'beginner' | 'intermediate' | 'advanced';
+  }): Promise<ReviewWord[]> => {
     const { data } = await axiosInstance.get<{
       success: boolean;
       data: ReviewWord[];
-    }>('/srs/due');
+    }>('/srs/due', { params: options });
     return data.success ? data.data : [];
   },
 

@@ -1,6 +1,7 @@
 import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { profileApi } from '../services/profile.api';
 import type { ChangePasswordRequest, UpdateProfileRequest } from '../types';
 
@@ -42,7 +43,7 @@ export function useProfile() {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       toast({ title: 'Profile updated!', status: 'success' });
     },
-    onError: (err: any) => {
+    onError: (err: AxiosError<{ message: string }>) => {
       toast({
         title: 'Update failed',
         description: err.response?.data?.message || 'Something went wrong',
@@ -56,7 +57,7 @@ export function useProfile() {
     onSuccess: () => {
       toast({ title: 'Password changed successfully!', status: 'success' });
     },
-    onError: (err: any) => {
+    onError: (err: AxiosError<{ message: string }>) => {
       toast({
         title: 'Password change failed',
         description: err.response?.data?.message || 'Something went wrong',

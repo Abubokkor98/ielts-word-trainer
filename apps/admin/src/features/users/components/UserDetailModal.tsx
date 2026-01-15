@@ -17,7 +17,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Award, Calendar, Flame, Mail, Shield } from 'lucide-react';
-import type { User } from '../../../types/user';
+import type { User } from '../types';
 
 interface UserDetailModalProps {
   isOpen: boolean;
@@ -47,7 +47,6 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
             <Avatar
               size="2xl"
               name={user.name}
-              src={user.avatar}
               border="4px solid"
               borderColor={bgCard}
               bg="brand.500"
@@ -70,13 +69,7 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
               </HStack>
 
               <HStack spacing={2} mt={2}>
-                <Badge
-                  px={3}
-                  py={1}
-                  borderRadius="full"
-                  colorScheme={user.role === 'admin' ? 'purple' : 'blue'}
-                  variant="subtle"
-                >
+                <Badge px={3} py={1} borderRadius="full" colorScheme="blue" variant="subtle">
                   {user.role || 'USER'}
                 </Badge>
                 <Badge

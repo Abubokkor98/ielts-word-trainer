@@ -1,7 +1,8 @@
+import type { User } from '@ielts/auth';
 import { useQuery } from '@tanstack/react-query';
 import { dashboardApi } from '../services/dashboard.api';
 
-export function useDashboardData(isAuthenticated: boolean, localUser: any) {
+export function useDashboardData(isAuthenticated: boolean, localUser: User | null) {
   const { data: user, isLoading: userLoading } = useQuery({
     queryKey: ['user', 'me'],
     queryFn: dashboardApi.getUser,

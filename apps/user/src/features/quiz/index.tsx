@@ -4,6 +4,7 @@ import { useToast } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { QuizQuestionCard } from './components/quiz-question-card';
@@ -50,7 +51,7 @@ export function QuizContainer() {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       queryClient.invalidateQueries({ queryKey: ['srs', 'stats'] });
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError) => {
       console.error('Failed to save quiz attempt:', error);
       toast({
         title: 'Failed to save quiz',

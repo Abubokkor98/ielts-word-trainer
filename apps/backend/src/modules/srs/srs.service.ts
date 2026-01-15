@@ -123,12 +123,17 @@ export class SRSService {
     }
   }
 
-  static async getDueWords(
-    userId: string,
-    topicId?: string,
-    difficulty?: string,
-    limit: number = 20,
-  ) {
+  static async getDueWords({
+    userId,
+    topicId,
+    difficulty,
+    limit = 20,
+  }: {
+    userId: string;
+    topicId?: string;
+    difficulty?: string;
+    limit?: number;
+  }) {
     const pipeline: any[] = [
       // 1. Match due SRS items
       {
@@ -169,12 +174,13 @@ export class SRSService {
     }
 
     // 5. Project and Limit
-    pipeline.push(
-      {
-        $replaceRoot: { newRoot: '$wordDetails' }, // Return just the word object
-      },
-      { $limit: limit },
-    );
+    pipeline.push({
+      $replaceRoot: { newRoot: '$wordDetails' }, // Return just the word object
+    });
+
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
 
     const words = await SRSItem.aggregate(pipeline);
     return words;

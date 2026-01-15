@@ -90,7 +90,9 @@ export function VocabularyFilters({
           value={module || ''}
           onChange={(e) => {
             const val = e.target.value;
-            onModuleChange(val ? (val as any) : undefined);
+            onModuleChange(
+              val ? (val as 'reading' | 'writing' | 'listening' | 'speaking') : undefined,
+            );
           }}
           gridColumn={{ base: '1 / 2', md: 'auto' }}
         >

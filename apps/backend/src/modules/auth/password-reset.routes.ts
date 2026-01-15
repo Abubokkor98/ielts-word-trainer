@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { passwordResetRateLimit } from '../../core/middleware/rate-limit.middleware';
+import {
+  passwordResetRateLimit,
+  strictRateLimit,
+} from '../../core/middleware/rate-limit.middleware';
 import { validateRequest } from '../../core/middleware/validate.middleware';
 import { PasswordResetController } from './password-reset.controller';
 
@@ -27,6 +30,7 @@ router.post(
 );
 router.post(
   '/reset-password',
+  strictRateLimit,
   validateRequest(resetPasswordSchema),
   PasswordResetController.resetPassword,
 );

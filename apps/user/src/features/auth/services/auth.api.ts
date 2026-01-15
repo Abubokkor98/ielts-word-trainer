@@ -28,4 +28,12 @@ export const authApi = {
       password: credentials.password,
     });
   },
+
+  getMe: async (): Promise<AuthResponse['data']> => {
+    const { data } = await axiosInstance.get<{
+      success: boolean;
+      data: AuthResponse['data'];
+    }>('/auth/me');
+    return data.data;
+  },
 };

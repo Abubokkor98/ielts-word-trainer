@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google';
+import { Suspense } from 'react';
 import './global.css';
 import { ChakraUIProvider, ReactQueryProvider } from '@ielts/ui';
 import { UserNavbar } from '../components/navbar';
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ReactQueryProvider>
           <ChakraUIProvider>
             <div className="flex flex-col min-h-screen">
-              <UserNavbar />
+              <Suspense fallback={<div className="h-16 bg-gray-900 border-b border-gray-800" />}>
+                <UserNavbar />
+              </Suspense>
               <main id="main-content" className="flex-1 flex flex-col">
                 {children}
               </main>

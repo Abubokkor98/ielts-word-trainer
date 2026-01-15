@@ -1,7 +1,6 @@
 import type { Response } from 'express';
 import mongoose from 'mongoose';
 import type { AuthRequest } from '../auth/auth.middleware';
-import { User } from '../users/users.model';
 import { QuizAttemptSchema } from './quiz-attempt.schema';
 import { QuizAttemptService } from './quiz-attempt.service';
 
@@ -55,54 +54,8 @@ export class QuizAttemptController {
       // Calculate XP earned (10 XP per correct answer)
       const xpEarned = validatedData.score * 10;
 
-      // Get current user to check last quiz date
-      const currentUser = await User.findById(userId);
-
-      // Calculate streak based on consecutive days
-      let newStreak = 1; // Default for first quiz or broken streak
-
-      if (currentUser?.lastQuizDate) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Start of today
-
-        const lastQuiz = new Date(currentUser.lastQuizDate);
-        lastQuiz.setHours(0, 0, 0, 0); // Start of last quiz day
-
-        const diffTime = today.getTime() - lastQuiz.getTime();
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) {
-          // Same day - keep current streak
-          newStreak = currentUser.streak || 1;
-        } else if (diffDays === 1) {
-          // Consecutive day - increment streak
-          newStreak = (currentUser.streak || 0) + 1;
-        }
-        // else: more than 1 day gap - reset to 1 (already set above)
-      }
-
-      // Update user XP, streak, and last quiz date
-      const updatedUser = await User.findByIdAndUpdate(
-        userId,
-        {
-          $inc: { xp: xpEarned },
-          $set: {
-            lastQuizDate: new Date(),
-            streak: newStreak,
-          },
-        },
-        { new: true },
-      );
-
       if (process.env.NODE_ENV !== 'production') {
-        console.log(
-          '✅ User updated - XP:',
-          updatedUser?.xp,
-          `(+${xpEarned})`,
-          '| Streak:',
-          updatedUser?.streak,
-          '🔥',
-        );
+        console.log(`✅ XP Calculate: ${xpEarned}`);
       }
 
       return res.status(201).json({

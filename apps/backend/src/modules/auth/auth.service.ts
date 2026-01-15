@@ -40,6 +40,10 @@ export class AuthService {
     }
 
     user.refreshToken.push(hashedToken);
+
+    // Update lastLoginAt on login/refresh
+    user.lastLoginAt = new Date();
+
     await user.save();
 
     return { accessToken, refreshToken };
