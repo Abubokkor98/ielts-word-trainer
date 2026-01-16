@@ -1,17 +1,17 @@
 {
   "version": 2,
   "installCommand": "cd ../.. && pnpm install --no-frozen-lockfile",
-  "buildCommand": "cd ../.. && nx run backend:build-vercel",
+  "buildCommand": "cd ../.. && nx build backend --prod",
   "builds": [
     {
-      "src": "api-build/index.js",
+      "src": "api/index.ts",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/api-build/index.js"
+      "dest": "/api/index.ts"
     }
   ]
 }
