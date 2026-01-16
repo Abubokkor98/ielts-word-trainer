@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next';
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
 import './global.css';
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </ChakraUIProvider>
         </ReactQueryProvider>
+        <Analytics />
       </body>
     </html>
   );
