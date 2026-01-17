@@ -1,4 +1,4 @@
-import { Logger } from '@ielts/utils';
+import { Logger } from '../../utils';
 import { parse } from 'csv-parse/sync';
 import { z } from 'zod';
 import { AppError } from '../../core/errors/AppError';
@@ -43,10 +43,15 @@ export class CSVImportService {
         'antonyms',
       ];
       const firstRecord = records[0] as Record<string, unknown>;
-      const missingColumns = requiredColumns.filter((col) => !(col in firstRecord));
+      const missingColumns = requiredColumns.filter(
+        (col) => !(col in firstRecord)
+      );
 
       if (missingColumns.length > 0) {
-        throw new AppError(`Missing required columns: ${missingColumns.join(', ')}`, 400);
+        throw new AppError(
+          `Missing required columns: ${missingColumns.join(', ')}`,
+          400
+        );
       }
 
       return records;

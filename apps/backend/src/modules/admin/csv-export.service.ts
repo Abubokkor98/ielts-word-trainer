@@ -1,4 +1,4 @@
-import { Logger } from '@ielts/utils';
+import { Logger } from '../../utils';
 import { AppError } from '../../core/errors/AppError';
 import { User } from '../users/users.model';
 
@@ -25,7 +25,11 @@ export class CSVExportService {
     }
 
     // Escape quotes and wrap in quotes if contains comma, newline, or quote
-    if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n')) {
+    if (
+      sanitized.includes(',') ||
+      sanitized.includes('"') ||
+      sanitized.includes('\n')
+    ) {
       sanitized = `"${sanitized.replace(/"/g, '""')}"`;
     }
 
@@ -47,7 +51,9 @@ export class CSVExportService {
       user.updatedAt ? new Date(user.updatedAt).toISOString() : '',
     ];
 
-    return fields.map((field) => CSVExportService.sanitizeField(field)).join(',');
+    return fields
+      .map((field) => CSVExportService.sanitizeField(field))
+      .join(',');
   }
 
   /**
@@ -67,7 +73,9 @@ export class CSVExportService {
 
       // Query all users excluding sensitive fields
       const users = await User.find({})
-        .select('-passwordHash -refreshToken -resetPasswordToken -resetPasswordExpires')
+        .select(
+          '-passwordHash -refreshToken -resetPasswordToken -resetPasswordExpires'
+        )
         .sort({ createdAt: -1 })
         .lean();
 
