@@ -1,5 +1,5 @@
-import { AdminRole } from '@ielts/shared';
 import mongoose, { type Document, Schema } from 'mongoose';
+import { AdminRole } from '../../shared';
 
 export interface IAdmin extends Document {
   name: string;

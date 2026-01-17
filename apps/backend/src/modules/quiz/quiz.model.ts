@@ -1,5 +1,5 @@
-import { Difficulty } from '@ielts/shared';
 import mongoose, { type Document, Schema } from 'mongoose';
+import { Difficulty } from '../../shared';
 
 export interface IQuizResult extends Document {
   user: mongoose.Types.ObjectId;

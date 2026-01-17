@@ -1,8 +1,8 @@
-import { AdminRole, UserRole } from '@ielts/shared';
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
 import { AppError } from '../../core/errors/AppError';
+import { AdminRole, UserRole } from '../../shared';
 
 export interface AuthRequest extends Request {
   user?: {

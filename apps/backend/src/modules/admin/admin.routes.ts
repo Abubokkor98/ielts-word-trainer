@@ -1,6 +1,6 @@
-import { AdminRole } from '@ielts/shared';
 import { Router } from 'express';
 import { moderateRateLimit, strictRateLimit } from '../../core/middleware/rate-limit.middleware';
+import { AdminRole } from '../../shared';
 import { authenticate, authorize } from '../auth/auth.middleware';
 import { AdminController } from './admin.controller';
 import { AdminDashboardController } from './admin-dashboard.controller';

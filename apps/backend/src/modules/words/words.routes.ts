@@ -1,8 +1,8 @@
-import { AdminRole, CreateWordSchema } from '@ielts/shared';
 import { Router } from 'express';
 import { lightRateLimit, moderateRateLimit } from '../../core/middleware/rate-limit.middleware';
 import { upload } from '../../core/middleware/upload.middleware';
 import { validateRequest } from '../../core/middleware/validate.middleware';
+import { AdminRole, CreateWordSchema } from '../../shared';
 import { authenticate, authorize } from '../auth/auth.middleware';
 import { WordsController } from './words.controller';
 

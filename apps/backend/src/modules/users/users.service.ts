@@ -1,5 +1,5 @@
-import type { CreateUserInput } from '@ielts/shared';
 import bcrypt from 'bcryptjs';
+import type { CreateUserInput } from '../../shared';
 import { type IUser, User } from './users.model';
 
 export class UserService {

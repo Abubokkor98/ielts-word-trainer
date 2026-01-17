@@ -1,9 +1,7 @@
 import { type IQuizAttempt, QuizAttempt } from './quiz-attempt.model';
 
 export class QuizAttemptService {
-  static async createAttempt(
-    data: Partial<IQuizAttempt>
-  ): Promise<IQuizAttempt> {
+  static async createAttempt(data: Partial<IQuizAttempt>): Promise<IQuizAttempt> {
     const attempt = new QuizAttempt(data);
     await attempt.save();
 
@@ -28,17 +26,13 @@ export class QuizAttemptService {
         const lastQuiz = user.lastQuizDate ? new Date(user.lastQuizDate) : null;
 
         // Reset time component for accurate day comparison
-        const today = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate()
-        );
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
         if (lastQuiz) {
           const lastQuizDay = new Date(
             lastQuiz.getFullYear(),
             lastQuiz.getMonth(),
-            lastQuiz.getDate()
+            lastQuiz.getDate(),
           );
           const diffTime = Math.abs(today.getTime() - lastQuizDay.getTime());
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -68,10 +62,7 @@ export class QuizAttemptService {
     return attempt;
   }
 
-  static async getUserAttempts(
-    userId: string,
-    limit = 10
-  ): Promise<IQuizAttempt[]> {
+  static async getUserAttempts(userId: string, limit = 10): Promise<IQuizAttempt[]> {
     return QuizAttempt.find({ userId })
       .sort({ createdAt: -1 })
       .limit(limit)
@@ -92,21 +83,15 @@ export class QuizAttemptService {
 
     const totalScore = attempts.reduce((sum, a) => sum + a.score, 0);
     const totalTime = attempts.reduce((sum, a) => sum + a.totalTimeSpent, 0);
-    const totalQuestions = attempts.reduce(
-      (sum, a) => sum + a.totalQuestions,
-      0
-    );
+    const totalQuestions = attempts.reduce((sum, a) => sum + a.totalQuestions, 0);
     const bestScore = Math.max(
-      ...attempts.map((a) =>
-        a.totalQuestions > 0 ? (a.score / a.totalQuestions) * 100 : 0
-      )
+      ...attempts.map((a) => (a.totalQuestions > 0 ? (a.score / a.totalQuestions) * 100 : 0)),
     );
 
     return {
       totalAttempts: attempts.length,
       averageScore: totalScore / attempts.length,
-      averageTimePerQuestion:
-        totalQuestions > 0 ? totalTime / totalQuestions : 0,
+      averageTimePerQuestion: totalQuestions > 0 ? totalTime / totalQuestions : 0,
       bestScore,
     };
   }

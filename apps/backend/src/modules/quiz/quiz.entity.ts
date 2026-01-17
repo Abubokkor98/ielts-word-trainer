@@ -1,5 +1,5 @@
-import { Difficulty } from '@ielts/shared';
 import mongoose, { type Document, Schema } from 'mongoose';
+import { Difficulty } from '../../shared';
 
 export interface IQuiz extends Document {
   title: string;

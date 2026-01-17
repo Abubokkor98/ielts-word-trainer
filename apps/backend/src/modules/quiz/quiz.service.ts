@@ -1,5 +1,5 @@
-import { QuestionType } from '@ielts/shared';
 import { AppError } from '../../core/errors/AppError';
+import { QuestionType } from '../../shared';
 import { type IWord, Word } from '../words/words.model';
 
 export class QuizService {

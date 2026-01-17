@@ -1,5 +1,5 @@
-import { SRSStatus } from '@ielts/shared';
 import mongoose, { type Document, Schema } from 'mongoose';
+import { SRSStatus } from '../../shared';
 
 export interface ISRSItem extends Document {
   user: mongoose.Types.ObjectId;

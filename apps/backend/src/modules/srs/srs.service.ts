@@ -1,5 +1,5 @@
-import { calculateSM2, getNextReviewDate, SRSStatus } from '@ielts/shared';
 import mongoose from 'mongoose';
+import { calculateSM2, getNextReviewDate, SRSStatus } from '../../shared';
 import { Word } from '../words/words.model';
 import { SRSItem } from './srs.model';
 

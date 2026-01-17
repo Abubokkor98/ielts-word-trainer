@@ -1,6 +1,6 @@
-import { AdminRole } from '@ielts/shared';
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
+import { AdminRole } from '../../shared';
 import type { AuthRequest } from '../auth/auth.middleware';
 import { AuthService } from '../auth/auth.service';
 import { AdminService } from './admin.service';

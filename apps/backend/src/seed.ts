@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: 'apps/backend/.env' });
 
-import { AdminRole, UserRole } from '@ielts/shared';
 import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import { Admin } from './modules/admin/admin.model';
@@ -11,6 +10,7 @@ import { QuizAttempt } from './modules/quiz/quiz-attempt.model';
 import { Topic } from './modules/topics/topics.model';
 import { User } from './modules/users/users.model';
 import { Word } from './modules/words/words.model';
+import { AdminRole, UserRole } from './shared';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 const MONGODB_DBNAME = process.env.MONGODB_DBNAME || 'itelts-vocabs-app';

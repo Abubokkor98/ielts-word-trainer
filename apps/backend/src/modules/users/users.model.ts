@@ -1,5 +1,5 @@
-import { UserRole } from '@ielts/shared';
 import mongoose, { type Document, Schema } from 'mongoose';
+import { UserRole } from '../../shared';
 
 export interface IUser extends Document {
   name: string;

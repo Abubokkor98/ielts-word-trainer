@@ -1,5 +1,5 @@
-import type { CreateWordInput } from '@ielts/shared';
 import mongoose from 'mongoose';
+import type { CreateWordInput } from '../../shared';
 import { Topic } from '../topics/topics.model';
 import { Word } from './words.model';
 

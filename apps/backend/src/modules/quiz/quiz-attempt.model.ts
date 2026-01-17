@@ -1,5 +1,5 @@
-import type { QuestionType } from '@ielts/shared';
 import mongoose, { type Document, Schema } from 'mongoose';
+import type { QuestionType } from '../../shared';
 
 export interface IQuizAttempt extends Document {
   userId: mongoose.Types.ObjectId;

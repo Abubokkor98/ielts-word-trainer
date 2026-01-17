@@ -1,7 +1,7 @@
-import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '@ielts/shared';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { env } from '../../config/env';
+import { ACCESS_TOKEN_EXPIRY, REFRESH_TOKEN_EXPIRY } from '../../shared';
 import type { IAdmin } from '../admin/admin.model';
 import type { IUser } from '../users/users.model';
 
