@@ -29,11 +29,11 @@ export const authApi = {
     });
   },
 
-  getMe: async (): Promise<AuthResponse['data']> => {
+  getMe: async (config?: { skipErrorLogging?: boolean }): Promise<AuthResponse['data']> => {
     const { data } = await axiosInstance.get<{
       success: boolean;
       data: AuthResponse['data'];
-    }>('/auth/me');
+    }>('/auth/me', config as any);
     return data.data;
   },
 };

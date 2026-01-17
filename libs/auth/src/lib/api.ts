@@ -1,5 +1,11 @@
-import axios from 'axios';
+import axios, { type InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from './auth.store';
+
+// Extend Axios config to support custom flags
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  skipErrorLogging?: boolean;
+  _retry?: boolean;
+}
 
 const baseURL =
   process.env['NEXT_PUBLIC_API_URL'] || 'http://localhost:3333/api/v1';
@@ -31,7 +37,7 @@ let failedQueue: Array<{
   reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -43,11 +49,29 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+// Public routes where we don't want to force a redirect to login
+const publicRoutes = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/',
+  '/vocabulary',
+  '/quiz',
+];
+
+const isPublicRoute = (path: string) =>
+  publicRoutes.some((route) =>
+    route === '/'
+      ? path === route
+      : path === route || path.startsWith(`${route}/`)
+  );
+
 // Response interceptor: Handle 401 & Auto-refresh
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as CustomAxiosRequestConfig;
 
     // Skip refresh for these endpoints - they return 401 intentionally
     const skipRefreshPaths = [
@@ -63,11 +87,59 @@ axiosInstance.interceptors.response.use(
       originalRequest.url?.includes(path)
     );
 
+    // Check if we're in production mode
+    const isProduction = process.env['NODE_ENV'] === 'production';
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !shouldSkipRefresh
     ) {
+      // Check if this is an expected auth check (silent auth)
+      const isExpectedAuthCheck = originalRequest.skipErrorLogging === true;
+
+      // Check if we have an access token - if not, don't attempt refresh
+      const hasAccessToken = !!useAuthStore.getState().accessToken;
+
+      // If this is an expected auth check and we have no token, fail silently
+      if (isExpectedAuthCheck && !hasAccessToken) {
+        // In production, suppress the error completely
+        // In development, let it through for debugging
+        if (isProduction) {
+          const silentError = new Error('Unauthorized');
+          Object.assign(silentError, {
+            response: error.response,
+            config: error.config,
+          });
+          return Promise.reject(silentError);
+        }
+        return Promise.reject(error);
+      }
+
+      // If we have no access token at all, don't attempt refresh
+      if (!hasAccessToken) {
+        // This is an unexpected 401 without a session - logout and redirect
+        useAuthStore.getState().logout();
+
+        if (typeof window !== 'undefined') {
+          const currentPath = window.location.pathname;
+          if (!isPublicRoute(currentPath)) {
+            window.location.href = '/';
+          }
+        }
+
+        // In production, suppress console error
+        if (isProduction) {
+          const silentError = new Error('Unauthorized');
+          Object.assign(silentError, {
+            response: error.response,
+            config: error.config,
+          });
+          return Promise.reject(silentError);
+        }
+        return Promise.reject(error);
+      }
+
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({
@@ -126,36 +198,43 @@ axiosInstance.interceptors.response.use(
         useAuthStore.getState().logout();
 
         if (typeof window !== 'undefined') {
-          // Public routes where we don't want to force a redirect to login
-          // matches proxy.ts configuration
-          const publicRoutes = [
-            '/login',
-            '/register',
-            '/forgot-password',
-            '/reset-password',
-            '/',
-            '/vocabulary',
-            '/quiz',
-          ];
-
           const currentPath = window.location.pathname;
-          // Check if current path matches any public route (exact match or sub-path)
-          // We use simple matching here. For exact routes like '/', we match exactly.
-          // For nested routes like '/vocabulary', we check startWith.
-          const isPublic = publicRoutes.some((route) =>
-            route === '/'
-              ? currentPath === route
-              : currentPath === route || currentPath.startsWith(`${route}/`)
-          );
 
-          if (!isPublic) {
+          if (!isPublicRoute(currentPath)) {
             window.location.href = '/';
           }
+        }
+
+        // In production, suppress console error for refresh failures
+        if (isProduction) {
+          const silentError = new Error('Token refresh failed');
+          Object.assign(silentError, {
+            response: error.response,
+            config: error.config,
+          });
+          return Promise.reject(silentError);
         }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }
+    }
+
+    // For all 4xx client errors (400-499), suppress in production
+    // Keep 5xx server errors visible as they indicate bugs/issues
+    const statusCode = error.response?.status;
+    if (statusCode && statusCode >= 400 && statusCode < 500 && isProduction) {
+      // Still reject the promise so error handling works
+      // But create a clean error without axios logging
+      const silentError = new Error(
+        error.response?.data?.message || `Client error (${statusCode})`
+      );
+      Object.assign(silentError, {
+        response: error.response,
+        config: error.config,
+        status: statusCode,
+      });
+      return Promise.reject(silentError);
     }
 
     return Promise.reject(error);
