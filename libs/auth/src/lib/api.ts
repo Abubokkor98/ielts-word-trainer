@@ -49,6 +49,24 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
+// Public routes where we don't want to force a redirect to login
+const publicRoutes = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/',
+  '/vocabulary',
+  '/quiz',
+];
+
+const isPublicRoute = (path: string) =>
+  publicRoutes.some((route) =>
+    route === '/'
+      ? path === route
+      : path === route || path.startsWith(`${route}/`)
+  );
+
 // Response interceptor: Handle 401 & Auto-refresh
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -104,24 +122,8 @@ axiosInstance.interceptors.response.use(
         useAuthStore.getState().logout();
 
         if (typeof window !== 'undefined') {
-          const publicRoutes = [
-            '/login',
-            '/register',
-            '/forgot-password',
-            '/reset-password',
-            '/',
-            '/vocabulary',
-            '/quiz',
-          ];
-
           const currentPath = window.location.pathname;
-          const isPublic = publicRoutes.some((route) =>
-            route === '/'
-              ? currentPath === route
-              : currentPath === route || currentPath.startsWith(`${route}/`)
-          );
-
-          if (!isPublic) {
+          if (!isPublicRoute(currentPath)) {
             window.location.href = '/';
           }
         }
@@ -196,29 +198,9 @@ axiosInstance.interceptors.response.use(
         useAuthStore.getState().logout();
 
         if (typeof window !== 'undefined') {
-          // Public routes where we don't want to force a redirect to login
-          // matches proxy.ts configuration
-          const publicRoutes = [
-            '/login',
-            '/register',
-            '/forgot-password',
-            '/reset-password',
-            '/',
-            '/vocabulary',
-            '/quiz',
-          ];
-
           const currentPath = window.location.pathname;
-          // Check if current path matches any public route (exact match or sub-path)
-          // We use simple matching here. For exact routes like '/', we match exactly.
-          // For nested routes like '/vocabulary', we check startWith.
-          const isPublic = publicRoutes.some((route) =>
-            route === '/'
-              ? currentPath === route
-              : currentPath === route || currentPath.startsWith(`${route}/`)
-          );
 
-          if (!isPublic) {
+          if (!isPublicRoute(currentPath)) {
             window.location.href = '/';
           }
         }
