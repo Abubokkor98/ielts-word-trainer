@@ -9,9 +9,15 @@ import { globalErrorHandler } from './core/middleware/error.middleware';
 
 export const createServer = (): Express => {
   const app = express();
-  console.log('----------------------------------------------------------------');
-  console.log('Server Request - CORS Config: http://localhost:3000, http://localhost:3001');
-  console.log('----------------------------------------------------------------');
+  console.log(
+    '----------------------------------------------------------------'
+  );
+  console.log(
+    'Server Request - CORS Config: http://localhost:3000, http://localhost:3001'
+  );
+  console.log(
+    '----------------------------------------------------------------'
+  );
 
   // Middleware
   app.use(express.json());
@@ -20,7 +26,7 @@ export const createServer = (): Express => {
     cors({
       origin: env.CORS_ORIGINS.split(','), // Allow multiple origins from env
       credentials: true,
-    }),
+    })
   );
   app.use(helmet());
   app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'short'));
@@ -35,6 +41,16 @@ export const createServer = (): Express => {
   //   legacyHeaders: false,
   // });
   // app.use(limiter);
+
+  // Root Route
+  app.get('/', (_req, res) => {
+    res.json({
+      message: 'Welcome to IELTS Vocabs API',
+      status: 'running',
+      environment: env.NODE_ENV,
+      timestamp: new Date().toISOString(),
+    });
+  });
 
   // Health Check
   app.get('/health', (_req, res) => {
