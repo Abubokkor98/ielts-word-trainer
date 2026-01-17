@@ -1,3 +1,4 @@
+import { PageLoadingFallback } from '@ielts/ui';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { ResetPasswordContent } from './reset-password-content';
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PageLoadingFallback />}>
       <ResetPasswordContent />
     </Suspense>
   );

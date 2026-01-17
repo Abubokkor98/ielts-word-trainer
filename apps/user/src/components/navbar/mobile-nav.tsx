@@ -136,7 +136,7 @@ export const MobileNav = ({
                     Admin Panel
                   </MobileNavLink>
                 )}
-                <Divider my={2} borderColor="whiteAlpha.200" />
+
                 <MobileNavLink icon={<LogOut size={20} />} onClick={onLogout} color="red.400">
                   Sign Out
                 </MobileNavLink>

@@ -3,7 +3,7 @@ import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { authApi } from '../../features/auth/services/auth.api';
 
 interface SrsStats {
@@ -22,6 +22,17 @@ export function useNavbar() {
   const router = useRouter();
   const toast = useToast();
   const queryClient = useQueryClient();
+
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Session restoration
   const { data: restoredUser } = useQuery({
@@ -88,5 +99,6 @@ export function useNavbar() {
     user,
     handleLogout,
     dueCount,
+    isScrolled,
   };
 }

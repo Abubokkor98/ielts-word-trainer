@@ -1,3 +1,4 @@
+import { PageLoadingFallback } from '@ielts/ui';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { LoginContent } from './login-content';
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PageLoadingFallback />}>
       <LoginContent />
     </Suspense>
   );

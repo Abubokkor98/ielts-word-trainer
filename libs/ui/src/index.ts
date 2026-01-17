@@ -7,6 +7,7 @@ export * from './components/ui/button';
 export * from './components/ui/card';
 export * from './components/ui/input';
 export { LoadingSpinner } from './lib/loading-spinner';
+export { PageLoadingFallback } from './lib/page-loading-fallback';
 export { Pagination } from './lib/Pagination';
 export { UserMenu } from './lib/UserMenu';
 export * from './lib/utils';

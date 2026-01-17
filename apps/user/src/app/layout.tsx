@@ -35,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ReactQueryProvider>
           <ChakraUIProvider>
             <div className="flex flex-col min-h-screen">
-              <Suspense fallback={<div className="h-16 bg-gray-900 border-b border-gray-800" />}>
+              <Suspense fallback={<div className="h-16 bg-[#171923] border-b border-gray-800" />}>
                 <UserNavbar />
               </Suspense>
               <main id="main-content" className="flex-1 flex flex-col">

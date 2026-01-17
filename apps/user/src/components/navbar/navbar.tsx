@@ -9,7 +9,8 @@ import { MobileNav } from './mobile-nav';
 import { useNavbar } from './use-navbar';
 
 export const UserNavbar = () => {
-  const { isOpen, onOpen, onClose, isAuthenticated, user, handleLogout, dueCount } = useNavbar();
+  const { isOpen, onOpen, onClose, isAuthenticated, user, handleLogout, dueCount, isScrolled } =
+    useNavbar();
 
   return (
     <>
@@ -37,9 +38,11 @@ export const UserNavbar = () => {
 
       {/* Main Navbar */}
       <Box
-        bg="gray.900"
+        bg={isScrolled ? 'rgba(17, 24, 39, 0.8)' : 'gray.900'}
+        backdropFilter={isScrolled ? 'blur(12px)' : 'none'}
+        transition="all 0.3s ease"
         borderBottom="1px"
-        borderColor="gray.800"
+        borderColor={isScrolled ? 'whiteAlpha.200' : 'gray.800'}
         position="sticky"
         top="0"
         zIndex={10}
@@ -64,11 +67,6 @@ export const UserNavbar = () => {
 
               <DesktopNav isAuthenticated={isAuthenticated} dueCount={dueCount} />
             </HStack>
-
-            {/* User Menu - Left Side (Mobile Only) */}
-            <Flex alignItems="center" display={{ base: 'flex', lg: 'none' }}>
-              <UserMenu user={user} onLogout={handleLogout} />
-            </Flex>
 
             {/* User Menu - Right Side (Desktop Only) */}
             <Flex alignItems="center" display={{ base: 'none', lg: 'flex' }}>
