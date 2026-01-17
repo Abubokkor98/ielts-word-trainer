@@ -214,8 +214,12 @@ export class QuizService {
       return QuizService.generateWordToMeaning(word, allWords);
     }
 
+    // Escape special regex characters to prevent ReDoS and matching issues
+    const escapeRegex = (str: string) =>
+      str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
     const sentence = word.exampleSentence.replace(
-      new RegExp(word.word, 'gi'),
+      new RegExp(escapeRegex(word.word), 'gi'),
       '_____'
     );
 
