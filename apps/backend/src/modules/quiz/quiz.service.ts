@@ -1,13 +1,14 @@
 import { AppError } from '../../core/errors/AppError';
 import { QuestionType } from '../../shared';
 import { type IWord, Word } from '../words/words.model';
+import { SRSService } from '../srs/srs.service';
 
 export class QuizService {
   static async generateQuiz(
     userId?: string, // Made optional
     topicId?: string,
     difficulty?: string,
-    limit: number = 10,
+    limit: number = 10
   ) {
     let selectedWords: IWord[] = [];
 
@@ -17,7 +18,6 @@ export class QuizService {
       // We need to import SRSService dynamically or normally.
       // Since we are in QuizService, let's assume we can import SRSService if no circular dep issue,
       // or use dynamic import inside the method.
-      const { SRSService } = await import('../srs/srs.service');
 
       const dueWords = await SRSService.getDueWords({
         userId,
@@ -31,7 +31,12 @@ export class QuizService {
       // Priority 2: Fill remaining slots with new words
       if (selectedWords.length < limit) {
         const remainingCount = limit - selectedWords.length;
-        const newWords = await SRSService.getNewWords(userId, topicId, difficulty, remainingCount);
+        const newWords = await SRSService.getNewWords(
+          userId,
+          topicId,
+          difficulty,
+          remainingCount
+        );
         selectedWords = [...selectedWords, ...newWords];
       }
     }
@@ -57,7 +62,10 @@ export class QuizService {
     }
 
     if (selectedWords.length < 4) {
-      throw new AppError('Not enough words to generate a quiz (min 4 required)', 400);
+      throw new AppError(
+        'Not enough words to generate a quiz (min 4 required)',
+        400
+      );
     }
 
     // Shuffle the final selection so due/new words are mixed
@@ -206,7 +214,10 @@ export class QuizService {
       return QuizService.generateWordToMeaning(word, allWords);
     }
 
-    const sentence = word.exampleSentence.replace(new RegExp(word.word, 'gi'), '_____');
+    const sentence = word.exampleSentence.replace(
+      new RegExp(word.word, 'gi'),
+      '_____'
+    );
 
     const distractors = allWords
       .filter((w) => w._id.toString() !== word._id.toString())

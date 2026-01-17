@@ -11,7 +11,7 @@
  */
 
 import type { Request } from 'express';
-import rateLimit from 'express-rate-limit';
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit';
 import type { AuthRequest } from '../../modules/auth/auth.middleware';
 
 // Note: We don't need custom IP handling - the library handles IPv6 automatically
@@ -77,7 +77,7 @@ export const createRateLimiter = (
   windowMs: number,
   max: number,
   message: string,
-  skipAdmin = false,
+  skipAdmin = false
 ) => {
   return rateLimit({
     windowMs,
@@ -97,10 +97,12 @@ export const createRateLimiter = (
       }
       const clientIp = req.ip;
       if (!clientIp) {
-        console.warn('Rate limit key: undefined IP for unauthenticated request');
+        console.warn(
+          'Rate limit key: undefined IP for unauthenticated request'
+        );
         return 'unknown';
       }
-      return clientIp;
+      return ipKeyGenerator(clientIp);
     },
 
     // Skip rate limiting for admins
@@ -116,7 +118,10 @@ export const createRateLimiter = (
  * Dynamic rate limiter that adjusts limits based on authentication
  * Authenticated users get higher limits
  */
-export const dynamicRateLimit = (authenticatedMax: number, publicMax: number) => {
+export const dynamicRateLimit = (
+  authenticatedMax: number,
+  publicMax: number
+) => {
   return rateLimit({
     windowMs: 60 * 1000, // 1 minute
     max: (req: Request) => {
@@ -128,7 +133,9 @@ export const dynamicRateLimit = (authenticatedMax: number, publicMax: number) =>
       const limit = user ? authenticatedMax : publicMax;
       return {
         error: `Rate limit exceeded. Max ${limit} requests per minute`,
-        hint: user ? 'Slow down a bit' : 'Consider logging in for higher limits',
+        hint: user
+          ? 'Slow down a bit'
+          : 'Consider logging in for higher limits',
       };
     },
     standardHeaders: true,
@@ -140,10 +147,12 @@ export const dynamicRateLimit = (authenticatedMax: number, publicMax: number) =>
         return `user:${user.id}`;
       }
       if (!req.ip) {
-        console.warn('Rate limit key: undefined IP for unauthenticated request');
+        console.warn(
+          'Rate limit key: undefined IP for unauthenticated request'
+        );
         return 'unknown';
       }
-      return req.ip;
+      return ipKeyGenerator(req.ip);
     },
   });
 };

@@ -4,20 +4,22 @@ import { useAuthStore } from './auth.store';
 
 const { useEffect } = React;
 export const useAuth = (requireAuth = false) => {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, logout, hasHydrated } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (requireAuth && !isAuthenticated) {
+    // Only redirect if hydration is complete and auth is required but missing
+    if (hasHydrated && requireAuth && !isAuthenticated) {
       router.push(`/login?redirect=${pathname}`);
     }
-  }, [requireAuth, isAuthenticated, router, pathname]);
+  }, [requireAuth, isAuthenticated, hasHydrated, router, pathname]);
 
   return {
     user,
     isAuthenticated,
     logout,
+    hasHydrated,
   };
 };
 
@@ -30,10 +32,13 @@ export const protectUserRoute = <P extends object>(
   Component: React.ComponentType<P>
 ) => {
   return function ProtectedUserRoute(props: P) {
-    const { user, isAuthenticated } = useAuthStore();
+    const { user, isAuthenticated, hasHydrated } = useAuthStore();
     const router = useRouter();
 
     useEffect(() => {
+      // Don't do anything until store is hydrated
+      if (!hasHydrated) return;
+
       if (!isAuthenticated) {
         router.push('/login');
       } else if (user?.role === 'admin' || user?.role === 'super_admin') {
@@ -44,9 +49,10 @@ export const protectUserRoute = <P extends object>(
           }/dashboard`;
         }
       }
-    }, [isAuthenticated, user, router]);
+    }, [isAuthenticated, user, router, hasHydrated]);
 
-    if (!isAuthenticated || user?.role !== 'user') {
+    // Show nothing while rehydrating or if not authenticated
+    if (!hasHydrated || !isAuthenticated || user?.role !== 'user') {
       return null;
     }
 
@@ -58,10 +64,13 @@ export const protectAdminRoute = <P extends object>(
   Component: React.ComponentType<P>
 ) => {
   return function ProtectedAdminRoute(props: P) {
-    const { user, isAuthenticated } = useAuthStore();
+    const { user, isAuthenticated, hasHydrated } = useAuthStore();
     const router = useRouter();
 
     useEffect(() => {
+      // Don't do anything until store is hydrated
+      if (!hasHydrated) return;
+
       if (!isAuthenticated) {
         router.push('/login');
       } else if (user?.role === 'user') {
@@ -72,9 +81,10 @@ export const protectAdminRoute = <P extends object>(
           }/dashboard`;
         }
       }
-    }, [isAuthenticated, user, router]);
+    }, [isAuthenticated, user, router, hasHydrated]);
 
     if (
+      !hasHydrated ||
       !isAuthenticated ||
       !['admin', 'super_admin'].includes(user?.role || '')
     ) {

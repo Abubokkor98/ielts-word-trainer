@@ -9,6 +9,9 @@ import { globalErrorHandler } from './core/middleware/error.middleware';
 
 export const createServer = (): Express => {
   const app = express();
+
+  // Trust first proxy (required for rate limiting behind load balancers like Vercel/Dokploy)
+  app.set('trust proxy', 1);
   console.log(
     '----------------------------------------------------------------'
   );
