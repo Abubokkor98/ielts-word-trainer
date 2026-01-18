@@ -5,18 +5,22 @@ import type { AuthRequest } from './auth.middleware';
 import { AuthService } from './auth.service';
 
 export class AuthController {
-  private static setAuthCookies(res: Response, accessToken: string, refreshToken: string) {
+  private static setAuthCookies(
+    res: Response,
+    accessToken: string,
+    refreshToken: string
+  ) {
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 3600000, // 7 days
     });
   }
@@ -29,7 +33,9 @@ export class AuthController {
       }
 
       const user = await UserService.createUser(req.body);
-      const { accessToken, refreshToken } = await AuthService.generateTokens(user);
+      const { accessToken, refreshToken } = await AuthService.generateTokens(
+        user
+      );
 
       AuthController.setAuthCookies(res, accessToken, refreshToken);
 
@@ -59,16 +65,24 @@ export class AuthController {
 
       // Check ban status before password validation to prevent information disclosure
       if (user.status === 'banned') {
-        throw new AppError('Your account has been banned. Please contact support.', 403);
+        throw new AppError(
+          'Your account has been banned. Please contact support.',
+          403
+        );
       }
 
-      const isValid = await AuthService.validatePassword(password, user.passwordHash);
+      const isValid = await AuthService.validatePassword(
+        password,
+        user.passwordHash
+      );
 
       if (!isValid) {
         throw new AppError('Invalid email or password', 401);
       }
 
-      const { accessToken, refreshToken } = await AuthService.generateTokens(user);
+      const { accessToken, refreshToken } = await AuthService.generateTokens(
+        user
+      );
 
       AuthController.setAuthCookies(res, accessToken, refreshToken);
 
@@ -128,13 +142,19 @@ export class AuthController {
       }
 
       if (user.status === 'banned') {
-        throw new AppError('Your account has been banned. Please contact support.', 403);
+        throw new AppError(
+          'Your account has been banned. Please contact support.',
+          403
+        );
       }
 
       // Check if refresh token exists in user's token list
       let tokenValid = false;
       for (const storedToken of user.refreshToken) {
-        const isMatch = await AuthService.validatePassword(refreshToken, storedToken);
+        const isMatch = await AuthService.validatePassword(
+          refreshToken,
+          storedToken
+        );
         if (isMatch) {
           tokenValid = true;
           break;
@@ -146,7 +166,8 @@ export class AuthController {
       }
 
       // Token rotation: Generate new tokens and invalidate old refresh token
-      const { accessToken, refreshToken: newRefreshToken } = await AuthService.generateTokens(user);
+      const { accessToken, refreshToken: newRefreshToken } =
+        await AuthService.generateTokens(user);
 
       // Remove old refresh token
       await AuthService.logout(user, refreshToken);
@@ -179,7 +200,7 @@ export class AuthController {
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       });
       res.json({ success: true, message: 'Logged out successfully' });
     } catch (err) {
