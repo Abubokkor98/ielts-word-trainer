@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuthStore } from '@ielts/auth';
+import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { LoadingSpinner } from '@ielts/ui';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -8,7 +8,8 @@ import { useEffect, useState } from 'react';
 const protectedRoutes = ['/dashboard', '/profile', '/analytics', '/review'];
 
 export function RouteGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, hasHydrated } = useAuthStore();
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const router = useRouter();
   const pathname = usePathname();
   const [isChecking, setIsChecking] = useState(true);
@@ -17,7 +18,9 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
     // Wait for hydration
     if (!hasHydrated) return;
 
-    const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
+    const isProtectedRoute = protectedRoutes.some((route) =>
+      pathname.startsWith(route)
+    );
 
     if (isProtectedRoute && !isAuthenticated) {
       router.push(`/login?redirect=${pathname}`);

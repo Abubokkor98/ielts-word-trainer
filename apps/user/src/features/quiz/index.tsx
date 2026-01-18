@@ -1,7 +1,7 @@
 'use client';
 
 import { useToast } from '@chakra-ui/react';
-import { useAuthStore } from '@ielts/auth';
+import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
@@ -15,7 +15,7 @@ import { quizApi } from './services/quiz.api';
 import type { QuizAttempt } from './types';
 
 export function QuizContainer() {
-  const { isAuthenticated } = useAuthStore();
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
   const router = useRouter();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -74,25 +74,34 @@ export function QuizContainer() {
   }, [questions]);
 
   // Derive score from answers map locally in render to be safe
-  const calculatedScore = Array.from(questionAnswers.values()).filter((a) => a.isCorrect).length;
+  const calculatedScore = Array.from(questionAnswers.values()).filter(
+    (a) => a.isCorrect
+  ).length;
 
   useEffect(() => {
-    if (showResult && startTime && !hasSavedRef.current && questions.length > 0) {
+    if (
+      showResult &&
+      startTime &&
+      !hasSavedRef.current &&
+      questions.length > 0
+    ) {
       hasSavedRef.current = true;
 
       const endTime = new Date();
       const totalTimeSpent = endTime.getTime() - startTime.getTime();
 
       const attemptData: QuizAttempt = {
-        questions: Array.from(questionAnswers.entries()).map(([idx, answer]) => ({
-          wordId: questions[idx].id,
-          selectedAnswer: answer.selected,
-          correctAnswer: answer.correct,
-          isCorrect: answer.isCorrect,
-          timeSpent: answer.timeSpentMs || 0,
-          questionType: questions[idx].type,
-          qualityRating: answer.rating,
-        })),
+        questions: Array.from(questionAnswers.entries()).map(
+          ([idx, answer]) => ({
+            wordId: questions[idx].id,
+            selectedAnswer: answer.selected,
+            correctAnswer: answer.correct,
+            isCorrect: answer.isCorrect,
+            timeSpent: answer.timeSpentMs || 0,
+            questionType: questions[idx].type,
+            qualityRating: answer.rating,
+          })
+        ),
         score: calculatedScore,
         totalQuestions: questions.length,
         startTime: startTime.toISOString(),

@@ -1,10 +1,10 @@
 'use client';
 import { Box, Button, Heading, Text, VStack } from '@chakra-ui/react';
-import { useAuthStore } from '@ielts/auth';
+import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import Link from 'next/link';
 
 export function HeroSection() {
-  const { isAuthenticated } = useAuthStore();
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
   return (
     <Box textAlign="center" py={{ base: 8, md: 12, lg: 16 }} px={4}>

@@ -14,24 +14,24 @@ export interface User {
 interface AuthState {
   user: User | null;
   accessToken: string | null;
-  isAuthenticated: boolean;
   hasHydrated: boolean;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
   logout: () => void;
 }
 
+// Selector to compute isAuthenticated from user state
+export const selectIsAuthenticated = (state: AuthState) => !!state.user;
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
       accessToken: null,
-      isAuthenticated: false,
       hasHydrated: false,
       setUser: (user) =>
         set({
           user,
-          isAuthenticated: !!user,
         }),
       setToken: (token) =>
         set({
@@ -41,7 +41,6 @@ export const useAuthStore = create<AuthState>()(
         set({
           user: null,
           accessToken: null,
-          isAuthenticated: false,
         }),
     }),
     {
@@ -52,6 +51,9 @@ export const useAuthStore = create<AuthState>()(
           state.hasHydrated = true;
         }
       },
-    },
-  ),
+    }
+  )
 );
+
+// Convenience hook to get isAuthenticated
+export const useIsAuthenticated = () => useAuthStore(selectIsAuthenticated);

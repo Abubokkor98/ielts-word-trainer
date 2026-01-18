@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Container, Heading, Text, VStack } from '@chakra-ui/react';
-import { useAuthStore } from '@ielts/auth';
+import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { ReviewCard } from '../../components/ReviewCard';
@@ -11,7 +11,9 @@ import { QuickActions } from './components/quick-actions';
 import { useDashboardData } from './hooks/use-dashboard-data';
 
 export function DashboardContainer() {
-  const { user: localUser, isAuthenticated, hasHydrated } = useAuthStore();
+  const localUser = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const router = useRouter();
 
   // Redirect to login if not authenticated (but wait for hydration first)
@@ -21,7 +23,10 @@ export function DashboardContainer() {
     }
   }, [hasHydrated, isAuthenticated, router]);
 
-  const { user, analytics, srsStats, isLoading } = useDashboardData(isAuthenticated, localUser);
+  const { user, analytics, srsStats, isLoading } = useDashboardData(
+    isAuthenticated,
+    localUser
+  );
 
   // Show loading during hydration
   if (!hasHydrated) {
