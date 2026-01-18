@@ -16,19 +16,38 @@ export class AdminController {
         throw new AppError('Invalid email or password', 401);
       }
 
-      const isValid = await AuthService.validatePassword(password, admin.passwordHash);
+      const isValid = await AuthService.validatePassword(
+        password,
+        admin.passwordHash
+      );
 
       if (!isValid) {
         throw new AppError('Invalid email or password', 401);
       }
 
-      const { accessToken, refreshToken } = await AuthService.generateTokens(admin);
+      const { accessToken, refreshToken } = await AuthService.generateTokens(
+        admin
+      );
+
+      const isProduction = process.env.NODE_ENV === 'production';
+      const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+        path: '/',
+        domain: cookieDomain,
+      };
+
+      res.cookie('accessToken', accessToken, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      });
 
       res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-        maxAge: 7 * 24 * 3600000,
+        ...cookieOptions,
+        maxAge: 7 * 24 * 3600000, // 7 days
       });
 
       res.status(200).json({
@@ -109,7 +128,11 @@ export class AdminController {
     }
   }
 
-  static async updateUserStatus(req: Request, res: Response, next: NextFunction) {
+  static async updateUserStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const { id } = req.params;
       const { status } = req.body;
@@ -167,7 +190,7 @@ export class AdminController {
           name,
           role: role || AdminRole.ADMIN,
         },
-        password,
+        password
       );
 
       res.status(201).json({
@@ -286,7 +309,11 @@ export class AdminController {
 
       const { currentPassword, newPassword } = req.body;
 
-      if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+      if (
+        !newPassword ||
+        typeof newPassword !== 'string' ||
+        newPassword.length < 6
+      ) {
         throw new AppError('Password must be at least 6 characters', 400);
       }
 
@@ -297,7 +324,10 @@ export class AdminController {
       }
 
       // Verify current password
-      const isValid = await AuthService.validatePassword(currentPassword, admin.passwordHash);
+      const isValid = await AuthService.validatePassword(
+        currentPassword,
+        admin.passwordHash
+      );
 
       if (!isValid) {
         throw new AppError('Current password is incorrect', 401);
@@ -334,7 +364,10 @@ export class AdminController {
       // Check if refresh token exists in admin's token list
       let tokenValid = false;
       for (const storedToken of admin.refreshToken) {
-        const isMatch = await AuthService.validatePassword(refreshToken, storedToken);
+        const isMatch = await AuthService.validatePassword(
+          refreshToken,
+          storedToken
+        );
         if (isMatch) {
           tokenValid = true;
           break;
@@ -352,11 +385,25 @@ export class AdminController {
       // Remove old refresh token
       await AuthService.logout(admin, refreshToken);
 
-      // Set new refresh token cookie
-      res.cookie('refreshToken', newRefreshToken, {
+      // Set new tokens with proper cookie configuration
+      const isProduction = process.env.NODE_ENV === 'production';
+      const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
+
+      const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: isProduction,
+        sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+        path: '/',
+        domain: cookieDomain,
+      };
+
+      res.cookie('accessToken', accessToken, {
+        ...cookieOptions,
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      });
+
+      res.cookie('refreshToken', newRefreshToken, {
+        ...cookieOptions,
         maxAge: 7 * 24 * 3600000, // 7 days
       });
 

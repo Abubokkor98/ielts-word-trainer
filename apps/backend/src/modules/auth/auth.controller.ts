@@ -10,17 +10,27 @@ export class AuthController {
     accessToken: string,
     refreshToken: string
   ) {
-    res.cookie('accessToken', accessToken, {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    // Extract domain for production (e.g., .vercel.app for Vercel)
+    // This allows cookies to work across subdomains
+    const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
+
+    const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: isProduction,
+      sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
+      path: '/',
+      domain: cookieDomain, // Will be undefined in dev (localhost)
+    };
+
+    res.cookie('accessToken', accessToken, {
+      ...cookieOptions,
       maxAge: 15 * 60 * 1000, // 15 minutes
     });
 
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      ...cookieOptions,
       maxAge: 7 * 24 * 3600000, // 7 days
     });
   }
