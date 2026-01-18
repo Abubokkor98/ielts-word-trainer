@@ -3,7 +3,7 @@
 import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { LoadingSpinner } from '@ielts/ui';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 const protectedRoutes = ['/dashboard', '/profile', '/analytics', '/review'];
 
@@ -12,25 +12,24 @@ export function RouteGuard({ children }: { children: React.ReactNode }) {
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const router = useRouter();
   const pathname = usePathname();
-  const [isChecking, setIsChecking] = useState(true);
+
+  // Derive protected route status outside effect
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
   useEffect(() => {
-    // Wait for hydration
-    if (!hasHydrated) return;
+    // Only redirect if:
+    // 1. Store has hydrated
+    // 2. Current route is protected
+    // 3. User is not authenticated
+    if (!hasHydrated || !isProtectedRoute || isAuthenticated) return;
 
-    const isProtectedRoute = protectedRoutes.some((route) =>
-      pathname.startsWith(route)
-    );
+    router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+  }, [hasHydrated, isAuthenticated, isProtectedRoute, pathname, router]);
 
-    if (isProtectedRoute && !isAuthenticated) {
-      router.push(`/login?redirect=${pathname}`);
-    } else {
-      setIsChecking(false);
-    }
-  }, [hasHydrated, isAuthenticated, pathname, router]);
-
-  // Show loading state while checking auth
-  if (isChecking || !hasHydrated) {
+  // Only show loading spinner for protected routes during hydration or auth check
+  if (isProtectedRoute && (!hasHydrated || !isAuthenticated)) {
     return <LoadingSpinner />;
   }
 

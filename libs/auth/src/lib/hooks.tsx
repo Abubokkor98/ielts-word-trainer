@@ -27,7 +27,7 @@ export const useAuth = (requireAuth = false) => {
 };
 
 export const useUserRole = () => {
-  const { user } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   return user?.role || null;
 };
 

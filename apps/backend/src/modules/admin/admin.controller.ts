@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
+import { clearAuthCookies, setAuthCookies } from '../../shared/cookies';
 import { AppError } from '../../core/errors/AppError';
 import { AdminRole } from '../../shared';
 import type { AuthRequest } from '../auth/auth.middleware';
@@ -29,26 +30,7 @@ export class AdminController {
         admin
       );
 
-      const isProduction = process.env.NODE_ENV === 'production';
-      const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
-
-      const cookieOptions = {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
-        path: '/',
-        domain: cookieDomain,
-      };
-
-      res.cookie('accessToken', accessToken, {
-        ...cookieOptions,
-        maxAge: 15 * 60 * 1000, // 15 minutes
-      });
-
-      res.cookie('refreshToken', refreshToken, {
-        ...cookieOptions,
-        maxAge: 7 * 24 * 3600000, // 7 days
-      });
+      setAuthCookies(res, accessToken, refreshToken);
 
       res.status(200).json({
         success: true,
@@ -385,35 +367,15 @@ export class AdminController {
       // Remove old refresh token
       await AuthService.logout(admin, refreshToken);
 
-      // Set new tokens with proper cookie configuration
-      const isProduction = process.env.NODE_ENV === 'production';
-      const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
-
-      const cookieOptions = {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
-        path: '/',
-        domain: cookieDomain,
-      };
-
-      res.cookie('accessToken', accessToken, {
-        ...cookieOptions,
-        maxAge: 15 * 60 * 1000, // 15 minutes
-      });
-
-      res.cookie('refreshToken', newRefreshToken, {
-        ...cookieOptions,
-        maxAge: 7 * 24 * 3600000, // 7 days
-      });
+      setAuthCookies(res, accessToken, newRefreshToken);
 
       res.json({
         success: true,
         accessToken,
       });
     } catch (err) {
-      // Clear invalid refresh token
-      res.clearCookie('refreshToken');
+      // Clear invalid refresh token with proper options
+      clearAuthCookies(res);
       next(err);
     }
   }

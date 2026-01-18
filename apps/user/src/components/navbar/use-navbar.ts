@@ -26,6 +26,7 @@ export function useNavbar() {
   const logout = useAuthStore((state) => state.logout);
   const setUser = useAuthStore((state) => state.setUser);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const accessToken = useAuthStore((state) => state.accessToken);
   const searchParams = useSearchParams();
   const router = useRouter();
   const toast = useToast();
@@ -46,8 +47,7 @@ export function useNavbar() {
   const { data: restoredUser } = useQuery({
     queryKey: ['auth', 'restore'],
     queryFn: () => authApi.getMe({ skipErrorLogging: true }),
-    enabled:
-      hasHydrated && !isAuthenticated && !!useAuthStore.getState().accessToken,
+    enabled: hasHydrated && !isAuthenticated && !!accessToken,
     retry: false,
     staleTime: Infinity,
   });
