@@ -1,10 +1,13 @@
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
-import { useAuthStore } from './auth.store';
+import { selectIsAuthenticated, useAuthStore } from './auth.store';
 
 const { useEffect } = React;
 export const useAuth = (requireAuth = false) => {
-  const { user, isAuthenticated, logout, hasHydrated } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
+  const logout = useAuthStore((state) => state.logout);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -32,7 +35,9 @@ export const protectUserRoute = <P extends object>(
   Component: React.ComponentType<P>
 ) => {
   return function ProtectedUserRoute(props: P) {
-    const { user, isAuthenticated, hasHydrated } = useAuthStore();
+    const user = useAuthStore((state) => state.user);
+    const isAuthenticated = useAuthStore(selectIsAuthenticated);
+    const hasHydrated = useAuthStore((state) => state.hasHydrated);
     const router = useRouter();
 
     useEffect(() => {
@@ -64,7 +69,9 @@ export const protectAdminRoute = <P extends object>(
   Component: React.ComponentType<P>
 ) => {
   return function ProtectedAdminRoute(props: P) {
-    const { user, isAuthenticated, hasHydrated } = useAuthStore();
+    const user = useAuthStore((state) => state.user);
+    const isAuthenticated = useAuthStore(selectIsAuthenticated);
+    const hasHydrated = useAuthStore((state) => state.hasHydrated);
     const router = useRouter();
 
     useEffect(() => {
