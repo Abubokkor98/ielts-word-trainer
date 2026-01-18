@@ -1,30 +1,11 @@
 import type { NextFunction, Request, Response } from 'express';
+import { clearAuthCookies, setAuthCookies } from '../../shared/cookies';
 import { AppError } from '../../core/errors/AppError';
 import { UserService } from '../users/users.service';
 import type { AuthRequest } from './auth.middleware';
 import { AuthService } from './auth.service';
 
 export class AuthController {
-  private static setAuthCookies(
-    res: Response,
-    accessToken: string,
-    refreshToken: string
-  ) {
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 15 * 60 * 1000, // 15 minutes
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 3600000, // 7 days
-    });
-  }
-
   static async register(req: Request, res: Response, next: NextFunction) {
     try {
       const existingUser = await UserService.findByEmail(req.body.email);
@@ -37,7 +18,7 @@ export class AuthController {
         user
       );
 
-      AuthController.setAuthCookies(res, accessToken, refreshToken);
+      setAuthCookies(res, accessToken, refreshToken);
 
       res.status(201).json({
         success: true,
@@ -84,7 +65,7 @@ export class AuthController {
         user
       );
 
-      AuthController.setAuthCookies(res, accessToken, refreshToken);
+      setAuthCookies(res, accessToken, refreshToken);
 
       res.status(200).json({
         success: true,
@@ -172,15 +153,15 @@ export class AuthController {
       // Remove old refresh token
       await AuthService.logout(user, refreshToken);
 
-      AuthController.setAuthCookies(res, accessToken, newRefreshToken);
+      setAuthCookies(res, accessToken, newRefreshToken);
 
       res.json({
         success: true,
         accessToken,
       });
     } catch (err) {
-      // Clear invalid refresh token
-      res.clearCookie('refreshToken');
+      // Clear invalid refresh token with proper options
+      clearAuthCookies(res);
       next(err);
     }
   }
@@ -196,12 +177,7 @@ export class AuthController {
         }
       }
 
-      res.clearCookie('accessToken');
-      res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      });
+      clearAuthCookies(res);
       res.json({ success: true, message: 'Logged out successfully' });
     } catch (err) {
       next(err);

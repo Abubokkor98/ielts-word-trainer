@@ -1,31 +1,29 @@
 'use client';
 
 import { Center, Spinner } from '@chakra-ui/react';
-import { useAuthStore } from '@ielts/auth';
+import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, user } = useAuthStore();
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
   const router = useRouter();
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted) {
+    if (hasHydrated) {
       if (!isAuthenticated) {
         router.push('/login');
       } else if (!['admin', 'super_admin'].includes(user?.role || '')) {
         // Redirect non-admins
-        window.location.href = process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
+        window.location.href =
+          process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
       }
     }
-  }, [isAuthenticated, user, router, isMounted]);
+  }, [isAuthenticated, user, router, hasHydrated]);
 
-  if (!isMounted) {
+  if (!hasHydrated) {
     return (
       <Center h="100vh">
         <Spinner size="xl" color="brand.500" />
@@ -33,7 +31,10 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isAuthenticated || !['admin', 'super_admin'].includes(user?.role || '')) {
+  if (
+    !isAuthenticated ||
+    !['admin', 'super_admin'].includes(user?.role || '')
+  ) {
     return null; // Will redirect via useEffect
   }
 

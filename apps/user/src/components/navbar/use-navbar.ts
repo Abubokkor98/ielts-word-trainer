@@ -1,5 +1,9 @@
 import { useDisclosure, useToast } from '@chakra-ui/react';
-import { axiosInstance, useAuthStore } from '@ielts/auth';
+import {
+  axiosInstance,
+  selectIsAuthenticated,
+  useAuthStore,
+} from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -17,7 +21,12 @@ interface SrsStats {
 
 export function useNavbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isAuthenticated, user, logout, setUser, hasHydrated } = useAuthStore();
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
+  const setUser = useAuthStore((state) => state.setUser);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const accessToken = useAuthStore((state) => state.accessToken);
   const searchParams = useSearchParams();
   const router = useRouter();
   const toast = useToast();
@@ -38,7 +47,7 @@ export function useNavbar() {
   const { data: restoredUser } = useQuery({
     queryKey: ['auth', 'restore'],
     queryFn: () => authApi.getMe({ skipErrorLogging: true }),
-    enabled: hasHydrated && !isAuthenticated && !!useAuthStore.getState().accessToken,
+    enabled: hasHydrated && !isAuthenticated && !!accessToken,
     retry: false,
     staleTime: Infinity,
   });
