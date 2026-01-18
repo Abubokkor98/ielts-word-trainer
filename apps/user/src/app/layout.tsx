@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
 import './global.css';
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </ChakraUIProvider>
         </ReactQueryProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

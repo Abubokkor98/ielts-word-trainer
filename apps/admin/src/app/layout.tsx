@@ -1,3 +1,4 @@
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Inter } from 'next/font/google';
 import './global.css';
 import { ChakraUIProvider, ReactQueryProvider } from '@ielts/ui';
@@ -19,6 +20,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ReactQueryProvider>
           <ChakraUIProvider>{children}</ChakraUIProvider>
         </ReactQueryProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
