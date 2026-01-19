@@ -5,9 +5,9 @@ export interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  module: 'reading' | 'writing' | 'listening' | 'speaking';
+  modules: ('reading' | 'writing' | 'listening' | 'speaking')[];
   partOfSpeech: string;
-  topic: any;
+  topics: any[];
   synonyms: string[];
   antonyms: string[];
 }

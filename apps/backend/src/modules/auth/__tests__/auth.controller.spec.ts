@@ -35,11 +35,7 @@ describe('AuthController - Cookie Configuration', () => {
 
       // Access the private method via reflection
       const setAuthCookies = (AuthController as any).setAuthCookies;
-      setAuthCookies(
-        mockRes as Response,
-        'test-access-token',
-        'test-refresh-token'
-      );
+      setAuthCookies(mockRes as Response, 'test-access-token', 'test-refresh-token');
 
       // Verify accessToken cookie
       expect(cookieSpy).toHaveBeenCalledWith(
@@ -52,7 +48,7 @@ describe('AuthController - Cookie Configuration', () => {
           path: '/',
           domain: '.vercel.app',
           maxAge: 15 * 60 * 1000,
-        })
+        }),
       );
 
       // Verify refreshToken cookie
@@ -66,7 +62,7 @@ describe('AuthController - Cookie Configuration', () => {
           path: '/',
           domain: '.vercel.app',
           maxAge: 7 * 24 * 3600000,
-        })
+        }),
       );
 
       expect(cookieSpy).toHaveBeenCalledTimes(2);
@@ -78,11 +74,7 @@ describe('AuthController - Cookie Configuration', () => {
       delete process.env.COOKIE_DOMAIN;
 
       const setAuthCookies = (AuthController as any).setAuthCookies;
-      setAuthCookies(
-        mockRes as Response,
-        'test-access-token',
-        'test-refresh-token'
-      );
+      setAuthCookies(mockRes as Response, 'test-access-token', 'test-refresh-token');
 
       // Verify accessToken cookie
       expect(cookieSpy).toHaveBeenCalledWith(
@@ -95,7 +87,7 @@ describe('AuthController - Cookie Configuration', () => {
           path: '/',
           domain: undefined,
           maxAge: 15 * 60 * 1000,
-        })
+        }),
       );
 
       // Verify refreshToken cookie
@@ -109,7 +101,7 @@ describe('AuthController - Cookie Configuration', () => {
           path: '/',
           domain: undefined,
           maxAge: 7 * 24 * 3600000,
-        })
+        }),
       );
     });
 
@@ -118,18 +110,14 @@ describe('AuthController - Cookie Configuration', () => {
       process.env.COOKIE_DOMAIN = '.example.com';
 
       const setAuthCookies = (AuthController as any).setAuthCookies;
-      setAuthCookies(
-        mockRes as Response,
-        'test-access-token',
-        'test-refresh-token'
-      );
+      setAuthCookies(mockRes as Response, 'test-access-token', 'test-refresh-token');
 
       expect(cookieSpy).toHaveBeenCalledWith(
         'accessToken',
         'test-access-token',
         expect.objectContaining({
           domain: '.example.com',
-        })
+        }),
       );
     });
   });

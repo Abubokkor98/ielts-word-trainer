@@ -6,12 +6,12 @@ export interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: DifficultyLevel;
-  topic: {
+  topics: Array<{
     _id: string;
     name: string;
-  };
+  }>;
   partOfSpeech: string;
-  module: 'reading' | 'writing' | 'listening' | 'speaking';
+  modules: ('reading' | 'writing' | 'listening' | 'speaking')[];
   synonyms: string[];
   antonyms: string[];
 }

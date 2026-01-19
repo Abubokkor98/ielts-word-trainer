@@ -12,15 +12,9 @@ export const createServer = (): Express => {
 
   // Trust first proxy (required for rate limiting behind load balancers like Vercel/Dokploy)
   app.set('trust proxy', 1);
-  console.log(
-    '----------------------------------------------------------------'
-  );
-  console.log(
-    'Server Request - CORS Config: http://localhost:3000, http://localhost:3001'
-  );
-  console.log(
-    '----------------------------------------------------------------'
-  );
+  console.log('----------------------------------------------------------------');
+  console.log('Server Request - CORS Config: http://localhost:3000, http://localhost:3001');
+  console.log('----------------------------------------------------------------');
 
   // Middleware
   app.use(express.json());
@@ -29,7 +23,7 @@ export const createServer = (): Express => {
     cors({
       origin: env.CORS_ORIGINS.split(','), // Allow multiple origins from env
       credentials: true,
-    })
+    }),
   );
   app.use(helmet());
   app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'short'));

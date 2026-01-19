@@ -14,26 +14,34 @@ export function QuizStartScreen({
   onDifficultyChange,
 }: QuizStartScreenProps) {
   return (
-    <Box bg="gray.900" display="flex" alignItems="center" justifyContent="center" py={12} flex="1">
-      <Container maxW="2xl">
+    <Box
+      bg="gray.900"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      py={{ base: 6, md: 12 }}
+      flex="1"
+    >
+      <Container maxW="2xl" px={{ base: 4, md: 0 }}>
         <VStack
-          spacing={8}
+          spacing={{ base: 6, md: 8 }}
           bg="gray.800"
-          p={12}
+          p={{ base: 6, md: 12 }}
           borderRadius="lg"
           borderWidth="1px"
           borderColor="gray.700"
+          w="full"
         >
-          <Text fontSize="6xl">🎯</Text>
-          <Heading as="h1" fontSize="3xl" color="gray.50" textAlign="center">
+          <Text fontSize={{ base: '5xl', md: '6xl' }}>🎯</Text>
+          <Heading as="h1" fontSize={{ base: '2xl', md: '3xl' }} color="gray.50" textAlign="center">
             Ready to Test Your Vocabulary?
           </Heading>
-          <Text fontSize="lg" color="gray.400" textAlign="center" maxW="md">
+          <Text fontSize={{ base: 'md', md: 'lg' }} color="gray.400" textAlign="center" maxW="md">
             Challenge yourself with our interactive quiz featuring carefully selected IELTS
             vocabulary
           </Text>
           <Box w="full" maxW="md">
-            <Text color="gray.300" fontWeight="600" mb={2}>
+            <Text color="gray.300" fontWeight="600" mb={2} fontSize={{ base: 'sm', md: 'md' }}>
               Select Difficulty Level
             </Text>
             <select
@@ -48,6 +56,7 @@ export function QuizStartScreen({
                 color: '#F7FAFC',
                 borderWidth: '1px',
                 borderStyle: 'solid',
+                fontSize: '1rem',
               }}
             >
               <option value="mixed" style={{ background: '#1A202C' }}>
@@ -68,9 +77,10 @@ export function QuizStartScreen({
             size="lg"
             onClick={onStart}
             isLoading={isLoading}
-            loadingText="Loading questions..."
-            px={12}
+            loadingText="Loading..."
+            px={{ base: 8, md: 12 }}
             py={6}
+            w={{ base: 'full', sm: 'auto' }}
           >
             Start New Quiz
           </Button>

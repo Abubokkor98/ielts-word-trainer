@@ -1,14 +1,14 @@
 import { AppError } from '../../core/errors/AppError';
 import { QuestionType } from '../../shared';
-import { type IWord, Word } from '../words/words.model';
 import { SRSService } from '../srs/srs.service';
+import { type IWord, Word } from '../words/words.model';
 
 export class QuizService {
   static async generateQuiz(
     userId?: string, // Made optional
     topicId?: string,
     difficulty?: string,
-    limit: number = 10
+    limit: number = 10,
   ) {
     let selectedWords: IWord[] = [];
 
@@ -31,12 +31,7 @@ export class QuizService {
       // Priority 2: Fill remaining slots with new words
       if (selectedWords.length < limit) {
         const remainingCount = limit - selectedWords.length;
-        const newWords = await SRSService.getNewWords(
-          userId,
-          topicId,
-          difficulty,
-          remainingCount
-        );
+        const newWords = await SRSService.getNewWords(userId, topicId, difficulty, remainingCount);
         selectedWords = [...selectedWords, ...newWords];
       }
     }
@@ -48,7 +43,7 @@ export class QuizService {
     if (selectedWords.length < 4) {
       // ensuring min 4 for distractors logic
       const filter: any = {};
-      if (topicId) filter.topic = topicId;
+      if (topicId) filter.topics = topicId;
       if (difficulty) filter.difficulty = difficulty;
 
       // Exclude already selected
@@ -62,10 +57,7 @@ export class QuizService {
     }
 
     if (selectedWords.length < 4) {
-      throw new AppError(
-        'Not enough words to generate a quiz (min 4 required)',
-        400
-      );
+      throw new AppError('Not enough words to generate a quiz (min 4 required)', 400);
     }
 
     // Shuffle the final selection so due/new words are mixed
@@ -215,12 +207,11 @@ export class QuizService {
     }
 
     // Escape special regex characters to prevent ReDoS and matching issues
-    const escapeRegex = (str: string) =>
-      str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
     const sentence = word.exampleSentence.replace(
       new RegExp(escapeRegex(word.word), 'gi'),
-      '_____'
+      '_____',
     );
 
     const distractors = allWords

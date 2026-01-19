@@ -1,13 +1,13 @@
-import { Logger } from '../../utils';
 import type { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
+import { Logger } from '../../utils';
 import { AppError } from '../errors/AppError';
 
 export const globalErrorHandler = (
   err: Error,
   _req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ) => {
   Logger.error(err.message);
 

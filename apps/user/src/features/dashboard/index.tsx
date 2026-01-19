@@ -23,10 +23,7 @@ export function DashboardContainer() {
     }
   }, [hasHydrated, isAuthenticated, router]);
 
-  const { user, analytics, srsStats, isLoading } = useDashboardData(
-    isAuthenticated,
-    localUser
-  );
+  const { user, analytics, srsStats, isLoading } = useDashboardData(isAuthenticated, localUser);
 
   // Show loading during hydration
   if (!hasHydrated) {

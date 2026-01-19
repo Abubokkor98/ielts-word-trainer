@@ -20,11 +20,7 @@ export const getAuthCookieOptions = () => {
 /**
  * Set authentication cookies (access token and refresh token)
  */
-export const setAuthCookies = (
-  res: Response,
-  accessToken: string,
-  refreshToken: string
-) => {
+export const setAuthCookies = (res: Response, accessToken: string, refreshToken: string) => {
   const options = getAuthCookieOptions();
 
   res.cookie('accessToken', accessToken, {

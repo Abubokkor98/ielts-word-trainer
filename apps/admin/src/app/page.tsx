@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Button, Container, Heading, Text, VStack } from '@chakra-ui/react';
 import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -35,8 +28,7 @@ export default function AdminHomePage() {
 
     if (user?.role === 'user') {
       // Regular user trying to access admin portal - redirect to user app
-      const userAppUrl =
-        process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
+      const userAppUrl = process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
       if (typeof window !== 'undefined') {
         window.location.replace(userAppUrl);
       }
@@ -50,13 +42,7 @@ export default function AdminHomePage() {
   // Show loading while hydrating
   if (!hasHydrated) {
     return (
-      <Box
-        minH="100vh"
-        bg="gray.900"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
+      <Box minH="100vh" bg="gray.900" display="flex" alignItems="center" justifyContent="center">
         <Text color="gray.400">Loading...</Text>
       </Box>
     );
@@ -65,13 +51,7 @@ export default function AdminHomePage() {
   // Show loading state while redirecting authenticated users
   if (isAuthenticated) {
     return (
-      <Box
-        minH="100vh"
-        bg="gray.900"
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-      >
+      <Box minH="100vh" bg="gray.900" display="flex" alignItems="center" justifyContent="center">
         <Text color="gray.400">Redirecting...</Text>
       </Box>
     );
@@ -79,13 +59,7 @@ export default function AdminHomePage() {
 
   // Show welcome page for unauthenticated users
   return (
-    <Box
-      minH="100vh"
-      bg="gray.900"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
+    <Box minH="100vh" bg="gray.900" display="flex" alignItems="center" justifyContent="center">
       <Container maxW="md">
         <VStack spacing={8} align="center" textAlign="center">
           <Heading as="h1" size="2xl" color="white">

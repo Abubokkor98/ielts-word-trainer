@@ -6,9 +6,11 @@ export interface ReviewWord {
   synonyms: string[];
   antonyms: string[];
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  topic?: {
+  topics: Array<{
+    _id: string;
     name: string;
-  };
+  }>;
+  modules: string[];
 }
 
 export interface ReviewSession {
