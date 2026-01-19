@@ -106,9 +106,11 @@ export function WordDetailsModal({
                   word.topics.length > 0 &&
                   word.topics.slice(0, 3).map((topic) => {
                     const topicName =
-                      typeof topic === 'object' ? (topic as any).name : topic;
+                      typeof topic === 'object' && topic !== null
+                        ? topic.name
+                        : topic;
                     return (
-                      <WrapItem key={topicName}>
+                      <WrapItem key={`topic-${topicName}`}>
                         <Badge
                           colorScheme="purple"
                           variant="subtle"

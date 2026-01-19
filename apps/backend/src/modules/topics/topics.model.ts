@@ -29,4 +29,19 @@ TopicSchema.pre('save', function () {
   }
 });
 
+TopicSchema.pre('findOneAndUpdate', function () {
+  const update = this.getUpdate() as Record<string, any>;
+  if (update?.name && typeof update.name === 'string') {
+    update.slug = update.name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+  } else if (update?.$set?.name && typeof update.$set.name === 'string') {
+    update.$set.slug = update.$set.name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+  }
+});
+
 export const Topic = mongoose.model<ITopic>('Topic', TopicSchema);

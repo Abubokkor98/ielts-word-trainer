@@ -154,15 +154,6 @@ export class SRSService {
       },
       // 3. Unwind (should always be 1-to-1)
       { $unwind: '$wordDetails' },
-      // 3.5 Populate topics
-      {
-        $lookup: {
-          from: 'topics',
-          localField: 'wordDetails.topics',
-          foreignField: '_id',
-          as: 'wordDetails.topics',
-        },
-      },
     ];
 
     // 4. Apply Filters on Word fields
@@ -181,6 +172,16 @@ export class SRSService {
         },
       });
     }
+
+    // 3.5 Populate topics (Moved after filtering)
+    pipeline.push({
+      $lookup: {
+        from: 'topics',
+        localField: 'wordDetails.topics',
+        foreignField: '_id',
+        as: 'wordDetails.topics',
+      },
+    });
 
     // 5. Project and Limit
     pipeline.push({

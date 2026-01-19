@@ -95,10 +95,17 @@ export class CSVImportService {
           .filter(Boolean);
 
         // Parse comma-separated modules
+        const validModules = ['reading', 'writing', 'listening', 'speaking'];
         const modules = validatedData.modules
           .split(',')
           .map((m) => m.trim())
-          .filter(Boolean);
+          .filter((m) => {
+            if (!validModules.includes(m.toLowerCase())) {
+              throw new Error(`Invalid module: ${m}. Must be one of: ${validModules.join(', ')}`);
+            }
+            return true;
+          })
+          .map((m) => m.toLowerCase());
 
         // Parse comma-separated topics
         const topicNames = validatedData.topics
@@ -109,8 +116,10 @@ export class CSVImportService {
         // Resolve Topics (Find or Create)
         const topicIds = await resolveTopics(topicNames);
 
+        const { topics: _rawTopics, modules: _rawModules, ...wordData } = validatedData;
+
         await Word.create({
-          ...validatedData,
+          ...wordData,
           topics: topicIds,
           modules: modules,
           synonyms,

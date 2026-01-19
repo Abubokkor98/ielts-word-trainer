@@ -18,39 +18,56 @@ async function fixWordTopics() {
     console.log(`Found ${words.length} words to check.`);
 
     for (const word of words) {
-      const currentTopic = word.topic;
+      const legacyTopic = (word as any).topic; // Handle legacy field
+      const currentTopics = word.topics || [];
 
-      if (!currentTopic) {
-        console.log(`Word "${word.word}" has no topic. Skipping.`);
+      // If already has new format topics, skip
+      if (currentTopics.length > 0 && mongoose.isValidObjectId(currentTopics[0])) {
         continue;
       }
 
-      // Check if it's already a valid ObjectId
-      if (mongoose.isValidObjectId(currentTopic)) {
-        // Assume it's already migrated
+      // If no legacy topic and no current topics, skip
+      if (!legacyTopic && currentTopics.length === 0) {
+        console.log(`Word "${word.word}" has no topic info. Skipping.`);
         continue;
       }
 
-      const topicName = String(currentTopic);
-      console.log(`Processing word "${word.word}" with legacy topic "${topicName}"`);
+      let topicIdToLink: mongoose.Types.ObjectId | null = null;
 
-      // Find or create topic
-      let topic = await Topic.findOne({
-        name: { $regex: new RegExp(`^${topicName}$`, 'i') },
-      });
+      // Case 1: Legacy topic ID exists and is valid
+      if (legacyTopic && mongoose.isValidObjectId(legacyTopic)) {
+        topicIdToLink = legacyTopic;
+      }
+      // Case 2: Legacy topic is a string name
+      else if (legacyTopic && typeof legacyTopic === 'string') {
+        const topicName = String(legacyTopic);
+        console.log(`Processing word "${word.word}" with legacy topic name "${topicName}"`);
 
-      if (!topic) {
-        console.log(`Creating new topic: ${topicName}`);
-        topic = await Topic.create({
-          name: topicName,
-          wordCount: 0,
+        let topic = await Topic.findOne({
+          name: { $regex: new RegExp(`^${topicName}$`, 'i') },
         });
+
+        if (!topic) {
+          console.log(`Creating new topic: ${topicName}`);
+          topic = await Topic.create({
+            name: topicName,
+            wordCount: 0,
+          });
+        }
+        topicIdToLink = topic._id as mongoose.Types.ObjectId;
       }
 
-      // Update word using updateOne to bypass schema validation of the "old" document
-      await Word.updateOne({ _id: word._id }, { topic: topic._id });
-
-      console.log(`Updated word "${word.word}" linked to topic "${topic.name}"`);
+      if (topicIdToLink) {
+        // Update word to use array format, removing legacy field
+        await Word.updateOne(
+          { _id: word._id },
+          {
+            $set: { topics: [topicIdToLink] },
+            $unset: { topic: '' },
+          },
+        );
+        console.log(`Updated word "${word.word}" migrated to topics array.`);
+      }
     }
 
     console.log('Migration complete.');

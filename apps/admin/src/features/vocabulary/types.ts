@@ -7,7 +7,7 @@ export interface Word {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   modules: ('reading' | 'writing' | 'listening' | 'speaking')[];
   partOfSpeech: string;
-  topics: any[];
+  topics: Array<{ _id: string; name: string }>;
   synonyms: string[];
   antonyms: string[];
 }
