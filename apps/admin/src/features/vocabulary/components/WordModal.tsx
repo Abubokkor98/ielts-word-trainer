@@ -81,7 +81,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
     reset,
     setValue,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<WordFormData>();
 
   const toast = useToast();
@@ -187,7 +187,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
           difficulty: '',
           partOfSpeech: '',
           topics: [],
-          modules: [],
+          modules: ['reading'],
           synonyms: '',
           antonyms: '',
         });
@@ -243,6 +243,27 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
   });
 
   const onSubmit = (data: WordFormData) => {
+    // Manual validation since standard required rules don't work easily with custom inputs like these
+    if (!data.modules || data.modules.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'At least one module must be selected',
+        status: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (!data.topics || data.topics.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'At least one topic must be selected',
+        status: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
     mutation.mutate(data);
   };
 

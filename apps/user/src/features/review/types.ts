@@ -1,3 +1,5 @@
+import type { ModuleType } from '@ielts/shared';
+
 export interface ReviewWord {
   _id: string;
   word: string;
@@ -10,7 +12,7 @@ export interface ReviewWord {
     _id: string;
     name: string;
   }>;
-  modules: string[];
+  modules: ModuleType[];
 }
 
 export interface ReviewSession {

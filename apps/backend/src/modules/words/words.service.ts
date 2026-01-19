@@ -49,12 +49,9 @@ export async function resolveTopic(topicInput: string): Promise<string> {
 
 // Resolve multiple topics at once
 export async function resolveTopics(topicInputs: string[]): Promise<string[]> {
-  const resolvedTopicIds: string[] = [];
-
-  for (const topicInput of topicInputs) {
-    const topicId = await resolveTopic(topicInput);
-    resolvedTopicIds.push(topicId);
-  }
+  const resolvedTopicIds = await Promise.all(
+    topicInputs.map((topicInput) => resolveTopic(topicInput)),
+  );
 
   // Remove duplicates
   return [...new Set(resolvedTopicIds)];
@@ -62,11 +59,12 @@ export async function resolveTopics(topicInputs: string[]): Promise<string[]> {
 
 export class WordsService {
   static async create(input: CreateWordInput) {
+    const wordData = { ...input };
     // If topics are provided, handle them (they might be names or IDs)
-    if (input.topics && Array.isArray(input.topics) && input.topics.length > 0) {
-      input.topics = await resolveTopics(input.topics as string[]);
+    if (wordData.topics && Array.isArray(wordData.topics) && wordData.topics.length > 0) {
+      wordData.topics = await resolveTopics(wordData.topics as string[]);
     }
-    return Word.create(input);
+    return Word.create(wordData);
   }
 
   static async findAll(query: any, page: number = 1, limit: number = 20) {

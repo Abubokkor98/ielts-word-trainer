@@ -35,7 +35,7 @@ const WordSchema = new Schema<IWord>(
       type: String,
       enum: ['beginner', 'intermediate', 'advanced'],
       required: true,
-      index: true, // For difficulty filtering
+      // index: true, // For difficulty filtering - Removed as covered by compound index
     },
     modules: {
       type: [String],

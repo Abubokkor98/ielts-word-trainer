@@ -8,13 +8,19 @@ async function verifyTopics() {
   console.log('Registered Models:', mongoose.modelNames());
 
   try {
-    const word = await Word.findOne({ word: 'abandon' }).populate('topic');
-    console.log('Word with populated topic:', JSON.stringify(word, null, 2));
+    const word = await Word.findOne({ word: 'abandon' }).populate('topics');
+    console.log('Word with populated topics:', JSON.stringify(word, null, 2));
 
-    if (word?.topic && typeof word.topic === 'object' && 'name' in word.topic) {
-      console.log('SUCCESS: Topic is correctly populated as an object.');
+    if (
+      word?.topics &&
+      Array.isArray(word.topics) &&
+      word.topics.length > 0 &&
+      typeof word.topics[0] === 'object' &&
+      'name' in word.topics[0]
+    ) {
+      console.log('SUCCESS: Topics array is correctly populated with objects.');
     } else {
-      console.log('FAILURE: Topic is not populated correctly.', word?.topic);
+      console.log('FAILURE: Topics are not populated correctly.', word?.topics);
     }
   } catch (error) {
     console.error('Verification failed:', error);
