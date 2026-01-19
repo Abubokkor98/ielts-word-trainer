@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    ports:
+      - '3333:3000' # Maps localhost:3333 -> Container:3000
+    env_file:
+      - .env # Loads MONGODB_URI/JWT_SECRET from your local .env
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    restart: unless-stopped
+    # Optional: If you want to see logs immediately
+    # tty: true

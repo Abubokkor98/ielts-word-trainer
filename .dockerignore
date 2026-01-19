@@ -1,0 +1,35 @@
+# Dependency directories
+node_modules
+.pnpm-store
+
+# Build output
+dist
+coverage
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Version control
+.git
+.gitignore
+
+# IDE & Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Temporary
+tmp
