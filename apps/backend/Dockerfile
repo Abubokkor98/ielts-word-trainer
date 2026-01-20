@@ -16,7 +16,8 @@ RUN pnpm install --frozen-lockfile
 RUN nx build backend --configuration=production
 
 # Prune dependencies to keep only production ones
-# We do this in a separate step or modify node_modules in place
+# Set CI=true to skip pnpm interactive checks
+ENV CI=true
 RUN pnpm prune --prod
 
 # Runner Stage
