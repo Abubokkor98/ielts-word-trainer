@@ -1,9 +1,5 @@
 import { useDisclosure, useToast } from '@chakra-ui/react';
-import {
-  axiosInstance,
-  selectIsAuthenticated,
-  useAuthStore,
-} from '@ielts/auth';
+import { axiosInstance, selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';

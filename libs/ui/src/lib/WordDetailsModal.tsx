@@ -31,45 +31,119 @@ interface WordDetailsModalProps {
     partOfSpeech?: string;
     synonyms?: string[];
     antonyms?: string[];
-    topic?: string | { _id: string; name: string };
+    topics?: Array<string | { _id: string; name: string }>;
+    modules?: string[];
   } | null;
 }
 
-export function WordDetailsModal({ isOpen, onClose, word }: WordDetailsModalProps) {
+export function WordDetailsModal({
+  isOpen,
+  onClose,
+  word,
+}: WordDetailsModalProps) {
   if (!word) return null;
 
   const difficultyColorScheme =
     word.difficulty === 'beginner'
       ? 'green'
       : word.difficulty === 'intermediate'
-        ? 'orange'
-        : 'red';
+      ? 'orange'
+      : 'red';
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
       <ModalOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
-      <ModalContent bg="gray.800" borderWidth="1px" borderColor="gray.700" mx={{ base: 4, md: 0 }}>
+      <ModalContent
+        bg="gray.800"
+        borderWidth="1px"
+        borderColor="gray.700"
+        mx={{ base: 4, md: 0 }}
+      >
         {/* Compact Header */}
-        <ModalHeader pb={3} pt={4} borderBottomWidth="1px" borderColor="gray.700">
+        <ModalHeader
+          pb={3}
+          pt={4}
+          borderBottomWidth="1px"
+          borderColor="gray.700"
+        >
           <VStack align="stretch" spacing={2}>
-            <Heading size="lg" color="brand.400">
-              {word.word}
-            </Heading>
-            <HStack spacing={2}>
-              {word.partOfSpeech && (
-                <Badge colorScheme="blue" fontSize="xs" textTransform="uppercase">
-                  {word.partOfSpeech}
-                </Badge>
-              )}
-              <Badge colorScheme={difficultyColorScheme} fontSize="xs" textTransform="uppercase">
-                {word.difficulty}
-              </Badge>
-              {word.topic && (
-                <Badge colorScheme="purple" fontSize="xs" textTransform="uppercase">
-                  {typeof word.topic === 'object' ? (word.topic as any).name : word.topic}
-                </Badge>
-              )}
-            </HStack>
+            <VStack align="start" spacing={2} w="full">
+              <HStack spacing={3} align="baseline" flexWrap="wrap">
+                <Heading size="2xl" color="brand.400" lineHeight="shorter">
+                  {word.word}
+                </Heading>
+                {word.partOfSpeech && (
+                  <Badge
+                    colorScheme="blue"
+                    variant="solid"
+                    fontSize="sm"
+                    px={2}
+                    py={0.5}
+                    borderRadius="md"
+                    textTransform="uppercase"
+                    alignSelf="center"
+                  >
+                    {word.partOfSpeech}
+                  </Badge>
+                )}
+              </HStack>
+
+              <Wrap spacing={2} mt={1}>
+                <WrapItem>
+                  <Badge
+                    colorScheme={difficultyColorScheme}
+                    fontSize="0.65rem"
+                    px={2}
+                    py={0.5}
+                    borderRadius="md"
+                    textTransform="uppercase"
+                    letterSpacing="wider"
+                  >
+                    {word.difficulty}
+                  </Badge>
+                </WrapItem>
+                {word.topics &&
+                  word.topics.length > 0 &&
+                  word.topics.slice(0, 3).map((topic) => {
+                    const topicName =
+                      typeof topic === 'object' && topic !== null
+                        ? topic.name
+                        : topic;
+                    return (
+                      <WrapItem key={`topic-${topicName}`}>
+                        <Badge
+                          colorScheme="purple"
+                          variant="subtle"
+                          fontSize="0.65rem"
+                          px={2}
+                          py={0.5}
+                          borderRadius="full"
+                          textTransform="uppercase"
+                          letterSpacing="wider"
+                        >
+                          {topicName}
+                        </Badge>
+                      </WrapItem>
+                    );
+                  })}
+                {word.topics && word.topics.length > 3 && (
+                  <WrapItem>
+                    <Badge
+                      colorScheme="gray"
+                      variant="outline"
+                      fontSize="0.65rem"
+                      px={2}
+                      py={0.5}
+                      borderRadius="full"
+                      textTransform="uppercase"
+                      letterSpacing="wider"
+                    >
+                      +{word.topics.length - 3} more
+                    </Badge>
+                  </WrapItem>
+                )}
+              </Wrap>
+            </VStack>
           </VStack>
         </ModalHeader>
         <ModalCloseButton color="gray.400" />
@@ -105,7 +179,12 @@ export function WordDetailsModal({ isOpen, onClose, word }: WordDetailsModalProp
               >
                 Example
               </Text>
-              <Text fontSize="md" fontStyle="italic" color="gray.300" lineHeight="1.6">
+              <Text
+                fontSize="md"
+                fontStyle="italic"
+                color="gray.300"
+                lineHeight="1.6"
+              >
                 "{word.exampleSentence}"
               </Text>
             </Box>
@@ -130,7 +209,12 @@ export function WordDetailsModal({ isOpen, onClose, word }: WordDetailsModalProp
                     <Wrap spacing={1.5}>
                       {word.synonyms.map((syn) => (
                         <WrapItem key={syn}>
-                          <Badge colorScheme="green" fontSize="xs" px={2} py={0.5}>
+                          <Badge
+                            colorScheme="green"
+                            fontSize="xs"
+                            px={2}
+                            py={0.5}
+                          >
                             {syn}
                           </Badge>
                         </WrapItem>
@@ -155,7 +239,12 @@ export function WordDetailsModal({ isOpen, onClose, word }: WordDetailsModalProp
                     <Wrap spacing={1.5}>
                       {word.antonyms.map((ant) => (
                         <WrapItem key={ant}>
-                          <Badge colorScheme="red" fontSize="xs" px={2} py={0.5}>
+                          <Badge
+                            colorScheme="red"
+                            fontSize="xs"
+                            px={2}
+                            py={0.5}
+                          >
                             {ant}
                           </Badge>
                         </WrapItem>

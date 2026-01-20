@@ -1,3 +1,5 @@
+import type { ModuleType } from '@ielts/shared';
+
 export interface ReviewWord {
   _id: string;
   word: string;
@@ -6,9 +8,11 @@ export interface ReviewWord {
   synonyms: string[];
   antonyms: string[];
   difficulty: 'beginner' | 'intermediate' | 'advanced';
-  topic?: {
+  topics: Array<{
+    _id: string;
     name: string;
-  };
+  }>;
+  modules: ModuleType[];
 }
 
 export interface ReviewSession {

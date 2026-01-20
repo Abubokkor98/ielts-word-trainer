@@ -24,44 +24,70 @@ async function seed() {
     });
     console.log(`Connected to MongoDB - Database: ${MONGODB_DBNAME}`);
 
-    // Clear existing data
-    await Admin.deleteMany({});
-    await User.deleteMany({});
-    await Word.deleteMany({});
-    await Topic.deleteMany({});
-    await Quiz.deleteMany({});
-    await QuizAttempt.deleteMany({});
-    console.log('Cleared existing data');
+    // Check if we should do a full reset (dangerous - only for development)
+    const FULL_RESET = process.env.SEED_FULL_RESET === 'true';
 
-    // Create admin user
+    if (FULL_RESET) {
+      console.log('⚠️  FULL_RESET enabled - Clearing ALL data...');
+      await Admin.deleteMany({});
+      await User.deleteMany({});
+      await Word.deleteMany({});
+      await Topic.deleteMany({});
+      await Quiz.deleteMany({});
+      await QuizAttempt.deleteMany({});
+      console.log('Cleared existing data');
+    } else {
+      console.log('ℹ️  FULL_RESET not enabled - Preserving existing users');
+      console.log("   Only adding new data if it doesn't exist");
+    }
+
+    // Create admins only if they don't exist
     const adminPassword = await bcrypt.hash('admin123', 10);
-    const _admin = await Admin.create({
-      name: 'Super Admin',
-      email: 'admin@ielts.com',
-      passwordHash: adminPassword,
-      role: AdminRole.SUPER_ADMIN,
-    });
 
-    // Create regular admin
-    const _regularAdmin = await Admin.create({
-      name: 'Regular Admin',
+    let _admin = await Admin.findOne({ email: 'admin@ielts.com' });
+    if (!_admin) {
+      _admin = await Admin.create({
+        name: 'Super Admin',
+        email: 'admin@ielts.com',
+        passwordHash: adminPassword,
+        role: AdminRole.SUPER_ADMIN,
+      });
+      console.log('Created Super Admin');
+    } else {
+      console.log('Super Admin already exists');
+    }
+
+    let _regularAdmin = await Admin.findOne({
       email: 'regular_admin@ielts.com',
-      passwordHash: adminPassword, // Reuse hash since passwords are the same
-      role: AdminRole.ADMIN,
     });
+    if (!_regularAdmin) {
+      _regularAdmin = await Admin.create({
+        name: 'Regular Admin',
+        email: 'regular_admin@ielts.com',
+        passwordHash: adminPassword,
+        role: AdminRole.ADMIN,
+      });
+      console.log('Created Regular Admin');
+    } else {
+      console.log('Regular Admin already exists');
+    }
 
-    // Create regular user
+    // Create test user only if they don't exist
     const userPassword = await bcrypt.hash('user123', 10);
-    const user = await User.create({
-      name: 'John Doe',
-      email: 'user@ielts.com',
-      passwordHash: userPassword,
-      role: UserRole.USER,
-      xp: 500,
-      streak: 3,
-    });
-
-    console.log('Created users');
+    let user = await User.findOne({ email: 'user@ielts.com' });
+    if (!user) {
+      user = await User.create({
+        name: 'John Doe',
+        email: 'user@ielts.com',
+        passwordHash: userPassword,
+        role: UserRole.USER,
+        xp: 500,
+        streak: 3,
+      });
+      console.log('Created test user');
+    } else {
+      console.log('Test user already exists');
+    }
 
     // Create topics
     const topics = await Topic.create([
@@ -88,14 +114,14 @@ async function seed() {
 
     // Create vocabulary words
     const words = await Word.create([
-      // BEGINNER LEVEL WORDS (10 words)
+      // BEGINNER LEVEL WORDS (15 words)
       {
         word: 'important',
         meaning: 'of great value or significance',
         exampleSentence: 'It is important to study every day.',
         difficulty: 'beginner',
-        module: 'reading',
-        topic: topicMap.General,
+        modules: ['reading', 'writing'],
+        topics: [topicMap.General],
         partOfSpeech: 'adjective',
         synonyms: ['significant', 'valuable', 'essential'],
         antonyms: ['unimportant', 'trivial', 'minor'],

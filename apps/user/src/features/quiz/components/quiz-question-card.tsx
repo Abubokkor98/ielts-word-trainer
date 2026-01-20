@@ -96,11 +96,19 @@ export function QuizQuestionCard({
                   onClick={() => onAnswer(option.id)}
                   isDisabled={selectedAnswer !== null}
                   w="full"
-                  py={8}
+                  py={4}
+                  px={6}
                   textAlign="left"
                   justifyContent="flex-start"
+                  alignItems="center"
+                  whiteSpace="normal"
+                  height="auto"
+                  minH="4rem"
+                  display="flex"
                 >
-                  {option.text}
+                  <Text display="block" lineHeight="base">
+                    {option.text}
+                  </Text>
                 </Button>
               ))}
             </SimpleGrid>

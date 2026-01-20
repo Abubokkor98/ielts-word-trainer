@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
-import { Logger } from '../../utils';
 import bcrypt from 'bcryptjs';
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
 import { EmailService } from '../../core/services/email.service';
+import { Logger } from '../../utils';
 import { UserService } from '../users/users.service';
 
 export class PasswordResetController {
@@ -21,10 +21,7 @@ export class PasswordResetController {
       }
 
       const resetToken = crypto.randomBytes(32).toString('hex');
-      const hashedToken = crypto
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
+      const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
       user.resetPasswordToken = hashedToken;
       user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hour
@@ -54,10 +51,7 @@ export class PasswordResetController {
         throw new AppError('Password must be at least 6 characters', 400);
       }
 
-      const hashedToken = crypto
-        .createHash('sha256')
-        .update(token)
-        .digest('hex');
+      const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
 
       const user = await UserService.findOne({
         resetPasswordToken: hashedToken,

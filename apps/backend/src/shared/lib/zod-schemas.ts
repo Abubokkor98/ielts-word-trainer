@@ -22,8 +22,8 @@ export const CreateWordSchema = z.object({
   partOfSpeech: z.string().min(1),
   synonyms: z.array(z.string()),
   antonyms: z.array(z.string()),
-  topic: z.string(),
-  module: z.nativeEnum(ModuleType),
+  topics: z.array(z.string()).min(1, 'At least one topic is required'),
+  modules: z.array(z.nativeEnum(ModuleType)).min(1, 'At least one module is required'),
   difficulty: z.nativeEnum(Difficulty),
 });
 

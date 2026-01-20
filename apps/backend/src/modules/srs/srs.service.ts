@@ -160,7 +160,7 @@ export class SRSService {
     if (topicId) {
       pipeline.push({
         $match: {
-          'wordDetails.topic': new mongoose.Types.ObjectId(topicId),
+          'wordDetails.topics': new mongoose.Types.ObjectId(topicId),
         },
       });
     }
@@ -172,6 +172,16 @@ export class SRSService {
         },
       });
     }
+
+    // 3.5 Populate topics (Moved after filtering)
+    pipeline.push({
+      $lookup: {
+        from: 'topics',
+        localField: 'wordDetails.topics',
+        foreignField: '_id',
+        as: 'wordDetails.topics',
+      },
+    });
 
     // 5. Project and Limit
     pipeline.push({
@@ -198,7 +208,7 @@ export class SRSService {
 
     // 1. Filter Words by Topic/Difficulty first (reduce search space)
     const matchStage: any = {};
-    if (topicId) matchStage.topic = new mongoose.Types.ObjectId(topicId);
+    if (topicId) matchStage.topics = new mongoose.Types.ObjectId(topicId);
     if (difficulty) matchStage.difficulty = difficulty;
 
     if (Object.keys(matchStage).length > 0) {
@@ -242,6 +252,14 @@ export class SRSService {
     pipeline.push(
       { $project: { isStudied: 0 } }, // Remove temp field
       { $limit: limit },
+      {
+        $lookup: {
+          from: 'topics',
+          localField: 'topics',
+          foreignField: '_id',
+          as: 'topics',
+        },
+      },
     );
 
     return Word.aggregate(pipeline);

@@ -17,8 +17,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         router.push('/login');
       } else if (!['admin', 'super_admin'].includes(user?.role || '')) {
         // Redirect non-admins
-        window.location.href =
-          process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
+        window.location.href = process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000';
       }
     }
   }, [isAuthenticated, user, router, hasHydrated]);
@@ -31,10 +30,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (
-    !isAuthenticated ||
-    !['admin', 'super_admin'].includes(user?.role || '')
-  ) {
+  if (!isAuthenticated || !['admin', 'super_admin'].includes(user?.role || '')) {
     return null; // Will redirect via useEffect
   }
 

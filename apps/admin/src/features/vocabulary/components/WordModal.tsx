@@ -1,6 +1,8 @@
 import {
   Box,
   Button,
+  Checkbox,
+  CheckboxGroup,
   FormControl,
   FormErrorMessage,
   FormLabel,
@@ -18,10 +20,15 @@ import {
   ModalOverlay,
   Select,
   Spinner,
+  Stack,
+  Tag,
+  TagCloseButton,
+  TagLabel,
   Textarea,
   useColorModeValue,
   useToast,
   VStack,
+  Wrap,
 } from '@chakra-ui/react';
 import { axiosInstance } from '@ielts/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -42,9 +49,9 @@ interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: string;
-  module: 'reading' | 'writing' | 'listening' | 'speaking';
+  modules: ('reading' | 'writing' | 'listening' | 'speaking')[];
   partOfSpeech: string;
-  topic: Topic | string; // Can be populated object or ID string
+  topics: Topic[] | string[]; // Can be populated objects or ID strings
   synonyms: string[];
   antonyms: string[];
 }
@@ -60,9 +67,9 @@ interface WordFormData {
   meaning: string;
   exampleSentence: string;
   difficulty: string;
-  module: 'reading' | 'writing' | 'listening' | 'speaking';
+  modules: ('reading' | 'writing' | 'listening' | 'speaking')[];
   partOfSpeech: string;
-  topic: string;
+  topics: string[];
   synonyms: string;
   antonyms: string;
 }
@@ -74,7 +81,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
     reset,
     setValue,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<WordFormData>();
 
   const toast = useToast();
@@ -91,14 +98,9 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredTopics, setFilteredTopics] = useState<Topic[]>([]);
   const [userHasTyped, setUserHasTyped] = useState(false); // Track if user is actively searching
+  const [topicInput, setTopicInput] = useState(''); // For typing new topics
   const topicInputRef = useRef<HTMLInputElement | null>(null);
-
-  const {
-    ref: registerRef,
-    onChange: registerOnChange,
-    ...registerRest
-  } = register('topic', { required: 'Topic is required' });
-  const currentTopicValue = watch('topic');
+  const currentTopicsValue = watch('topics');
 
   // Fetch Topics for Autocomplete
   const { data: topicsData, isLoading: isTopicsLoading } = useQuery({
@@ -114,10 +116,10 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
   // Filter topics based on input
   useEffect(() => {
     if (topicsData) {
-      if (userHasTyped && currentTopicValue) {
+      if (userHasTyped && topicInput) {
         // User is typing -> Filter
         const filtered = topicsData.filter((t) =>
-          t.name.toLowerCase().includes(currentTopicValue.toLowerCase())
+          t.name.toLowerCase().includes(topicInput.toLowerCase()),
         );
         setFilteredTopics(filtered);
       } else {
@@ -125,39 +127,45 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
         setFilteredTopics(topicsData);
       }
     }
-  }, [currentTopicValue, topicsData, userHasTyped]);
+  }, [topicInput, topicsData, userHasTyped]);
 
   const handleTopicSelect = (topicName: string) => {
-    setValue('topic', topicName);
+    const currentTopics = currentTopicsValue || [];
+    if (!currentTopics.includes(topicName)) {
+      setValue('topics', [...currentTopics, topicName]);
+    }
+    setTopicInput('');
     setShowSuggestions(false);
-    setUserHasTyped(false); // Reset state so next click shows full list
+    setUserHasTyped(false);
+  };
+
+  const handleRemoveTopic = (topicName: string) => {
+    const currentTopics = currentTopicsValue || [];
+    setValue(
+      'topics',
+      currentTopics.filter((t) => t !== topicName),
+    );
   };
 
   // Reset form when modal opens or initialData changes
   useEffect(() => {
     if (isOpen) {
       if (initialData) {
-        let topicName = '';
-        const initialTopic = initialData.topic;
-
-        // Determine topic name
-        if (
-          typeof initialTopic === 'object' &&
-          initialTopic !== null &&
-          'name' in initialTopic
-        ) {
-          // It's a populated object
-          topicName = initialTopic.name;
-        } else if (typeof initialTopic === 'string') {
-          // It's a string (ID or Name)
-          // Try to find it in the loaded topics list by ID
-          const foundTopic = topicsData?.find((t) => t._id === initialTopic);
-          if (foundTopic) {
-            topicName = foundTopic.name;
-          } else {
-            // If not found by ID, it might be the name itself (from older data or just a name string)
-            topicName = initialTopic;
-          }
+        // Extract topic names from topics array
+        const topicNames: string[] = [];
+        if (initialData.topics) {
+          initialData.topics.forEach((t) => {
+            if (typeof t === 'object' && t !== null && 'name' in t) {
+              topicNames.push(t.name);
+            } else if (typeof t === 'string') {
+              const foundTopic = topicsData?.find((topic) => topic._id === t);
+              if (foundTopic) {
+                topicNames.push(foundTopic.name);
+              } else {
+                topicNames.push(t);
+              }
+            }
+          });
         }
 
         reset({
@@ -166,16 +174,8 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
           exampleSentence: initialData.exampleSentence,
           difficulty: initialData.difficulty,
           partOfSpeech: initialData.partOfSpeech || '',
-          topic: topicName,
-          module: (() => {
-            if (!initialData.module) {
-              console.warn(
-                `Word ${initialData._id} missing module field, defaulting to 'reading'`
-              );
-              return 'reading';
-            }
-            return initialData.module;
-          })(),
+          topics: topicNames,
+          modules: initialData.modules?.length > 0 ? initialData.modules : ['reading'],
           synonyms: initialData.synonyms?.join(', ') || '',
           antonyms: initialData.antonyms?.join(', ') || '',
         });
@@ -186,8 +186,8 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
           exampleSentence: '',
           difficulty: '',
           partOfSpeech: '',
-          topic: '',
-          module: 'reading',
+          topics: [],
+          modules: ['reading'],
           synonyms: '',
           antonyms: '',
         });
@@ -214,10 +214,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
       };
 
       if (initialData?._id) {
-        const response = await axiosInstance.patch(
-          `/words/${initialData._id}`,
-          payload
-        );
+        const response = await axiosInstance.patch(`/words/${initialData._id}`, payload);
         return response.data;
       } else {
         const response = await axiosInstance.post('/words', payload);
@@ -226,9 +223,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
     },
     onSuccess: () => {
       toast({
-        title: initialData
-          ? 'Word updated successfully'
-          : 'Word added successfully',
+        title: initialData ? 'Word updated successfully' : 'Word added successfully',
         status: 'success',
         duration: 3000,
       });
@@ -248,6 +243,27 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
   });
 
   const onSubmit = (data: WordFormData) => {
+    // Manual validation since standard required rules don't work easily with custom inputs like these
+    if (!data.modules || data.modules.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'At least one module must be selected',
+        status: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (!data.topics || data.topics.length === 0) {
+      toast({
+        title: 'Validation Error',
+        description: 'At least one topic must be selected',
+        status: 'error',
+        duration: 3000,
+      });
+      return;
+    }
+
     mutation.mutate(data);
   };
 
@@ -286,25 +302,28 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="Use the word in a sentence"
                 />
-                <FormErrorMessage>
-                  {errors.exampleSentence?.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.exampleSentence?.message}</FormErrorMessage>
               </FormControl>
 
-              <FormControl isInvalid={!!errors.module} isRequired>
-                <FormLabel>Module</FormLabel>
-                <Select
-                  {...register('module', {
-                    required: 'Module is required',
-                  })}
-                  placeholder="Select module"
+              <FormControl isInvalid={!!errors.modules} isRequired>
+                <FormLabel>Modules (Select all that apply)</FormLabel>
+                <CheckboxGroup
+                  value={watch('modules')}
+                  onChange={(values) =>
+                    setValue(
+                      'modules',
+                      values as ('reading' | 'writing' | 'listening' | 'speaking')[],
+                    )
+                  }
                 >
-                  <option value="reading">Reading</option>
-                  <option value="writing">Writing</option>
-                  <option value="listening">Listening</option>
-                  <option value="speaking">Speaking</option>
-                </Select>
-                <FormErrorMessage>{errors.module?.message}</FormErrorMessage>
+                  <Stack spacing={2}>
+                    <Checkbox value="reading">Reading</Checkbox>
+                    <Checkbox value="writing">Writing</Checkbox>
+                    <Checkbox value="listening">Listening</Checkbox>
+                    <Checkbox value="speaking">Speaking</Checkbox>
+                  </Stack>
+                </CheckboxGroup>
+                <FormErrorMessage>{errors.modules?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.difficulty} isRequired>
@@ -319,43 +338,45 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
                 </Select>
-                <FormErrorMessage>
-                  {errors.difficulty?.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.difficulty?.message}</FormErrorMessage>
               </FormControl>
 
-              <FormControl
-                position="relative"
-                isInvalid={!!errors.topic}
-                isRequired
-              >
-                <FormLabel>Topic</FormLabel>
+              <FormControl position="relative" isInvalid={!!errors.topics} isRequired>
+                <FormLabel>Topics</FormLabel>
+
+                {/* Display selected topics */}
+                {currentTopicsValue && currentTopicsValue.length > 0 && (
+                  <Wrap mb={2}>
+                    {currentTopicsValue.map((topicName) => (
+                      <Tag key={topicName} size="md" colorScheme="brand" borderRadius="full">
+                        <TagLabel>{topicName}</TagLabel>
+                        <TagCloseButton onClick={() => handleRemoveTopic(topicName)} />
+                      </Tag>
+                    ))}
+                  </Wrap>
+                )}
+
                 <InputGroup>
                   <Input
-                    {...registerRest}
-                    ref={(e) => {
-                      registerRef(e);
-                      topicInputRef.current = e;
-                    }}
+                    ref={topicInputRef}
+                    value={topicInput}
                     onChange={(e) => {
-                      registerOnChange(e);
+                      setTopicInput(e.target.value);
                       setUserHasTyped(true);
                     }}
-                    placeholder="Select or type a topic..."
+                    placeholder="Type to search and add topics..."
                     autoComplete="off"
                     onFocus={() => {
                       setShowSuggestions(true);
                       setUserHasTyped(false);
                     }}
-                    onBlur={() =>
-                      setTimeout(() => setShowSuggestions(false), 200)
-                    }
+                    onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                   />
                   <InputRightElement pointerEvents="none">
                     <ChevronDown size={16} color="gray" />
                   </InputRightElement>
                 </InputGroup>
-                <FormErrorMessage>{errors.topic?.message}</FormErrorMessage>
+                <FormErrorMessage>{errors.topics?.message}</FormErrorMessage>
 
                 {/* Topic Suggestions Dropdown */}
                 {showSuggestions && (
@@ -412,9 +433,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
                   })}
                   placeholder="e.g. Adjective"
                 />
-                <FormErrorMessage>
-                  {errors.partOfSpeech?.message}
-                </FormErrorMessage>
+                <FormErrorMessage>{errors.partOfSpeech?.message}</FormErrorMessage>
               </FormControl>
 
               <FormControl isInvalid={!!errors.synonyms} isRequired>
@@ -445,11 +464,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
             <Button variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button
-              colorScheme="brand"
-              type="submit"
-              isLoading={mutation.isPending}
-            >
+            <Button colorScheme="brand" type="submit" isLoading={mutation.isPending}>
               {initialData ? 'Update Word' : 'Add Word'}
             </Button>
           </ModalFooter>

@@ -47,13 +47,24 @@ export async function resolveTopic(topicInput: string): Promise<string> {
   }
 }
 
+// Resolve multiple topics at once
+export async function resolveTopics(topicInputs: string[]): Promise<string[]> {
+  const resolvedTopicIds = await Promise.all(
+    topicInputs.map((topicInput) => resolveTopic(topicInput)),
+  );
+
+  // Remove duplicates
+  return [...new Set(resolvedTopicIds)];
+}
+
 export class WordsService {
   static async create(input: CreateWordInput) {
-    // If topic is provided, handle it (it might be a name or an ID)
-    if (input.topic) {
-      input.topic = await resolveTopic(input.topic);
+    const wordData = { ...input };
+    // If topics are provided, handle them (they might be names or IDs)
+    if (wordData.topics && Array.isArray(wordData.topics) && wordData.topics.length > 0) {
+      wordData.topics = await resolveTopics(wordData.topics as string[]);
     }
-    return Word.create(input);
+    return Word.create(wordData);
   }
 
   static async findAll(query: any, page: number = 1, limit: number = 20) {
@@ -61,11 +72,12 @@ export class WordsService {
     const filter: any = {};
     const andConditions: any[] = [];
 
-    if (query.module) filter.module = query.module;
+    // Filter by module (MongoDB automatically matches if array contains value)
+    if (query.module) filter.modules = query.module;
     if (query.difficulty) filter.difficulty = query.difficulty;
 
-    // Direct topic ID filter
-    if (query.topic) filter.topic = query.topic;
+    // Direct topic ID filter (MongoDB automatically matches if array contains value)
+    if (query.topic) filter.topics = query.topic;
 
     // Search by topic Name
     if (query.topicName) {
@@ -79,7 +91,7 @@ export class WordsService {
       // If a topic name was requested but no matching topics found,
       // we should return no results (or results that match nothing)
       if (topicIds.length > 0) {
-        andConditions.push({ topic: { $in: topicIds } });
+        andConditions.push({ topics: { $in: topicIds } });
       } else {
         // Force empty result if topic name was searched but not found
         // using a condition that will always be false
@@ -101,7 +113,7 @@ export class WordsService {
     }
 
     const [words, total] = await Promise.all([
-      Word.find(filter).skip(skip).limit(limit).populate('topic'),
+      Word.find(filter).skip(skip).limit(limit).populate('topics'),
       Word.countDocuments(filter),
     ]);
 
@@ -109,13 +121,18 @@ export class WordsService {
   }
 
   static async findById(id: string) {
-    return Word.findById(id).populate('topic');
+    return Word.findById(id).populate('topics');
   }
 
   static async update(id: string, input: Partial<CreateWordInput>) {
     const updateDoc: Partial<CreateWordInput> = { ...input };
-    if (typeof updateDoc.topic === 'string') {
-      updateDoc.topic = await resolveTopic(updateDoc.topic);
+
+    if (
+      updateDoc.topics &&
+      Array.isArray(updateDoc.topics) &&
+      (updateDoc.topics as string[]).length > 0
+    ) {
+      updateDoc.topics = await resolveTopics(updateDoc.topics as string[]);
     }
 
     const word = await Word.findById(id);

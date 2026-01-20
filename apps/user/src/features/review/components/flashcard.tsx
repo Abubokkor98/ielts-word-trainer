@@ -61,10 +61,26 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
           >
             {word.difficulty}
           </Badge>
-          {word.topic && (
-            <Text fontSize="sm" color="gray.400">
-              {word.topic.name}
-            </Text>
+          {word.topics && word.topics.length > 0 && (
+            <HStack spacing={2}>
+              {word.topics.slice(0, 2).map((t) => (
+                <Badge
+                  key={t._id}
+                  colorScheme="purple"
+                  variant="subtle"
+                  fontSize="xs"
+                  borderRadius="full"
+                  px={2}
+                >
+                  {t.name}
+                </Badge>
+              ))}
+              {word.topics.length > 2 && (
+                <Badge colorScheme="gray" variant="subtle" fontSize="xs" borderRadius="full" px={2}>
+                  +{word.topics.length - 2}
+                </Badge>
+              )}
+            </HStack>
           )}
         </HStack>
       </CardHeader>
