@@ -38,7 +38,7 @@ export function VocabularyContainer() {
     }
   }, [user, router]);
 
-  const { data, isLoading } = useVocabulary({
+  const { data, isFetching } = useVocabulary({
     page,
     difficulty,
     module,
@@ -98,20 +98,33 @@ export function VocabularyContainer() {
         </Box>
 
         <VocabularyList
-          isLoading={isLoading}
+          isLoading={isFetching}
           words={words}
           onViewDetails={handleViewDetails}
           onClearFilters={handleClearFilters}
           hasActiveFilters={
-            !!(wordSearchQuery || topicSearchQuery || difficulty !== 'all' || module)
+            !!(
+              wordSearchQuery ||
+              topicSearchQuery ||
+              difficulty !== 'all' ||
+              module
+            )
           }
         />
 
-        {words.length > 0 && (
-          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        {!isFetching && words.length > 0 && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         )}
 
-        <WordDetailsModal isOpen={isOpen} onClose={onClose} word={selectedWord} />
+        <WordDetailsModal
+          isOpen={isOpen}
+          onClose={onClose}
+          word={selectedWord}
+        />
       </Container>
     </Box>
   );

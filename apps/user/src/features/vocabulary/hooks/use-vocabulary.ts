@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { vocabularyApi } from '../services/vocabulary.api';
 import type { VocabularyFilters } from '../types';
 
@@ -14,7 +14,7 @@ export function useVocabulary(filters: VocabularyFilters) {
       filters.module,
     ],
     queryFn: () => vocabularyApi.getWords(filters),
-    placeholderData: keepPreviousData,
+    // placeholderData: keepPreviousData, //i remove this line because i want to show the loading state
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
   });
