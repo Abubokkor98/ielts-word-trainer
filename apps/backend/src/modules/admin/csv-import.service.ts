@@ -117,9 +117,9 @@ export class CSVImportService {
           })
           .map((m) => m.toLowerCase());
 
-        // Parse comma-separated or space-separated topics
+        // Parse comma-separated topics (preserve multi-word topics)
         const topicNames = validatedData.topics
-          .split(/[,\s]+/) // Split by comma OR space
+          .split(',') // Only split on comma to preserve spaces in topic names
           .map((t) => t.trim())
           .filter(Boolean);
 

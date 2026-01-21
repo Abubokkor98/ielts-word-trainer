@@ -79,7 +79,7 @@ export function useSpeechSynthesis({
   // Initialize voices on mount and listen for voiceschanged
   useEffect(() => {
     if (!isSupported) return;
-// Load voices immediately if available
+    // Load voices immediately if available
     loadVoices();
     // Listen for voiceschanged event (fires when voices are loaded)
     const handleVoicesChanged = () => loadVoices();
@@ -98,9 +98,25 @@ export function useSpeechSynthesis({
 
   // Update utterance text when it changes
   useEffect(() => {
-    if (!isSupported || !utteranceRef.current) return;
+    if (!isSupported) return;
+
+    // Create utterance if it doesn't exist yet (handles empty initial text case)
+    if (!utteranceRef.current && text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      if (selectedVoiceRef.current) {
+        utterance.voice = selectedVoiceRef.current;
+      }
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      utteranceRef.current = utterance;
+      return;
+    }
+
+    if (!utteranceRef.current) return;
     utteranceRef.current.text = text;
-  }, [text, isSupported]);
+  }, [text, isSupported, lang]);
 
   // Speak with instant playback
   const speak = useCallback(() => {
