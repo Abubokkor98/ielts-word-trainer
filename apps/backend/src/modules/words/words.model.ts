@@ -52,7 +52,7 @@ const WordSchema = new Schema<IWord>(
       index: true, // For efficient search across word, synonyms, antonyms
     },
   },
-  { timestamps: true, versionKey: false },
+  { timestamps: true, versionKey: false }
 );
 
 // Compound index for combined difficulty + modules filtering
@@ -62,7 +62,6 @@ WordSchema.index({ difficulty: 1, modules: 1 });
 WordSchema.pre('save', function () {
   this.searchableText = [
     this.word,
-    this.meaning,
     ...(this.synonyms || []),
     ...(this.antonyms || []),
   ]
@@ -70,4 +69,5 @@ WordSchema.pre('save', function () {
     .toLowerCase();
 });
 
-export const Word = mongoose.models.Word || mongoose.model<IWord>('Word', WordSchema);
+export const Word =
+  mongoose.models.Word || mongoose.model<IWord>('Word', WordSchema);
