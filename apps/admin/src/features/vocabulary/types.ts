@@ -25,3 +25,15 @@ export interface WordsResponse {
   currentPage: number;
   total: number;
 }
+
+export interface WordFormData {
+  word: string;
+  meaning: string;
+  exampleSentence: string;
+  difficulty: string;
+  modules: ('reading' | 'writing' | 'listening' | 'speaking')[];
+  partOfSpeech: string;
+  topics: string[];
+  synonyms: string;
+  antonyms: string;
+}
