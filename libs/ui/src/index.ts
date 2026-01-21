@@ -6,6 +6,7 @@ export { ReactQueryProvider } from './components/react-query-provider';
 export * from './components/ui/button';
 export * from './components/ui/card';
 export * from './components/ui/input';
+export { useSpeechSynthesis } from './hooks/use-speech-synthesis';
 export { LoadingSpinner } from './lib/loading-spinner';
 export { PageLoadingFallback } from './lib/page-loading-fallback';
 export { Pagination } from './lib/Pagination';

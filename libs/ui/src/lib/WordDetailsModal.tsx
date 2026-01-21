@@ -5,6 +5,7 @@ import {
   Box,
   Heading,
   HStack,
+  IconButton,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -13,12 +14,16 @@ import {
   ModalHeader,
   ModalOverlay,
   SimpleGrid,
+  Spinner,
   Text,
+  Tooltip,
   VStack,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
+import { Volume2 } from 'lucide-react';
 import { Button } from '@ielts/ui';
+import { useSpeechSynthesis } from '../hooks/use-speech-synthesis';
 
 interface WordDetailsModalProps {
   isOpen: boolean;
@@ -41,6 +46,13 @@ export function WordDetailsModal({
   onClose,
   word,
 }: WordDetailsModalProps) {
+  // Preload pronunciation when modal opens - must be called before any returns
+  const { speak, isSpeaking, isLoading, isSupported } = useSpeechSynthesis({
+    text: word?.word || '',
+    lang: 'en',
+    voiceLang: 'en-GB', // UK English
+  });
+
   if (!word) return null;
 
   const difficultyColorScheme =
@@ -72,6 +84,37 @@ export function WordDetailsModal({
                 <Heading size="2xl" color="brand.400" lineHeight="shorter">
                   {word.word}
                 </Heading>
+                {/* Pronunciation Button */}
+                {isSupported && (
+                  <Tooltip
+                    label={
+                      isLoading
+                        ? 'Loading voice...'
+                        : isSpeaking
+                        ? 'Playing...'
+                        : 'Listen to pronunciation'
+                    }
+                    placement="top"
+                  >
+                    <IconButton
+                      aria-label="Pronounce word"
+                      icon={
+                        isLoading ? (
+                          <Spinner size="sm" />
+                        ) : (
+                          <Volume2 size={20} />
+                        )
+                      }
+                      size="sm"
+                      colorScheme="brand"
+                      variant={isSpeaking ? 'solid' : 'ghost'}
+                      onClick={speak}
+                      isDisabled={isLoading}
+                      _hover={{ bg: 'brand.600' }}
+                      alignSelf="center"
+                    />
+                  </Tooltip>
+                )}
                 {word.partOfSpeech && (
                   <Badge
                     colorScheme="blue"
