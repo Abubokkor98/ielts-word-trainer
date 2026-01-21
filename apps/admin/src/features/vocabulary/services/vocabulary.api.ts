@@ -16,7 +16,9 @@ export const vocabularyApi = {
       searchParams.append('difficulty', params.difficulty);
     }
 
-    const { data } = await axiosInstance.get(`/words?${searchParams.toString()}`);
+    const { data } = await axiosInstance.get(
+      `/words?${searchParams.toString()}`
+    );
     return data.data;
   },
 
@@ -33,6 +35,10 @@ export const vocabularyApi = {
   uploadCSV: async (file: File): Promise<void> => {
     const formData = new FormData();
     formData.append('file', file);
-    await axiosInstance.post('/words/upload', formData);
+    await axiosInstance.post('/words/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
   },
 };

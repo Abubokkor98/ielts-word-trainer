@@ -43,10 +43,15 @@ export class CSVImportService {
         'antonyms',
       ];
       const firstRecord = records[0] as Record<string, unknown>;
-      const missingColumns = requiredColumns.filter((col) => !(col in firstRecord));
+      const missingColumns = requiredColumns.filter(
+        (col) => !(col in firstRecord)
+      );
 
       if (missingColumns.length > 0) {
-        throw new AppError(`Missing required columns: ${missingColumns.join(', ')}`, 400);
+        throw new AppError(
+          `Missing required columns: ${missingColumns.join(', ')}`,
+          400
+        );
       }
 
       return records;
@@ -94,29 +99,38 @@ export class CSVImportService {
           .map((s) => s.trim())
           .filter(Boolean);
 
-        // Parse comma-separated modules
+        // Parse comma-separated or space-separated modules
         const validModules = ['reading', 'writing', 'listening', 'speaking'];
         const modules = validatedData.modules
-          .split(',')
+          .split(/[,\s]+/) // Split by comma OR space
           .map((m) => m.trim())
+          .filter(Boolean) // Remove empty strings
           .filter((m) => {
             if (!validModules.includes(m.toLowerCase())) {
-              throw new Error(`Invalid module: ${m}. Must be one of: ${validModules.join(', ')}`);
+              throw new Error(
+                `Invalid module: ${m}. Must be one of: ${validModules.join(
+                  ', '
+                )}`
+              );
             }
             return true;
           })
           .map((m) => m.toLowerCase());
 
-        // Parse comma-separated topics
+        // Parse comma-separated topics (preserve multi-word topics)
         const topicNames = validatedData.topics
-          .split(',')
+          .split(',') // Only split on comma to preserve spaces in topic names
           .map((t) => t.trim())
           .filter(Boolean);
 
         // Resolve Topics (Find or Create)
         const topicIds = await resolveTopics(topicNames);
 
-        const { topics: _rawTopics, modules: _rawModules, ...wordData } = validatedData;
+        const {
+          topics: _rawTopics,
+          modules: _rawModules,
+          ...wordData
+        } = validatedData;
 
         await Word.create({
           ...wordData,
