@@ -4,9 +4,15 @@ import { Box, Flex, Heading, SimpleGrid, VStack } from '@chakra-ui/react';
 import { Activity, BookOpen, TrendingUp, Users } from 'lucide-react';
 import { AlertSection } from './components/AlertSection';
 import { DAUTrendChart } from './components/DAUTrendChart';
+import { DifficultyDistributionChart } from './components/DifficultyDistributionChart';
 import { MetricCard } from './components/MetricCard';
+import { ModuleDistributionChart } from './components/ModuleDistributionChart';
 import { ProblemWordsCard } from './components/ProblemWordsCard';
 import { QuickActions } from './components/QuickActions';
+import { TopicDistributionChart } from './components/TopicDistributionChart';
+import { TopWordsCard } from './components/TopWordsCard';
+import { UnusedWordsCard } from './components/UnusedWordsCard';
+import { VocabularyOverviewCard } from './components/VocabularyOverviewCard';
 import { useDashboardMetrics } from './hooks/use-dashboard-metrics';
 
 export function DashboardContainer() {
@@ -109,6 +115,31 @@ export function DashboardContainer() {
         {/* Problem Words Section */}
         <Box>
           <ProblemWordsCard />
+        </Box>
+
+        {/* Vocabulary Analytics Section */}
+        <Box>
+          <Heading size="md" mb={4}>
+            Vocabulary Analytics
+          </Heading>
+
+          {/* Overview KPIs */}
+          <Box mb={6}>
+            <VocabularyOverviewCard />
+          </Box>
+
+          {/* Distribution Charts */}
+          <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6} mb={6}>
+            <ModuleDistributionChart />
+            <DifficultyDistributionChart />
+            <TopicDistributionChart />
+          </SimpleGrid>
+
+          {/* Top & Unused Words */}
+          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
+            <TopWordsCard />
+            <UnusedWordsCard />
+          </SimpleGrid>
         </Box>
       </VStack>
     </Box>

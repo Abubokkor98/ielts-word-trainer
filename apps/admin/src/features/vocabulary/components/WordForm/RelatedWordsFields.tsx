@@ -1,9 +1,4 @@
-import {
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-} from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 import type { WordFormData } from '../../types';
 
@@ -12,10 +7,7 @@ interface RelatedWordsFieldsProps {
   errors: FieldErrors<WordFormData>;
 }
 
-export function RelatedWordsFields({
-  register,
-  errors,
-}: RelatedWordsFieldsProps) {
+export function RelatedWordsFields({ register, errors }: RelatedWordsFieldsProps) {
   return (
     <>
       <FormControl isInvalid={!!errors.synonyms}>

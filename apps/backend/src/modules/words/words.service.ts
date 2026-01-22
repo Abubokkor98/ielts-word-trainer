@@ -21,6 +21,13 @@ export async function resolveTopic(topicInput: string): Promise<string> {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9-]/g, '');
 
+    // Validate that slug is not empty (e.g., from non-Latin characters only)
+    if (!topicSlug) {
+      throw new Error(
+        `Topic name "${cleanedTopic}" must contain at least one alphanumeric character`,
+      );
+    }
+
     try {
       const topic = await Topic.findOneAndUpdate(
         {
@@ -35,7 +42,7 @@ export async function resolveTopic(topicInput: string): Promise<string> {
         {
           new: true,
           upsert: true,
-        }
+        },
       );
       return topic._id.toString();
     } catch (error: any) {
@@ -64,7 +71,7 @@ export async function resolveTopic(topicInput: string): Promise<string> {
 // Resolve multiple topics at once
 export async function resolveTopics(topicInputs: string[]): Promise<string[]> {
   const resolvedTopicIds = await Promise.all(
-    topicInputs.map((topicInput) => resolveTopic(topicInput))
+    topicInputs.map((topicInput) => resolveTopic(topicInput)),
   );
 
   // Remove duplicates
@@ -75,11 +82,7 @@ export class WordsService {
   static async create(input: CreateWordInput) {
     const wordData = { ...input };
     // If topics are provided, handle them (they might be names or IDs)
-    if (
-      wordData.topics &&
-      Array.isArray(wordData.topics) &&
-      wordData.topics.length > 0
-    ) {
+    if (wordData.topics && Array.isArray(wordData.topics) && wordData.topics.length > 0) {
       wordData.topics = await resolveTopics(wordData.topics as string[]);
     }
     return Word.create(wordData);
@@ -99,10 +102,7 @@ export class WordsService {
 
     // Search by topic Name
     if (query.topicName) {
-      const escapedTopicName = query.topicName.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        '\\$&'
-      );
+      const escapedTopicName = query.topicName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const topics = await Topic.find({
         name: { $regex: escapedTopicName, $options: 'i' },
       }).select('_id');

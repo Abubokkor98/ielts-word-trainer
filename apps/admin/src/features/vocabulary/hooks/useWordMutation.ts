@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@chakra-ui/react';
 import { axiosInstance } from '@ielts/auth';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import type { Word, WordFormData } from '../types';
 
@@ -9,10 +9,7 @@ interface UseWordMutationProps {
   onSuccess: () => void;
 }
 
-export function useWordMutation({
-  initialData,
-  onSuccess,
-}: UseWordMutationProps) {
+export function useWordMutation({ initialData, onSuccess }: UseWordMutationProps) {
   const toast = useToast();
   const queryClient = useQueryClient();
 
@@ -35,10 +32,7 @@ export function useWordMutation({
       };
 
       if (initialData?._id) {
-        const response = await axiosInstance.patch(
-          `/words/${initialData._id}`,
-          payload
-        );
+        const response = await axiosInstance.patch(`/words/${initialData._id}`, payload);
         return response.data;
       } else {
         const response = await axiosInstance.post('/words', payload);
@@ -47,9 +41,7 @@ export function useWordMutation({
     },
     onSuccess: () => {
       toast({
-        title: initialData
-          ? 'Word updated successfully'
-          : 'Word added successfully',
+        title: initialData ? 'Word updated successfully' : 'Word added successfully',
         status: 'success',
         duration: 3000,
       });

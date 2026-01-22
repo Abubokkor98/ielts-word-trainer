@@ -6,7 +6,7 @@ import {
   FormLabel,
   Stack,
 } from '@chakra-ui/react';
-import { Controller, type Control, type FieldErrors } from 'react-hook-form';
+import { type Control, Controller, type FieldErrors } from 'react-hook-form';
 import type { WordFormData } from '../../types';
 
 interface ModulesFieldProps {
@@ -23,9 +23,7 @@ export function ModulesField({ control, error }: ModulesFieldProps) {
         control={control}
         rules={{
           validate: (value) =>
-            value && value.length > 0
-              ? true
-              : 'At least one module must be selected',
+            value && value.length > 0 ? true : 'At least one module must be selected',
         }}
         render={({ field }) => (
           <CheckboxGroup value={field.value} onChange={field.onChange}>

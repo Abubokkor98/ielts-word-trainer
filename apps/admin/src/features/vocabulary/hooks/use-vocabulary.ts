@@ -42,8 +42,7 @@ export function useVocabularyCRUD() {
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
     },
     onError: (error: any) => {
-      const message =
-        error?.response?.data?.message || 'Failed to import words';
+      const message = error?.response?.data?.message || 'Failed to import words';
       toast({
         title: 'Import Failed',
         description: message,
@@ -68,8 +67,7 @@ export function useVocabularyCRUD() {
     },
     onError: (error: any) => {
       const message =
-        error?.response?.data?.message ||
-        'Atomic import failed - no words were imported';
+        error?.response?.data?.message || 'Atomic import failed - no words were imported';
       toast({
         title: 'Atomic Import Failed',
         description: message,

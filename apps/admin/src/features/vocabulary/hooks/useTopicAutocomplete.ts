@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
 import { useColorModeValue } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
 import { axiosInstance } from '@ielts/auth';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useRef, useState } from 'react';
 import type { UseFormSetValue, UseFormWatch } from 'react-hook-form';
 import type { WordFormData } from '../types';
 
@@ -16,11 +16,7 @@ interface UseTopicAutocompleteProps {
   watch: UseFormWatch<WordFormData>;
 }
 
-export function useTopicAutocomplete({
-  isOpen,
-  setValue,
-  watch,
-}: UseTopicAutocompleteProps) {
+export function useTopicAutocomplete({ isOpen, setValue, watch }: UseTopicAutocompleteProps) {
   // Topic Autocomplete State
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredTopics, setFilteredTopics] = useState<Topic[]>([]);
@@ -52,7 +48,7 @@ export function useTopicAutocomplete({
     if (topicsData) {
       if (userHasTyped && topicInput) {
         const filtered = topicsData.filter((t) =>
-          t.name.toLowerCase().includes(topicInput.toLowerCase())
+          t.name.toLowerCase().includes(topicInput.toLowerCase()),
         );
         setFilteredTopics(filtered);
       } else {
@@ -77,9 +73,7 @@ export function useTopicAutocomplete({
     setUserHasTyped(false);
   };
 
-  const handleTopicInputKeyDown = (
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handleTopicInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       if (topicInput.trim()) {
@@ -93,7 +87,7 @@ export function useTopicAutocomplete({
     setValue(
       'topics',
       currentTopics.filter((t) => t !== topicName),
-      { shouldValidate: true }
+      { shouldValidate: true },
     );
   };
 

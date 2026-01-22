@@ -1,11 +1,11 @@
 import { parse } from 'csv-parse/sync';
+import mongoose from 'mongoose';
 import { z } from 'zod';
 import { AppError } from '../../core/errors/AppError';
 import { Logger } from '../../utils';
 import { Topic } from '../topics/topics.model';
 import { Word } from '../words/words.model';
 import { resolveTopic, resolveTopics } from '../words/words.service';
-import mongoose from 'mongoose';
 
 const wordSchema = z.object({
   word: z.string().min(1, 'Word is required'),
@@ -45,15 +45,10 @@ export class CSVImportService {
         'antonyms',
       ];
       const firstRecord = records[0] as Record<string, unknown>;
-      const missingColumns = requiredColumns.filter(
-        (col) => !(col in firstRecord)
-      );
+      const missingColumns = requiredColumns.filter((col) => !(col in firstRecord));
 
       if (missingColumns.length > 0) {
-        throw new AppError(
-          `Missing required columns: ${missingColumns.join(', ')}`,
-          400
-        );
+        throw new AppError(`Missing required columns: ${missingColumns.join(', ')}`, 400);
       }
 
       return records;
@@ -109,11 +104,7 @@ export class CSVImportService {
           .filter(Boolean) // Remove empty strings
           .filter((m) => {
             if (!validModules.includes(m.toLowerCase())) {
-              throw new Error(
-                `Invalid module: ${m}. Must be one of: ${validModules.join(
-                  ', '
-                )}`
-              );
+              throw new Error(`Invalid module: ${m}. Must be one of: ${validModules.join(', ')}`);
             }
             return true;
           })
@@ -128,11 +119,7 @@ export class CSVImportService {
         // Resolve Topics (Find or Create)
         const topicIds = await resolveTopics(topicNames);
 
-        const {
-          topics: _rawTopics,
-          modules: _rawModules,
-          ...wordData
-        } = validatedData;
+        const { topics: _rawTopics, modules: _rawModules, ...wordData } = validatedData;
 
         await Word.create({
           ...wordData,
@@ -202,10 +189,7 @@ export class CSVImportService {
       try {
         validatedData = wordSchema.parse(record);
       } catch (error: any) {
-        throw new AppError(
-          `Validation error at row ${i + 2}: ${error.message}`,
-          400
-        );
+        throw new AppError(`Validation error at row ${i + 2}: ${error.message}`, 400);
       }
 
       wordList.push(validatedData.word);
@@ -246,11 +230,7 @@ export class CSVImportService {
 
       const { topics: _, modules: __, ...rest } = validatedData;
 
-      const searchableText = [
-        validatedData.word,
-        ...(synonyms || []),
-        ...(antonyms || []),
-      ]
+      const searchableText = [validatedData.word, ...(synonyms || []), ...(antonyms || [])]
         .join(' ')
         .toLowerCase();
 
@@ -279,10 +259,8 @@ export class CSVImportService {
             .slice(0, 5)
             .join(', ');
           throw new AppError(
-            `Words already exist: ${existingWords}${
-              existing.length > 5 ? '...' : ''
-            }`,
-            400
+            `Words already exist: ${existingWords}${existing.length > 5 ? '...' : ''}`,
+            400,
           );
         }
 
@@ -290,14 +268,12 @@ export class CSVImportService {
         await Word.insertMany(preparedDocs, { session });
 
         // Bulk Topic Update (Optimized to single DB call)
-        const bulkOps = Array.from(topicIncrements.entries()).map(
-          ([topicId, count]) => ({
-            updateOne: {
-              filter: { _id: topicId },
-              update: { $inc: { wordCount: count } },
-            },
-          })
-        );
+        const bulkOps = Array.from(topicIncrements.entries()).map(([topicId, count]) => ({
+          updateOne: {
+            filter: { _id: new mongoose.Types.ObjectId(topicId) },
+            update: { $inc: { wordCount: count } },
+          },
+        }));
 
         if (bulkOps.length > 0) {
           await Topic.bulkWrite(bulkOps as any[], { session });
@@ -316,10 +292,7 @@ export class CSVImportService {
     } catch (error: any) {
       await session.endSession();
       if (error instanceof AppError) throw error;
-      throw new AppError(
-        `Atomic import failed: ${error.message}. No words were imported.`,
-        400
-      );
+      throw new AppError(`Atomic import failed: ${error.message}. No words were imported.`, 400);
     }
   }
 
