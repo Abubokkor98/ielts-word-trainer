@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
+import { Logger } from '../../utils';
 import { CSVImportService } from '../admin/csv-import.service';
 import { WordsService } from './words.service';
 
@@ -76,11 +77,7 @@ export class WordsController {
     }
   }
 
-  static async uploadCSVAtomic(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  static async uploadCSVAtomic(req: Request, res: Response, next: NextFunction) {
     try {
       if (!req.file) {
         throw new AppError('No file provided', 400);
@@ -91,7 +88,7 @@ export class WordsController {
 
       // Import words atomically (all-or-nothing)
       const result = await CSVImportService.importWordsAtomic(csvContent);
-      console.log('Atomic Import Result:', JSON.stringify(result, null, 2));
+      Logger.info('Atomic Import Result:', result);
 
       // Return detailed results
       res.status(200).json({

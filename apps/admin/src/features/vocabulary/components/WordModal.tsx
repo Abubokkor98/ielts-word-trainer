@@ -11,14 +11,14 @@ import {
 } from '@chakra-ui/react';
 import { useWordForm } from '../hooks/useWordForm';
 import { useWordMutation } from '../hooks/useWordMutation';
+import type { Word, WordFormData } from '../types';
 import {
   BasicInfoFields,
-  ModulesField,
   MetadataFields,
-  TopicsField,
+  ModulesField,
   RelatedWordsFields,
+  TopicsField,
 } from './WordForm';
-import type { Word, WordFormData } from '../types';
 
 interface WordModalProps {
   isOpen: boolean;
@@ -76,11 +76,7 @@ export function WordModal({ isOpen, onClose, initialData }: WordModalProps) {
             <Button variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
-            <Button
-              colorScheme="brand"
-              type="submit"
-              isLoading={mutation.isPending}
-            >
+            <Button colorScheme="brand" type="submit" isLoading={mutation.isPending}>
               {initialData ? 'Update Word' : 'Add Word'}
             </Button>
           </ModalFooter>

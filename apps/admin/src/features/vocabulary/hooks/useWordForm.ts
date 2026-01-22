@@ -35,8 +35,7 @@ export function useWordForm({ isOpen, initialData }: UseWordFormProps) {
           difficulty: initialData.difficulty,
           partOfSpeech: initialData.partOfSpeech || '',
           topics: topicNames,
-          modules:
-            initialData.modules?.length > 0 ? initialData.modules : ['reading'],
+          modules: initialData.modules?.length > 0 ? initialData.modules : ['reading'],
           synonyms: initialData.synonyms?.join(', ') || '',
           antonyms: initialData.antonyms?.join(', ') || '',
         });

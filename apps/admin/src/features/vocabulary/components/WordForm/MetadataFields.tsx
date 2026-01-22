@@ -1,10 +1,4 @@
-import {
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  Select,
-} from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 import type { WordFormData } from '../../types';
 

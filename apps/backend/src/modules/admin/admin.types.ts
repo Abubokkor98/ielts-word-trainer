@@ -60,3 +60,67 @@ export interface ProblemWordsResponse {
     count: number;
   };
 }
+
+// ===========================
+// Vocabulary Analytics Types
+// ===========================
+
+export interface ModuleDistribution {
+  reading: number;
+  writing: number;
+  listening: number;
+  speaking: number;
+}
+
+export interface DifficultyDistribution {
+  beginner: number;
+  intermediate: number;
+  advanced: number;
+}
+
+export interface TopicDistribution {
+  topicId: string;
+  topicName: string;
+  count: number;
+}
+
+export interface VocabularyOverview {
+  totalCount: number;
+  byModule: ModuleDistribution;
+  byDifficulty: DifficultyDistribution;
+  byTopic: TopicDistribution[];
+  avgAccuracy: number;
+  unusedWordsCount: number;
+}
+
+export interface TopWord {
+  wordId: string;
+  word: string;
+  meaning: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  accuracy: number;
+  attempts: number;
+  lastUpdated?: string;
+}
+
+export interface UnusedWord {
+  wordId: string;
+  word: string;
+  meaning: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  modules: ('reading' | 'writing' | 'listening' | 'speaking')[];
+  topics: { id: string; name: string }[];
+}
+
+export interface WordUsage {
+  wordId: string;
+  word: string;
+  meaning: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  attemptCount: number;
+}
+
+export interface UsageStats {
+  mostReviewed: WordUsage[];
+  leastReviewed: WordUsage[];
+}

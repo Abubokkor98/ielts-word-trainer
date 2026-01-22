@@ -5,6 +5,7 @@ import { authenticate, authorize } from '../auth/auth.middleware';
 import { AdminController } from './admin.controller';
 import { AdminDashboardController } from './admin-dashboard.controller';
 import adminPasswordResetRoutes from './admin-password-reset.routes';
+import { AdminVocabularyController } from './admin-vocabulary.controller';
 
 const router = Router();
 
@@ -92,7 +93,33 @@ router.get(
   AdminDashboardController.getProblemWords,
 );
 
-// Vocabulary Routes
-// CRUD handled by /api/v1/words
+// Vocabulary Analytics Routes
+router.get(
+  '/vocabulary/overview',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminVocabularyController.getOverview,
+);
+
+router.get(
+  '/vocabulary/top-words',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminVocabularyController.getTopWords,
+);
+
+router.get(
+  '/vocabulary/unused-words',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminVocabularyController.getUnusedWords,
+);
+
+router.get(
+  '/vocabulary/usage-stats',
+  authenticate,
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  AdminVocabularyController.getUsageStats,
+);
 
 export default router;

@@ -14,14 +14,14 @@ import {
   TagLabel,
   Wrap,
 } from '@chakra-ui/react';
+import { ChevronDown } from 'lucide-react';
 import {
-  Controller,
   type Control,
+  Controller,
   type FieldErrors,
   type UseFormSetValue,
   type UseFormWatch,
 } from 'react-hook-form';
-import { ChevronDown } from 'lucide-react';
 import { useTopicAutocomplete } from '../../hooks/useTopicAutocomplete';
 import type { WordFormData } from '../../types';
 
@@ -33,13 +33,7 @@ interface TopicsFieldProps {
   watch: UseFormWatch<WordFormData>;
 }
 
-export function TopicsField({
-  control,
-  error,
-  isOpen,
-  setValue,
-  watch,
-}: TopicsFieldProps) {
+export function TopicsField({ control, error, isOpen, setValue, watch }: TopicsFieldProps) {
   const {
     topicInput,
     setTopicInput,
@@ -68,9 +62,7 @@ export function TopicsField({
         control={control}
         rules={{
           validate: (value) =>
-            value && value.length > 0
-              ? true
-              : 'At least one topic must be selected',
+            value && value.length > 0 ? true : 'At least one topic must be selected',
         }}
         render={({ field }) => (
           <>
@@ -78,16 +70,9 @@ export function TopicsField({
             {field.value && field.value.length > 0 && (
               <Wrap mb={2}>
                 {field.value.map((topicName) => (
-                  <Tag
-                    key={topicName}
-                    size="md"
-                    colorScheme="brand"
-                    borderRadius="full"
-                  >
+                  <Tag key={topicName} size="md" colorScheme="brand" borderRadius="full">
                     <TagLabel>{topicName}</TagLabel>
-                    <TagCloseButton
-                      onClick={() => handleRemoveTopic(topicName)}
-                    />
+                    <TagCloseButton onClick={() => handleRemoveTopic(topicName)} />
                   </Tag>
                 ))}
               </Wrap>
