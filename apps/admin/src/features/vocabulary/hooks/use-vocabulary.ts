@@ -31,17 +31,58 @@ export function useVocabularyCRUD() {
 
   const uploadCSV = useMutation({
     mutationFn: vocabularyApi.uploadCSV,
-    onSuccess: () => {
-      toast({ title: 'Words imported successfully', status: 'success' });
+    onSuccess: (data: any) => {
+      const message = data?.message || 'Words imported successfully';
+      toast({
+        title: 'Import Complete',
+        description: message,
+        status: 'success',
+        duration: 5000,
+      });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
     },
-    onError: () => {
-      toast({ title: 'Failed to import words', status: 'error' });
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message || 'Failed to import words';
+      toast({
+        title: 'Import Failed',
+        description: message,
+        status: 'error',
+        duration: 7000,
+        isClosable: true,
+      });
+    },
+  });
+
+  const uploadCSVAtomic = useMutation({
+    mutationFn: vocabularyApi.uploadCSVAtomic,
+    onSuccess: (data: any) => {
+      const message = data?.message || 'All words imported successfully';
+      toast({
+        title: 'Atomic Import Successful',
+        description: message,
+        status: 'success',
+        duration: 5000,
+      });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
+    },
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message ||
+        'Atomic import failed - no words were imported';
+      toast({
+        title: 'Atomic Import Failed',
+        description: message,
+        status: 'error',
+        duration: 7000,
+        isClosable: true,
+      });
     },
   });
 
   return {
     deleteWord,
     uploadCSV,
+    uploadCSVAtomic,
   };
 }

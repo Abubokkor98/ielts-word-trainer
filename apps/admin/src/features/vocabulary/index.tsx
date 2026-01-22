@@ -25,7 +25,14 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { Button, Card, CardContent, CardHeader, Input, Pagination } from '@ielts/ui';
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Input,
+  Pagination,
+} from '@ielts/ui';
 import { Edit2, Filter, Plus, Search, Trash2, Upload } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { WordModal } from './components/WordModal';
@@ -36,9 +43,9 @@ export function VocabularyContainer() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [difficulty, setDifficulty] = useState<'all' | 'beginner' | 'intermediate' | 'advanced'>(
-    'all',
-  );
+  const [difficulty, setDifficulty] = useState<
+    'all' | 'beginner' | 'intermediate' | 'advanced'
+  >('all');
   const toast = useToast();
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -55,6 +62,7 @@ export function VocabularyContainer() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const atomicFileInputRef = useRef<HTMLInputElement>(null);
 
   // Debounce search
   useEffect(() => {
@@ -77,7 +85,7 @@ export function VocabularyContainer() {
   });
 
   // CRUD operations
-  const { deleteWord, uploadCSV } = useVocabularyCRUD();
+  const { deleteWord, uploadCSV, uploadCSVAtomic } = useVocabularyCRUD();
 
   const handleDelete = (wordId: string) => {
     setDeletingId(wordId);
@@ -109,6 +117,10 @@ export function VocabularyContainer() {
     fileInputRef.current?.click();
   };
 
+  const handleAtomicImportClick = () => {
+    atomicFileInputRef.current?.click();
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -127,12 +139,31 @@ export function VocabularyContainer() {
     }
   };
 
+  const handleAtomicFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.name.endsWith('.csv') || !file.type.includes('csv')) {
+        toast({
+          title: 'Please select a valid CSV file',
+          status: 'error',
+        });
+        return;
+      }
+      uploadCSVAtomic.mutate(file, {
+        onSettled: () => {
+          if (atomicFileInputRef.current) atomicFileInputRef.current.value = '';
+        },
+      });
+    }
+  };
+
   return (
     <Box>
       <VStack spacing={8} align="stretch">
         <HStack justify="space-between">
           <Heading size="lg">Vocabulary Management</Heading>
-          <HStack>
+          <HStack spacing={3}>
+            {/* Partial Import Input */}
             <input
               type="file"
               accept=".csv"
@@ -140,17 +171,51 @@ export function VocabularyContainer() {
               style={{ display: 'none' }}
               onChange={handleFileChange}
             />
-            <Button
-              leftIcon={<Upload size={16} />}
-              variant="outline"
-              onClick={handleImportClick}
-              isLoading={uploadCSV.isPending}
-            >
-              Import CSV
-            </Button>
-            <Button leftIcon={<Plus size={16} />} colorScheme="brand" onClick={handleAdd}>
-              Add Word
-            </Button>
+            {/* Atomic Import Input */}
+            <input
+              type="file"
+              accept=".csv"
+              ref={atomicFileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleAtomicFileChange}
+            />
+
+            <VStack align="stretch" spacing={2}>
+              <HStack spacing={2}>
+                <Button
+                  leftIcon={<Upload size={16} />}
+                  variant="outline"
+                  colorScheme="blue"
+                  size="sm"
+                  onClick={handleImportClick}
+                  isLoading={uploadCSV.isPending}
+                >
+                  Import CSV (Partial)
+                </Button>
+                <Button
+                  leftIcon={<Upload size={16} />}
+                  variant="outline"
+                  colorScheme="purple"
+                  size="sm"
+                  onClick={handleAtomicImportClick}
+                  isLoading={uploadCSVAtomic.isPending}
+                >
+                  Import CSV (All-or-Nothing)
+                </Button>
+                <Button
+                  leftIcon={<Plus size={16} />}
+                  colorScheme="brand"
+                  size="sm"
+                  onClick={handleAdd}
+                >
+                  Add Word
+                </Button>
+              </HStack>
+              <Text fontSize="xs" color="gray.500">
+                Partial: Imports valid words, skips errors • All-or-Nothing: All
+                succeed or all fail
+              </Text>
+            </VStack>
           </HStack>
         </HStack>
 
@@ -219,8 +284,8 @@ export function VocabularyContainer() {
                                 word.difficulty === 'beginner'
                                   ? 'green'
                                   : word.difficulty === 'intermediate'
-                                    ? 'blue'
-                                    : 'purple'
+                                  ? 'blue'
+                                  : 'purple'
                               }
                             >
                               {word.difficulty}
@@ -277,7 +342,13 @@ export function VocabularyContainer() {
       >
         <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
           <AlertDialogContent borderRadius="xl" boxShadow="2xl">
-            <AlertDialogHeader fontSize="lg" color={'red.500'} fontWeight="bold" pt={8} pb={0}>
+            <AlertDialogHeader
+              fontSize="lg"
+              color={'red.500'}
+              fontWeight="bold"
+              pt={8}
+              pb={0}
+            >
               <VStack spacing={4}>
                 <Text>Delete Word</Text>
               </VStack>
