@@ -1,7 +1,13 @@
 import { QuizAttempt } from '../quiz/quiz-attempt.model';
 import { Topic } from '../topics/topics.model';
 import { Word } from '../words/words.model';
-import type { TopWord, UnusedWord, UsageStats, VocabularyOverview, WordUsage } from './admin.types';
+import type {
+  TopWord,
+  UnusedWord,
+  UsageStats,
+  VocabularyOverview,
+  WordUsage,
+} from './admin.types';
 
 export class AdminVocabularyService {
   /**
@@ -10,66 +16,72 @@ export class AdminVocabularyService {
    */
   static async getVocabularyOverview(): Promise<VocabularyOverview> {
     // Execute all aggregations in parallel for performance
-    const [totalCount, byModule, byDifficulty, byTopic, avgAccuracy, unusedWordsCount] =
-      await Promise.all([
-        // Total vocabulary count
-        Word.countDocuments(),
+    const [
+      totalCount,
+      byModule,
+      byDifficulty,
+      byTopic,
+      avgAccuracy,
+      unusedWordsCount,
+    ] = await Promise.all([
+      // Total vocabulary count
+      Word.countDocuments(),
 
-        // Words per module - unwind array and group
-        Word.aggregate<{ _id: string; count: number }>([
-          { $unwind: '$modules' },
-          {
-            $group: {
-              _id: '$modules',
-              count: { $sum: 1 },
-            },
+      // Words per module - unwind array and group
+      Word.aggregate<{ _id: string; count: number }>([
+        { $unwind: '$modules' },
+        {
+          $group: {
+            _id: '$modules',
+            count: { $sum: 1 },
           },
-        ]),
+        },
+      ]),
 
-        // Words per difficulty
-        Word.aggregate<{ _id: string; count: number }>([
-          {
-            $group: {
-              _id: '$difficulty',
-              count: { $sum: 1 },
-            },
+      // Words per difficulty
+      Word.aggregate<{ _id: string; count: number }>([
+        {
+          $group: {
+            _id: '$difficulty',
+            count: { $sum: 1 },
           },
-        ]),
+        },
+      ]),
 
-        // Words per topic with topic details
-        Word.aggregate<{ _id: string; topicName: string; count: number }>([
-          { $unwind: '$topics' },
-          {
-            $group: {
-              _id: '$topics',
-              count: { $sum: 1 },
-            },
+      // Words per topic with topic details
+      Word.aggregate<{ _id: string; topicName: string; count: number }>([
+        { $unwind: '$topics' },
+        {
+          $group: {
+            _id: '$topics',
+            count: { $sum: 1 },
           },
-          {
-            $lookup: {
-              from: 'topics',
-              localField: '_id',
-              foreignField: '_id',
-              as: 'topicInfo',
-            },
+        },
+        {
+          $lookup: {
+            from: 'topics',
+            localField: '_id',
+            foreignField: '_id',
+            as: 'topicInfo',
           },
-          { $unwind: '$topicInfo' },
-          {
-            $project: {
-              _id: 1,
-              topicName: '$topicInfo.name',
-              count: 1,
-            },
+        },
+        { $unwind: { path: '$topicInfo', preserveNullAndEmptyArrays: true } },
+        {
+          $project: {
+            _id: 1,
+            topicName: { $ifNull: ['$topicInfo.name', 'Unknown'] },
+            count: 1,
           },
-          { $sort: { count: -1 } },
-        ]),
+        },
+        { $sort: { count: -1 } },
+      ]),
 
-        // Average word accuracy across all quiz attempts
-        AdminVocabularyService.calculateAverageAccuracy(),
+      // Average word accuracy across all quiz attempts
+      AdminVocabularyService.calculateAverageAccuracy(),
 
-        // Count of words with zero attempts
-        AdminVocabularyService.countUnusedWords(),
-      ]);
+      // Count of words with zero attempts
+      AdminVocabularyService.countUnusedWords(),
+    ]);
 
     // Transform aggregation results to structured format
     const moduleDistribution = {
@@ -81,7 +93,8 @@ export class AdminVocabularyService {
 
     const difficultyDistribution = {
       beginner: byDifficulty.find((d) => d._id === 'beginner')?.count || 0,
-      intermediate: byDifficulty.find((d) => d._id === 'intermediate')?.count || 0,
+      intermediate:
+        byDifficulty.find((d) => d._id === 'intermediate')?.count || 0,
       advanced: byDifficulty.find((d) => d._id === 'advanced')?.count || 0,
     };
 
@@ -216,10 +229,11 @@ export class AdminVocabularyService {
     // Get word details
     const wordIds = topWordsAggregation.map((w) => w.wordId);
     const words = await Word.find({ _id: { $in: wordIds } }).lean();
+    const wordMap = new Map(words.map((w) => [w._id.toString(), w]));
 
     // Merge aggregation results with word details
     return topWordsAggregation.map((tw) => {
-      const word = words.find((w) => w._id.toString() === tw.wordId.toString());
+      const word = wordMap.get(tw.wordId.toString());
 
       return {
         wordId: tw.wordId.toString(),
@@ -237,7 +251,9 @@ export class AdminVocabularyService {
    * Get words that have never been attempted in any quiz
    * Returns full word details for unused words + total count
    */
-  static async getUnusedWords(limit = 50): Promise<{ words: UnusedWord[]; totalCount: number }> {
+  static async getUnusedWords(
+    limit = 50
+  ): Promise<{ words: UnusedWord[]; totalCount: number }> {
     // Get all unique word IDs from QuizAttempts
     const attemptedWordIds = await QuizAttempt.aggregate<{ _id: string }>([
       { $unwind: '$questions' },
@@ -338,7 +354,9 @@ export class AdminVocabularyService {
       .filter((item): item is WordUsage => item !== null);
 
     // Sort and get top/bottom
-    const sortedByAttempts = [...enrichedUsage].sort((a, b) => b.attemptCount - a.attemptCount);
+    const sortedByAttempts = [...enrichedUsage].sort(
+      (a, b) => b.attemptCount - a.attemptCount
+    );
 
     return {
       mostReviewed: sortedByAttempts.slice(0, limit),

@@ -100,7 +100,7 @@ export interface TopWord {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   accuracy: number;
   attempts: number;
-  lastUpdated?: Date;
+  lastUpdated?: string;
 }
 
 export interface UnusedWord {

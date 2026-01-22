@@ -56,7 +56,9 @@ export const TopWordsCard = () => {
           <Heading size="sm">Top Performing Words</Heading>
         </CardHeader>
         <CardContent>
-          <Text color="gray.500">No top words data available (requires ≥10 attempts per word)</Text>
+          <Text color="gray.500">
+            No top words data available (requires ≥10 attempts per word)
+          </Text>
         </CardContent>
       </Card>
     );
@@ -100,8 +102,8 @@ export const TopWordsCard = () => {
                         word.difficulty === 'beginner'
                           ? 'green'
                           : word.difficulty === 'intermediate'
-                            ? 'blue'
-                            : 'purple'
+                          ? 'blue'
+                          : 'purple'
                       }
                       fontSize="xs"
                     >
@@ -124,7 +126,7 @@ export const TopWordsCard = () => {
 
         <Box mt={3} pt={3} borderTop="1px solid" borderColor="gray.200">
           <Text fontSize="xs" color="gray.500">
-            Showing {data.words.length} of {data.count} top performing words
+            Showing {data.words.length} top performing words
           </Text>
         </Box>
       </CardContent>

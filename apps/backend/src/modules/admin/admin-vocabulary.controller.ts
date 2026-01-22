@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
 import { AdminVocabularyService } from './admin-vocabulary.service';
 
+// Maximum allowed limit to prevent expensive queries
+const MAX_LIMIT = 200;
+
 export class AdminVocabularyController {
   /**
    * Get comprehensive vocabulary overview metrics
@@ -25,8 +28,13 @@ export class AdminVocabularyController {
    */
   static async getTopWords(req: Request, res: Response, next: NextFunction) {
     try {
-      const parsedLimit = req.query.limit ? Number.parseInt(req.query.limit as string, 10) : 20;
-      const limit = Number.isNaN(parsedLimit) || parsedLimit <= 0 ? 20 : parsedLimit;
+      const parsedLimit = req.query.limit
+        ? Number.parseInt(req.query.limit as string, 10)
+        : 20;
+      const limit =
+        Number.isNaN(parsedLimit) || parsedLimit <= 0
+          ? 20
+          : Math.min(parsedLimit, MAX_LIMIT);
 
       const topWords = await AdminVocabularyService.getTopWords(limit);
 
@@ -48,10 +56,17 @@ export class AdminVocabularyController {
    */
   static async getUnusedWords(req: Request, res: Response, next: NextFunction) {
     try {
-      const parsedLimit = req.query.limit ? Number.parseInt(req.query.limit as string, 10) : 50;
-      const limit = Number.isNaN(parsedLimit) || parsedLimit <= 0 ? 50 : parsedLimit;
+      const parsedLimit = req.query.limit
+        ? Number.parseInt(req.query.limit as string, 10)
+        : 50;
+      const limit =
+        Number.isNaN(parsedLimit) || parsedLimit <= 0
+          ? 50
+          : Math.min(parsedLimit, MAX_LIMIT);
 
-      const { words, totalCount } = await AdminVocabularyService.getUnusedWords(limit);
+      const { words, totalCount } = await AdminVocabularyService.getUnusedWords(
+        limit
+      );
 
       res.json({
         success: true,
@@ -71,8 +86,13 @@ export class AdminVocabularyController {
    */
   static async getUsageStats(req: Request, res: Response, next: NextFunction) {
     try {
-      const parsedLimit = req.query.limit ? Number.parseInt(req.query.limit as string, 10) : 20;
-      const limit = Number.isNaN(parsedLimit) || parsedLimit <= 0 ? 20 : parsedLimit;
+      const parsedLimit = req.query.limit
+        ? Number.parseInt(req.query.limit as string, 10)
+        : 20;
+      const limit =
+        Number.isNaN(parsedLimit) || parsedLimit <= 0
+          ? 20
+          : Math.min(parsedLimit, MAX_LIMIT);
 
       const usageStats = await AdminVocabularyService.getUsageStats(limit);
 
