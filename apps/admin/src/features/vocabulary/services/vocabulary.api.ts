@@ -1,5 +1,5 @@
 import { axiosInstance } from '@ielts/auth';
-import type { Word, WordsQueryParams, WordsResponse } from '../types';
+import type { WordsQueryParams, WordsResponse } from '../types';
 
 export const vocabularyApi = {
   /**
@@ -36,6 +36,19 @@ export const vocabularyApi = {
     const formData = new FormData();
     formData.append('file', file);
     await axiosInstance.post('/words/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  },
+
+  /**
+   * Upload CSV file with words (atomic - all-or-nothing)
+   */
+  uploadCSVAtomic: async (file: File): Promise<void> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    await axiosInstance.post('/words/upload-atomic', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

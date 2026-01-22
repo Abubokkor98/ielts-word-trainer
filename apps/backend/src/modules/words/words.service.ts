@@ -15,15 +15,22 @@ export async function resolveTopic(topicInput: string): Promise<string> {
     if (!topicExists) throw new Error('Topic not found');
     return topicInput;
   } else {
-    // It's likely a topic name
     const cleanedTopic = topicInput.trim();
+    const topicSlug = cleanedTopic
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
     try {
       const topic = await Topic.findOneAndUpdate(
         {
           name: { $regex: new RegExp(`^${escapeRegex(cleanedTopic)}$`, 'i') },
         },
         {
-          $setOnInsert: { name: cleanedTopic },
+          $setOnInsert: {
+            name: cleanedTopic,
+            slug: topicSlug,
+          },
         },
         {
           new: true,
@@ -32,12 +39,19 @@ export async function resolveTopic(topicInput: string): Promise<string> {
       );
       return topic._id.toString();
     } catch (error: any) {
-      // Handle race condition: if duplicate key error (E11000), strictly retry finding the topic
-      // The other process just created it, so simple find will succeed now.
+      // Handle race condition or duplicate slug: if duplicate key error (E11000)
+      // The duplicate might be on slug index, so check both name and slug
       if (error.code === 11000) {
-        const existingTopic = await Topic.findOne({
+        // First try to find by name (case-insensitive)
+        let existingTopic = await Topic.findOne({
           name: { $regex: new RegExp(`^${escapeRegex(cleanedTopic)}$`, 'i') },
         });
+
+        // If not found by name, try by slug (the duplicate key is on slug)
+        if (!existingTopic) {
+          existingTopic = await Topic.findOne({ slug: topicSlug });
+        }
+
         if (existingTopic) {
           return existingTopic._id.toString();
         }

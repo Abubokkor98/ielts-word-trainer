@@ -75,4 +75,32 @@ export class WordsController {
       next(err);
     }
   }
+
+  static async uploadCSVAtomic(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      if (!req.file) {
+        throw new AppError('No file provided', 400);
+      }
+
+      // Convert buffer to string
+      const csvContent = req.file.buffer.toString('utf-8');
+
+      // Import words atomically (all-or-nothing)
+      const result = await CSVImportService.importWordsAtomic(csvContent);
+      console.log('Atomic Import Result:', JSON.stringify(result, null, 2));
+
+      // Return detailed results
+      res.status(200).json({
+        success: true,
+        data: result,
+        message: `Atomic import successful: All ${result.successful} words imported`,
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
