@@ -1,11 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
 import { clearAuthCookies, setAuthCookies } from '../../shared/cookies';
-import {
-  generateCsrfToken,
-  setCsrfCookie,
-  clearCsrfCookie,
-} from '../../shared/csrf';
 import { UserService } from '../users/users.service';
 import type { AuthRequest } from './auth.middleware';
 import { AuthService } from './auth.service';
@@ -25,14 +20,9 @@ export class AuthController {
 
       setAuthCookies(res, accessToken, refreshToken);
 
-      // Generate and set CSRF token for security
-      const csrfToken = generateCsrfToken();
-      setCsrfCookie(res, csrfToken);
-
       res.status(201).json({
         success: true,
         accessToken,
-        csrfToken, // Frontend will include this in protected requests
         data: {
           id: user._id,
           name: user.name,
@@ -77,14 +67,9 @@ export class AuthController {
 
       setAuthCookies(res, accessToken, refreshToken);
 
-      // Generate and set CSRF token for security
-      const csrfToken = generateCsrfToken();
-      setCsrfCookie(res, csrfToken);
-
       res.status(200).json({
         success: true,
         accessToken,
-        csrfToken, // Frontend will include this in protected requests
         data: {
           id: user._id,
           name: user.name,
@@ -169,12 +154,12 @@ export class AuthController {
         throw error;
       }
 
-      // Token rotation: Generate new tokens and invalidate old refresh token
+      // Remove old refresh token first
+      await AuthService.logout(user, refreshToken);
+
+      // Token rotation: Generate new tokens after invalidating old refresh token
       const { accessToken, refreshToken: newRefreshToken } =
         await AuthService.generateTokens(user);
-
-      // Remove old refresh token
-      await AuthService.logout(user, refreshToken);
 
       setAuthCookies(res, accessToken, newRefreshToken);
 
@@ -228,7 +213,6 @@ export class AuthController {
       }
 
       clearAuthCookies(res);
-      clearCsrfCookie(res);
       res.json({ success: true, message: 'Logged out successfully' });
     } catch (err) {
       next(err);

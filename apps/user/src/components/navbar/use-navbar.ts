@@ -63,19 +63,13 @@ export function useNavbar() {
 
   const handleLogout = async () => {
     try {
-      // IMPORTANT: Call backend FIRST to validate CSRF token
-      // This ensures we don't clear state if CSRF validation fails
       await axiosInstance.post('/auth/logout');
 
-      // Only clear state if backend logout succeeded
       logout();
       queryClient.clear();
       useQuizStore.getState().reset();
-
-      // Clear cookies explicitly (belt and suspenders)
       document.cookie = 'accessToken=; path=/; max-age=0';
       document.cookie = 'refreshToken=; path=/; max-age=0';
-      document.cookie = 'csrf-token=; path=/; max-age=0';
 
       // Show success toast immediately (before redirect)
       // Note: The useEffect won't trigger because we already cleared the user state
@@ -89,7 +83,6 @@ export function useNavbar() {
       router.push('/');
       onClose();
     } catch (error: unknown) {
-      // Handle logout errors (e.g., CSRF validation failure)
       console.error('Logout failed:', error);
 
       const errorMessage =

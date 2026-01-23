@@ -431,7 +431,6 @@ This project is built as an Nx monorepo containing three main applications that 
 - **Helmet**: Security headers middleware
 - **CORS**: Cross-origin resource sharing configuration
 - **express-rate-limit**: API rate limiting protection
-- **CSRF Protection**: Double-submit cookie pattern for state-changing operations
 - **HTTP Cache-Control**: Optimized caching strategy for performance and security
 
 **File Processing**

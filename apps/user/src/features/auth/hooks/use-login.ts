@@ -18,12 +18,6 @@ export function useLogin() {
       setToken(data.accessToken);
       setUser(data.data);
 
-      // Store CSRF token in axios headers for protected requests
-      if (data.csrfToken) {
-        const { axiosInstance } = await import('@ielts/auth');
-        axiosInstance.defaults.headers.common['X-CSRF-Token'] = data.csrfToken;
-      }
-
       // Verify cookies were set correctly
       try {
         const { axiosInstance } = await import('@ielts/auth');
