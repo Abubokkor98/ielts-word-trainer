@@ -14,9 +14,34 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: (credentials: LoginCredentials) => authApi.login(credentials),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setToken(data.accessToken);
       setUser(data.data);
+
+      // Store CSRF token in axios headers for protected requests
+      if (data.csrfToken) {
+        const { axiosInstance } = await import('@ielts/auth');
+        axiosInstance.defaults.headers.common['X-CSRF-Token'] = data.csrfToken;
+      }
+
+      // Verify cookies were set correctly
+      try {
+        const { axiosInstance } = await import('@ielts/auth');
+        const cookieCheck = await axiosInstance.get('/auth/verify-cookies');
+        if (!cookieCheck.data.data.cookiesValid) {
+          toast({
+            title: 'Warning: Session may not persist',
+            description:
+              'Cookies were not set correctly. You may be logged out on refresh.',
+            status: 'warning',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      } catch (error) {
+        console.warn('Cookie verification failed:', error);
+        // Don't block login on verification failure
+      }
 
       toast({
         title: 'Login successful!',
@@ -30,7 +55,9 @@ export function useLogin() {
 
       // Security: Ensure redirect is a relative path (not external URL or protocol-relative)
       const safeRedirect =
-        redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/';
+        redirectTo.startsWith('/') && !redirectTo.startsWith('//')
+          ? redirectTo
+          : '/';
 
       router.push(safeRedirect);
     },

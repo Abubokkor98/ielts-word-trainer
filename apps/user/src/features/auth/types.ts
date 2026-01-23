@@ -23,5 +23,6 @@ export interface ResetPasswordCredentials {
 export interface AuthResponse {
   success: boolean;
   accessToken: string;
+  csrfToken?: string; // CSRF token for protected requests
   data: User;
 }
