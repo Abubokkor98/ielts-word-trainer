@@ -158,7 +158,11 @@ Customize your learning experience:
 1. Complete all due SRS reviews
 2. Add 5-10 new words from the vocabulary library
 
-**Afternoon/Evening (15-20 minutes)** 3. Take one quiz at your current difficulty level 4. Review any words you got wrong in the quiz 5. Browse vocabulary library for new words related to your weak topics
+**Afternoon/Evening (15-20 minutes)**
+
+3. Take one quiz at your current difficulty level
+4. Review any words you got wrong in the quiz
+5. Browse vocabulary library for new words related to your weak topics
 
 **Consistency Tips:**
 
@@ -342,9 +346,9 @@ pnpm dev
 
 The applications will be available at:
 
-- User App: http://localhost:3000
-- Admin Panel: http://localhost:3001
-- Backend API: http://localhost:3333
+- User App: <http://localhost:3000>
+- Admin Panel: <http://localhost:3001>
+- Backend API: <http://localhost:3333>
 
 ## For Developers
 
@@ -515,7 +519,7 @@ Adaptive quiz generation based on user performance and preferences:
 
 **XP Calculation:**
 
-```
+```text
 Base XP = 10 points per question
 Difficulty Multiplier: Beginner (1x), Intermediate (1.5x), Advanced (2x)
 XP Earned = (Correct Answers × Base XP × Multiplier)
@@ -615,7 +619,7 @@ word,meaning,exampleSentence,synonyms,antonyms,partOfSpeech,difficulty,modules,t
 
 ### Project Structure
 
-```
+```text
 ielts-vocabs-app/
 ├── apps/
 │   ├── backend/                  # Express API
@@ -1436,9 +1440,9 @@ pnpm dev
 
 This starts:
 
-- Backend API: http://localhost:3333
-- User App: http://localhost:3000
-- Admin Panel: http://localhost:3001
+- Backend API: <http://localhost:3333>
+- User App: <http://localhost:3000>
+- Admin Panel: <http://localhost:3001>
 
 **Option B: Run applications individually**
 
@@ -1553,7 +1557,7 @@ pnpm test:watch       # Run tests in watch mode
 
 **Test Structure:**
 
-```
+```text
 apps/backend/src/**/__tests__/
 apps/user/src/**/__tests__/
 apps/admin/src/**/__tests__/
@@ -1993,14 +1997,14 @@ A: Please email security concerns privately to mail.abubokkor@gmail.com rather t
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under a custom proprietary license for **personal and educational use only**.
 
-### MIT License Summary
+### License Summary
 
-Permission is granted to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of this software, subject to the following conditions:
+- **Allowed:** Personal and educational use.
+- **Prohibited:** Commercial use, redistribution, modification and distribution of modified copies without explicit permission.
 
-- The above copyright notice and permission notice shall be included in all copies
-- The software is provided "as is", without warranty of any kind
+See the [LICENSE](LICENSE) file for full details.
 
 ## Acknowledgments
 

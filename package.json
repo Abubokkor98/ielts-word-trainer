@@ -1,7 +1,7 @@
 {
   "name": "@ielts-vocabs-app/source",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:user\" \"pnpm dev:admin\"",
     "dev:backend": "npx tsx --tsconfig apps/backend/tsconfig.json apps/backend/src/main.ts",
