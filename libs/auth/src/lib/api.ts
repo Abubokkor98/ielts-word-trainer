@@ -160,7 +160,8 @@ axiosInstance.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        // Suppress production errors for client errors only
+        // Suppress in production if the ORIGINAL request was a client error (4xx)
+        // Note: 'error' is the original 401, 'refreshError' is from the refresh attempt
         if (
           isProduction &&
           error.response?.status >= 400 &&

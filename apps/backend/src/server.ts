@@ -16,7 +16,7 @@ export const createServer = (): Express => {
     '----------------------------------------------------------------'
   );
   console.log(
-    'Server Request - CORS Config: http://localhost:3000, http://localhost:3001'
+    `Server Request - CORS Config: ${env.CORS_ORIGINS}`
   );
   console.log(
     '----------------------------------------------------------------'

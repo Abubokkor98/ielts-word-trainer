@@ -14,7 +14,7 @@ Imagine you're logged into your bank's website in one browser tab.
 
 **Without CSRF Protection:**
 
-```
+```text
 You: *logged into BankApp.com*
 Evil site: "Hey browser, send money from BankApp.com!"
 Browser: "OK!" *sends cookies automatically*
@@ -24,7 +24,7 @@ You: "Wait, I didn't do that!" ❌
 
 **With CSRF Protection:**
 
-```
+```text
 You: *logged into BankApp.com* → Gets secret token
 Evil site: "Hey browser, send money from BankApp.com!"
 Browser: *sends cookies but NO secret token*
@@ -64,7 +64,7 @@ static async login(req: Request, res: Response) {
 
 **What happens:**
 
-```
+```text
 1. You login with email/password
 2. Backend creates 3 cookies:
    - accessToken (httpOnly - can't read)
@@ -139,7 +139,7 @@ export const validateCsrf = (req: Request, res: Response, next: NextFunction) =>
 
 **Why this works:**
 
-```
+```text
 Legitimate Request (Your App):
 Cookie: csrf-token=abc123     ← Browser sends automatically
 Header: X-CSRF-Token: abc123  ← Your app sends explicitly
@@ -186,7 +186,7 @@ fetch('https://ielts-vocabs-app.com/auth/logout', {
 
 ### Without CSRF Protection ❌
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │  You visit evil-site.com                        │
 │  (while logged into ielts-vocabs-app.com)       │
@@ -214,7 +214,7 @@ fetch('https://ielts-vocabs-app.com/auth/logout', {
 
 ### With CSRF Protection ✅
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │  You visit evil-site.com                        │
 │  (while logged into ielts-vocabs-app.com)       │

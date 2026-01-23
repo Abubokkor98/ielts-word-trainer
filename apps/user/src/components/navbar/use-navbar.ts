@@ -68,35 +68,21 @@ export function useNavbar() {
       logout();
       queryClient.clear();
       useQuizStore.getState().reset();
-      document.cookie = 'accessToken=; path=/; max-age=0';
-      document.cookie = 'refreshToken=; path=/; max-age=0';
 
-      // Show success toast immediately (before redirect)
-      // Note: The useEffect won't trigger because we already cleared the user state
       toast({
         title: 'Logged out successfully',
         status: 'success',
         duration: 2000,
       });
 
-      // Redirect and close modal
       router.push('/');
       onClose();
     } catch (error: unknown) {
       console.error('Logout failed:', error);
 
       const errorMessage =
-        error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        error.response &&
-        typeof error.response === 'object' &&
-        'data' in error.response &&
-        error.response.data &&
-        typeof error.response.data === 'object' &&
-        'error' in error.response.data
-          ? String(error.response.data.error)
-          : 'Failed to logout. Please try again.';
+        (error as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error ?? 'Failed to logout. Please try again.';
 
       toast({
         title: 'Logout failed',

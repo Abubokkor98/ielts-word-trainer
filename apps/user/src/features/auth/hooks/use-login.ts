@@ -1,5 +1,5 @@
 import { useToast } from '@chakra-ui/react';
-import { useAuthStore } from '@ielts/auth';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -20,9 +20,8 @@ export function useLogin() {
 
       // Verify cookies were set correctly
       try {
-        const { axiosInstance } = await import('@ielts/auth');
         const cookieCheck = await axiosInstance.get('/auth/verify-cookies');
-        if (!cookieCheck.data.data.cookiesValid) {
+        if (!cookieCheck.data?.data?.cookiesValid) {
           toast({
             title: 'Warning: Session may not persist',
             description:

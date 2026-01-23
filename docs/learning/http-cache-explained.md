@@ -104,7 +104,7 @@ It's a message from your backend to the browser saying: "Here's how you should c
 
 ### Your Backend Code
 
-**File:** [`server.ts`](file:///d:/Projects/ielts-vocabs-app/apps/backend/src/server.ts)
+**File:** [`server.ts`](../../apps/backend/src/server.ts)
 
 ```typescript
 // Auth endpoints: NEVER cache
