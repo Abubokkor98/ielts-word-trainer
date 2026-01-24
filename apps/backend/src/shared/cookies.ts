@@ -6,14 +6,14 @@ import type { Response } from 'express';
  */
 export const getAuthCookieOptions = () => {
   const isProduction = process.env.NODE_ENV === 'production';
-  const cookieDomain = process.env.COOKIE_DOMAIN || undefined;
 
   return {
     httpOnly: true,
     secure: isProduction,
     sameSite: (isProduction ? 'none' : 'lax') as 'none' | 'lax',
     path: '/',
-    domain: cookieDomain,
+    // No domain attribute - cookies will be set on the requesting domain
+    // With rewrites, frontend and API are on same domain (ieltsvocabs.vercel.app)
   };
 };
 
