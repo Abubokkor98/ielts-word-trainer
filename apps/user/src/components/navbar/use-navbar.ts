@@ -6,6 +6,7 @@ import {
 } from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { authApi } from '../../features/auth/services/auth.api';
@@ -81,9 +82,9 @@ export function useNavbar() {
     } catch (error: unknown) {
       console.error('Logout failed:', error);
 
-      const errorMessage =
-        (error as { response?: { data?: { error?: string } } })?.response?.data
-          ?.error ?? 'Failed to logout. Please try again.';
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.error ?? 'Failed to logout. Please try again.'
+        : 'Failed to logout. Please try again.';
 
       toast({
         title: 'Logout failed',

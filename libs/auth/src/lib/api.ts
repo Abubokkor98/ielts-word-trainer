@@ -160,16 +160,16 @@ axiosInstance.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        // Suppress in production if the ORIGINAL request was a client error (4xx)
+        // Suppress in production if the REFRESH ATTEMPT was a client error (4xx)
         // Note: 'error' is the original 401, 'refreshError' is from the refresh attempt
         if (
           isProduction &&
-          error.response?.status >= 400 &&
-          error.response?.status < 500
+          (refreshError as any).response?.status >= 400 &&
+          (refreshError as any).response?.status < 500
         ) {
           const silentError = new Error('Token refresh failed');
           Object.assign(silentError, {
-            response: error.response,
+            response: (refreshError as any).response,
             config: error.config,
           });
           return Promise.reject(silentError);

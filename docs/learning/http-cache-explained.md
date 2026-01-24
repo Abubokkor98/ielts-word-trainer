@@ -286,9 +286,8 @@ Time    Action                          Cache Status              What You See
 00:15   Study word 1                    POST /srs/review          studying...
         ↓ React Query invalidates       Backend: dueToday = 9
 
-00:16   React Query refetch             Cache still valid?        dueToday: 10
-        ↓ Browser blocks!               Yes (16s old > 10s?)      ❌ Old data!
-                                        No, 6s old ✅
+00:16   React Query refetch             Cache expired!
+        ↓ API call                      16s > 10s max-age         dueToday: 9 ✅
 
 00:45   Study word 2                    POST /srs/review          studying...
         ↓ React Query invalidates       Backend: dueToday = 8

@@ -38,7 +38,7 @@ You: Safe! ✅
 
 ### Step 1: Login (You Get a Secret Token)
 
-**Your code:** [`auth.controller.ts`](file:///d:/Projects/ielts-vocabs-app/apps/backend/src/modules/auth/auth.controller.ts)
+**Your code:** [`auth.controller.ts`](../../apps/backend/src/modules/auth/auth.controller.ts)
 
 ```typescript
 // When you login successfully:
@@ -78,7 +78,7 @@ static async login(req: Request, res: Response) {
 
 ### Step 2: Protected Action (Logout Example)
 
-**Your code:** [`auth.routes.ts`](file:///d:/Projects/ielts-vocabs-app/apps/backend/src/modules/auth/auth.routes.ts)
+**Your code:** [`auth.routes.ts`](../../apps/backend/src/modules/auth/auth.routes.ts)
 
 ```typescript
 router.post('/logout', authenticate, validateCsrf, AuthController.logout);
@@ -112,7 +112,7 @@ sequenceDiagram
 
 ### Step 3: CSRF Validation (The Check)
 
-**Your code:** [`csrf.ts`](file:///d:/Projects/ielts-vocabs-app/apps/backend/src/shared/csrf.ts)
+**Your code:** [`csrf.ts`](../../apps/backend/src/shared/csrf.ts)
 
 ```typescript
 export const validateCsrf = (req: Request, res: Response, next: NextFunction) => {
@@ -359,10 +359,10 @@ A type of attack where evil sites trick your browser into doing things you don't
 
 **Files involved:**
 
-1. [`csrf.ts`](file:///d:/Projects/ielts-vocabs-app/apps/backend/src/shared/csrf.ts) - Token generation & validation
-2. [`auth.controller.ts`](file:///d:/Projects/ielts-vocabs-app/apps/backend/src/modules/auth/auth.controller.ts) - Sets token on login
-3. [`auth.routes.ts`](file:///d:/Projects/ielts-vocabs-app/apps/backend/src/modules/auth/auth.routes.ts) - Validates token on logout/refresh
-4. [`use-login.ts`](file:///d:/Projects/ielts-vocabs-app/apps/user/src/features/auth/hooks/use-login.ts) - Stores token in frontend
+1. [`csrf.ts`](../../apps/backend/src/shared/csrf.ts) - Token generation & validation
+2. [`auth.controller.ts`](../../apps/backend/src/modules/auth/auth.controller.ts) - Sets token on login
+3. [`auth.routes.ts`](../../apps/backend/src/modules/auth/auth.routes.ts) - Validates token on logout/refresh
+4. [`use-login.ts`](../../apps/user/src/features/auth/hooks/use-login.ts) - Stores token in frontend
 
 **Protection level:** 🛡️🛡️🛡️ Production-grade!
 
