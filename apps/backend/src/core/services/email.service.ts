@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { AppError } from '../errors/AppError';
 import { Logger } from '../../utils';
 
 const smtpHost = process.env.SMTP_HOST;
@@ -7,12 +8,15 @@ const smtpUser = process.env.SMTP_USER;
 const smtpPass = process.env.SMTP_PASS;
 
 if (!smtpHost || !smtpUser || !smtpPass) {
-  throw new Error('SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS) must be fully configured.');
+  throw new AppError(
+    'SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS) must be fully configured.',
+    500
+  );
 }
 
 const port = Number(smtpPort ?? 587);
 if (!Number.isInteger(port) || port <= 0) {
-  throw new Error(`Invalid SMTP_PORT: ${smtpPort}`);
+  throw new AppError(`Invalid SMTP_PORT: ${smtpPort}`, 500);
 }
 
 const transporter = nodemailer.createTransport({
@@ -26,11 +30,19 @@ const transporter = nodemailer.createTransport({
 });
 
 export class EmailService {
-  static async sendPasswordResetEmail(email: string, token: string, role: string = 'user') {
-    const baseUrl = role === 'admin' ? process.env.ADMIN_URL : process.env.CLIENT_URL;
+  static async sendPasswordResetEmail(
+    email: string,
+    token: string,
+    role: string = 'user'
+  ) {
+    const baseUrl =
+      role === 'admin' ? process.env.ADMIN_URL : process.env.CLIENT_URL;
 
     if (!baseUrl) {
-      throw new Error(`Missing base URL env for password reset email (role=${role}).`);
+      throw new AppError(
+        `Missing base URL env for password reset email (role=${role}).`,
+        500
+      );
     }
 
     const resetUrl = new URL('/reset-password', baseUrl);

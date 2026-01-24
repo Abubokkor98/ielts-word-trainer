@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { AppError } from '../../core/errors/AppError';
 import type { CreateWordInput } from '../../shared';
 import { Topic } from '../topics/topics.model';
 import { Word } from './words.model';
@@ -12,7 +13,7 @@ export async function resolveTopic(topicInput: string): Promise<string> {
 
   if (isObjectId) {
     const topicExists = await Topic.findById(topicInput);
-    if (!topicExists) throw new Error('Topic not found');
+    if (!topicExists) throw new AppError('Topic not found', 404);
     return topicInput;
   } else {
     const cleanedTopic = topicInput.trim();
@@ -23,8 +24,9 @@ export async function resolveTopic(topicInput: string): Promise<string> {
 
     // Validate that slug is not empty (e.g., from non-Latin characters only)
     if (!topicSlug) {
-      throw new Error(
+      throw new AppError(
         `Topic name "${cleanedTopic}" must contain at least one alphanumeric character`,
+        400
       );
     }
 
@@ -42,7 +44,7 @@ export async function resolveTopic(topicInput: string): Promise<string> {
         {
           new: true,
           upsert: true,
-        },
+        }
       );
       return topic._id.toString();
     } catch (error: any) {
@@ -71,7 +73,7 @@ export async function resolveTopic(topicInput: string): Promise<string> {
 // Resolve multiple topics at once
 export async function resolveTopics(topicInputs: string[]): Promise<string[]> {
   const resolvedTopicIds = await Promise.all(
-    topicInputs.map((topicInput) => resolveTopic(topicInput)),
+    topicInputs.map((topicInput) => resolveTopic(topicInput))
   );
 
   // Remove duplicates
@@ -82,7 +84,11 @@ export class WordsService {
   static async create(input: CreateWordInput) {
     const wordData = { ...input };
     // If topics are provided, handle them (they might be names or IDs)
-    if (wordData.topics && Array.isArray(wordData.topics) && wordData.topics.length > 0) {
+    if (
+      wordData.topics &&
+      Array.isArray(wordData.topics) &&
+      wordData.topics.length > 0
+    ) {
       wordData.topics = await resolveTopics(wordData.topics as string[]);
     }
     return Word.create(wordData);
@@ -102,7 +108,10 @@ export class WordsService {
 
     // Search by topic Name
     if (query.topicName) {
-      const escapedTopicName = query.topicName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const escapedTopicName = query.topicName.replace(
+        /[.*+?^${}()|[\]\\]/g,
+        '\\$&'
+      );
       const topics = await Topic.find({
         name: { $regex: escapedTopicName, $options: 'i' },
       }).select('_id');
@@ -158,7 +167,7 @@ export class WordsService {
 
     const word = await Word.findById(id);
     if (!word) {
-      throw new Error('Word not found');
+      throw new AppError('Word not found', 404);
     }
 
     Object.assign(word, updateDoc);

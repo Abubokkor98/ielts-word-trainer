@@ -1,3 +1,5 @@
+import { AppError } from '../../core/errors/AppError';
+
 export interface SM2Input {
   quality: number; // 0-5
   prevInterval: number;
@@ -23,7 +25,10 @@ export function calculateSM2({
 }: SM2Input): SM2Output {
   // Validate quality is within SM-2 range (0-5)
   if (quality < 0 || quality > 5) {
-    throw new Error(`Invalid quality rating: ${quality}. Must be between 0 and 5.`);
+    throw new AppError(
+      `Invalid quality rating: ${quality}. Must be between 0 and 5.`,
+      400
+    );
   }
 
   let interval: number;
@@ -44,7 +49,8 @@ export function calculateSM2({
 
     // Update Ease Factor
     // EF' = EF + (0.1 - (5-q) * (0.08 + (5-q) * 0.02))
-    easeFactor = prevEaseFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    easeFactor =
+      prevEaseFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
   } else {
     // Incorrect response logic (Reset)
     repetitions = 0;
