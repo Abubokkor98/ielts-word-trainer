@@ -6,7 +6,6 @@ import { Suspense } from 'react';
 import './global.css';
 import { ChakraUIProvider, ReactQueryProvider } from '@ielts/ui';
 import { UserNavbar } from '../components/navbar';
-import { RouteGuard } from '../components/route-guard';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -105,20 +104,18 @@ export default function RootLayout({
       >
         <ReactQueryProvider>
           <ChakraUIProvider>
-            <RouteGuard>
-              <div className="flex flex-col min-h-screen">
-                <Suspense
-                  fallback={
-                    <div className="h-16 bg-[#171923] border-b border-gray-800" />
-                  }
-                >
-                  <UserNavbar />
-                </Suspense>
-                <main id="main-content" className="flex-1 flex flex-col">
-                  {children}
-                </main>
-              </div>
-            </RouteGuard>
+            <div className="flex flex-col min-h-screen">
+              <Suspense
+                fallback={
+                  <div className="h-16 bg-[#171923] border-b border-gray-800" />
+                }
+              >
+                <UserNavbar />
+              </Suspense>
+              <main id="main-content" className="flex-1 flex flex-col">
+                {children}
+              </main>
+            </div>
           </ChakraUIProvider>
         </ReactQueryProvider>
         <Analytics />

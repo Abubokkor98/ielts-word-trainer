@@ -65,6 +65,7 @@ export function useNavbar() {
     try {
       await axiosInstance.post('/auth/logout');
 
+      // Clear state and navigate - proxy handles redirect logic server-side
       logout();
       queryClient.clear();
       useQuizStore.getState().reset();
