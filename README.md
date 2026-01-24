@@ -431,6 +431,7 @@ This project is built as an Nx monorepo containing three main applications that 
 - **Helmet**: Security headers middleware
 - **CORS**: Cross-origin resource sharing configuration
 - **express-rate-limit**: API rate limiting protection
+- **HTTP Cache-Control**: Optimized caching strategy for performance and security
 
 **File Processing**
 
@@ -561,10 +562,12 @@ Streak Bonus = (XP Earned × 0.1 × Streak Days) [capped at 2x]
 
 **Security Features:**
 
-- HTTP-only cookies prevent XSS token theft
-- Refresh token rotation prevents replay attacks
-- Old refresh tokens invalidated on new login
-- Rate limiting on auth endpoints
+- **HTTP-only cookies** prevent XSS token theft
+- **Refresh token rotation** prevents replay attacks
+- **CSRF protection** on logout and refresh endpoints
+- **Old refresh tokens** invalidated on new login
+- **Rate limiting** on all auth endpoints
+- **Secure cookie attributes** (partitioned, sameSite) for modern browsers
 
 #### Rate Limiting Strategy
 

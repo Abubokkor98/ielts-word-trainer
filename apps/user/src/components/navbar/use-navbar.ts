@@ -1,8 +1,13 @@
 import { useDisclosure, useToast } from '@chakra-ui/react';
-import { axiosInstance, selectIsAuthenticated, useAuthStore } from '@ielts/auth';
+import {
+  axiosInstance,
+  selectIsAuthenticated,
+  useAuthStore,
+} from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter, useSearchParams } from 'next/navigation';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { authApi } from '../../features/auth/services/auth.api';
 
@@ -22,8 +27,7 @@ export function useNavbar() {
   const logout = useAuthStore((state) => state.logout);
   const setUser = useAuthStore((state) => state.setUser);
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const searchParams = useSearchParams();
+
   const router = useRouter();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -39,26 +43,33 @@ export function useNavbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Session restoration - only attempt if we have an access token
+  // Session restoration - attempt on initial load if no user (might have cookies)
   const { data: restoredUser } = useQuery({
     queryKey: ['auth', 'restore'],
     queryFn: () => authApi.getMe({ skipErrorLogging: true }),
-    enabled: hasHydrated && !isAuthenticated && !!accessToken,
+    enabled: hasHydrated && !user, // ✅ Changed: attempt if no user (might have cookies)
     retry: false,
     staleTime: Infinity,
   });
 
   useEffect(() => {
-    if (restoredUser && !isAuthenticated) {
+    // Only restore if we got a user AND currently have no user
+    if (restoredUser && !user) {
       setUser(restoredUser);
     }
-  }, [restoredUser, isAuthenticated, setUser]);
+    // If restoration failed with auth error, cookies are truly invalid
+    // Don't do anything - let interceptor handle it on next API call
+    // Don't clear user on network errors
+  }, [restoredUser, user, setUser]);
 
-  useEffect(() => {
-    // Check if we just logged out via redirection
-    if (searchParams.get('logout') === 'success' && user) {
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('/auth/logout');
+
+      // Clear state and navigate - proxy handles redirect logic server-side
       logout();
       queryClient.clear();
+      useQuizStore.getState().reset();
 
       toast({
         title: 'Logged out successfully',
@@ -66,21 +77,25 @@ export function useNavbar() {
         duration: 2000,
       });
 
-      // Clear the query param
-      router.replace('/');
-    }
-  }, [searchParams, user, logout, queryClient, toast, router]);
-
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post('/auth/logout');
-    } catch (error) {
-      console.error('Logout API call failed:', error);
-    } finally {
-      document.cookie = 'accessToken=; path=/; max-age=0';
-      useQuizStore.getState().reset();
-      router.push('/?logout=success');
+      router.push('/');
       onClose();
+    } catch (error: unknown) {
+      console.error('Logout failed:', error);
+
+      const errorMessage = axios.isAxiosError(error)
+        ? error.response?.data?.error ?? 'Failed to logout. Please try again.'
+        : 'Failed to logout. Please try again.';
+
+      toast({
+        title: 'Logout failed',
+        description: errorMessage,
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      });
+
+      // Don't clear state - user stays logged in
+      onClose(); // Just close the modal
     }
   };
 

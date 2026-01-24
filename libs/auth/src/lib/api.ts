@@ -30,25 +30,6 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Queue to store pending requests during refresh
-let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (value?: unknown) => void;
-  reject: (reason?: unknown) => void;
-}> = [];
-
-const processQueue = (error: unknown, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
-
-  failedQueue = [];
-};
-
 // Public routes where we don't want to force a redirect to login
 const publicRoutes = [
   '/login',
@@ -66,6 +47,13 @@ const isPublicRoute = (path: string) =>
       ? path === route
       : path === route || path.startsWith(`${route}/`)
   );
+
+// Shared promise for refresh token to prevent concurrent refreshes
+let refreshTokenPromise: Promise<string> | null = null;
+
+const resetRefreshState = () => {
+  refreshTokenPromise = null;
+};
 
 // Response interceptor: Handle 401 & Auto-refresh
 axiosInstance.interceptors.response.use(
@@ -95,128 +83,98 @@ axiosInstance.interceptors.response.use(
       !originalRequest._retry &&
       !shouldSkipRefresh
     ) {
-      // Check if this is an expected auth check (silent auth)
-      const isExpectedAuthCheck = originalRequest.skipErrorLogging === true;
-
-      // Check if we have an access token - if not, don't attempt refresh
-      const hasAccessToken = !!useAuthStore.getState().accessToken;
-
-      // If this is an expected auth check and we have no token, fail silently
-      if (isExpectedAuthCheck && !hasAccessToken) {
-        // In production, suppress the error completely
-        // In development, let it through for debugging
-        if (isProduction) {
-          const silentError = new Error('Unauthorized');
-          Object.assign(silentError, {
-            response: error.response,
-            config: error.config,
-          });
-          return Promise.reject(silentError);
-        }
-        return Promise.reject(error);
-      }
-
-      // If we have no access token at all, don't attempt refresh
-      if (!hasAccessToken) {
-        // This is an unexpected 401 without a session - logout and redirect
-        useAuthStore.getState().logout();
-
-        if (typeof window !== 'undefined') {
-          const currentPath = window.location.pathname;
-          if (!isPublicRoute(currentPath)) {
-            window.location.href = '/';
-          }
-        }
-
-        // In production, suppress console error
-        if (isProduction) {
-          const silentError = new Error('Unauthorized');
-          Object.assign(silentError, {
-            response: error.response,
-            config: error.config,
-          });
-          return Promise.reject(silentError);
-        }
-        return Promise.reject(error);
-      }
-
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({
-            resolve: (token) => {
-              originalRequest.headers.Authorization = `Bearer ${token}`;
-              resolve(axiosInstance(originalRequest));
-            },
-            reject: (err) => {
-              reject(err);
-            },
-          });
-        });
-      }
-
+      // Mark request as retried to prevent infinite loops
       originalRequest._retry = true;
-      isRefreshing = true;
 
-      try {
-        // Determine which refresh endpoint to use based on current path
-        const isAdminPath =
-          originalRequest.url?.startsWith('/admin/') ||
-          originalRequest.url === '/admin';
-        const refreshEndpoint = isAdminPath
-          ? '/admin/refresh'
-          : '/auth/refresh';
+      // If already refreshing, wait for that promise
+      if (refreshTokenPromise) {
+        try {
+          const newToken = await refreshTokenPromise;
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return axiosInstance(originalRequest);
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
+        }
+      }
 
-        // Attempt to refresh token
-        const response = await axios.post(
-          `${baseURL}${refreshEndpoint}`,
-          {},
-          { withCredentials: true }
-        );
+      // Start new refresh attempt
+      refreshTokenPromise = (async () => {
+        try {
+          // Determine which refresh endpoint to use based on current path
+          const isAdminPath =
+            originalRequest.url?.startsWith('/admin/') ||
+            originalRequest.url === '/admin';
+          const refreshEndpoint = isAdminPath
+            ? '/admin/refresh'
+            : '/auth/refresh';
 
-        const { accessToken } = response.data;
+          // Attempt to refresh using cookie (the source of truth for sessions)
+          const response = await axios.post(
+            `${baseURL}${refreshEndpoint}`,
+            {},
+            { withCredentials: true }
+          );
 
-        if (accessToken) {
+          const { accessToken } = response.data;
+
+          if (!accessToken) {
+            throw new Error('Token refresh returned no access token');
+          }
+
+          // Update store
           useAuthStore.getState().setToken(accessToken);
 
-          processQueue(null, accessToken);
+          return accessToken;
+        } catch (refreshError: any) {
+          // Determine if we should logout based on error type
+          // Only logout for authentication errors, not network/server errors
+          const shouldLogout =
+            refreshError.response?.status === 401 ||
+            refreshError.response?.status === 403 ||
+            refreshError.response?.data?.code === 'REFRESH_TOKEN_MISSING' ||
+            refreshError.response?.data?.code === 'INVALID_REFRESH_TOKEN' ||
+            refreshError.response?.data?.code === 'USER_NOT_FOUND' ||
+            refreshError.response?.data?.code === 'USER_BANNED';
 
-          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-          return axiosInstance(originalRequest);
-        } else {
-          // Refresh succeeded but no token returned - treat as failure
-          const noTokenError = new Error(
-            'Token refresh returned no access token'
-          );
-          processQueue(noTokenError, null);
-          useAuthStore.getState().logout();
-          return Promise.reject(noTokenError);
-        }
-      } catch (refreshError) {
-        processQueue(refreshError, null);
+          if (shouldLogout) {
+            // Only logout for authentication errors
+            useAuthStore.getState().logout();
 
-        // Refresh failed - logout user
-        useAuthStore.getState().logout();
-
-        if (typeof window !== 'undefined') {
-          const currentPath = window.location.pathname;
-
-          if (!isPublicRoute(currentPath)) {
-            window.location.href = '/';
+            if (typeof window !== 'undefined') {
+              const currentPath = window.location.pathname;
+              if (!isPublicRoute(currentPath)) {
+                window.location.href = '/';
+              }
+            }
           }
-        }
 
-        // In production, suppress console error for refresh failures
-        if (isProduction) {
+          throw refreshError;
+        } finally {
+          // Reset state after refresh completes (success or failure)
+          resetRefreshState();
+        }
+      })();
+
+      try {
+        const newToken = await refreshTokenPromise;
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        // Suppress in production if the REFRESH ATTEMPT was a client error (4xx)
+        // Note: 'error' is the original 401, 'refreshError' is from the refresh attempt
+        if (
+          isProduction &&
+          (refreshError as any).response?.status >= 400 &&
+          (refreshError as any).response?.status < 500
+        ) {
           const silentError = new Error('Token refresh failed');
           Object.assign(silentError, {
-            response: error.response,
+            response: (refreshError as any).response,
             config: error.config,
           });
           return Promise.reject(silentError);
         }
         return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
       }
     }
 

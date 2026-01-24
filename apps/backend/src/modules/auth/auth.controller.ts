@@ -14,7 +14,9 @@ export class AuthController {
       }
 
       const user = await UserService.createUser(req.body);
-      const { accessToken, refreshToken } = await AuthService.generateTokens(user);
+      const { accessToken, refreshToken } = await AuthService.generateTokens(
+        user
+      );
 
       setAuthCookies(res, accessToken, refreshToken);
 
@@ -44,16 +46,24 @@ export class AuthController {
 
       // Check ban status before password validation to prevent information disclosure
       if (user.status === 'banned') {
-        throw new AppError('Your account has been banned. Please contact support.', 403);
+        throw new AppError(
+          'Your account has been banned. Please contact support.',
+          403
+        );
       }
 
-      const isValid = await AuthService.validatePassword(password, user.passwordHash);
+      const isValid = await AuthService.validatePassword(
+        password,
+        user.passwordHash
+      );
 
       if (!isValid) {
         throw new AppError('Invalid email or password', 401);
       }
 
-      const { accessToken, refreshToken } = await AuthService.generateTokens(user);
+      const { accessToken, refreshToken } = await AuthService.generateTokens(
+        user
+      );
 
       setAuthCookies(res, accessToken, refreshToken);
 
@@ -101,7 +111,9 @@ export class AuthController {
       const refreshToken = req.cookies.refreshToken;
 
       if (!refreshToken) {
-        throw new AppError('Refresh token not found', 401);
+        const error = new AppError('Refresh token not found', 401);
+        (error as any).code = 'REFRESH_TOKEN_MISSING';
+        throw error;
       }
 
       // Verify refresh token
@@ -109,17 +121,27 @@ export class AuthController {
       const user = await UserService.findById(decoded.id);
 
       if (!user) {
-        throw new AppError('User not found', 401);
+        const error = new AppError('User not found', 401);
+        (error as any).code = 'USER_NOT_FOUND';
+        throw error;
       }
 
       if (user.status === 'banned') {
-        throw new AppError('Your account has been banned. Please contact support.', 403);
+        const error = new AppError(
+          'Your account has been banned. Please contact support.',
+          403
+        );
+        (error as any).code = 'USER_BANNED';
+        throw error;
       }
 
       // Check if refresh token exists in user's token list
       let tokenValid = false;
       for (const storedToken of user.refreshToken) {
-        const isMatch = await AuthService.validatePassword(refreshToken, storedToken);
+        const isMatch = await AuthService.validatePassword(
+          refreshToken,
+          storedToken
+        );
         if (isMatch) {
           tokenValid = true;
           break;
@@ -127,14 +149,17 @@ export class AuthController {
       }
 
       if (!tokenValid) {
-        throw new AppError('Invalid refresh token', 401);
+        const error = new AppError('Invalid refresh token', 401);
+        (error as any).code = 'INVALID_REFRESH_TOKEN';
+        throw error;
       }
 
-      // Token rotation: Generate new tokens and invalidate old refresh token
-      const { accessToken, refreshToken: newRefreshToken } = await AuthService.generateTokens(user);
-
-      // Remove old refresh token
+      // Remove old refresh token first
       await AuthService.logout(user, refreshToken);
+
+      // Token rotation: Generate new tokens after invalidating old refresh token
+      const { accessToken, refreshToken: newRefreshToken } =
+        await AuthService.generateTokens(user);
 
       setAuthCookies(res, accessToken, newRefreshToken);
 
@@ -142,9 +167,36 @@ export class AuthController {
         success: true,
         accessToken,
       });
+    } catch (err: any) {
+      // Clear cookies only for auth-related errors, not server errors
+      const authErrorCodes = [
+        'REFRESH_TOKEN_MISSING',
+        'USER_NOT_FOUND',
+        'USER_BANNED',
+        'INVALID_REFRESH_TOKEN',
+      ];
+      const isAuthError = err.code && authErrorCodes.includes(err.code);
+      if (isAuthError) {
+        clearAuthCookies(res);
+      }
+      next(err);
+    }
+  }
+
+  static async verifyCookies(req: Request, res: Response, next: NextFunction) {
+    try {
+      const hasAccessToken = !!req.cookies.accessToken;
+      const hasRefreshToken = !!req.cookies.refreshToken;
+
+      res.json({
+        success: true,
+        data: {
+          hasAccessToken,
+          hasRefreshToken,
+          cookiesValid: hasAccessToken && hasRefreshToken,
+        },
+      });
     } catch (err) {
-      // Clear invalid refresh token with proper options
-      clearAuthCookies(res);
       next(err);
     }
   }

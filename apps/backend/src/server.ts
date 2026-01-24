@@ -12,9 +12,15 @@ export const createServer = (): Express => {
 
   // Trust first proxy (required for rate limiting behind load balancers like Vercel/Dokploy)
   app.set('trust proxy', 1);
-  console.log('----------------------------------------------------------------');
-  console.log('Server Request - CORS Config: http://localhost:3000, http://localhost:3001');
-  console.log('----------------------------------------------------------------');
+  console.log(
+    '----------------------------------------------------------------'
+  );
+  console.log(
+    `Server Request - CORS Config: ${env.CORS_ORIGINS}`
+  );
+  console.log(
+    '----------------------------------------------------------------'
+  );
 
   // Middleware
   app.use(express.json());
@@ -23,11 +29,39 @@ export const createServer = (): Express => {
     cors({
       origin: env.CORS_ORIGINS.split(','), // Allow multiple origins from env
       credentials: true,
-    }),
+    })
   );
   app.use(helmet());
   app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'short'));
   app.use(cookieParser());
+
+  // Cache control headers for production security and performance
+  // These work WITH React Query's caching, not against it
+
+  // Auth endpoints: NEVER cache (login state must always be fresh)
+  app.use('/api/v1/auth', (_req, res, next) => {
+    res.setHeader(
+      'Cache-Control',
+      'no-store, no-cache, must-revalidate, proxy-revalidate'
+    );
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    next();
+  });
+
+  // SRS endpoints: Very short cache (10s) - data changes after every study session
+  // React Query staleTime: 2min, but invalidates on mutations
+  app.use('/api/v1/srs', (_req, res, next) => {
+    res.setHeader('Cache-Control', 'private, max-age=10');
+    next();
+  });
+
+  // Quiz/Analytics: 1 minute cache - updates after quiz completion
+  // React Query staleTime: 10min, but invalidates on quiz save
+  app.use('/api/v1/quiz', (_req, res, next) => {
+    res.setHeader('Cache-Control', 'private, max-age=60');
+    next();
+  });
 
   // Rate Limiting
   // const limiter = rateLimit({

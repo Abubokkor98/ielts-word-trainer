@@ -1,5 +1,5 @@
 import { useToast } from '@chakra-ui/react';
-import { useAuthStore } from '@ielts/auth';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -14,9 +14,27 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: (credentials: LoginCredentials) => authApi.login(credentials),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       setToken(data.accessToken);
       setUser(data.data);
+
+      // Verify cookies were set correctly
+      try {
+        const cookieCheck = await axiosInstance.get('/auth/verify-cookies');
+        if (!cookieCheck.data?.data?.cookiesValid) {
+          toast({
+            title: 'Warning: Session may not persist',
+            description:
+              'Cookies were not set correctly. You may be logged out on refresh.',
+            status: 'warning',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      } catch (error) {
+        console.warn('Cookie verification failed:', error);
+        // Don't block login on verification failure
+      }
 
       toast({
         title: 'Login successful!',
@@ -30,7 +48,9 @@ export function useLogin() {
 
       // Security: Ensure redirect is a relative path (not external URL or protocol-relative)
       const safeRedirect =
-        redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/';
+        redirectTo.startsWith('/') && !redirectTo.startsWith('//')
+          ? redirectTo
+          : '/';
 
       router.push(safeRedirect);
     },
