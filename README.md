@@ -254,12 +254,19 @@ XP reflects consistency and effort, not just correctness. It motivates regular p
 #### Streak System
 
 **What is a Streak?**
-A streak counts consecutive days you've been active on the platform.
+A streak counts consecutive days you've been active on the platform using your local timezone.
 
 **How to Maintain:**
 
 - Complete at least one quiz OR
 - Review at least one SRS card per day
+
+**Timezone Intelligence:**
+
+- Streaks are tracked in your local timezone (automatically detected)
+- Works correctly even when traveling between timezones
+- Midnight boundaries calculated based on your location
+- No manual timezone configuration needed
 
 **Benefits:**
 
@@ -268,7 +275,11 @@ A streak counts consecutive days you've been active on the platform.
 - Psychological motivation
 
 **Streak Resets:**
-Missing a day resets your streak to zero. Set daily reminders to maintain momentum.
+
+- Streak resets after 2+ days of inactivity
+- Automatic reset happens when you access the dashboard after 2+ missed days
+- Grace period: you have until the end of the next calendar day to keep your streak
+- Set daily reminders to maintain momentum
 
 #### Quiz Performance Metrics
 
@@ -564,7 +575,6 @@ Streak Bonus = (XP Earned × 0.1 × Streak Days) [capped at 2x]
 
 - **HTTP-only cookies** prevent XSS token theft
 - **Refresh token rotation** prevents replay attacks
-- **CSRF protection** on logout and refresh endpoints
 - **Old refresh tokens** invalidated on new login
 - **Rate limiting** on all auth endpoints
 - **Secure cookie attributes** (partitioned, sameSite) for modern browsers

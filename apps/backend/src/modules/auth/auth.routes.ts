@@ -4,6 +4,7 @@ import {
   strictRateLimit,
 } from '../../core/middleware/rate-limit.middleware';
 import { validateRequest } from '../../core/middleware/validate.middleware';
+import { extractTimezone } from '../../middleware/timezone.middleware';
 import { AuthController } from './auth.controller';
 import { authenticate } from './auth.middleware';
 import { loginSchema, registerSchema } from './auth.validation';
@@ -24,7 +25,8 @@ router.post(
 );
 router.post('/refresh', moderateRateLimit, AuthController.refresh);
 router.get('/verify-cookies', AuthController.verifyCookies);
-router.get('/me', authenticate, AuthController.me);
+//needs timezone for streak checking
+router.get('/me', authenticate, extractTimezone, AuthController.me);
 router.post('/logout', authenticate, AuthController.logout);
 
 export default router;

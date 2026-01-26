@@ -18,13 +18,18 @@ export const axiosInstance = axios.create({
   },
 });
 
-// Request interceptor: Attach access token
+// Request interceptor: Attach access token and timezone
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = useAuthStore.getState().accessToken;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Auto-detect and send user's timezone
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    config.headers['X-User-Timezone'] = timezone;
+
     return config;
   },
   (error) => Promise.reject(error)

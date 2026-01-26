@@ -1,8 +1,10 @@
 import bcrypt from 'bcryptjs';
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
+import type { RequestWithTimezone } from '../../middleware/request-with-timezone';
 import type { AuthRequest } from '../auth/auth.middleware';
 import { QuizAttemptService } from '../quiz/quiz-attempt.service';
+import { StreakUtils } from './streak-utils';
 import { UserService } from './users.service';
 
 export class UserProfileController {
@@ -13,6 +15,31 @@ export class UserProfileController {
 
       const user = await UserService.findById(authReq.user.id);
       if (!user) throw new AppError('User not found', 404);
+
+      // Check if streak needs reset (passive detection)
+      const userTimezone =
+        (req as RequestWithTimezone).userTimezone || user.timezone || 'UTC';
+
+      //  OPTIMIZATION: Only check streak if we haven't checked today
+      if (
+        StreakUtils.shouldCheckStreak(userTimezone, user.lastStreakCheckDate)
+      ) {
+        // Only run check if we haven't checked today
+        const { needsReset, newStreak } = StreakUtils.checkAndResetStreak(
+          userTimezone,
+          user.lastQuizDate,
+          user.lastReviewDate,
+          user.streak
+        );
+
+        if (needsReset) {
+          user.streak = newStreak;
+        }
+
+        user.lastStreakCheckDate = new Date(); // Mark as checked today
+        user.timezone = userTimezone;
+        await user.save();
+      }
 
       const stats = await QuizAttemptService.getUserStats(authReq.user.id);
 
@@ -71,7 +98,11 @@ export class UserProfileController {
 
       const { currentPassword, newPassword } = req.body;
 
-      if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+      if (
+        !newPassword ||
+        typeof newPassword !== 'string' ||
+        newPassword.length < 6
+      ) {
         throw new AppError('Password must be at least 6 characters', 400);
       }
 

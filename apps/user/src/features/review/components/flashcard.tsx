@@ -6,7 +6,6 @@ import {
   CardHeader,
   Divider,
   Heading,
-  HStack,
   SimpleGrid,
   Text,
   VStack,
@@ -51,38 +50,53 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
       }}
     >
       <CardHeader>
-        <HStack justify="space-between">
-          <Badge
-            colorScheme={getDifficultyColor(word.difficulty)}
-            fontSize="sm"
-            px={3}
-            py={1}
-            borderRadius="full"
-          >
-            {word.difficulty}
-          </Badge>
+        <Wrap spacing={2} align="center">
+          <WrapItem>
+            <Badge
+              colorScheme={getDifficultyColor(word.difficulty)}
+              fontSize={{ base: 'xs', md: 'sm' }}
+              px={{ base: 2, md: 3 }}
+              py={1}
+              borderRadius="full"
+              textTransform="uppercase"
+            >
+              {word.difficulty}
+            </Badge>
+          </WrapItem>
           {word.topics && word.topics.length > 0 && (
-            <HStack spacing={2}>
+            <>
               {word.topics.slice(0, 2).map((t) => (
-                <Badge
-                  key={t._id}
-                  colorScheme="purple"
-                  variant="subtle"
-                  fontSize="xs"
-                  borderRadius="full"
-                  px={2}
-                >
-                  {t.name}
-                </Badge>
+                <WrapItem key={t._id}>
+                  <Badge
+                    colorScheme="purple"
+                    variant="subtle"
+                    fontSize={{ base: '2xs', md: 'xs' }}
+                    borderRadius="full"
+                    px={{ base: 1.5, md: 2 }}
+                    py={0.5}
+                    textTransform="uppercase"
+                  >
+                    {t.name}
+                  </Badge>
+                </WrapItem>
               ))}
               {word.topics.length > 2 && (
-                <Badge colorScheme="gray" variant="subtle" fontSize="xs" borderRadius="full" px={2}>
-                  +{word.topics.length - 2}
-                </Badge>
+                <WrapItem>
+                  <Badge
+                    colorScheme="gray"
+                    variant="subtle"
+                    fontSize={{ base: '2xs', md: 'xs' }}
+                    borderRadius="full"
+                    px={{ base: 1.5, md: 2 }}
+                    py={0.5}
+                  >
+                    +{word.topics.length - 2}
+                  </Badge>
+                </WrapItem>
               )}
-            </HStack>
+            </>
           )}
-        </HStack>
+        </Wrap>
       </CardHeader>
       <CardBody>
         <VStack spacing={8} justify="center" minH="320px" px={4}>
@@ -143,7 +157,12 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                   >
                     Example
                   </Text>
-                  <Text fontSize="lg" fontStyle="italic" color="gray.300" lineHeight="tall">
+                  <Text
+                    fontSize="lg"
+                    fontStyle="italic"
+                    color="gray.300"
+                    lineHeight="tall"
+                  >
                     "{word.exampleSentence}"
                   </Text>
                 </Box>
@@ -167,7 +186,12 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                       <Wrap spacing={1.5}>
                         {word.synonyms.map((syn) => (
                           <WrapItem key={syn}>
-                            <Badge colorScheme="green" fontSize="xs" px={2} py={0.5}>
+                            <Badge
+                              colorScheme="green"
+                              fontSize="xs"
+                              px={2}
+                              py={0.5}
+                            >
                               {syn}
                             </Badge>
                           </WrapItem>
@@ -190,7 +214,12 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                       <Wrap spacing={1.5}>
                         {word.antonyms.map((ant) => (
                           <WrapItem key={ant}>
-                            <Badge colorScheme="red" fontSize="xs" px={2} py={0.5}>
+                            <Badge
+                              colorScheme="red"
+                              fontSize="xs"
+                              px={2}
+                              py={0.5}
+                            >
                               {ant}
                             </Badge>
                           </WrapItem>

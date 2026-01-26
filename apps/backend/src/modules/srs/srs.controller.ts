@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from 'express';
+import type { RequestWithTimezone } from '../../middleware/request-with-timezone';
 import type { AuthRequest } from '../auth/auth.middleware';
 import { SRSService } from './srs.service';
 
@@ -8,7 +9,16 @@ export class SRSController {
       const authReq = req as AuthRequest;
       const { wordId, quality } = req.body;
       const userId = authReq.user?.id;
-      const item = await SRSService.reviewWord(userId, wordId, quality);
+
+      // Extract timezone for streak tracking
+      const userTimezone = (req as RequestWithTimezone).userTimezone;
+
+      const item = await SRSService.reviewWord(
+        userId,
+        wordId,
+        quality,
+        userTimezone
+      );
       res.json({ success: true, data: item });
     } catch (err) {
       next(err);

@@ -1,6 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 import { AppError } from '../../core/errors/AppError';
+import type { RequestWithTimezone } from '../../middleware/request-with-timezone';
 import { clearAuthCookies, setAuthCookies } from '../../shared/cookies';
+import { StreakUtils } from '../users/streak-utils';
 import { UserService } from '../users/users.service';
 import type { AuthRequest } from './auth.middleware';
 import { AuthService } from './auth.service';
@@ -88,6 +90,31 @@ export class AuthController {
       if (!authReq.user) throw new AppError('Unauthenticated', 401);
       const user = await UserService.findById(authReq.user.id);
       if (!user) throw new AppError('User not found', 404);
+
+      // Check if streak needs reset (passive detection)
+      const userTimezone =
+        (req as RequestWithTimezone).userTimezone || user.timezone || 'UTC';
+
+      // OPTIMIZATION: Only check streak if we haven't checked today
+      if (
+        StreakUtils.shouldCheckStreak(userTimezone, user.lastStreakCheckDate)
+      ) {
+        // Only run check if we haven't checked today
+        const { needsReset, newStreak } = StreakUtils.checkAndResetStreak(
+          userTimezone,
+          user.lastQuizDate,
+          user.lastReviewDate,
+          user.streak
+        );
+
+        if (needsReset) {
+          user.streak = newStreak;
+        }
+
+        user.lastStreakCheckDate = new Date(); // Mark as checked today
+        user.timezone = userTimezone;
+        await user.save();
+      }
 
       res.json({
         success: true,

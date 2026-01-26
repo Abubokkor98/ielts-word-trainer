@@ -1,5 +1,9 @@
 import { Router } from 'express';
-import { createRateLimiter, moderateRateLimit } from '../../core/middleware/rate-limit.middleware';
+import {
+  createRateLimiter,
+  moderateRateLimit,
+} from '../../core/middleware/rate-limit.middleware';
+import { extractTimezone } from '../../middleware/timezone.middleware';
 import { authenticate } from '../auth/auth.middleware';
 import { SRSController } from './srs.controller';
 
@@ -8,11 +12,14 @@ const router = Router();
 // All routes require authentication
 router.use(authenticate);
 
+// Apply timezone middleware for streak tracking
+router.use(extractTimezone);
+
 // Review endpoint - per-user rate limiting (write operation, 100 reviews per 10 min)
 router.post(
   '/review',
   createRateLimiter(10 * 60 * 1000, 100, 'Too many reviews'),
-  SRSController.review,
+  SRSController.review
 );
 
 // Read endpoints - moderate rate limiting

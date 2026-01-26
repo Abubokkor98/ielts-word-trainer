@@ -1,10 +1,17 @@
 import mongoose from 'mongoose';
 import { calculateSM2, getNextReviewDate, SRSStatus } from '../../shared';
+import { User } from '../users/users.model';
+import { StreakUtils } from '../users/streak-utils';
 import { Word } from '../words/words.model';
 import { SRSItem } from './srs.model';
 
 export class SRSService {
-  static async reviewWord(userId: string, wordId: string, quality: number) {
+  static async reviewWord(
+    userId: string,
+    wordId: string,
+    quality: number,
+    userTimezone?: string
+  ) {
     let srsItem = await SRSItem.findOne({ user: userId, word: wordId });
 
     if (!srsItem) {
@@ -52,10 +59,32 @@ export class SRSService {
       }
     }
 
+    // Update user streak (same logic as quiz completion)
+    const user = await User.findById(userId);
+    if (user) {
+      // Use header timezone, fall back to stored timezone, then UTC
+      const effectiveTimezone = userTimezone || user.timezone || 'UTC';
+
+      const { newStreak } = StreakUtils.updateStreakOnQuiz(
+        effectiveTimezone,
+        user.lastQuizDate,
+        user.lastReviewDate,
+        user.streak
+      );
+
+      user.streak = newStreak;
+      user.lastReviewDate = new Date(); // Update last review date
+      user.timezone = effectiveTimezone; // Preserve stored tz if header missing
+      await user.save();
+    }
+
     return srsItem.save();
   }
 
-  static async bulkReview(userId: string, reviews: { wordId: string; quality: number }[]) {
+  static async bulkReview(
+    userId: string,
+    reviews: { wordId: string; quality: number }[]
+  ) {
     if (reviews.length === 0) return;
 
     // 1. Fetch existing SRS items for these words
@@ -65,7 +94,9 @@ export class SRSService {
       word: { $in: wordIds },
     });
 
-    const itemMap = new Map(existingItems.map((item) => [item.word.toString(), item]));
+    const itemMap = new Map(
+      existingItems.map((item) => [item.word.toString(), item])
+    );
 
     // 2. Prepare bulk operations
     const bulkOps = reviews.map(({ wordId, quality }) => {
@@ -200,7 +231,7 @@ export class SRSService {
     userId: string,
     topicId?: string,
     difficulty?: string,
-    limit: number = 10,
+    limit: number = 10
   ) {
     // Utilize Word model to find new words via Aggregation
     // Improved: Avoid fetching all seen IDs into memory ($nin method)
@@ -259,7 +290,7 @@ export class SRSService {
           foreignField: '_id',
           as: 'topics',
         },
-      },
+      }
     );
 
     return Word.aggregate(pipeline);
@@ -318,11 +349,14 @@ export class SRSService {
 
     // Process aggregation results
     const statusMap = stats[0].byStatus.reduce(
-      (acc: Record<string, number>, { _id, count }: { _id: string; count: number }) => {
+      (
+        acc: Record<string, number>,
+        { _id, count }: { _id: string; count: number }
+      ) => {
         acc[_id] = count;
         return acc;
       },
-      {},
+      {}
     );
 
     return {
