@@ -1,8 +1,10 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
 import type { Response } from 'express';
 import mongoose from 'mongoose';
 import type { AuthRequest } from '../auth/auth.middleware';
 import { QuizAttemptSchema } from './quiz-attempt.schema';
 import { QuizAttemptService } from './quiz-attempt.service';
+import { RequestWithTimezone } from '../../middleware/request-with-timezone';
 
 export class QuizAttemptController {
   static async create(req: AuthRequest, res: Response) {
@@ -17,7 +19,10 @@ export class QuizAttemptController {
 
       if (process.env.NODE_ENV !== 'production') {
         console.log('📝 Quiz attempt create - User ID:', userId);
-        console.log('📝 Quiz attempt create - Request body:', JSON.stringify(req.body, null, 2));
+        console.log(
+          '📝 Quiz attempt create - Request body:',
+          JSON.stringify(req.body, null, 2)
+        );
       }
 
       // Validate request body
@@ -32,14 +37,20 @@ export class QuizAttemptController {
         wordId: new mongoose.Types.ObjectId(q.wordId),
       }));
 
-      // Create quiz attempt
-      const attempt = await QuizAttemptService.createAttempt({
-        ...validatedData,
-        questions: questionsWithObjectIds,
-        userId: new mongoose.Types.ObjectId(userId),
-        startTime: new Date(validatedData.startTime),
-        endTime: new Date(validatedData.endTime),
-      });
+      // Extract user timezone from request header (set by middleware)
+      const userTimezone = (req as RequestWithTimezone).userTimezone || 'UTC';
+
+      // Create quiz attempt with timezone
+      const attempt = await QuizAttemptService.createAttempt(
+        {
+          ...validatedData,
+          questions: questionsWithObjectIds,
+          userId: new mongoose.Types.ObjectId(userId),
+          startTime: new Date(validatedData.startTime),
+          endTime: new Date(validatedData.endTime),
+        },
+        userTimezone
+      );
 
       if (process.env.NODE_ENV !== 'production') {
         console.log('✅ Quiz attempt saved to DB - ID:', attempt._id);
@@ -47,7 +58,7 @@ export class QuizAttemptController {
           '📊 Quiz stats - Score:',
           validatedData.score,
           '/',
-          validatedData.totalQuestions,
+          validatedData.totalQuestions
         );
       }
 
@@ -66,11 +77,15 @@ export class QuizAttemptController {
           xpEarned,
         },
       });
+      // biome-ignore lint/suspicious/noExplicitAny: <>
     } catch (error: any) {
       console.error('❌ Error creating quiz attempt:', error);
 
       if (error.name === 'ZodError') {
-        console.error('❌ Validation errors:', JSON.stringify(error.errors, null, 2));
+        console.error(
+          '❌ Validation errors:',
+          JSON.stringify(error.errors, null, 2)
+        );
         return res.status(400).json({
           success: false,
           message: 'Validation error',
