@@ -6,7 +6,7 @@ import { type IQuizAttempt, QuizAttempt } from './quiz-attempt.model';
 export class QuizAttemptService {
   static async createAttempt(
     data: Partial<IQuizAttempt>,
-    userTimezone = 'UTC'
+    userTimezone?: string // No default - let service handle fallback
   ): Promise<IQuizAttempt> {
     const attempt = new QuizAttempt(data);
     await attempt.save();
@@ -29,9 +29,12 @@ export class QuizAttemptService {
       if (user) {
         const now = new Date();
 
+        // Use header timezone, fall back to stored timezone, then UTC
+        const effectiveTimezone = userTimezone || user.timezone || 'UTC';
+
         // Use centralized timezone-aware streak logic
         const { newStreak } = StreakUtils.updateStreakOnQuiz(
-          userTimezone,
+          effectiveTimezone,
           user.lastQuizDate,
           user.lastReviewDate,
           user.streak
@@ -43,7 +46,7 @@ export class QuizAttemptService {
         user.xp = (user.xp || 0) + xpEarned;
 
         user.lastQuizDate = now;
-        user.timezone = userTimezone; // Save for fallback
+        user.timezone = effectiveTimezone; // Preserve stored tz if header missing
         await user.save();
       }
     }

@@ -6,9 +6,22 @@ export function extractTimezone(
   _res: Response,
   next: NextFunction
 ) {
-  const timezone = req.headers['x-user-timezone'] as string;
+  const header = req.headers['x-user-timezone'];
+  const timezone = Array.isArray(header) ? header[0] : header;
 
-  (req as Request & { userTimezone?: string }).userTimezone = timezone || 'UTC';
+  // Validate timezone to prevent RangeError in toLocaleString
+  let safeTimezone = 'UTC';
+  if (timezone) {
+    try {
+      // Test if timezone is valid by attempting to use it
+      new Intl.DateTimeFormat('en-US', { timeZone: timezone });
+      safeTimezone = timezone;
+    } catch {
+      // Invalid timezone - keep UTC fallback
+    }
+  }
+
+  (req as Request & { userTimezone?: string }).userTimezone = safeTimezone;
 
   next();
 }

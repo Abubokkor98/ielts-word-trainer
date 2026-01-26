@@ -356,11 +356,16 @@ export class AdminService {
       metrics.quizCompletionRate.current < 65 ||
       metrics.quizCompletionRate.percentChange < -10
     ) {
+      const dropped = metrics.quizCompletionRate.percentChange < 0;
+      const changeMsg = dropped
+        ? `dropped ${Math.abs(metrics.quizCompletionRate.percentChange).toFixed(
+            1
+          )}%`
+        : `at ${metrics.quizCompletionRate.current.toFixed(1)}%`;
+
       alerts.push({
         severity: AlertSeverity.WARNING,
-        message: `Quiz completion dropped ${Math.abs(
-          metrics.quizCompletionRate.percentChange
-        ).toFixed(1)}% - investigate dropout`,
+        message: `Quiz completion ${changeMsg} - investigate dropout`,
         action: AlertAction.CHECK_QUIZ_UX,
       });
     }

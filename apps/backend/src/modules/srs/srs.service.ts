@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { calculateSM2, getNextReviewDate, SRSStatus } from '../../shared';
 import { User } from '../users/users.model';
+import { StreakUtils } from '../users/streak-utils';
 import { Word } from '../words/words.model';
 import { SRSItem } from './srs.model';
 
@@ -59,22 +60,22 @@ export class SRSService {
     }
 
     // Update user streak (same logic as quiz completion)
-    if (userTimezone) {
-      const user = await User.findById(userId);
-      if (user) {
-        const { StreakUtils } = await import('../users/streak-utils');
-        const { newStreak } = StreakUtils.updateStreakOnQuiz(
-          userTimezone,
-          user.lastQuizDate,
-          user.lastReviewDate,
-          user.streak
-        );
+    const user = await User.findById(userId);
+    if (user) {
+      // Use header timezone, fall back to stored timezone, then UTC
+      const effectiveTimezone = userTimezone || user.timezone || 'UTC';
 
-        user.streak = newStreak;
-        user.lastReviewDate = new Date(); // Update last review date
-        user.timezone = userTimezone;
-        await user.save();
-      }
+      const { newStreak } = StreakUtils.updateStreakOnQuiz(
+        effectiveTimezone,
+        user.lastQuizDate,
+        user.lastReviewDate,
+        user.streak
+      );
+
+      user.streak = newStreak;
+      user.lastReviewDate = new Date(); // Update last review date
+      user.timezone = effectiveTimezone; // Preserve stored tz if header missing
+      await user.save();
     }
 
     return srsItem.save();

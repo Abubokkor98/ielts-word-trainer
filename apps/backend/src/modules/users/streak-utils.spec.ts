@@ -1,6 +1,17 @@
 import { StreakUtils } from './streak-utils';
 
 describe('StreakUtils - Production Tests', () => {
+  // Helper to set system time for controlled testing
+  const setNow = (iso: string) => jest.setSystemTime(new Date(iso));
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   describe('getUserCalendarDay', () => {
     it('should convert UTC time to Asia/Dhaka calendar day', () => {
       const date = new Date('2026-01-26T23:30:00Z');
@@ -49,6 +60,7 @@ describe('StreakUtils - Production Tests', () => {
 
   describe('checkAndResetStreak - Dashboard Access', () => {
     it('should not reset if never took quiz or review', () => {
+      setNow('2026-01-26T10:00:00Z');
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
         null,
@@ -60,6 +72,7 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should not reset if last quiz was today', () => {
+      setNow('2026-01-26T10:00:00Z');
       const today = new Date();
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
@@ -72,6 +85,7 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should not reset if last review was today', () => {
+      setNow('2026-01-26T10:00:00Z');
       const today = new Date();
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
@@ -84,8 +98,8 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should not reset if last quiz was yesterday', () => {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      setNow('2026-01-26T10:00:00Z');
+      const yesterday = new Date('2026-01-25T10:00:00Z');
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
         yesterday,
@@ -97,8 +111,8 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should not reset if last review was yesterday', () => {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      setNow('2026-01-26T10:00:00Z');
+      const yesterday = new Date('2026-01-25T10:00:00Z');
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
         null,
@@ -110,11 +124,10 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should use most recent activity (quiz newer)', () => {
+      setNow('2026-01-26T10:00:00Z');
       const today = new Date();
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+      const threeDaysAgo = new Date('2026-01-23T10:00:00Z');
 
-      // Quiz today, review 3 days ago - should NOT reset
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
         today,
@@ -126,11 +139,10 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should use most recent activity (review newer)', () => {
+      setNow('2026-01-26T10:00:00Z');
       const today = new Date();
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+      const threeDaysAgo = new Date('2026-01-23T10:00:00Z');
 
-      // Quiz 3 days ago, review today - should NOT reset
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
         threeDaysAgo,
@@ -142,8 +154,8 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should reset to 0 if 2 days passed since last activity', () => {
-      const twoDaysAgo = new Date();
-      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+      setNow('2026-01-26T10:00:00Z');
+      const twoDaysAgo = new Date('2026-01-24T10:00:00Z');
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
         twoDaysAgo,
@@ -155,8 +167,8 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should reset to 0 if 10 days passed', () => {
-      const tenDaysAgo = new Date();
-      tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+      setNow('2026-01-26T10:00:00Z');
+      const tenDaysAgo = new Date('2026-01-16T10:00:00Z');
       const result = StreakUtils.checkAndResetStreak(
         'Asia/Dhaka',
         null,
@@ -170,6 +182,7 @@ describe('StreakUtils - Production Tests', () => {
 
   describe('updateStreakOnQuiz - Quiz Completion', () => {
     it('should set streak to 1 for first quiz ever', () => {
+      setNow('2026-01-26T10:00:00Z');
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         null,
@@ -181,6 +194,7 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should not change streak if quiz taken same day', () => {
+      setNow('2026-01-26T10:00:00Z');
       const today = new Date();
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
@@ -193,6 +207,7 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should not change streak if review done same day', () => {
+      setNow('2026-01-26T10:00:00Z');
       const today = new Date();
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
@@ -205,8 +220,8 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should increment streak if consecutive day (quiz)', () => {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      setNow('2026-01-26T10:00:00Z');
+      const yesterday = new Date('2026-01-25T10:00:00Z');
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         yesterday,
@@ -218,8 +233,8 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should increment streak if consecutive day (review)', () => {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      setNow('2026-01-26T10:00:00Z');
+      const yesterday = new Date('2026-01-25T10:00:00Z');
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         null,
@@ -231,12 +246,10 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should use most recent activity for streak calculation', () => {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+      setNow('2026-01-26T10:00:00Z');
+      const yesterday = new Date('2026-01-25T10:00:00Z');
+      const threeDaysAgo = new Date('2026-01-23T10:00:00Z');
 
-      // Review yesterday, quiz 3 days ago - should increment
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         threeDaysAgo,
@@ -248,8 +261,8 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should reset to 1 if missed 2 days', () => {
-      const twoDaysAgo = new Date();
-      twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+      setNow('2026-01-26T10:00:00Z');
+      const twoDaysAgo = new Date('2026-01-24T10:00:00Z');
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         twoDaysAgo,
@@ -261,8 +274,8 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('should reset to 1 if missed many days', () => {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
+      setNow('2026-01-26T10:00:00Z');
+      const weekAgo = new Date('2026-01-19T10:00:00Z');
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         null,
@@ -276,19 +289,21 @@ describe('StreakUtils - Production Tests', () => {
 
   describe('shouldCheckStreak - Optimization Logic', () => {
     it('should return true if never checked before', () => {
+      setNow('2026-01-26T10:00:00Z');
       const result = StreakUtils.shouldCheckStreak('Asia/Dhaka', null);
       expect(result).toBe(true);
     });
 
     it('should return false if already checked today', () => {
+      setNow('2026-01-26T10:00:00Z');
       const today = new Date();
       const result = StreakUtils.shouldCheckStreak('Asia/Dhaka', today);
       expect(result).toBe(false);
     });
 
     it('should return true if last check was yesterday', () => {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
+      setNow('2026-01-26T10:00:00Z');
+      const yesterday = new Date('2026-01-25T10:00:00Z');
       const result = StreakUtils.shouldCheckStreak('Asia/Dhaka', yesterday);
       expect(result).toBe(true);
     });
@@ -297,11 +312,13 @@ describe('StreakUtils - Production Tests', () => {
   describe('Production Scenarios with Reviews', () => {
     it('CRITICAL: Quiz maintains streak, then review next day', () => {
       // Day 1: Quiz
-      const day1 = new Date('2026-01-25T10:00:00Z');
+      setNow('2026-01-25T10:00:00Z');
+      const day1 = new Date();
       let result = StreakUtils.updateStreakOnQuiz('Asia/Dhaka', null, null, 0);
       expect(result.newStreak).toBe(1);
 
-      // Day 2: Review (last quiz = day1, last review = null)
+      // Day 2: Review (advance time to next day)
+      setNow('2026-01-26T10:00:00Z');
       result = StreakUtils.updateStreakOnQuiz('Asia/Dhaka', day1, null, 1);
       expect(result.newStreak).toBe(2);
       expect(result.streakIncremented).toBe(true);
@@ -309,43 +326,43 @@ describe('StreakUtils - Production Tests', () => {
 
     it('CRITICAL: Review maintains streak, then quiz next day', () => {
       // Day 1: Review
-      const day1 = new Date('2026-01-25T10:00:00Z');
+      setNow('2026-01-25T10:00:00Z');
+      const day1 = new Date();
       let result = StreakUtils.updateStreakOnQuiz('Asia/Dhaka', null, null, 0);
       expect(result.newStreak).toBe(1);
 
-      // Day 2: Quiz (last quiz = null, last review = day1)
+      // Day 2: Quiz (advance time to next day)
+      setNow('2026-01-26T10:00:00Z');
       result = StreakUtils.updateStreakOnQuiz('Asia/Dhaka', null, day1, 1);
       expect(result.newStreak).toBe(2);
       expect(result.streakIncremented).toBe(true);
     });
 
     it('CRITICAL: Mixed quiz and review over 5 days', () => {
-      const day1 = new Date('2026-01-20T10:00:00Z');
-      const day2 = new Date('2026-01-21T10:00:00Z');
-      const day3 = new Date('2026-01-22T10:00:00Z');
-      const day4 = new Date('2026-01-23T10:00:00Z');
-
       // Day 1: Quiz
-      let lastQuiz: Date | null = day1;
+      setNow('2026-01-20T10:00:00Z');
+      let lastQuiz: Date | null = new Date();
       let lastReview: Date | null = null;
       let streak = 1;
 
       // Day 2: Review
-      lastReview = day2;
+      setNow('2026-01-21T10:00:00Z');
+      lastReview = new Date();
       let result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         lastQuiz,
-        lastReview,
+        null,
         streak
       );
       expect(result.newStreak).toBe(2);
       streak = result.newStreak;
 
       // Day 3: Quiz
-      lastQuiz = day3;
+      setNow('2026-01-22T10:00:00Z');
+      lastQuiz = new Date();
       result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
-        lastQuiz,
+        null,
         lastReview,
         streak
       );
@@ -353,11 +370,12 @@ describe('StreakUtils - Production Tests', () => {
       streak = result.newStreak;
 
       // Day 4: Review
-      lastReview = day4;
+      setNow('2026-01-23T10:00:00Z');
+      lastReview = new Date();
       result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         lastQuiz,
-        lastReview,
+        null,
         streak
       );
       expect(result.newStreak).toBe(4);
@@ -371,8 +389,8 @@ describe('StreakUtils - Production Tests', () => {
       let streak = 0;
 
       for (let day = 0; day < 7; day++) {
-        const reviewDate = new Date('2026-01-20T10:00:00Z');
-        reviewDate.setDate(reviewDate.getDate() + day);
+        const dateStr = `2026-01-${20 + day}T10:00:00Z`;
+        setNow(dateStr);
 
         const result = StreakUtils.updateStreakOnQuiz(
           'Asia/Dhaka',
@@ -381,16 +399,17 @@ describe('StreakUtils - Production Tests', () => {
           streak
         );
         streak = result.newStreak;
-        lastReview = reviewDate;
+        lastReview = new Date();
       }
 
       expect(streak).toBe(7);
     });
 
     it('CRITICAL: Midnight boundary', () => {
-      const beforeMidnight = new Date('2026-01-25T23:59:00+06:00');
-      const afterMidnight = new Date('2026-01-26T00:01:00+06:00');
+      setNow('2026-01-25T17:59:00Z'); // 11:59 PM in Dhaka
+      const beforeMidnight = new Date();
 
+      setNow('2026-01-25T18:01:00Z'); // 12:01 AM next day in Dhaka
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
         null,
@@ -401,8 +420,12 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('CRITICAL: Same day multiple quizzes AND reviews', () => {
-      const morning = new Date('2026-01-26T04:00:00Z');
-      const evening = new Date('2026-01-26T14:00:00Z');
+      setNow('2026-01-26T04:00:00Z');
+      const morning = new Date();
+
+      // Same day, different time
+      setNow('2026-01-26T14:00:00Z');
+      const evening = new Date();
 
       const result = StreakUtils.updateStreakOnQuiz(
         'Asia/Dhaka',
@@ -415,6 +438,7 @@ describe('StreakUtils - Production Tests', () => {
     });
 
     it('CRITICAL: Optimization prevents duplicate checks', () => {
+      setNow('2026-01-26T10:00:00Z');
       const lastCheck = new Date();
 
       for (let i = 0; i < 100; i++) {

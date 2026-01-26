@@ -276,10 +276,10 @@ A streak counts consecutive days you've been active on the platform using your l
 
 **Streak Resets:**
 
-- Missing a day resets your streak to zero
-- Automatic reset happens when you access the dashboard after 2+ days of inactivity
+- Streak resets after 2+ days of inactivity
+- Automatic reset happens when you access the dashboard after 2+ missed days
+- Grace period: you have until the end of the next calendar day to keep your streak
 - Set daily reminders to maintain momentum
-- Grace period: You have until the end of the next calendar day to maintain your streak
 
 #### Quiz Performance Metrics
 
