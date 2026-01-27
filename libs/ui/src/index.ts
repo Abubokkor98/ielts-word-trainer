@@ -1,8 +1,8 @@
 export { AdminSidebar } from './components/AdminSidebar';
 export { ResetPasswordForm } from './components/auth/ResetPasswordForm';
-export { ChakraUIProvider } from './components/chakra-provider';
+export { ChakraUIProvider } from './providers/chakra-provider';
 export { DashboardChart } from './components/DashboardChart';
-export { ReactQueryProvider } from './components/react-query-provider';
+export { ReactQueryProvider } from './providers/react-query-provider';
 export * from './components/ui/button';
 export * from './components/ui/card';
 export * from './components/ui/input';
