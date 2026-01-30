@@ -1,9 +1,13 @@
 'use client';
 
 import { Box, Flex, Heading, SimpleGrid, VStack } from '@chakra-ui/react';
+import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { Activity, BookOpen, TrendingUp, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { AlertSection } from './components/AlertSection';
 import { DAUTrendChart } from './components/DAUTrendChart';
+import { DashboardSkeleton } from './components/dashboard-skeleton';
 import { DifficultyDistributionChart } from './components/DifficultyDistributionChart';
 import { MetricCard } from './components/MetricCard';
 import { ModuleDistributionChart } from './components/ModuleDistributionChart';
@@ -16,10 +20,31 @@ import { VocabularyOverviewCard } from './components/VocabularyOverviewCard';
 import { useDashboardMetrics } from './hooks/use-dashboard-metrics';
 
 export function DashboardContainer() {
+  const isAuthenticated = useAuthStore(selectIsAuthenticated);
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const router = useRouter();
+
+  // Redirect to login if not authenticated (but wait for hydration first)
+  useEffect(() => {
+    if (hasHydrated && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [hasHydrated, isAuthenticated, router]);
+
   const { data: metrics, isLoading, isError } = useDashboardMetrics('7d');
 
+  // Show skeleton during hydration
+  if (!hasHydrated) {
+    return <DashboardSkeleton />;
+  }
+
+  // Early return AFTER hydration check
+  if (!isAuthenticated) {
+    return null;
+  }
+
   if (isLoading) {
-    return <Box p={4}>Loading dashboard...</Box>;
+    return <DashboardSkeleton />;
   }
 
   if (isError || !metrics) {

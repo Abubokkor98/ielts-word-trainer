@@ -11,6 +11,13 @@
         "cwd": "apps/admin",
         "args": ["--webpack"]
       }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/admin/jest.config.ts"
+      }
     }
   }
 }

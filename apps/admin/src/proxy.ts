@@ -2,23 +2,46 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 export function proxy(request: NextRequest) {
-  // Get auth token from cookies
-  const token = request.cookies.get('admin_auth_token')?.value;
   const { pathname } = request.nextUrl;
 
-  // Public routes that don't require authentication
-  const publicRoutes = ['/login', '/', '/forgot-password', '/reset-password'];
-  const isPublicRoute = publicRoutes.includes(pathname);
+  // Check for session token (backend sets this as httpOnly)
+  const hasSession = !!request.cookies.get('refreshToken')?.value;
 
-  // If accessing protected route without token, redirect to login
-  if (!isPublicRoute && !token) {
+  // Define protected and auth routes
+  const protectedRoutes = [
+    '/dashboard',
+    '/admins',
+    '/users',
+    '/vocabulary',
+    '/problem-words',
+    '/settings',
+  ];
+  const authRoutes = ['/login', '/forgot-password', '/reset-password'];
+
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+
+  // Redirect unauthenticated users away from protected routes
+  if (isProtectedRoute && !hasSession) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
     url.searchParams.set('redirect', pathname);
     return NextResponse.redirect(url);
   }
 
-  return NextResponse.next();
+  // Redirect authenticated users away from auth routes to dashboard
+  if (isAuthRoute && hasSession) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    return NextResponse.redirect(url);
+  }
+
+  // For all other routes, continue
+  const response = NextResponse.next();
+  response.headers.set('x-middleware-passed', 'true');
+  return response;
 }
 
 export const config = {
