@@ -1,6 +1,8 @@
 'use client';
 
 import { Sidebar } from '@ielts/ui';
+import { useIsViewer } from '@ielts/auth';
+import { Alert, AlertIcon, Box, Text } from '@chakra-ui/react';
 import { useState } from 'react';
 
 export default function DashboardLayout({
@@ -9,6 +11,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const isViewer = useIsViewer();
 
   return (
     <div className="flex min-h-screen bg-gray-900">
@@ -22,6 +25,27 @@ export default function DashboardLayout({
           isCollapsed ? 'md:ml-20' : 'md:ml-64'
         }`}
       >
+        {isViewer && (
+          <Alert
+            status="info"
+            mb={6}
+            borderRadius="md"
+            bg="blue.900"
+            borderColor="blue.700"
+            borderWidth="1px"
+          >
+            <AlertIcon color="blue.300" />
+            <Box>
+              <Text fontWeight="bold" color="blue.100">
+                Demo Mode (Read-Only Access)
+              </Text>
+              <Text fontSize="sm" color="blue.200" mt={1}>
+                You're viewing as a demo user. All create, edit, and delete
+                operations are disabled to protect production data.
+              </Text>
+            </Box>
+          </Alert>
+        )}
         {children}
       </main>
     </div>

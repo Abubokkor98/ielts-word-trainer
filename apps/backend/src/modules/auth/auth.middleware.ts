@@ -11,9 +11,16 @@ export interface AuthRequest extends Request {
   };
 }
 
-const VALID_ROLES = new Set<string>([...Object.values(UserRole), ...Object.values(AdminRole)]);
+const VALID_ROLES = new Set<string>([
+  ...Object.values(UserRole),
+  ...Object.values(AdminRole),
+]);
 
-export const authenticate = (req: Request, _res: Response, next: NextFunction) => {
+export const authenticate = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
   try {
     let token = req.headers.authorization?.replace('Bearer ', '');
 
@@ -63,4 +70,32 @@ export const authorize = (roles: (UserRole | AdminRole)[]) => {
 
     next();
   };
+};
+
+/**
+ * Middleware to block write operations for viewer (demo) accounts
+ * Allows read operations (GET) but blocks create/update/delete
+ */
+export const requireWriteAccess = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
+  const authReq = req as AuthRequest;
+
+  if (!authReq.user) {
+    return next(new AppError('Unauthenticated', 401));
+  }
+
+  // Block all write operations for viewer role
+  if (authReq.user.role === AdminRole.VIEWER) {
+    return next(
+      new AppError(
+        'Demo accounts have read-only access. Write operations are disabled.',
+        403
+      )
+    );
+  }
+
+  next();
 };

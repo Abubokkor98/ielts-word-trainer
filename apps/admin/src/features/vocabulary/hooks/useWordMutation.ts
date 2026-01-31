@@ -9,7 +9,10 @@ interface UseWordMutationProps {
   onSuccess: () => void;
 }
 
-export function useWordMutation({ initialData, onSuccess }: UseWordMutationProps) {
+export function useWordMutation({
+  initialData,
+  onSuccess,
+}: UseWordMutationProps) {
   const toast = useToast();
   const queryClient = useQueryClient();
 
@@ -32,7 +35,10 @@ export function useWordMutation({ initialData, onSuccess }: UseWordMutationProps
       };
 
       if (initialData?._id) {
-        const response = await axiosInstance.patch(`/words/${initialData._id}`, payload);
+        const response = await axiosInstance.patch(
+          `/words/${initialData._id}`,
+          payload
+        );
         return response.data;
       } else {
         const response = await axiosInstance.post('/words', payload);
@@ -41,7 +47,9 @@ export function useWordMutation({ initialData, onSuccess }: UseWordMutationProps
     },
     onSuccess: () => {
       toast({
-        title: initialData ? 'Word updated successfully' : 'Word added successfully',
+        title: initialData
+          ? 'Word updated successfully'
+          : 'Word added successfully',
         status: 'success',
         duration: 3000,
       });
@@ -50,11 +58,19 @@ export function useWordMutation({ initialData, onSuccess }: UseWordMutationProps
       onSuccess();
     },
     onError: (error: AxiosError<{ message?: string }>) => {
+      const message = error.response?.data?.message || 'Something went wrong';
+      const isViewerRestriction =
+        message.includes('read-only') || message.includes('Demo accounts');
+
       toast({
-        title: initialData ? 'Failed to update word' : 'Failed to add word',
-        description: error.response?.data?.message || 'Something went wrong',
-        status: 'error',
-        duration: 5000,
+        title: isViewerRestriction
+          ? 'Action Not Allowed'
+          : initialData
+          ? 'Failed to update word'
+          : 'Failed to add word',
+        description: message,
+        status: isViewerRestriction ? 'warning' : 'error',
+        duration: 4000,
       });
     },
   });

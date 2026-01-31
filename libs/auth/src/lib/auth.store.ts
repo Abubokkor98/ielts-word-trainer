@@ -57,3 +57,9 @@ export const useAuthStore = create<AuthState>()(
 
 // Convenience hook to get isAuthenticated
 export const useIsAuthenticated = () => useAuthStore(selectIsAuthenticated);
+
+// Convenience hook to check if user is a viewer (demo account)
+export const useIsViewer = () => {
+  const user = useAuthStore((state) => state.user);
+  return user?.role === 'viewer';
+};

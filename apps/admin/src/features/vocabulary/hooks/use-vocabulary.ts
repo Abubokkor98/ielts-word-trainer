@@ -10,7 +10,7 @@ export function useVocabulary(params: WordsQueryParams) {
   return useQuery<WordsResponse>({
     queryKey: ['admin', 'words', params.page, params.search, params.difficulty],
     queryFn: () => vocabularyApi.getWords(params),
-    enabled: !!user && ['admin', 'super_admin'].includes(user.role),
+    enabled: !!user && ['admin', 'super_admin', 'viewer'].includes(user.role),
   });
 }
 
@@ -24,8 +24,14 @@ export function useVocabularyCRUD() {
       toast({ title: 'Word deleted successfully', status: 'success' });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
     },
-    onError: () => {
-      toast({ title: 'Failed to delete word', status: 'error' });
+    onError: (error: any) => {
+      const message = error?.response?.data?.message || 'Failed to delete word';
+      toast({
+        title: 'Action Not Allowed',
+        description: message,
+        status: 'warning',
+        duration: 4000,
+      });
     },
   });
 
@@ -42,7 +48,8 @@ export function useVocabularyCRUD() {
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
     },
     onError: (error: any) => {
-      const message = error?.response?.data?.message || 'Failed to import words';
+      const message =
+        error?.response?.data?.message || 'Failed to import words';
       toast({
         title: 'Import Failed',
         description: message,
@@ -67,7 +74,8 @@ export function useVocabularyCRUD() {
     },
     onError: (error: any) => {
       const message =
-        error?.response?.data?.message || 'Atomic import failed - no words were imported';
+        error?.response?.data?.message ||
+        'Atomic import failed - no words were imported';
       toast({
         title: 'Atomic Import Failed',
         description: message,

@@ -5,6 +5,7 @@ export enum UserRole {
 export enum AdminRole {
   SUPER_ADMIN = 'super_admin',
   ADMIN = 'admin',
+  VIEWER = 'viewer',
 }
 
 // Global Difficulty Levels

@@ -1,9 +1,16 @@
 import { Router } from 'express';
-import { lightRateLimit, moderateRateLimit } from '../../core/middleware/rate-limit.middleware';
+import {
+  lightRateLimit,
+  moderateRateLimit,
+} from '../../core/middleware/rate-limit.middleware';
 import { upload } from '../../core/middleware/upload.middleware';
 import { validateRequest } from '../../core/middleware/validate.middleware';
 import { AdminRole, CreateWordSchema } from '../../shared';
-import { authenticate, authorize } from '../auth/auth.middleware';
+import {
+  authenticate,
+  authorize,
+  requireWriteAccess,
+} from '../auth/auth.middleware';
 import { WordsController } from './words.controller';
 
 const router = Router();
@@ -17,8 +24,9 @@ router.post(
   '/',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  requireWriteAccess,
   validateRequest({ body: CreateWordSchema }),
-  WordsController.create,
+  WordsController.create
 );
 
 // CSV Upload (Admin only)
@@ -26,8 +34,9 @@ router.post(
   '/upload',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  requireWriteAccess,
   upload.single('file'),
-  WordsController.uploadCSV,
+  WordsController.uploadCSV
 );
 
 // Atomic CSV Upload - All-or-Nothing (Admin only)
@@ -35,21 +44,24 @@ router.post(
   '/upload-atomic',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
+  requireWriteAccess,
   upload.single('file'),
-  WordsController.uploadCSVAtomic,
+  WordsController.uploadCSVAtomic
 );
 
 router.patch(
   '/:id',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  WordsController.update,
+  requireWriteAccess,
+  WordsController.update
 );
 router.delete(
   '/:id',
   authenticate,
   authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
-  WordsController.delete,
+  requireWriteAccess,
+  WordsController.delete
 );
 
 export default router;
