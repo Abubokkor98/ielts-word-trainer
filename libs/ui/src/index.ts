@@ -1,4 +1,5 @@
-export { AdminSidebar } from './components/AdminSidebar';
+export { Sidebar } from './components/sidebar';
+export type { SidebarProps } from './components/sidebar';
 export { ResetPasswordForm } from './components/auth/ResetPasswordForm';
 export { ChakraUIProvider } from './providers/chakra-provider';
 export { DashboardChart } from './components/DashboardChart';

@@ -5,7 +5,7 @@ export function FeaturesSection() {
     <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} py={8}>
       <FeatureCard
         icon="📚"
-        title="3000+ Words"
+        title="3500+ Words"
         description="Comprehensive IELTS vocabulary database with meanings, examples, and usage"
       />
       <FeatureCard

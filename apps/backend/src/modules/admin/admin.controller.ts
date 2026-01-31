@@ -17,13 +17,18 @@ export class AdminController {
         throw new AppError('Invalid email or password', 401);
       }
 
-      const isValid = await AuthService.validatePassword(password, admin.passwordHash);
+      const isValid = await AuthService.validatePassword(
+        password,
+        admin.passwordHash
+      );
 
       if (!isValid) {
         throw new AppError('Invalid email or password', 401);
       }
 
-      const { accessToken, refreshToken } = await AuthService.generateTokens(admin);
+      const { accessToken, refreshToken } = await AuthService.generateTokens(
+        admin
+      );
 
       setAuthCookies(res, accessToken, refreshToken);
 
@@ -105,7 +110,11 @@ export class AdminController {
     }
   }
 
-  static async updateUserStatus(req: Request, res: Response, next: NextFunction) {
+  static async updateUserStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const { id } = req.params;
       const { status } = req.body;
@@ -163,7 +172,7 @@ export class AdminController {
           name,
           role: role || AdminRole.ADMIN,
         },
-        password,
+        password
       );
 
       res.status(201).json({
@@ -282,7 +291,11 @@ export class AdminController {
 
       const { currentPassword, newPassword } = req.body;
 
-      if (!newPassword || typeof newPassword !== 'string' || newPassword.length < 6) {
+      if (
+        !newPassword ||
+        typeof newPassword !== 'string' ||
+        newPassword.length < 6
+      ) {
         throw new AppError('Password must be at least 6 characters', 400);
       }
 
@@ -293,7 +306,10 @@ export class AdminController {
       }
 
       // Verify current password
-      const isValid = await AuthService.validatePassword(currentPassword, admin.passwordHash);
+      const isValid = await AuthService.validatePassword(
+        currentPassword,
+        admin.passwordHash
+      );
 
       if (!isValid) {
         throw new AppError('Current password is incorrect', 401);
@@ -330,7 +346,10 @@ export class AdminController {
       // Check if refresh token exists in admin's token list
       let tokenValid = false;
       for (const storedToken of admin.refreshToken) {
-        const isMatch = await AuthService.validatePassword(refreshToken, storedToken);
+        const isMatch = await AuthService.validatePassword(
+          refreshToken,
+          storedToken
+        );
         if (isMatch) {
           tokenValid = true;
           break;
@@ -341,12 +360,12 @@ export class AdminController {
         throw new AppError('Invalid refresh token', 401);
       }
 
-      // Token rotation: Generate new tokens and invalidate old refresh token
+      // Remove old refresh token first
+      await AuthService.logout(admin, refreshToken);
+
+      // Token rotation: Generate new tokens after invalidating old refresh token
       const { accessToken, refreshToken: newRefreshToken } =
         await AuthService.generateTokens(admin);
-
-      // Remove old refresh token
-      await AuthService.logout(admin, refreshToken);
 
       setAuthCookies(res, accessToken, newRefreshToken);
 
@@ -357,6 +376,26 @@ export class AdminController {
     } catch (err) {
       // Clear invalid refresh token with proper options
       clearAuthCookies(res);
+      next(err);
+    }
+  }
+
+  static async logout(req: Request, res: Response, next: NextFunction) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      const authReq = req as AuthRequest;
+      // If we have a user and token, invalidate it in DB
+      if (refreshToken && authReq.user) {
+        const admin = await AdminService.findById(authReq.user.id);
+        if (admin) {
+          await AuthService.logout(admin, refreshToken);
+        }
+      }
+
+      // Always clear cookies
+      clearAuthCookies(res);
+      res.json({ success: true, message: 'Logged out successfully' });
+    } catch (err) {
       next(err);
     }
   }

@@ -31,7 +31,7 @@ export default function LoginPage() {
           email,
           password,
         },
-        { timeout: 10000 },
+        { timeout: 10000 }
       );
 
       if (!data || !data.accessToken || !data.data || !data.data.role) {
@@ -40,29 +40,29 @@ export default function LoginPage() {
 
       return data;
     },
-    onSuccess: (data) => {
-      // Role validation: Only allow admin users
-      if (!['admin', 'super_admin'].includes(data.data.role)) {
-        toast({
-          title: 'Access Denied',
-          description: `Only administrators can access this portal. Regular users should use the User Portal at ${
-            process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'
-          }`,
-          status: 'warning',
-          duration: 6000,
-          isClosable: true,
-        });
-        return;
-      }
-
+    onSuccess: async (data) => {
       setToken(data.accessToken);
       setUser(data.data);
 
-      // Set cookie for middleware
-      const isSecure = window.location.protocol === 'https:';
-      document.cookie = `admin_auth_token=${
-        data.accessToken
-      }; path=/; max-age=900; SameSite=Strict${isSecure ? '; Secure' : ''}`;
+      // Verify cookies were set correctly by backend
+      try {
+        const cookieCheck = await axiosInstance.get('/auth/verify-cookies', {
+          timeout: 3000,
+        });
+        if (!cookieCheck.data?.data?.cookiesValid) {
+          toast({
+            title: 'Warning: Session may not persist',
+            description:
+              'Cookies were not set correctly. You may be logged out on refresh.',
+            status: 'warning',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      } catch (error) {
+        console.warn('Cookie verification failed:', error);
+        // Don't block login on verification failure
+      }
 
       toast({
         title: 'Login successful!',
@@ -73,11 +73,14 @@ export default function LoginPage() {
 
       router.push('/dashboard');
     },
-    onError: (error: Error | { response?: { data?: { message?: string } } }) => {
+    onError: (
+      error: Error | { response?: { data?: { message?: string } } }
+    ) => {
       toast({
         title: 'Login failed',
         description:
-          ('response' in error && error.response?.data?.message) || 'Invalid credentials',
+          ('response' in error && error.response?.data?.message) ||
+          'Invalid credentials',
         status: 'error',
         duration: 5000,
       });
@@ -148,14 +151,21 @@ export default function LoginPage() {
                 </Box>
               </FormControl>
 
-              <Button type="submit" width="100%" isLoading={loginMutation.isPending}>
+              <Button
+                type="submit"
+                width="100%"
+                isLoading={loginMutation.isPending}
+              >
                 Admin Login
               </Button>
 
               <Text color="gray.400" textAlign="center" fontSize="sm">
                 <ChakraLink
                   as={Link}
-                  href={process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'}
+                  href={
+                    process.env.NEXT_PUBLIC_USER_APP_URL ||
+                    'http://localhost:3000'
+                  }
                   color="brand.400"
                   fontWeight="600"
                 >

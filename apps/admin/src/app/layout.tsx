@@ -13,10 +13,17 @@ export const metadata = {
   description: 'Admin panel for managing IELTS vocabulary platform',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${inter.className}`}>
+      <body
+        className={`${inter.variable} ${inter.className}`}
+        suppressHydrationWarning
+      >
         <ReactQueryProvider>
           <ChakraUIProvider>{children}</ChakraUIProvider>
         </ReactQueryProvider>

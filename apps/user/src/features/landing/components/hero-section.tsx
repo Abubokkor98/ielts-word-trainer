@@ -24,7 +24,7 @@ export function HeroSection() {
         maxW="2xl"
         mx="auto"
       >
-        Learn 3000+ words with adaptive quizzes and spaced repetition
+        Learn 3500+ words with adaptive quizzes and spaced repetition
       </Text>
 
       {!isAuthenticated ? (
