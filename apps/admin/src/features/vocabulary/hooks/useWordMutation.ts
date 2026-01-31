@@ -59,17 +59,16 @@ export function useWordMutation({
     },
     onError: (error: AxiosError<{ message?: string }>) => {
       const message = error.response?.data?.message || 'Something went wrong';
-      const isViewerRestriction =
-        message.includes('read-only') || message.includes('Demo accounts');
+      const isForbidden = error.response?.status === 403;
 
       toast({
-        title: isViewerRestriction
+        title: isForbidden
           ? 'Action Not Allowed'
           : initialData
           ? 'Failed to update word'
           : 'Failed to add word',
         description: message,
-        status: isViewerRestriction ? 'warning' : 'error',
+        status: isForbidden ? 'warning' : 'error',
         duration: 4000,
       });
     },

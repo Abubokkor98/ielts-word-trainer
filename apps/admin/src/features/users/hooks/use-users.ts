@@ -36,10 +36,12 @@ export function useUserManagement() {
     onError: (error: any) => {
       const message =
         error?.response?.data?.message || 'Failed to update user status';
+      const isForbidden = error?.response?.status === 403;
+
       toast({
-        title: 'Action Not Allowed',
+        title: isForbidden ? 'Action Not Allowed' : 'Update failed',
         description: message,
-        status: 'warning',
+        status: isForbidden ? 'warning' : 'error',
         duration: 4000,
       });
     },
@@ -59,10 +61,12 @@ export function useUserManagement() {
       toast({ title: 'Export successful', status: 'success' });
     } catch (error: any) {
       const message = error?.response?.data?.message || 'Export failed';
+      const isForbidden = error?.response?.status === 403;
+
       toast({
-        title: 'Action Not Allowed',
+        title: isForbidden ? 'Action Not Allowed' : 'Export failed',
         description: message,
-        status: 'warning',
+        status: isForbidden ? 'warning' : 'error',
         duration: 4000,
       });
     }

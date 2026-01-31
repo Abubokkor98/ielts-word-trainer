@@ -26,10 +26,12 @@ export function useVocabularyCRUD() {
     },
     onError: (error: any) => {
       const message = error?.response?.data?.message || 'Failed to delete word';
+      const isForbidden = error?.response?.status === 403;
+
       toast({
-        title: 'Action Not Allowed',
+        title: isForbidden ? 'Action Not Allowed' : 'Failed to delete word',
         description: message,
-        status: 'warning',
+        status: isForbidden ? 'warning' : 'error',
         duration: 4000,
       });
     },

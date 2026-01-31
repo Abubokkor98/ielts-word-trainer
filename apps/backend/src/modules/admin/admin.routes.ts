@@ -52,7 +52,7 @@ router.patch(
 router.get(
   '/users/export',
   authenticate,
-  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN, AdminRole.VIEWER]),
+  authorize([AdminRole.ADMIN, AdminRole.SUPER_ADMIN]),
   requireWriteAccess,
   AdminController.exportUsers
 );
