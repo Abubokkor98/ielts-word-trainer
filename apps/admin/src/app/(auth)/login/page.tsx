@@ -41,26 +41,14 @@ export default function LoginPage() {
       return data;
     },
     onSuccess: async (data) => {
-      // Role validation: Only allow admin users
-      if (!['admin', 'super_admin'].includes(data.data.role)) {
-        toast({
-          title: 'Access Denied',
-          description: `Only administrators can access this portal. Regular users should use the User Portal at ${
-            process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'
-          }`,
-          status: 'warning',
-          duration: 6000,
-          isClosable: true,
-        });
-        return;
-      }
-
       setToken(data.accessToken);
       setUser(data.data);
 
       // Verify cookies were set correctly by backend
       try {
-        const cookieCheck = await axiosInstance.get('/auth/verify-cookies');
+        const cookieCheck = await axiosInstance.get('/auth/verify-cookies', {
+          timeout: 3000,
+        });
         if (!cookieCheck.data?.data?.cookiesValid) {
           toast({
             title: 'Warning: Session may not persist',
