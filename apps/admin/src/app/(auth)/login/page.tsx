@@ -159,6 +159,18 @@ export default function LoginPage() {
                 Admin Login
               </Button>
 
+              <Button
+                variant="outline"
+                width="100%"
+                onClick={() => {
+                  setEmail('demo@admin.com');
+                  setPassword('demo123');
+                }}
+                colorScheme="gray"
+              >
+                🎯 Try Demo Credentials (Read-Only)
+              </Button>
+
               <Text color="gray.400" textAlign="center" fontSize="sm">
                 <ChakraLink
                   as={Link}

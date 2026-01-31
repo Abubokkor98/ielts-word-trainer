@@ -10,7 +10,7 @@ export function useUsers(params: UsersQueryParams) {
   return useQuery<UsersResponse, Error>({
     queryKey: ['admin', 'users', params.page, params.limit, params.search],
     queryFn: () => usersApi.getUsers(params),
-    enabled: !!user && ['admin', 'super_admin'].includes(user.role),
+    enabled: !!user && ['admin', 'super_admin', 'viewer'].includes(user.role),
   });
 }
 
@@ -19,8 +19,13 @@ export function useUserManagement() {
   const queryClient = useQueryClient();
 
   const updateStatus = useMutation({
-    mutationFn: ({ userId, status }: { userId: string; status: 'active' | 'banned' }) =>
-      usersApi.updateUserStatus(userId, status),
+    mutationFn: ({
+      userId,
+      status,
+    }: {
+      userId: string;
+      status: 'active' | 'banned';
+    }) => usersApi.updateUserStatus(userId, status),
     onSuccess: (_, variables) => {
       toast({
         title: `User ${variables.status === 'banned' ? 'banned' : 'activated'}`,
@@ -28,8 +33,17 @@ export function useUserManagement() {
       });
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
-    onError: () => {
-      toast({ title: 'Failed to update user status', status: 'error' });
+    onError: (error: any) => {
+      const message =
+        error?.response?.data?.message || 'Failed to update user status';
+      const isForbidden = error?.response?.status === 403;
+
+      toast({
+        title: isForbidden ? 'Action Not Allowed' : 'Update failed',
+        description: message,
+        status: isForbidden ? 'warning' : 'error',
+        duration: 4000,
+      });
     },
   });
 
@@ -45,8 +59,16 @@ export function useUserManagement() {
       link.remove();
       window.URL.revokeObjectURL(url);
       toast({ title: 'Export successful', status: 'success' });
-    } catch (_error) {
-      toast({ title: 'Export failed', status: 'error' });
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Export failed';
+      const isForbidden = error?.response?.status === 403;
+
+      toast({
+        title: isForbidden ? 'Action Not Allowed' : 'Export failed',
+        description: message,
+        status: isForbidden ? 'warning' : 'error',
+        duration: 4000,
+      });
     }
   };
 

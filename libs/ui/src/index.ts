@@ -3,6 +3,7 @@ export type { SidebarProps } from './components/sidebar';
 export { ResetPasswordForm } from './components/auth/ResetPasswordForm';
 export { ChakraUIProvider } from './providers/chakra-provider';
 export { DashboardChart } from './components/DashboardChart';
+export { useViewerRestriction } from './hooks/useViewerRestriction';
 export { ReactQueryProvider } from './providers/react-query-provider';
 export * from './components/ui/button';
 export * from './components/ui/card';

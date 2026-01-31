@@ -72,6 +72,21 @@ async function seed() {
       console.log('Regular Admin already exists');
     }
 
+    // Create Demo Viewer (Read-Only for Portfolio)
+    const demoPassword = await bcrypt.hash('demo123', 10);
+    let _demoViewer = await Admin.findOne({ email: 'demo@admin.com' });
+    if (!_demoViewer) {
+      _demoViewer = await Admin.create({
+        name: 'Demo Viewer',
+        email: 'demo@admin.com',
+        passwordHash: demoPassword,
+        role: AdminRole.VIEWER,
+      });
+      console.log('Created Demo Viewer (Read-Only)');
+    } else {
+      console.log('Demo Viewer already exists');
+    }
+
     // Create test user only if they don't exist
     const userPassword = await bcrypt.hash('user123', 10);
     let user = await User.findOne({ email: 'user@ielts.com' });
@@ -101,16 +116,14 @@ async function seed() {
 
     console.log('Created topics');
 
-    const topicMap = topics.reduce(
-      (acc, topic) => {
-        acc[topic.name] = topic._id;
-        return acc;
-      },
-      {} as Record<string, mongoose.Types.ObjectId>,
-    );
+    const topicMap = topics.reduce((acc, topic) => {
+      acc[topic.name] = topic._id;
+      return acc;
+    }, {} as Record<string, mongoose.Types.ObjectId>);
 
     // Fail fast if a seed word references a missing topic key
-    if (!topicMap.General) throw new Error('Seed misconfig: missing topic "General"');
+    if (!topicMap.General)
+      throw new Error('Seed misconfig: missing topic "General"');
 
     // Create vocabulary words
     const words = await Word.create([
@@ -594,7 +607,12 @@ async function seed() {
           {
             wordId: words[3]._id, // innovative
             questionText: 'What is the best definition for "innovative"?',
-            options: ['featuring new methods', 'old fashioned', 'boring', 'expensive'],
+            options: [
+              'featuring new methods',
+              'old fashioned',
+              'boring',
+              'expensive',
+            ],
             correctAnswer: 'featuring new methods',
           },
         ],
@@ -606,6 +624,7 @@ async function seed() {
     console.log('\nTest Accounts:');
     console.log('Super Admin: admin@ielts.com / admin123');
     console.log('Reg Admin:   regular_admin@ielts.com / admin123');
+    console.log('Demo Viewer: demo@admin.com / demo123 (READ-ONLY)');
     console.log('User:  user@ielts.com / user123');
     console.log(`\nCreated ${words.length} vocabulary words`);
     console.log(`Created ${topics.length} topics`);
