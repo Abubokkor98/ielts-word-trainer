@@ -7,7 +7,7 @@ export function QuickActions() {
       <ActionCard
         href="/vocabulary"
         title="Browse Vocabulary"
-        description="Explore 3000+ IELTS words"
+        description="Explore 3500+ IELTS words"
         emoji="📚"
       />
       <ActionCard

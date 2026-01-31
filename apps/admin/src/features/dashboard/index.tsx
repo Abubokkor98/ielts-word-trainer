@@ -1,11 +1,12 @@
 'use client';
 
-import { Box, Flex, Heading, SimpleGrid, VStack } from '@chakra-ui/react';
+import { Box, Flex, Heading, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { Activity, BookOpen, TrendingUp, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { AlertSection } from './components/AlertSection';
+import { DashboardSection } from './components/DashboardSection';
 import { DAUTrendChart } from './components/DAUTrendChart';
 import { DashboardSkeleton } from './components/dashboard-skeleton';
 import { DifficultyDistributionChart } from './components/DifficultyDistributionChart';
@@ -13,6 +14,7 @@ import { MetricCard } from './components/MetricCard';
 import { ModuleDistributionChart } from './components/ModuleDistributionChart';
 import { ProblemWordsCard } from './components/ProblemWordsCard';
 import { QuickActions } from './components/QuickActions';
+import { StatsGrid } from './components/StatsGrid';
 import { TopicDistributionChart } from './components/TopicDistributionChart';
 import { TopWordsCard } from './components/TopWordsCard';
 import { UnusedWordsCard } from './components/UnusedWordsCard';
@@ -70,102 +72,92 @@ export function DashboardContainer() {
   }
 
   return (
-    <Box py={6} px={4}>
-      <VStack spacing={8} align="stretch">
-        {/* Header */}
-        <Flex justify="space-between" align="center">
-          <Heading size="lg">Dashboard Overview</Heading>
-        </Flex>
+    <Box py={8} px={8} maxW="1920px" mx="auto">
+      <VStack spacing={10} align="stretch">
+        {/* Platform Health Section */}
+        <DashboardSection
+          title="Platform Health"
+          subtitle="Key metrics for the last 7 days"
+        >
+          <StatsGrid>
+            <MetricCard
+              label="Active Users"
+              sublabel="vs last week"
+              value={metrics.activeUsers.current}
+              change={metrics.activeUsers.percentChange}
+              icon={Users}
+              color="blue.500"
+            />
+            <MetricCard
+              label="Active Learners"
+              sublabel="vs last week"
+              value={metrics.activeLearners.current}
+              change={metrics.activeLearners.percentChange}
+              icon={BookOpen}
+              color="purple.500"
+            />
+            <MetricCard
+              label="New Users"
+              sublabel="vs last week"
+              value={metrics.newUsers.current}
+              change={metrics.newUsers.percentChange}
+              icon={TrendingUp}
+              color="green.500"
+            />
+            <MetricCard
+              label="Completion Rate"
+              sublabel="vs last week"
+              value={`${metrics.quizCompletionRate.current.toFixed(0)}%`}
+              change={metrics.quizCompletionRate.percentChange}
+              icon={Activity}
+              color="orange.500"
+            />
+            <MetricCard
+              label="Avg Score"
+              sublabel="vs last week"
+              value={`${metrics.avgQuizScore.current.toFixed(0)}%`}
+              change={metrics.avgQuizScore.percentChange}
+              icon={BookOpen}
+              color="red.500"
+            />
+          </StatsGrid>
+        </DashboardSection>
 
-        {/* Platform Health Cards */}
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 5 }} spacing={6}>
-          <MetricCard
-            label="Active Users"
-            sublabel="Login Activity"
-            value={metrics.activeUsers.current}
-            change={metrics.activeUsers.percentChange}
-            icon={Users}
-            color="blue.500"
-          />
-          <MetricCard
-            label="Active Learners"
-            sublabel="Took a Quiz"
-            value={metrics.activeLearners.current}
-            change={metrics.activeLearners.percentChange}
-            icon={BookOpen}
-            color="purple.500"
-          />
-          <MetricCard
-            label="New Users"
-            sublabel="This Week"
-            value={metrics.newUsers.current}
-            change={metrics.newUsers.percentChange}
-            icon={TrendingUp}
-            color="green.500"
-          />
-          <MetricCard
-            label="Completion"
-            sublabel="Quiz Finish Rate"
-            value={`${metrics.quizCompletionRate.current.toFixed(0)}%`}
-            change={metrics.quizCompletionRate.percentChange}
-            icon={Activity}
-            color="orange.500"
-          />
-          <MetricCard
-            label="Avg Score"
-            sublabel="Overall"
-            value={`${metrics.avgQuizScore.current.toFixed(0)}%`}
-            change={metrics.avgQuizScore.percentChange}
-            icon={BookOpen}
-            color="red.500"
-          />
-        </SimpleGrid>
+        {/* Actionable Insights Section */}
+        <DashboardSection title="Activity & Actions">
+          <AlertSection alerts={metrics.alerts} />
 
-        {/* Alerts Section */}
-        <AlertSection alerts={metrics.alerts} />
+          <SimpleGrid columns={{ base: 1, xl: 3 }} spacing={6} mt={6}>
+            <Box gridColumn={{ xl: 'span 2' }}>
+              <DAUTrendChart data={metrics.dailyActiveUsers} />
+            </Box>
+            <Box>
+              <QuickActions />
+            </Box>
+          </SimpleGrid>
+        </DashboardSection>
 
-        {/* Charts & Actions Grid */}
-        <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6}>
-          {/* DAU Chart (Takes 2 columns) */}
-          <Box gridColumn={{ lg: 'span 2' }}>
-            <DAUTrendChart data={metrics.dailyActiveUsers} />
-          </Box>
-
-          {/* Quick Actions (Takes 1 column) */}
-          <Box>
-            <QuickActions />
-          </Box>
-        </SimpleGrid>
-
-        {/* Problem Words Section */}
-        <Box>
-          <ProblemWordsCard />
-        </Box>
-
-        {/* Vocabulary Analytics Section */}
-        <Box>
-          <Heading size="md" mb={4}>
-            Vocabulary Analytics
-          </Heading>
-
-          {/* Overview KPIs */}
-          <Box mb={6}>
+        {/* Deep Dive Section */}
+        <DashboardSection
+          title="Content Insights"
+          subtitle="Vocabulary performance and distribution"
+        >
+          <VStack spacing={6} align="stretch">
             <VocabularyOverviewCard />
-          </Box>
 
-          {/* Distribution Charts */}
-          <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={6} mb={6}>
-            <ModuleDistributionChart />
-            <DifficultyDistributionChart />
-            <TopicDistributionChart />
-          </SimpleGrid>
+            <SimpleGrid columns={{ base: 1, xl: 3 }} spacing={6}>
+              <ModuleDistributionChart />
+              <DifficultyDistributionChart />
+              <TopicDistributionChart />
+            </SimpleGrid>
 
-          {/* Top & Unused Words */}
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-            <TopWordsCard />
-            <UnusedWordsCard />
-          </SimpleGrid>
-        </Box>
+            <SimpleGrid columns={{ base: 1, xl: 3 }} spacing={6}>
+              <TopWordsCard />
+              <UnusedWordsCard />
+              <ProblemWordsCard />
+            </SimpleGrid>
+          </VStack>
+        </DashboardSection>
       </VStack>
     </Box>
   );
