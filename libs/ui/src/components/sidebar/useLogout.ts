@@ -2,6 +2,7 @@
 
 import { useToast } from '@chakra-ui/react';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
@@ -9,11 +10,16 @@ export const useLogout = () => {
   const { logout: clearAuth } = useAuthStore();
   const toast = useToast();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   // Logout function
   const logout = async () => {
     try {
       await axiosInstance.post('/admin/logout');
+
+      // Clear auth state first (before showing toast)
+      clearAuth();
+      queryClient.clear();
 
       // Show success toast
       toast({
@@ -23,8 +29,7 @@ export const useLogout = () => {
         isClosable: true,
       });
 
-      // Clear auth state and navigate
-      clearAuth();
+      // Navigate to home
       router.push('/');
     } catch (error) {
       console.error('Logout failed', error);
