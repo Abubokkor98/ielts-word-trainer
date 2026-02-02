@@ -1,7 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@ielts/ui', '@ielts/shared', '@ielts/auth'],
-  // output: 'standalone',
+
+  // Proxy API requests to backend to avoid cross-origin cookie issues
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://ielts-vocabs-backend.vercel.app/api/:path*',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
