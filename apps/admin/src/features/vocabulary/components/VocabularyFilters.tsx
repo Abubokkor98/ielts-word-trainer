@@ -31,6 +31,7 @@ export function VocabularyFilters({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             pl={10}
+            aria-label="Search words"
           />
           <Box
             position="absolute"
@@ -47,6 +48,7 @@ export function VocabularyFilters({
           onChange={handleDifficultyChange}
           w="180px"
           icon={<Filter size={16} />}
+          aria-label="Filter by difficulty"
         >
           <option value="all">All Levels</option>
           <option value="beginner">Beginner</option>

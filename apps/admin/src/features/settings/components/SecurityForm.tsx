@@ -50,12 +50,15 @@ export function SecurityForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <VStack spacing={6} align="start" maxW="lg">
-        <FormControl isRequired>
+        <FormControl isRequired isInvalid={!!errors.currentPassword}>
           <FormLabel>Current Password</FormLabel>
           <Input
             type="password"
-            {...register('currentPassword', { required: true })}
+            {...register('currentPassword', {
+              required: 'Current password is required',
+            })}
           />
+          <FormErrorMessage>{errors.currentPassword?.message}</FormErrorMessage>
         </FormControl>
 
         <FormControl isRequired isInvalid={!!errors.newPassword}>

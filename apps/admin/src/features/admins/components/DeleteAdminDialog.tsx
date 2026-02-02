@@ -9,21 +9,20 @@ import {
 } from '@chakra-ui/react';
 import { Button } from '@ielts/ui';
 import { useRef } from 'react';
-import type { User } from '../types';
 
-interface BanUserDialogProps {
+interface DeleteAdminDialogProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  user: User | null;
+  adminName: string | null;
 }
 
-export function BanUserDialog({
+export function DeleteAdminDialog({
   isOpen,
   onClose,
   onConfirm,
-  user,
-}: BanUserDialogProps) {
+  adminName,
+}: DeleteAdminDialogProps) {
   const cancelRef = useRef<HTMLButtonElement>(null);
 
   return (
@@ -43,12 +42,12 @@ export function BanUserDialog({
             pt={8}
             pb={0}
           >
-            <Text>Ban User</Text>
+            <Text>Delete Admin</Text>
           </AlertDialogHeader>
 
           <AlertDialogBody textAlign="center" color="gray.500" py={6}>
-            Are you sure you want to ban <strong>{user?.name}</strong>? <br />
-            They will no longer be able to log in.
+            Are you sure you want to delete <strong>{adminName}</strong>? <br />
+            This action cannot be undone.
           </AlertDialogBody>
 
           <AlertDialogFooter justifyContent="center" pb={8} gap={3}>
@@ -67,7 +66,7 @@ export function BanUserDialog({
               borderRadius="lg"
               px={6}
             >
-              Ban User
+              Delete Admin
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

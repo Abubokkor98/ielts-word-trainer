@@ -70,10 +70,10 @@ export function UserTable({
                         ? 'green'
                         : u.status === 'banned'
                         ? 'red'
-                        : 'gray'
+                        : 'green'
                     }
                   >
-                    {u.status || 'Active'}
+                    {u.status === 'banned' ? 'Banned' : 'Active'}
                   </Badge>
                 </Td>
                 <Td fontWeight="bold">{u.xp || 0}</Td>

@@ -7,7 +7,7 @@ import { ProblemWordsTable } from './components/ProblemWordsTable';
 
 export function ProblemWordsContainer() {
   // Fetch up to 100 words for the detailed view
-  const { data: problemWords, isLoading } = useProblemWords(100);
+  const { data: problemWords, isLoading, isError } = useProblemWords(100);
 
   return (
     <Box py={6} px={4} maxW="container.xl" mx="auto">
@@ -24,7 +24,18 @@ export function ProblemWordsContainer() {
         </Flex>
 
         {/* Content */}
-        {!isLoading && (!problemWords || problemWords.words.length === 0) ? (
+        {isError ? (
+          <Card>
+            <CardContent>
+              <Heading size="md" mb={2} color="red.500">
+                Error Loading Problem Words
+              </Heading>
+              <Text color="gray.500">
+                Unable to fetch problem words. Please try again later.
+              </Text>
+            </CardContent>
+          </Card>
+        ) : !isLoading && (!problemWords || problemWords.words.length === 0) ? (
           <Card>
             <CardContent>
               <Heading size="md" mb={2}>

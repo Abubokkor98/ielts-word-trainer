@@ -33,6 +33,11 @@ export function VocabularyContainer() {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const handleDifficultyChange = (value: Difficulty) => {
+    setDifficulty(value);
+    setPage(1);
+  };
+
   // Debounce search
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -96,7 +101,7 @@ export function VocabularyContainer() {
             search={search}
             onSearchChange={setSearch}
             difficulty={difficulty}
-            onDifficultyChange={setDifficulty}
+            onDifficultyChange={handleDifficultyChange}
           />
           <CardContent>
             <VocabularyTable

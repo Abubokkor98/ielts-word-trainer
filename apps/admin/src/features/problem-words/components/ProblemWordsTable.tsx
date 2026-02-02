@@ -1,16 +1,7 @@
 import { Badge, Box, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import type { ProblemWord } from '../../dashboard/types';
 import { getDifficultyColorScheme } from '../../dashboard/utils/difficulty';
 import { ProblemWordsTableSkeleton } from './ProblemWordsTableSkeleton';
-
-interface ProblemWord {
-  wordId: string;
-  word: string;
-  meaning: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  accuracy: number;
-  attempts: number;
-  lastUpdated?: string;
-}
 
 interface ProblemWordsTableProps {
   isLoading: boolean;
@@ -59,7 +50,11 @@ export function ProblemWordsTable({
                 </Td>
                 <Td fontSize="sm" color="gray.500">
                   {pw.lastUpdated
-                    ? new Date(pw.lastUpdated).toLocaleDateString()
+                    ? new Date(pw.lastUpdated).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })
                     : '-'}
                 </Td>
               </Tr>

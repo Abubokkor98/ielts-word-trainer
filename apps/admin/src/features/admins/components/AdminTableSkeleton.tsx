@@ -1,4 +1,4 @@
-import { Box, HStack, Skeleton, Td, Tr } from '@chakra-ui/react';
+import { HStack, Skeleton, Td, Tr } from '@chakra-ui/react';
 
 export function AdminTableSkeleton() {
   return (

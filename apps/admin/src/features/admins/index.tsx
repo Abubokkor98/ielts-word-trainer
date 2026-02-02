@@ -14,6 +14,7 @@ import {
   Th,
   Thead,
   Tr,
+  useDisclosure,
   useToast,
   VStack,
 } from '@chakra-ui/react';
@@ -22,13 +23,32 @@ import { Card, CardContent } from '@ielts/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Admin } from 'apps/admin/src/types/admin';
 import { Plus, Shield, ShieldAlert, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { AdminTableSkeleton } from './components/AdminTableSkeleton';
+import { DeleteAdminDialog } from './components/DeleteAdminDialog';
+
+const AdminTableHeader = () => (
+  <Thead>
+    <Tr>
+      <Th>Name</Th>
+      <Th>Email</Th>
+      <Th>Role</Th>
+      <Th>Created At</Th>
+      <Th>Actions</Th>
+    </Tr>
+  </Thead>
+);
 
 export function AdminsContainer() {
   const { user } = useAuthStore();
   const toast = useToast();
   const queryClient = useQueryClient();
   const isSuperAdmin = user?.role === 'super_admin';
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [adminToDelete, setAdminToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const {
     data: adminsData,
@@ -49,6 +69,8 @@ export function AdminsContainer() {
     onSuccess: () => {
       toast({ title: 'Admin deleted successfully', status: 'success' });
       queryClient.invalidateQueries({ queryKey: ['admin', 'admins'] });
+      onClose();
+      setAdminToDelete(null);
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
@@ -60,9 +82,14 @@ export function AdminsContainer() {
     },
   });
 
-  const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this admin?')) {
-      deleteMutation.mutate(id);
+  const handleDeleteClick = (id: string, name: string) => {
+    setAdminToDelete({ id, name });
+    onOpen();
+  };
+
+  const handleConfirmDelete = () => {
+    if (adminToDelete) {
+      deleteMutation.mutate(adminToDelete.id);
     }
   };
 
@@ -87,15 +114,7 @@ export function AdminsContainer() {
             {isLoading ? (
               <Box overflowX="auto" pb={4}>
                 <Table variant="simple">
-                  <Thead>
-                    <Tr>
-                      <Th>Name</Th>
-                      <Th>Email</Th>
-                      <Th>Role</Th>
-                      <Th>Created At</Th>
-                      <Th>Actions</Th>
-                    </Tr>
-                  </Thead>
+                  <AdminTableHeader />
                   <Tbody>
                     <AdminTableSkeleton />
                   </Tbody>
@@ -106,15 +125,7 @@ export function AdminsContainer() {
             ) : (
               <Box overflowX="auto" pb={4}>
                 <Table variant="simple">
-                  <Thead>
-                    <Tr>
-                      <Th>Name</Th>
-                      <Th>Email</Th>
-                      <Th>Role</Th>
-                      <Th>Created At</Th>
-                      <Th>Actions</Th>
-                    </Tr>
-                  </Thead>
+                  <AdminTableHeader />
                   <Tbody>
                     {adminsData?.map((admin: Admin) => (
                       <Tr key={admin._id}>
@@ -140,7 +151,14 @@ export function AdminsContainer() {
                           </Badge>
                         </Td>
                         <Td>
-                          {new Date(admin.createdAt).toLocaleDateString()}
+                          {new Date(admin.createdAt).toLocaleDateString(
+                            'en-US',
+                            {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            }
+                          )}
                         </Td>
                         <Td>
                           {isSuperAdmin && admin._id !== user?.id && (
@@ -150,7 +168,9 @@ export function AdminsContainer() {
                               size="sm"
                               colorScheme="red"
                               variant="ghost"
-                              onClick={() => handleDelete(admin._id)}
+                              onClick={() =>
+                                handleDeleteClick(admin._id, admin.name)
+                              }
                             />
                           )}
                         </Td>
@@ -170,6 +190,13 @@ export function AdminsContainer() {
           </CardContent>
         </Card>
       </VStack>
+
+      <DeleteAdminDialog
+        isOpen={isOpen}
+        onClose={onClose}
+        onConfirm={handleConfirmDelete}
+        adminName={adminToDelete?.name || null}
+      />
     </Box>
   );
 }

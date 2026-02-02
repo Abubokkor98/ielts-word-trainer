@@ -1,6 +1,7 @@
 import {
   Button,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Input,
   useToast,
@@ -15,7 +16,12 @@ export function ProfileForm() {
   const { user } = useAuthStore();
   const toast = useToast();
 
-  const { register, handleSubmit, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       name: user?.name || '',
     },
@@ -69,9 +75,10 @@ export function ProfileForm() {
           />
         </FormControl>
 
-        <FormControl>
+        <FormControl isInvalid={!!errors.name}>
           <FormLabel>Name</FormLabel>
-          <Input {...register('name', { required: true })} />
+          <Input {...register('name', { required: 'Name is required' })} />
+          <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
         </FormControl>
 
         <Button

@@ -61,7 +61,12 @@ export function VocabularyTable({
             {wordsData?.words.map((word: Word) => (
               <Tr key={word._id}>
                 <Td fontWeight="600">{word.word}</Td>
-                <Td maxW="300px" isTruncated color="gray.500">
+                <Td
+                  maxW="300px"
+                  isTruncated
+                  color="gray.500"
+                  title={word.meaning}
+                >
                   {word.meaning}
                 </Td>
                 <Td>

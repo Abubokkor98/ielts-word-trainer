@@ -30,11 +30,15 @@ export function VocabularyHeader({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.name.endsWith('.csv') || !file.type.includes('csv')) {
+      const name = file.name.toLowerCase();
+      const mime = file.type.toLowerCase();
+      const isCsv = name.endsWith('.csv') || mime.includes('csv');
+      if (!isCsv) {
         toast({
           title: 'Please select a valid CSV file',
           status: 'error',
         });
+        e.target.value = '';
         return;
       }
       uploadCSV.mutate(file, {
@@ -48,11 +52,15 @@ export function VocabularyHeader({
   const handleAtomicFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.name.endsWith('.csv') || !file.type.includes('csv')) {
+      const name = file.name.toLowerCase();
+      const mime = file.type.toLowerCase();
+      const isCsv = name.endsWith('.csv') || mime.includes('csv');
+      if (!isCsv) {
         toast({
           title: 'Please select a valid CSV file',
           status: 'error',
         });
+        e.target.value = '';
         return;
       }
       uploadCSVAtomic.mutate(file, {
