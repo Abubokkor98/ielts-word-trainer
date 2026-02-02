@@ -3,18 +3,17 @@
 import { useToast } from '@chakra-ui/react';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export const useLogout = () => {
   const { logout: clearAuth } = useAuthStore();
   const toast = useToast();
+  const router = useRouter();
 
   // Logout function
   const logout = async () => {
     try {
       await axiosInstance.post('/admin/logout');
-
-      // Clear auth state
-      clearAuth();
 
       // Show success toast
       toast({
@@ -24,8 +23,9 @@ export const useLogout = () => {
         isClosable: true,
       });
 
-      // Redirect to login
-      window.location.replace('/');
+      // Clear auth state and navigate
+      clearAuth();
+      router.push('/');
     } catch (error) {
       console.error('Logout failed', error);
       const errorMessage = axios.isAxiosError(error)
