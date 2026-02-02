@@ -9,7 +9,7 @@ interface ProblemWord {
   difficulty: 'beginner' | 'intermediate' | 'advanced';
   accuracy: number;
   attempts: number;
-  lastUpdated: string;
+  lastUpdated?: string;
 }
 
 interface ProblemWordsTableProps {
