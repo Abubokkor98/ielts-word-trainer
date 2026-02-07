@@ -1,7 +1,5 @@
 /**
  * Formats a date string or Date object to a readable string (e.g., "October 5, 2023").
- * @param date - The date to format
- * @returns Formatted date string
  */
 export const formatDate = (date: Date | string): string => {
   const dateObj = new Date(date);
@@ -21,10 +19,6 @@ export const formatDate = (date: Date | string): string => {
 /**
  * Formats a date string or Date object to a relative time string (e.g., "5m ago").
  * Handles edge cases like future dates (clock skew).
- *
- * @param date - The date to format. If string, should be ISO 8601 format.
- * @param skewWindow - Optional skew window in ms (default 5 mins) where future dates are treated as "Just now".
- * @returns Formatted relative time string
  */
 export function formatRelativeTime(
   date: string | Date | undefined | null,

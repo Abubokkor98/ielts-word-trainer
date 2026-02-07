@@ -36,35 +36,25 @@ export function calculateSM2({
   let easeFactor: number;
 
   if (quality >= 3) {
-    // Correct response logic
     if (prevRepetitions === 0) {
-      interval = 1;
+      interval = 1; // First review: Verification phase (always 1 day)
     } else if (prevRepetitions === 1) {
-      interval = 6;
+      interval = 6; // Second review: Consolidation phase (6 days)
     } else {
-      interval = Math.round(prevInterval * prevEaseFactor);
+      interval = Math.round(prevInterval * prevEaseFactor); // Subsequent reviews: Exponential growth
     }
 
     repetitions = prevRepetitions + 1;
-
-    // Update Ease Factor
-    // EF' = EF + (0.1 - (5-q) * (0.08 + (5-q) * 0.02))
-    easeFactor =
-      prevEaseFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
   } else {
-    // Incorrect response logic (Reset)
-    repetitions = 0;
+    repetitions = 0; // Forgot: Reset progress
     interval = 1;
-    // Ease factor remains same or could be decreased slightly?
-    // SM-2 usually doesn't change EF on failure, keeps it same or decreases.
-    // The formula above covers q<3 cases if applied, but standard implementation resets interval.
-    // We will keep EF same for simplicity or apply formula if we want punishment.
-    // Standard SM-2 applies formula for all q, but only updates interval if q>=3.
-    // However, for simplicity here:
-    easeFactor = prevEaseFactor;
   }
 
-  // Ensure EF doesn't drop below 1.3
+  // Update Ease Factor based on performance (0-5)
+  easeFactor =
+    prevEaseFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+
+  // Establish a minimum floor for the Ease Factor
   if (easeFactor < 1.3) {
     easeFactor = 1.3;
   }
