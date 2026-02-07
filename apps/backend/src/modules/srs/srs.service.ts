@@ -277,9 +277,6 @@ export class SRSService {
     });
 
     // 4. Sample or Limit
-    // Using $sample for randomness like "New Words" should be, strictly speaking
-    // But original code was just "find().limit()". Let's stick to simple limit for speed
-    // unless user requests randomness. Implicit natural order is fine.
     pipeline.push(
       { $project: { isStudied: 0 } }, // Remove temp field
       { $limit: limit },
@@ -298,7 +295,6 @@ export class SRSService {
 
   static async getStats(userId: string) {
     // Use MongoDB aggregation + Promise.all for maximum performance
-    // Guide version: runs aggregation and new words count in parallel
     const [stats, newWordsCount] = await Promise.all([
       // Single aggregation pipeline - all counting done in MongoDB
       SRSItem.aggregate([
