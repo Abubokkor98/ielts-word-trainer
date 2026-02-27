@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { VocabularyContainer } from '../../features/vocabulary';
+import { VocabularyPageSkeleton } from '../../features/vocabulary/components/vocabulary-page-skeleton';
 
 export const metadata: Metadata = {
   title: 'Vocabulary Library - IELTS Vocabs',
@@ -7,5 +9,9 @@ export const metadata: Metadata = {
 };
 
 export default function VocabularyPage() {
-  return <VocabularyContainer />;
+  return (
+    <Suspense fallback={<VocabularyPageSkeleton />}>
+      <VocabularyContainer />
+    </Suspense>
+  );
 }
