@@ -5,30 +5,45 @@ import { useAuthStore } from '@ielts/auth';
 import { Pagination, WordDetailsModal } from '@ielts/ui';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import {
+  parseAsInteger,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryStates,
+} from 'nuqs';
 
 import { useDebounce } from '../../hooks/use-debounce';
-import type { DifficultyLevel } from '../../types';
 import { VocabularyFilters } from './components/vocabulary-filters';
 import { VocabularyList } from './components/vocabulary-list';
 import { useVocabulary } from './hooks/use-vocabulary';
 import type { Word } from './types';
 
-export function VocabularyContainer() {
-  const [page, setPage] = useState(1);
-  const [difficulty, setDifficulty] = useState<DifficultyLevel | 'all'>('all');
-  const [module, setModule] = useState<
-    'reading' | 'writing' | 'listening' | 'speaking' | undefined
-  >(undefined);
-  const [wordSearchQuery, setWordSearchQuery] = useState('');
-  const [topicSearchQuery, setTopicSearchQuery] = useState('');
+const DIFFICULTY_OPTIONS = [
+  'all',
+  'beginner',
+  'intermediate',
+  'advanced',
+] as const;
+const MODULE_OPTIONS = ['reading', 'writing', 'listening', 'speaking'] as const;
 
-  const debouncedWordSearch = useDebounce(wordSearchQuery, 500);
-  const debouncedTopicSearch = useDebounce(topicSearchQuery, 500);
+export function VocabularyContainer() {
+  const [filters, setFilters] = useQueryStates(
+    {
+      page: parseAsInteger.withDefault(1),
+      difficulty: parseAsStringLiteral(DIFFICULTY_OPTIONS).withDefault('all'),
+      module: parseAsStringLiteral(MODULE_OPTIONS),
+      search: parseAsString.withDefault(''),
+      topic: parseAsString.withDefault(''),
+    },
+    { history: 'push' }
+  );
+
+  const debouncedWordSearch = useDebounce(filters.search, 500);
+  const debouncedTopicSearch = useDebounce(filters.topic, 500);
 
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Auth check logic retained from original page
   const { user } = useAuthStore();
   const router = useRouter();
 
@@ -39,9 +54,9 @@ export function VocabularyContainer() {
   }, [user, router]);
 
   const { data, isFetching } = useVocabulary({
-    page,
-    difficulty,
-    module,
+    page: filters.page,
+    difficulty: filters.difficulty,
+    module: filters.module ?? undefined,
     search: debouncedWordSearch,
     topic: debouncedTopicSearch,
   });
@@ -55,11 +70,13 @@ export function VocabularyContainer() {
   };
 
   const handleClearFilters = () => {
-    setWordSearchQuery('');
-    setTopicSearchQuery('');
-    setDifficulty('all');
-    setModule(undefined);
-    setPage(1);
+    setFilters({
+      search: null,
+      topic: null,
+      difficulty: null,
+      module: null,
+      page: null,
+    });
   };
 
   return (
@@ -74,25 +91,21 @@ export function VocabularyContainer() {
           </Text>
 
           <VocabularyFilters
-            difficulty={difficulty}
+            difficulty={filters.difficulty}
             onDifficultyChange={(diff) => {
-              setDifficulty(diff);
-              setPage(1);
+              setFilters({ difficulty: diff, page: 1 });
             }}
-            wordSearch={wordSearchQuery}
+            wordSearch={filters.search}
             onWordSearchChange={(val) => {
-              setWordSearchQuery(val);
-              setPage(1);
+              setFilters({ search: val, page: 1 });
             }}
-            topicSearch={topicSearchQuery}
+            topicSearch={filters.topic}
             onTopicSearchChange={(val) => {
-              setTopicSearchQuery(val);
-              setPage(1);
+              setFilters({ topic: val, page: 1 });
             }}
-            module={module}
+            module={filters.module ?? undefined}
             onModuleChange={(val) => {
-              setModule(val);
-              setPage(1);
+              setFilters({ module: val ?? null, page: 1 });
             }}
           />
         </Box>
@@ -104,19 +117,19 @@ export function VocabularyContainer() {
           onClearFilters={handleClearFilters}
           hasActiveFilters={
             !!(
-              wordSearchQuery ||
-              topicSearchQuery ||
-              difficulty !== 'all' ||
-              module
+              filters.search ||
+              filters.topic ||
+              filters.difficulty !== 'all' ||
+              filters.module
             )
           }
         />
 
         {!isFetching && words.length > 0 && (
           <Pagination
-            currentPage={page}
+            currentPage={filters.page}
             totalPages={totalPages}
-            onPageChange={setPage}
+            onPageChange={(newPage) => setFilters({ page: newPage })}
           />
         )}
 

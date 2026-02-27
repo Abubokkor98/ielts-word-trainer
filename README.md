@@ -15,7 +15,6 @@ A comprehensive, free web-based platform designed to help IELTS candidates maste
   - [Learning Features](#learning-features)
   - [Best Learning Practices](#best-learning-practices)
   - [Understanding Your Analytics](#understanding-your-analytics)
-- [Quick Start](#quick-start)
 - [For Developers](#for-developers)
   - [Architecture Overview](#architecture-overview)
   - [Tech Stack](#tech-stack)
@@ -153,16 +152,16 @@ Customize your learning experience:
 
 #### Recommended Daily Routine
 
-**Morning (10-15 minutes)**
+##### Morning (10-15 minutes)
 
 1. Complete all due SRS reviews
 2. Add 5-10 new words from the vocabulary library
 
-**Afternoon/Evening (15-20 minutes)**
+##### Afternoon/Evening (15-20 minutes)
 
-3. Take one quiz at your current difficulty level
-4. Review any words you got wrong in the quiz
-5. Browse vocabulary library for new words related to your weak topics
+1. Take one quiz at your current difficulty level
+2. Review any words you got wrong in the quiz
+3. Browse vocabulary library for new words related to your weak topics
 
 **Consistency Tips:**
 
@@ -197,21 +196,21 @@ Customize your learning experience:
 
 #### Combining Features for Maximum Impact
 
-**Week 1-2: Foundation**
+##### Week 1-2: Foundation
 
 - Focus on beginner difficulty vocabulary
 - Add 10-15 new words daily to SRS
 - Take beginner quizzes to build confidence
 - Aim for 80%+ accuracy before advancing
 
-**Week 3-4: Progression**
+##### Week 3-4: Progression
 
 - Mix beginner and intermediate vocabulary
 - Maintain daily SRS reviews (critical phase)
 - Take intermediate quizzes
 - Review quiz mistakes and add to SRS
 
-**Week 5+: Mastery**
+##### Week 5+: Mastery
 
 - Focus on intermediate and advanced vocabulary
 - Continue daily SRS reviews (this never stops)
@@ -322,82 +321,44 @@ Number of cards scheduled for review today. Aim to complete all daily reviews fo
 **Recommended Review Schedule:**
 View your next 7 days of scheduled reviews to plan study time effectively.
 
-## Quick Start
-
-### Prerequisites
-
-- Node.js 20 or higher
-- pnpm 8 or higher
-- MongoDB instance (local or cloud)
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/Abubokkor98/ielts-word-trainer.git
-cd ielts-word-trainer
-
-# Install dependencies
-pnpm install
-
-# Set up environment variables
-cp apps/backend/.env.example apps/backend/.env
-cp apps/user/.env.example apps/user/.env.local
-cp apps/admin/.env.example apps/admin/.env.local
-
-# Configure your environment variables
-# Edit the .env files with your actual values
-
-# Seed the database with sample vocabulary
-pnpm seed
-
-# Start all applications
-pnpm dev
-```
-
-The applications will be available at:
-
-- User App: <http://localhost:3000>
-- Admin Panel: <http://localhost:3001>
-- Backend API: <http://localhost:3333>
-
 ## For Developers
 
 ### Architecture Overview
 
 This project is built as an Nx monorepo containing three main applications that work together to deliver a comprehensive learning platform:
 
-**Frontend Applications (Next.js 16)**
+#### Frontend Applications (Next.js 16)
 
 - **User App**: Public-facing learning platform where students browse vocabulary, take quizzes, and track progress
 - **Admin Panel**: Internal management dashboard for vocabulary CRUD operations, user management, and analytics
 
-**Backend API (Express.js)**
+#### Backend API (Express.js)
 
 - RESTful API serving both frontend applications
 - MongoDB database for persistent storage
 - JWT-based authentication with refresh token rotation
 - Role-based access control (User, Admin, Super Admin)
 
-**Shared Libraries**
+#### Shared Libraries
 
 - Common TypeScript types and interfaces
 - Shared validation schemas (Zod)
 - Utility functions used across apps
 
-**Design Decisions:**
+#### Design Decisions
 
 - Monorepo structure for code sharing and unified development
 - Separate user and admin apps for security and optimization
 - Feature-based architecture for maintainability and scalability
 - Client-side state management with Zustand for auth persistence
 - Server state management with TanStack Query for caching and synchronization
+- URL state management with nuqs for shareable, bookmarkable filter views
 
 ### Tech Stack
 
 #### Frontend
 
-**Framework & Libraries**
+##### Framework & Libraries
 
 - **Next.js 16**: React framework with App Router for server-side rendering and routing
 - **React 19**: Latest React with improved concurrent features
@@ -405,18 +366,19 @@ This project is built as an Nx monorepo containing three main applications that 
 - **Chakra UI 2.x**: Component library for consistent, accessible UI
 - **TanStack Query 5.x**: Server state management, caching, and synchronization
 - **Zustand 5.x**: Lightweight client state management for auth and UI state
+- **nuqs 2.x**: Type-safe URL query string state management for shareable filters
 - **React Hook Form**: Performant form handling with validation
 - **Zod**: Runtime type validation and schema parsing
 - **Framer Motion**: Smooth animations and transitions
 - **Recharts**: Data visualization for analytics
 
-**Styling & UI**
+##### Styling & UI
 
 - **Tailwind CSS**: Utility-first CSS framework
 - **Emotion**: CSS-in-JS for Chakra UI styling
 - **Lucide React**: Icon library
 
-**Development Tools**
+##### Development Tools
 
 - **Nx**: Monorepo tooling and build orchestration
 - **Biome**: Fast linting and formatting
@@ -424,18 +386,18 @@ This project is built as an Nx monorepo containing three main applications that 
 
 #### Backend
 
-**Server & Framework**
+##### Server & Framework
 
 - **Node.js 20**: Runtime environment
 - **Express.js 4**: Web application framework
 - **TypeScript**: Type-safe backend development
 
-**Database & ODM**
+##### Database & ODM
 
 - **MongoDB**: NoSQL database for flexible schema
 - **Mongoose 9**: ODM for MongoDB with schema validation and middleware
 
-**Authentication & Security**
+##### Authentication & Security
 
 - **JWT (jsonwebtoken)**: Stateless authentication tokens
 - **bcryptjs**: Password hashing
@@ -444,17 +406,17 @@ This project is built as an Nx monorepo containing three main applications that 
 - **express-rate-limit**: API rate limiting protection
 - **HTTP Cache-Control**: Optimized caching strategy for performance and security
 
-**File Processing**
+##### File Processing
 
 - **Multer**: File upload handling for CSV imports
 - **csv-parse**: CSV parsing for vocabulary imports
 
-**Logging & Monitoring**
+##### Logging & Monitoring
 
 - **Winston**: Structured logging
 - **Morgan**: HTTP request logging
 
-**Development & Build**
+##### Development & Build
 
 - **tsx**: TypeScript execution for development
 - **SWC**: Fast TypeScript/JavaScript compilation
@@ -1326,9 +1288,11 @@ Before you begin, ensure you have the following installed:
 
 - **Node.js**: Version 20 or higher ([Download](https://nodejs.org/))
 - **pnpm**: Version 8 or higher
+
   ```bash
   npm install -g pnpm
   ```
+
 - **MongoDB**: Local instance or cloud database (MongoDB Atlas)
   - Local: [Installation Guide](https://docs.mongodb.com/manual/installation/)
   - Cloud: [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
@@ -1355,7 +1319,7 @@ This will install all dependencies for the monorepo and all applications.
 
 The project requires environment variables for each application. Example files are provided:
 
-**Backend Environment**
+##### Backend Environment
 
 ```bash
 cp apps/backend/.env.example apps/backend/.env
@@ -1386,7 +1350,7 @@ ADMIN_URL=http://localhost:3001
 # EMAIL_PASS=your-app-password
 ```
 
-**User App Environment**
+##### User App Environment
 
 ```bash
 cp apps/user/.env.example apps/user/.env.local
@@ -1400,7 +1364,7 @@ NEXT_PUBLIC_USER_APP_URL=http://localhost:3000
 NEXT_PUBLIC_ADMIN_APP_URL=http://localhost:3001
 ```
 
-**Admin App Environment**
+##### Admin App Environment
 
 ```bash
 cp apps/admin/.env.example apps/admin/.env.local
@@ -1445,7 +1409,7 @@ This will populate your database with:
 
 #### 5. Run Development Servers
 
-**Option A: Run all applications concurrently**
+##### Option A: Run all applications concurrently
 
 ```bash
 pnpm dev
@@ -1457,7 +1421,7 @@ This starts:
 - User App: <http://localhost:3000>
 - Admin Panel: <http://localhost:3001>
 
-**Option B: Run applications individually**
+##### Option B: Run applications individually
 
 In separate terminal windows:
 
@@ -1976,7 +1940,7 @@ A: Currently not available, but this feature is planned for future releases.
 **Q: Is my data safe?**  
 A: Yes, we use industry-standard security practices. Passwords are hashed, and data is never shared with third parties.
 
-### For Developers
+### For Developers (FAQ)
 
 **Q: What is the minimum Node.js version required?**  
 A: Node.js 20 or higher is required.
@@ -2006,7 +1970,7 @@ A: JWT-based authentication with refresh token rotation. See [Authentication Flo
 A: Yes, Docker configuration is available for the backend. See `Dockerfile` and `docker-compose.yml`.
 
 **Q: How do I report security vulnerabilities?**  
-A: Please email security concerns privately to mail.abubokkor@gmail.com rather than creating public issues.
+A: Please email security concerns privately to [mail.abubokkor@gmail.com](mailto:mail.abubokkor@gmail.com) rather than creating public issues.
 
 ## License
 
@@ -2075,7 +2039,7 @@ This project would not be possible without these amazing open-source projects:
 
 - GitHub: [@Abubokkor98](https://github.com/Abubokkor98)
 - LinkedIn: [Abu Bokkor Siddik](https://www.linkedin.com/in/abubokkor)
-- Email: mail.abubokkor@gmail.com
+- Email: [mail.abubokkor@gmail.com](mailto:mail.abubokkor@gmail.com)
 
 **Project Repository:**
 
