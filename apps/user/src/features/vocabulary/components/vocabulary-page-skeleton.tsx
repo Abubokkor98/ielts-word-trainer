@@ -11,8 +11,18 @@ export function VocabularyPageSkeleton() {
     <Box bg="gray.900" py={8}>
       <Container maxW="7xl">
         <Box mb={8} textAlign={{ base: 'center', lg: 'left' }}>
-          <Skeleton height="48px" width="350px" mb={2} />
-          <Skeleton height="24px" width="420px" mb={6} />
+          <Skeleton
+            height="48px"
+            width={{ base: '100%', md: '350px' }}
+            maxW="350px"
+            mb={2}
+          />
+          <Skeleton
+            height="24px"
+            width={{ base: '100%', md: '420px' }}
+            maxW="420px"
+            mb={6}
+          />
           <Skeleton height="48px" borderRadius="md" />
         </Box>
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
