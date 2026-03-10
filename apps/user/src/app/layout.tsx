@@ -21,10 +21,7 @@ const siteConfig = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
 
-  title: {
-    default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
-  },
+  title: siteConfig.name,
 
   description: siteConfig.description,
 
@@ -86,10 +83,6 @@ export const metadata: Metadata = {
   },
 
   applicationName: siteConfig.name,
-
-  alternates: {
-    canonical: siteConfig.url,
-  },
 };
 
 export default function RootLayout({

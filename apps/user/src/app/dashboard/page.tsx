@@ -3,7 +3,11 @@ import { DashboardContainer } from '../../features/dashboard';
 
 export const metadata: Metadata = {
   title: 'Dashboard - IELTS Vocabs',
-  description: 'Track your progress and daily goals.',
+  description: 'Track your progress and daily goals. (Private Page)',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function UserDashboardPage() {
