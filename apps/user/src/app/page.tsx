@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { LandingContainer } from '../features/landing';
+import { siteConfig } from '../lib/site-config';
 
 export const metadata: Metadata = {
   title: { absolute: 'Master IELTS Vocabulary - Free Learning Platform' },
@@ -21,14 +22,13 @@ export default function HomePage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'IELTS Vocabs',
-    url: 'https://ieltsvocabs.vercel.app',
+    name: siteConfig.displayName,
+    url: siteConfig.url,
     description:
       'Master IELTS vocabulary with spaced repetition and adaptive quizzes. 3500+ words, completely free.',
     potentialAction: {
       '@type': 'SearchAction',
-      target:
-        'https://ieltsvocabs.vercel.app/vocabulary?search={search_term_string}',
+      target: `${siteConfig.url}/vocabulary?search={search_term_string}`,
       'query-input': 'required name=search_term_string',
     },
   };

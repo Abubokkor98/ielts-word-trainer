@@ -7,23 +7,16 @@ import { Suspense } from 'react';
 import './global.css';
 import { ChakraUIProvider, ReactQueryProvider } from '@ielts/ui';
 import { UserNavbar } from '../components/navbar';
+import { siteConfig } from '../lib/site-config';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
-
-const siteConfig = {
-  name: 'IELTSVocabs',
-  description:
-    'Master 3500+ IELTS vocabulary words with spaced repetition, adaptive quizzes, and personalized learning. Free and comprehensive IELTS preparation platform.',
-  url: 'https://ieltsvocabs.vercel.app',
-  ogImage: 'https://ieltsvocabs.vercel.app/og-image.png',
-};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
 
   title: {
     default: siteConfig.name,
-    template: `%s - IELTS Vocabs`,
+    template: `%s - ${siteConfig.displayName}`,
   },
 
   description: siteConfig.description,

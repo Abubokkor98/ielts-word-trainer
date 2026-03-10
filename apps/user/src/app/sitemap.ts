@@ -1,8 +1,7 @@
 import type { MetadataRoute } from 'next';
+import { siteConfig } from '../lib/site-config';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://ieltsvocabs.vercel.app';
-
   const routes = [
     '',
     '/vocabulary',
@@ -11,8 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/register',
     '/forgot-password',
   ].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
+    url: `${siteConfig.url}${route}`,
     changeFrequency: 'weekly' as const,
     priority:
       route === ''

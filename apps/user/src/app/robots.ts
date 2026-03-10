@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { siteConfig } from '../lib/site-config';
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -6,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://ieltsvocabs.vercel.app/sitemap.xml',
+    sitemap: `${siteConfig.url}/sitemap.xml`,
   };
 }
