@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { LandingContainer } from '../features/landing';
 
 export const metadata: Metadata = {
-  title: 'Master IELTS Vocabulary - Free Learning Platform',
+  title: { absolute: 'Master IELTS Vocabulary - Free Learning Platform' },
   description:
     'Learn 3500+ essential IELTS words completely free. Improve your band score with adaptive quizzes, spaced repetition, and personalized vocabulary tracking.',
   keywords: [

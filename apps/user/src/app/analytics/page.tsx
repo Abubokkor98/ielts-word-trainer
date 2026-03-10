@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { AnalyticsContainer } from '../../features/analytics';
 
 export const metadata: Metadata = {
-  title: 'Analytics - IELTS Vocabs',
+  title: 'Analytics',
   description:
     'Detailed breakdown of your learning performance. (Private Page)',
   robots: {

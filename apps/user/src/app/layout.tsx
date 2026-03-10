@@ -21,7 +21,10 @@ const siteConfig = {
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
 
-  title: siteConfig.name,
+  title: {
+    default: siteConfig.name,
+    template: `%s - IELTS Vocabs`,
+  },
 
   description: siteConfig.description,
 

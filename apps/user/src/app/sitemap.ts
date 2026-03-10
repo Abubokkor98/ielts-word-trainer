@@ -10,7 +10,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/login',
     '/register',
     '/forgot-password',
-    '/reset-password',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),

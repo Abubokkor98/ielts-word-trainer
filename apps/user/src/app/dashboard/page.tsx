@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { DashboardContainer } from '../../features/dashboard';
 
 export const metadata: Metadata = {
-  title: 'Dashboard - IELTS Vocabs',
+  title: 'Dashboard',
   description: 'Track your progress and daily goals. (Private Page)',
   robots: {
     index: false,

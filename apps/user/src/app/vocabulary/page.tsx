@@ -4,7 +4,9 @@ import { VocabularyContainer } from '../../features/vocabulary';
 import { VocabularyPageSkeleton } from '../../features/vocabulary/components/vocabulary-page-skeleton';
 
 export const metadata: Metadata = {
-  title: 'IELTS Vocabulary Library - 3500+ Words for Reading & Writing',
+  title: {
+    absolute: 'IELTS Vocabulary Library - 3500+ Words for Reading & Writing',
+  },
   description:
     'Browse, search, and filter the complete IELTS word bank by difficulty and exam module. Find the exact vocabulary words you need for a Band 8+.',
   keywords: [
