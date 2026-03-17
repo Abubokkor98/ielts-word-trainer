@@ -66,7 +66,7 @@ export function UserFooter() {
             <Heading as={Link} href="/" size="md" color="white" _hover={{ textDecoration: 'none' }}>
               {APP_NAME}
             </Heading>
-            <Text color="gray.400" fontSize={{ base: 'sm', md: 'md' }} lineHeight="tall" maxW={{ base: '280px', md: '420px' }} textAlign={{ base: 'center', lg: 'left' }}>
+            <Text color="gray.400" fontSize="sm" lineHeight="tall" maxW={{ base: '280px', md: '420px' }} textAlign={{ base: 'center', lg: 'left' }}>
               {APP_TAGLINE}
             </Text>
             {/* GitHub link in brand column */}
