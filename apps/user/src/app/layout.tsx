@@ -6,6 +6,7 @@ import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Suspense } from 'react';
 import './global.css';
 import { ChakraUIProvider, ReactQueryProvider } from '@ielts/ui';
+import { UserFooter } from '../components/footer';
 import { UserNavbar } from '../components/navbar';
 import { siteConfig } from '../lib/site-config';
 
@@ -105,6 +106,7 @@ export default function RootLayout({
               <main id="main-content" className="flex-1 flex flex-col">
                 <NuqsAdapter>{children}</NuqsAdapter>
               </main>
+              <UserFooter />
             </div>
           </ChakraUIProvider>
         </ReactQueryProvider>
