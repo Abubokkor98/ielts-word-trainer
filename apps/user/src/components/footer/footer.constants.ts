@@ -11,12 +11,17 @@ export const QUICK_LINKS: readonly FooterLink[] = [
 ] as const;
 
 
+export const GET_STARTED_LINKS: readonly FooterLink[] = [
+  { label: 'Create Account', href: '/register' },
+  { label: 'Sign In', href: '/login' },
+] as const;
+
 export const EXTERNAL_LINKS = {
   portfolio: 'https://abubokkor.vercel.app',
   github: 'https://github.com/Abubokkor98/ielts-word-trainer',
 } as const;
 
-export const CURRENT_YEAR = new Date().getFullYear();
+export const getCurrentYear = () => new Date().getFullYear();
 
 export const CREATOR_NAME = 'Abu Bokkor Siddik';
 export const APP_NAME = 'IELTS Vocabs';

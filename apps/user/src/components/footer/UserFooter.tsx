@@ -18,8 +18,9 @@ import {
   APP_NAME,
   APP_TAGLINE,
   CREATOR_NAME,
-  CURRENT_YEAR,
+  getCurrentYear,
   EXTERNAL_LINKS,
+  GET_STARTED_LINKS,
   QUICK_LINKS,
 } from './footer.constants';
 
@@ -56,7 +57,7 @@ function FooterLinkColumn({ title, links }: FooterLinkColumnProps) {
 export function UserFooter() {
   return (
     <Box as="footer" bg="gray.900" borderTop="1px" borderColor="gray.700" aria-label="Site footer">
-      <Container maxW="7xl" py={{ base: 10, md: 14 }}>
+      <Container maxW="7xl" pt={{ base: 8, md: 10 }} pb={6}>
         {/* Top Section: Brand + Link Columns */}
         <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={{ base: 8, md: 12 }} mb={10}>
           {/* Brand Column */}
@@ -87,48 +88,8 @@ export function UserFooter() {
           {/* Quick Links Column */}
           <FooterLinkColumn title="Quick Links" links={QUICK_LINKS} />
 
-          {/* Learning Column */}
-          <VStack align={{ base: 'center', lg: 'flex-start' }} spacing={4}>
-            <Heading
-              as="h3"
-              size="sm"
-              color="gray.200"
-              letterSpacing="wider"
-              textTransform="uppercase"
-            >
-              Get Started
-            </Heading>
-            <VStack align={{ base: 'center', lg: 'flex-start' }} spacing={2}>
-              <ChakraLink
-                as={Link}
-                href="/register"
-                color="gray.400"
-                fontSize="sm"
-                transition="all 0.2s"
-                _hover={{
-                  color: 'brand.400',
-                  textDecoration: 'none',
-                  transform: 'translateX(2px)',
-                }}
-              >
-                Create Account
-              </ChakraLink>
-              <ChakraLink
-                as={Link}
-                href="/login"
-                color="gray.400"
-                fontSize="sm"
-                transition="all 0.2s"
-                _hover={{
-                  color: 'brand.400',
-                  textDecoration: 'none',
-                  transform: 'translateX(2px)',
-                }}
-              >
-                Sign In
-              </ChakraLink>
-            </VStack>
-          </VStack>
+          {/* Get Started Column */}
+          <FooterLinkColumn title="Get Started" links={GET_STARTED_LINKS} />
         </SimpleGrid>
 
         {/* Divider */}
@@ -142,7 +103,7 @@ export function UserFooter() {
           spacing={{ base: 3, lg: 0 }}
         >
           <Text color="gray.500" fontSize="sm">
-            © {CURRENT_YEAR} {APP_NAME}. All rights reserved.
+            © {getCurrentYear()} {APP_NAME}. All rights reserved.
           </Text>
 
           <HStack spacing={1}>
@@ -156,7 +117,7 @@ export function UserFooter() {
               fontSize="sm"
               fontWeight="600"
               transition="all 0.2s"
-              _hover={{ color: 'brand.300', textDecoration: 'underline' }}
+              _hover={{ color: 'brand.300', textDecoration: 'none' }}
             >
               {CREATOR_NAME}
             </ChakraLink>
