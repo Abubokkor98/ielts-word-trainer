@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { Github } from 'lucide-react';
 import Link from 'next/link';
+import type { FooterLink } from './footer.constants';
 import {
   APP_NAME,
   APP_TAGLINE,
@@ -26,7 +27,7 @@ import {
 
 interface FooterLinkColumnProps {
   readonly title: string;
-  readonly links: readonly { label: string; href: string }[];
+  readonly links: readonly FooterLink[];
 }
 
 function FooterLinkColumn({ title, links }: FooterLinkColumnProps) {
@@ -78,7 +79,7 @@ export function UserFooter() {
               color="gray.400"
               transition="all 0.2s"
               _hover={{ color: 'brand.400', textDecoration: 'none' }}
-              aria-label="GitHub profile"
+              aria-label="GitHub repository"
             >
               <Icon as={Github} boxSize={5} />
               <Text fontSize="sm">GitHub</Text>
