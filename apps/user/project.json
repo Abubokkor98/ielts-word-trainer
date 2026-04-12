@@ -8,8 +8,7 @@
     "build": {
       "command": "next build",
       "options": {
-        "cwd": "apps/user",
-        "args": ["--webpack"]
+        "cwd": "apps/user"
       }
     },
     "test": {
