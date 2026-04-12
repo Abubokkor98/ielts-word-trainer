@@ -40,6 +40,7 @@ export function PronunciationButton({
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     onClick?.(e);
+    if (e.defaultPrevented) return;
     speak();
   };
 

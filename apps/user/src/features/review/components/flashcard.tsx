@@ -15,6 +15,7 @@ import {
 } from '@chakra-ui/react';
 import { PronunciationButton } from '@ielts/ui';
 import type { ReviewWord } from '../types';
+import type { MouseEvent } from 'react';
 
 interface FlashcardProps {
   word: ReviewWord;
@@ -35,7 +36,11 @@ const getDifficultyColor = (difficulty: string) => {
   }
 };
 
+
 export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
+  const handlePronunciationClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+  };
   return (
     <Card
       bg="gray.800"
@@ -111,7 +116,7 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                 <PronunciationButton
                   word={word.word}
                   size="md"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={handlePronunciationClick}
                 />
               </HStack>
               <VStack spacing={2}>
@@ -144,7 +149,7 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
                 <PronunciationButton
                   word={word.word}
                   size="sm"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={handlePronunciationClick}
                 />
               </HStack>
               <Divider borderColor="gray.700" />
