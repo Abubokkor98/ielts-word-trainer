@@ -6,13 +6,16 @@ import {
   CardHeader,
   Divider,
   Heading,
+  HStack,
   SimpleGrid,
   Text,
   VStack,
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
+import { PronunciationButton } from '@ielts/ui';
 import type { ReviewWord } from '../types';
+import type { MouseEvent } from 'react';
 
 interface FlashcardProps {
   word: ReviewWord;
@@ -33,7 +36,11 @@ const getDifficultyColor = (difficulty: string) => {
   }
 };
 
+
 export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
+  const handlePronunciationClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+  };
   return (
     <Card
       bg="gray.800"
@@ -102,9 +109,16 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
         <VStack spacing={8} justify="center" minH="320px" px={4}>
           {!isFlipped ? (
             <VStack spacing={6}>
-              <Heading size="3xl" textAlign="center" color="brand.400">
-                {word.word}
-              </Heading>
+              <HStack spacing={3} justify="center">
+                <Heading size="3xl" textAlign="center" color="brand.400">
+                  {word.word}
+                </Heading>
+                <PronunciationButton
+                  word={word.word}
+                  size="md"
+                  onClick={handlePronunciationClick}
+                />
+              </HStack>
               <VStack spacing={2}>
                 <Text color="gray.500" fontSize="md">
                   Click anywhere or press
@@ -128,9 +142,16 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
             </VStack>
           ) : (
             <VStack spacing={6} w="full" align="stretch">
-              <Heading size="2xl" color="brand.400" textAlign="center">
-                {word.word}
-              </Heading>
+              <HStack spacing={3} justify="center">
+                <Heading size="2xl" color="brand.400" textAlign="center">
+                  {word.word}
+                </Heading>
+                <PronunciationButton
+                  word={word.word}
+                  size="sm"
+                  onClick={handlePronunciationClick}
+                />
+              </HStack>
               <Divider borderColor="gray.700" />
               <Box>
                 <Text
