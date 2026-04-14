@@ -7,6 +7,7 @@ import srsRoutes from './modules/srs/srs.routes';
 import topicsRoutes from './modules/topics/topics.routes';
 import userProfileRoutes from './modules/users/users-profile.routes';
 import wordsRoutes from './modules/words/words.routes';
+import wordListRoutes from './modules/word-list/word-list.routes';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/topics', topicsRoutes);
 router.use('/quiz', quizRoutes);
 router.use('/admin', adminRoutes);
 router.use('/srs', srsRoutes);
+router.use('/word-lists', wordListRoutes);
 
 export default router;

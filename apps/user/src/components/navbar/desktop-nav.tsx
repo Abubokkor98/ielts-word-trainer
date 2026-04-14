@@ -17,6 +17,7 @@ export const DesktopNav = ({ isAuthenticated, dueCount }: DesktopNavProps) => {
       {isAuthenticated && (
         <>
           <NavLink href="/dashboard">Dashboard</NavLink>
+          <NavLink href="/my-lists">My Lists</NavLink>
           <NavLink href="/review">
             Review
             {dueCount > 0 && (

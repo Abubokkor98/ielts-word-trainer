@@ -3,7 +3,6 @@
 import {
   IconButton,
   Spinner,
-  Tooltip,
 } from '@chakra-ui/react';
 import { Volume2 } from 'lucide-react';
 import type { MouseEvent } from 'react';
@@ -30,12 +29,6 @@ export function PronunciationButton({
     return null;
   }
 
-  const tooltipLabel = isLoading
-    ? 'Loading voice...'
-    : isSpeaking
-    ? 'Playing...'
-    : 'Listen to pronunciation';
-
   const iconSize = size === 'md' ? 22 : 20;
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -45,24 +38,22 @@ export function PronunciationButton({
   };
 
   return (
-    <Tooltip label={tooltipLabel} placement="top">
-      <IconButton
-        aria-label="Pronounce word"
-        icon={
-          isLoading ? (
-            <Spinner size="sm" />
-          ) : (
-            <Volume2 size={iconSize} />
-          )
-        }
-        size={size}
-        colorScheme="brand"
-        variant={isSpeaking ? 'solid' : 'ghost'}
-        onClick={handleClick}
-        isDisabled={isLoading}
-        _hover={{ bg: 'brand.600' }}
-        alignSelf="center"
-      />
-    </Tooltip>
+    <IconButton
+      aria-label="Pronounce word"
+      icon={
+        isLoading ? (
+          <Spinner size="sm" />
+        ) : (
+          <Volume2 size={iconSize} />
+        )
+      }
+      size={size}
+      colorScheme="brand"
+      variant={isSpeaking ? 'solid' : 'ghost'}
+      onClick={handleClick}
+      isDisabled={isLoading}
+      _hover={{ bg: 'brand.600' }}
+      alignSelf="center"
+    />
   );
 }

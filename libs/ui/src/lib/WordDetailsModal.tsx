@@ -35,12 +35,14 @@ interface WordDetailsModalProps {
     topics?: Array<string | { _id: string; name: string }>;
     modules?: string[];
   } | null;
+  headerAction?: React.ReactNode;
 }
 
 export function WordDetailsModal({
   isOpen,
   onClose,
   word,
+  headerAction,
 }: WordDetailsModalProps) {
 
 
@@ -71,11 +73,12 @@ export function WordDetailsModal({
         >
           <VStack align="stretch" spacing={2}>
             <VStack align="start" spacing={2} w="full">
-              <HStack spacing={3} align="baseline" flexWrap="wrap">
+              <HStack spacing={3} align="center" flexWrap="wrap">
                 <Heading size="2xl" color="brand.400" lineHeight="shorter">
                   {word.word}
                 </Heading>
                 <PronunciationButton word={word.word} size="sm" />
+                {headerAction}
                 {word.partOfSpeech && (
                   <Badge
                     colorScheme="blue"
