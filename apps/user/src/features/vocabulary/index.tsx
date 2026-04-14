@@ -17,6 +17,7 @@ import { VocabularyFilters } from './components/vocabulary-filters';
 import { VocabularyList } from './components/vocabulary-list';
 import { useVocabulary } from './hooks/use-vocabulary';
 import type { Word } from './types';
+import { SaveToListButton } from '../word-list/components/save-to-list-button';
 
 const DIFFICULTY_OPTIONS = [
   'all',
@@ -137,6 +138,12 @@ export function VocabularyContainer() {
           isOpen={isOpen}
           onClose={onClose}
           word={selectedWord}
+          headerAction={
+            <SaveToListButton
+              wordId={selectedWord?._id ?? ''}
+              isAuthenticated={!!user}
+            />
+          }
         />
       </Container>
     </Box>

@@ -23,6 +23,7 @@ import {
   HelpCircle,
   Home,
   LayoutDashboard,
+  List,
   LogIn,
   LogOut,
   RotateCcw,
@@ -114,6 +115,9 @@ export const MobileNav = ({
                   onClick={onClose}
                 >
                   Dashboard
+                </MobileNavLink>
+                <MobileNavLink href="/my-lists" icon={<List size={20} />} onClick={onClose}>
+                  My Lists
                 </MobileNavLink>
                 <MobileNavLink href="/profile" icon={<User size={20} />} onClick={onClose}>
                   Profile Settings
