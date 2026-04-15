@@ -152,7 +152,7 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
   }
 
   return (
-    <Popover placement="bottom-start" isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+    <Popover placement="bottom-start" isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose} strategy="fixed">
       <PopoverTrigger>
         <Box>
           <IconButton
@@ -174,7 +174,8 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
         bg="gray.800"
         borderColor="gray.600"
         borderWidth="1px"
-        maxW="280px"
+        w={{ base: '260px', sm: '280px' }}
+        maxW="calc(100vw - 32px)"
         borderRadius="xl"
         boxShadow="0 8px 32px rgba(0,0,0,0.4)"
         onClick={(e) => e.stopPropagation()}
