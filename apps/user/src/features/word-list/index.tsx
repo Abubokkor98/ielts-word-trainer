@@ -7,6 +7,7 @@ import {
   Heading,
   HStack,
   Input,
+  SimpleGrid,
   Skeleton,
   Text,
   useDisclosure,
@@ -14,7 +15,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { WordDetailsModal } from '@ielts/ui';
-import { BookOpen, Plus } from 'lucide-react';
+import { BookOpen, FolderPlus, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ListCard } from './components/list-card';
@@ -27,8 +28,18 @@ export function WordListContainer() {
   const createList = useCreateList();
   const toast = useToast();
   const [newListName, setNewListName] = useState('');
+  const [showCreateInput, setShowCreateInput] = useState(false);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const totalWords = lists.reduce((sum, list) => sum + list.words.length, 0);
+
+  const handleCreateBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setShowCreateInput(false);
+      setNewListName('');
+    }
+  };
 
   const handleViewDetails = (word: Word) => {
     setSelectedWord(word);
@@ -42,6 +53,7 @@ export function WordListContainer() {
     try {
       await createList.mutateAsync(trimmedName);
       setNewListName('');
+      setShowCreateInput(false);
       toast({
         title: `"${trimmedName}" created`,
         status: 'success',
@@ -62,86 +74,140 @@ export function WordListContainer() {
     if (e.key === 'Enter') {
       handleCreateList();
     }
+    if (e.key === 'Escape') {
+      setShowCreateInput(false);
+      setNewListName('');
+    }
   };
 
   if (isLoading) {
     return (
-      <Container maxW="6xl" py={8}>
-        <VStack spacing={6} align="stretch">
-          <Skeleton height="40px" width="200px" />
-          <Skeleton height="200px" borderRadius="lg" />
-          <Skeleton height="200px" borderRadius="lg" />
-        </VStack>
-      </Container>
+      <Box bg="gray.900" minH="80vh" py={10}>
+        <Container maxW="6xl">
+          <VStack spacing={6} align="stretch">
+            <HStack justify="space-between">
+              <Skeleton height="32px" width="160px" />
+              <Skeleton height="32px" width="100px" />
+            </HStack>
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} height="200px" borderRadius="xl" />
+              ))}
+            </SimpleGrid>
+          </VStack>
+        </Container>
+      </Box>
     );
   }
 
   return (
-    <Container maxW="6xl" py={8}>
-      <VStack spacing={6} align="stretch">
-        {/* Page Header */}
-        <HStack justify="space-between" flexWrap="wrap" gap={4}>
-          <Heading size="lg" color="white">
-            My Lists
-          </Heading>
-          <HStack>
-            <Input
-              size="sm"
-              placeholder="New list name..."
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              onKeyDown={handleKeyDown}
-              bg="gray.800"
-              borderColor="gray.600"
-              _focus={{ borderColor: 'brand.400' }}
-              maxW="220px"
-            />
-            <Button
-              size="sm"
-              colorScheme="brand"
-              leftIcon={<Plus size={16} />}
-              isDisabled={!newListName.trim() || createList.isPending}
-              isLoading={createList.isPending}
-              onClick={handleCreateList}
-            >
-              Create
-            </Button>
-          </HStack>
-        </HStack>
-
-        {/* Lists */}
-        {lists.length === 0 ? (
-          <Box textAlign="center" py={16}>
-            <VStack spacing={4}>
-              <Box color="gray.500">
-                <BookOpen size={48} />
-              </Box>
-              <Heading size="md" color="gray.400">
-                No lists yet
+    <Box bg="gray.900" minH="80vh" py={10}>
+      <Container maxW="6xl">
+        <VStack spacing={8} align="stretch">
+          {/* Header */}
+          <Box>
+            <HStack justify="space-between" mb={1}>
+              <Heading size="lg" color="white">
+                My Lists
               </Heading>
-              <Text color="gray.500" maxW="md">
-                Create your first vocabulary list above, then save words from the
-                Vocabulary page.
-              </Text>
-              <Button
-                as={Link}
-                href="/vocabulary"
-                colorScheme="brand"
-                variant="outline"
-                size="sm"
-              >
-                Browse Vocabulary
-              </Button>
-            </VStack>
+
+              {showCreateInput ? (
+                <HStack spacing={2} onBlur={handleCreateBlur}>
+                  <Input
+                    size="sm"
+                    placeholder="List name..."
+                    value={newListName}
+                    onChange={(e) => setNewListName(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    bg="gray.800"
+                    borderColor="gray.600"
+                    borderRadius="lg"
+                    _focus={{
+                      borderColor: 'brand.400',
+                      boxShadow: '0 0 0 1px var(--chakra-colors-brand-400)',
+                    }}
+                    maxW="180px"
+                    autoFocus
+                  />
+                  <Button
+                    size="sm"
+                    colorScheme="brand"
+                    borderRadius="lg"
+                    leftIcon={<Plus size={15} />}
+                    isDisabled={!newListName.trim() || createList.isPending}
+                    isLoading={createList.isPending}
+                    onClick={handleCreateList}
+                  >
+                    Create
+                  </Button>
+                </HStack>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  color="gray.400"
+                  leftIcon={<FolderPlus size={15} />}
+                  _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+                  onClick={() => setShowCreateInput(true)}
+                >
+                  New List
+                </Button>
+              )}
+            </HStack>
+            <Text fontSize="sm" color="gray.500">
+              {lists.length} {lists.length === 1 ? 'list' : 'lists'} · {totalWords}{' '}
+              {totalWords === 1 ? 'word' : 'words'}
+            </Text>
           </Box>
-        ) : (
-          <VStack spacing={4} align="stretch">
-            {lists.map((list) => (
-              <ListCard key={list._id} list={list} onViewDetails={handleViewDetails} />
-            ))}
-          </VStack>
-        )}
-      </VStack>
+
+          {/* Grid */}
+          {lists.length === 0 ? (
+            <VStack py={16} spacing={4}>
+              <Box color="gray.600">
+                <BookOpen size={36} />
+              </Box>
+              <VStack spacing={1}>
+                <Text color="gray.400" fontWeight="500">
+                  No lists yet
+                </Text>
+                <Text color="gray.600" fontSize="sm">
+                  Create a list and save words from Vocabulary.
+                </Text>
+              </VStack>
+              <HStack spacing={3} pt={2}>
+                <Button
+                  size="sm"
+                  colorScheme="brand"
+                  borderRadius="lg"
+                  onClick={() => setShowCreateInput(true)}
+                >
+                  Create List
+                </Button>
+                <Button
+                  as={Link}
+                  href="/vocabulary"
+                  size="sm"
+                  variant="ghost"
+                  color="gray.400"
+                  _hover={{ color: 'white' }}
+                >
+                  Browse Words
+                </Button>
+              </HStack>
+            </VStack>
+          ) : (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+              {lists.map((list) => (
+                <ListCard
+                  key={list._id}
+                  list={list}
+                  onViewDetails={handleViewDetails}
+                />
+              ))}
+            </SimpleGrid>
+          )}
+        </VStack>
+      </Container>
 
       <WordDetailsModal
         isOpen={isOpen}
@@ -154,6 +220,6 @@ export function WordListContainer() {
           />
         }
       />
-    </Container>
+    </Box>
   );
 }

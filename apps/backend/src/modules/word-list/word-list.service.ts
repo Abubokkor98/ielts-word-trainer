@@ -10,7 +10,7 @@ export class WordListService {
   static async getUserLists(userId: string) {
     return WordList.find({ user: userId })
       .populate(WORDS_POPULATE)
-      .sort({ updatedAt: -1 });
+      .sort({ createdAt: 1 });
   }
 
   static async createList(userId: string, name: string) {

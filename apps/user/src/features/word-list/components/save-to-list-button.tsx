@@ -8,25 +8,22 @@ import {
   Popover,
   PopoverBody,
   PopoverContent,
-  PopoverHeader,
   PopoverTrigger,
   Text,
   useDisclosure,
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { Bookmark, BookmarkCheck, Check, Plus } from 'lucide-react';
+import { Bookmark, BookmarkCheck, Check, FolderPlus } from 'lucide-react';
 import type { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useAddWord, useCreateList, useWordLists } from '../hooks/use-word-lists';
 
 function getErrorMessage(error: unknown, fallback: string): string {
-  // Axios error in dev mode
   const axiosError = error as AxiosError<{ message?: string }>;
   if (axiosError?.response?.data?.message) {
     return axiosError.response.data.message;
   }
-  // Production mode (interceptor wraps as Error)
   if (error instanceof Error) {
     return error.message;
   }
@@ -43,9 +40,10 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
   const createList = useCreateList();
   const addWord = useAddWord();
   const toast = useToast();
-  const { onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const [newListName, setNewListName] = useState('');
+  const [showCreateInput, setShowCreateInput] = useState(false);
 
   const isBookmarked = lists.some((list) =>
     list.words.some((w) => w._id === wordId),
@@ -66,6 +64,7 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
         duration: 2000,
         isClosable: true,
       });
+      onClose();
     } catch (error: unknown) {
       toast({
         title: getErrorMessage(error, 'Failed to save word'),
@@ -84,6 +83,7 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
       const newList = await createList.mutateAsync(trimmedName);
       await addWord.mutateAsync({ listId: newList._id, wordId });
       setNewListName('');
+      setShowCreateInput(false);
       onClose();
       toast({
         title: `Created "${trimmedName}" and saved word`,
@@ -104,6 +104,10 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleCreateAndAdd();
+    }
+    if (e.key === 'Escape') {
+      setShowCreateInput(false);
+      setNewListName('');
     }
   };
 
@@ -133,7 +137,7 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
   }
 
   return (
-    <Popover placement="bottom-start" isLazy>
+    <Popover placement="bottom-start" isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
       <PopoverTrigger>
         <Box>
           <IconButton
@@ -154,67 +158,137 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
       <PopoverContent
         bg="gray.800"
         borderColor="gray.600"
-        maxW="250px"
+        borderWidth="1px"
+        maxW="280px"
+        borderRadius="xl"
+        boxShadow="0 8px 32px rgba(0,0,0,0.4)"
         onClick={(e) => e.stopPropagation()}
+        _focus={{ outline: 'none' }}
       >
-        <PopoverHeader borderColor="gray.700" fontSize="sm" fontWeight="600">
-          Save to list
-        </PopoverHeader>
-        <PopoverBody p={2}>
-          <VStack spacing={1} align="stretch" maxH="200px" overflowY="auto">
-            {lists.length === 0 && (
-              <Text fontSize="sm" color="gray.500" px={2} py={1}>
-                No lists yet. Create one below.
+        <PopoverBody p={0}>
+          {/* Header */}
+          <HStack
+            px={4}
+            py={3}
+            borderBottomWidth="1px"
+            borderColor="gray.700"
+            justify="space-between"
+          >
+            <Text fontSize="sm" fontWeight="700" color="gray.200" letterSpacing="wide">
+              Save to list
+            </Text>
+            <Box
+              as="button"
+              onClick={() => setShowCreateInput(!showCreateInput)}
+              color="brand.400"
+              _hover={{ color: 'brand.300' }}
+              transition="color 0.15s"
+              cursor="pointer"
+              display="flex"
+              alignItems="center"
+              gap={1}
+            >
+              <FolderPlus size={15} />
+              <Text fontSize="xs" fontWeight="600">
+                New
               </Text>
+            </Box>
+          </HStack>
+
+          {/* List Items */}
+          <VStack spacing={0} align="stretch" maxH="220px" overflowY="auto" py={1}>
+            {lists.length === 0 && !showCreateInput && (
+              <Box px={4} py={6} textAlign="center">
+                <Text fontSize="sm" color="gray.500">
+                  No lists yet
+                </Text>
+                <Text fontSize="xs" color="gray.600" mt={1}>
+                  Tap &quot;New&quot; to create your first list
+                </Text>
+              </Box>
             )}
             {lists.map((list) => {
               const isInList = listsContainingWord.has(list._id);
               return (
                 <HStack
                   key={list._id}
-                  px={2}
-                  py={1.5}
-                  rounded="md"
-                  cursor={isInList ? 'default' : 'pointer'}
-                  _hover={{ bg: isInList ? 'transparent' : 'gray.700' }}
-                  opacity={isInList ? 0.6 : 1}
+                  px={4}
+                  py={2.5}
+                  cursor="pointer"
+                  _hover={{ bg: 'whiteAlpha.100' }}
                   onClick={() => {
-                    if (!isInList && !isLoading) {
+                    if (!isLoading) {
                       handleAddToList(list._id, list.name);
                     }
                   }}
                   justify="space-between"
+                  transition="background 0.15s"
                 >
-                  <Text fontSize="sm" noOfLines={1}>
-                    {list.name}
-                  </Text>
-                  {isInList && <Check size={14} color="var(--chakra-colors-green-400)" />}
+                  <HStack spacing={3} flex={1} minW={0}>
+                    <Box
+                      w="8px"
+                      h="8px"
+                      borderRadius="full"
+                      bg={isInList ? 'brand.400' : 'gray.600'}
+                      flexShrink={0}
+                      transition="background 0.2s"
+                    />
+                    <Text
+                      fontSize="sm"
+                      noOfLines={1}
+                      color={isInList ? 'white' : 'gray.300'}
+                      fontWeight={isInList ? '600' : '400'}
+                    >
+                      {list.name}
+                    </Text>
+                  </HStack>
+                  {isInList && (
+                    <Check
+                      size={15}
+                      color="var(--chakra-colors-brand-400)"
+                      strokeWidth={3}
+                    />
+                  )}
                 </HStack>
               );
             })}
           </VStack>
 
-          <HStack mt={2} pt={2} borderTopWidth="1px" borderColor="gray.700">
-            <Input
-              size="sm"
-              placeholder="New list name..."
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              onKeyDown={handleKeyDown}
-              bg="gray.900"
-              borderColor="gray.600"
-              _focus={{ borderColor: 'brand.400' }}
-            />
-            <IconButton
-              aria-label="Create list"
-              icon={<Plus size={16} />}
-              size="sm"
-              colorScheme="brand"
-              isDisabled={!newListName.trim() || isLoading}
-              isLoading={isLoading}
-              onClick={handleCreateAndAdd}
-            />
-          </HStack>
+          {/* Create New List */}
+          {showCreateInput && (
+            <Box
+              px={3}
+              py={3}
+              borderTopWidth="1px"
+              borderColor="gray.700"
+            >
+              <HStack spacing={2}>
+                <Input
+                  size="sm"
+                  placeholder="List name"
+                  value={newListName}
+                  onChange={(e) => setNewListName(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  bg="gray.900"
+                  borderColor="gray.600"
+                  borderRadius="lg"
+                  _focus={{ borderColor: 'brand.400', boxShadow: '0 0 0 1px var(--chakra-colors-brand-400)' }}
+                  _placeholder={{ color: 'gray.500' }}
+                  autoFocus
+                />
+                <IconButton
+                  aria-label="Create list"
+                  icon={<FolderPlus size={16} />}
+                  size="sm"
+                  colorScheme="brand"
+                  borderRadius="lg"
+                  isDisabled={!newListName.trim() || isLoading}
+                  isLoading={isLoading}
+                  onClick={handleCreateAndAdd}
+                />
+              </HStack>
+            </Box>
+          )}
         </PopoverBody>
       </PopoverContent>
     </Popover>

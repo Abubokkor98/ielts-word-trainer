@@ -1,34 +1,45 @@
 import { Box, Heading, SimpleGrid, Text } from '@chakra-ui/react';
-
-export function FeaturesSection() {
-  return (
-    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} py={8}>
-      <FeatureCard
-        icon="📚"
-        title="3500+ Words"
-        description="Comprehensive IELTS vocabulary database with meanings, examples, and usage"
-      />
-      <FeatureCard
-        icon="🎯"
-        title="Adaptive Quizzes"
-        description="Smart quizzes that adapt to your level and track your progress"
-      />
-      <FeatureCard
-        icon="📊"
-        title="Analytics"
-        description="Detailed performance tracking and insights to improve faster"
-      />
-    </SimpleGrid>
-  );
-}
+import { BookOpen, BrainCircuit, BarChart3 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 interface FeatureCardProps {
-  icon: string;
+  icon: LucideIcon;
   title: string;
   description: string;
 }
 
-function FeatureCard({ icon, title, description }: FeatureCardProps) {
+const FEATURES: FeatureCardProps[] = [
+  {
+    icon: BookOpen,
+    title: '3500+ Words',
+    description:
+      'Comprehensive IELTS vocabulary database with meanings, examples, and usage',
+  },
+  {
+    icon: BrainCircuit,
+    title: 'Adaptive Quizzes',
+    description:
+      'Smart quizzes that adapt to your level and track your progress',
+  },
+  {
+    icon: BarChart3,
+    title: 'Analytics',
+    description:
+      'Detailed performance tracking and insights to improve faster',
+  },
+];
+
+export function FeaturesSection() {
+  return (
+    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} py={8}>
+      {FEATURES.map((feature) => (
+        <FeatureCard key={feature.title} {...feature} />
+      ))}
+    </SimpleGrid>
+  );
+}
+
+function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
   return (
     <Box
       bg="gray.800"
@@ -46,9 +57,16 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
         boxShadow: '0 10px 30px rgba(30, 136, 229, 0.3)',
       }}
     >
-      <Text fontSize="4xl" mb={4}>
-        {icon}
-      </Text>
+      <Box
+        display="inline-flex"
+        p={3}
+        mb={4}
+        borderRadius="xl"
+        bg="whiteAlpha.100"
+        color="brand.400"
+      >
+        <Icon size={28} strokeWidth={1.5} />
+      </Box>
       <Heading size="md" color="white" mb={3}>
         {title}
       </Heading>
