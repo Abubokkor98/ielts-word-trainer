@@ -70,45 +70,31 @@ export class WordListService {
   }
 
   static async addWord(userId: string, listId: string, wordId: string) {
-    const session = await WordList.startSession();
+    // Verify target list exists before modifying anything
+    const targetExists = await WordList.findOne({ _id: listId, user: userId });
 
-    try {
-      let updatedList: Awaited<ReturnType<typeof WordList.findOneAndUpdate>> | null = null;
-
-      await session.withTransaction(async () => {
-        // Verify target list exists before modifying anything
-        const targetExists = await WordList.findOne({
-          _id: listId,
-          user: userId,
-        }).session(session);
-
-        if (!targetExists) {
-          throw new AppError('List not found', 404);
-        }
-
-        // Remove from any other list (one word = one list)
-        await WordList.updateMany(
-          { user: userId, _id: { $ne: listId }, words: wordId },
-          { $pull: { words: wordId } },
-          { session },
-        );
-
-        // Add to target list
-        updatedList = await WordList.findOneAndUpdate(
-          { _id: listId, user: userId },
-          { $addToSet: { words: wordId } },
-          { new: true, session },
-        ).populate(WORDS_POPULATE);
-      });
-
-      if (!updatedList) {
-        throw new AppError('List not found', 404);
-      }
-
-      return updatedList;
-    } finally {
-      await session.endSession();
+    if (!targetExists) {
+      throw new AppError('List not found', 404);
     }
+
+    // Remove from any other list (one word = one list)
+    await WordList.updateMany(
+      { user: userId, _id: { $ne: listId }, words: wordId },
+      { $pull: { words: wordId } },
+    );
+
+    // Add to target list
+    const list = await WordList.findOneAndUpdate(
+      { _id: listId, user: userId },
+      { $addToSet: { words: wordId } },
+      { new: true },
+    ).populate(WORDS_POPULATE);
+
+    if (!list) {
+      throw new AppError('List not found', 404);
+    }
+
+    return list;
   }
 
   static async removeWord(userId: string, listId: string, wordId: string) {
