@@ -76,6 +76,23 @@ Each vocabulary entry includes:
 - Part of speech
 - Audio pronunciation (UK English)
 
+#### Personal Word Lists
+
+Organize your vocabulary with custom lists:
+
+- **Create Custom Lists**: Group words by theme, difficulty, or any category you prefer (e.g., "Writing Words", "Hard Words", "Topic: Environment")
+- **Bookmark Any Word**: Save words directly from the vocabulary library with one click
+- **One Word, One List**: Each word belongs to a single list. Saving a word to a different list automatically moves it, keeping your collections clean
+- **Manage Your Lists**: Rename or delete lists from the dedicated "My Lists" page
+- **Quick Access**: View all your saved words organized by list, with word details available on tap
+
+**How to Use:**
+
+1. Browse the vocabulary library and find a word you want to save
+2. Click the bookmark icon on any word card or in the word details modal
+3. Select an existing list or create a new one
+4. Access all your lists from the "My Lists" page in the navigation
+
 #### Spaced Repetition System (SRS)
 
 Our SRS feature uses a scientifically-proven algorithm to optimize your learning retention:
@@ -606,6 +623,7 @@ ielts-vocabs-app/
 │   │   │   │   ├── topics/       # Topic management
 │   │   │   │   ├── srs/          # Spaced repetition system
 │   │   │   │   ├── quiz/         # Quiz generation & attempts
+│   │   │   │   ├── word-list/    # Personal word lists & bookmarks
 │   │   │   │   └── admin/        # Admin-specific features
 │   │   │   ├── core/             # Middleware, errors, services
 │   │   │   ├── shared/           # Shared types & constants
@@ -625,6 +643,7 @@ ielts-vocabs-app/
 │   │   │   │   ├── review/       # SRS review session
 │   │   │   │   ├── quiz/         # Quiz interface
 │   │   │   │   ├── analytics/    # User analytics
+│   │   │   │   ├── word-list/    # Personal word lists
 │   │   │   │   └── profile/      # User profile
 │   │   │   ├── components/       # Shared components
 │   │   │   ├── hooks/            # Custom React hooks
