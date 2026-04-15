@@ -105,6 +105,8 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
         isClosable: true,
       });
     } catch (error: unknown) {
+      setNewListName('');
+      setShowCreateInput(false);
       toast({
         title: getErrorMessage(error, `List created but failed to save word`),
         status: 'warning',
@@ -228,9 +230,19 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
                   px={4}
                   py={2.5}
                   cursor="pointer"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Save to ${list.name}`}
                   _hover={{ bg: 'whiteAlpha.100' }}
+                  _focusVisible={{ bg: 'whiteAlpha.100', outline: 'none' }}
                   onClick={() => {
                     if (!isLoading) {
+                      handleAddToList(list._id, list.name);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if ((e.key === 'Enter' || e.key === ' ') && !isLoading) {
+                      e.preventDefault();
                       handleAddToList(list._id, list.name);
                     }
                   }}
