@@ -18,7 +18,7 @@ import { Bookmark, BookmarkCheck, Check, FolderPlus } from 'lucide-react';
 import type { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAddWord, useWordLists } from '../hooks/use-word-lists';
+import { useAddWord, useWordLists, WORD_LISTS_QUERY_KEY } from '../hooks/use-word-lists';
 import { wordListApi } from '../services/word-list.api';
 
 function getErrorMessage(error: unknown, fallback: string): string {
@@ -37,7 +37,6 @@ interface SaveToListButtonProps {
   isAuthenticated?: boolean;
 }
 
-const WORD_LISTS_QUERY_KEY = ['word-lists'] as const;
 
 export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToListButtonProps) {
   const { data: lists = [] } = useWordLists(isAuthenticated);
@@ -109,7 +108,7 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
       // Invalidate in case createList succeeded but addWord failed
       await queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
       toast({
-        title: getErrorMessage(error, 'Failed to create list'),
+        title: getErrorMessage(error, 'Something went wrong'),
         status: 'warning',
         duration: 3000,
         isClosable: true,
