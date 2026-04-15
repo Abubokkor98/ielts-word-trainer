@@ -80,26 +80,6 @@ export function WordListContainer() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <Box bg="gray.900" minH="80vh" py={10}>
-        <Container maxW="6xl">
-          <VStack spacing={6} align="stretch">
-            <HStack justify="space-between">
-              <Skeleton height="32px" width="160px" />
-              <Skeleton height="32px" width="100px" />
-            </HStack>
-            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} height="200px" borderRadius="xl" />
-              ))}
-            </SimpleGrid>
-          </VStack>
-        </Container>
-      </Box>
-    );
-  }
-
   return (
     <Box bg="gray.900" minH="80vh" py={10}>
       <Container maxW="6xl">
@@ -154,14 +134,22 @@ export function WordListContainer() {
                 </Button>
               )}
             </HStack>
-            <Text fontSize="sm" color="gray.500">
-              {lists.length} {lists.length === 1 ? 'list' : 'lists'} · {totalWords}{' '}
-              {totalWords === 1 ? 'word' : 'words'}
-            </Text>
+            {!isLoading && (
+              <Text fontSize="sm" color="gray.500">
+                {lists.length} {lists.length === 1 ? 'list' : 'lists'} · {totalWords}{' '}
+                {totalWords === 1 ? 'word' : 'words'}
+              </Text>
+            )}
           </Box>
 
-          {/* Grid */}
-          {lists.length === 0 ? (
+          {/* List Content */}
+          {isLoading ? (
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={4}>
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} height="200px" borderRadius="xl" />
+              ))}
+            </SimpleGrid>
+          ) : lists.length === 0 ? (
             <VStack py={16} spacing={4}>
               <Box color="gray.600">
                 <BookOpen size={36} />

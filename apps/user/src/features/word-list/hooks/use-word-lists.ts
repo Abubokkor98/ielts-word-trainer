@@ -3,11 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { wordListApi } from '../services/word-list.api';
 
-const QUERY_KEY = ['word-lists'] as const;
+export const WORD_LISTS_QUERY_KEY = ['word-lists'] as const;
 
 export function useWordLists(enabled = true) {
   return useQuery({
-    queryKey: QUERY_KEY,
+    queryKey: WORD_LISTS_QUERY_KEY,
     queryFn: wordListApi.getLists,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
@@ -21,7 +21,7 @@ export function useCreateList() {
   return useMutation({
     mutationFn: (name: string) => wordListApi.createList(name),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
     },
   });
 }
@@ -33,7 +33,7 @@ export function useRenameList() {
     mutationFn: ({ listId, name }: { listId: string; name: string }) =>
       wordListApi.renameList(listId, name),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
     },
   });
 }
@@ -44,7 +44,7 @@ export function useDeleteList() {
   return useMutation({
     mutationFn: (listId: string) => wordListApi.deleteList(listId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
     },
   });
 }
@@ -56,7 +56,7 @@ export function useAddWord() {
     mutationFn: ({ listId, wordId }: { listId: string; wordId: string }) =>
       wordListApi.addWord(listId, wordId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
     },
   });
 }
@@ -68,7 +68,7 @@ export function useRemoveWord() {
     mutationFn: ({ listId, wordId }: { listId: string; wordId: string }) =>
       wordListApi.removeWord(listId, wordId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
     },
   });
 }

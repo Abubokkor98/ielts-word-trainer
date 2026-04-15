@@ -17,8 +17,9 @@ import {
 import { Bookmark, BookmarkCheck, Check, FolderPlus } from 'lucide-react';
 import type { AxiosError } from 'axios';
 import { useState } from 'react';
-import { useAddWord, useCreateList, useWordLists } from '../hooks/use-word-lists';
-import type { WordList } from '../types';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAddWord, useWordLists, WORD_LISTS_QUERY_KEY } from '../hooks/use-word-lists';
+import { wordListApi } from '../services/word-list.api';
 
 function getErrorMessage(error: unknown, fallback: string): string {
   const axiosError = error as AxiosError<{ message?: string }>;
@@ -36,9 +37,10 @@ interface SaveToListButtonProps {
   isAuthenticated?: boolean;
 }
 
+
 export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToListButtonProps) {
   const { data: lists = [] } = useWordLists(isAuthenticated);
-  const createList = useCreateList();
+  const queryClient = useQueryClient();
   const addWord = useAddWord();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -76,25 +78,21 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
     }
   };
 
+  const [isCreating, setIsCreating] = useState(false);
+
   const handleCreateAndAdd = async () => {
     const trimmedName = newListName.trim();
     if (!trimmedName) return;
 
-    let newList: WordList;
+    setIsCreating(true);
     try {
-      newList = await createList.mutateAsync(trimmedName);
-    } catch (error: unknown) {
-      toast({
-        title: getErrorMessage(error, 'Failed to create list'),
-        status: 'warning',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
+      // Use raw API to avoid auto-invalidation showing list before word is added
+      const newList = await wordListApi.createList(trimmedName);
+      await wordListApi.addWord(newList._id, wordId);
 
-    try {
-      await addWord.mutateAsync({ listId: newList._id, wordId });
+      // Single cache invalidation after both operations complete
+      await queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
+
       setNewListName('');
       setShowCreateInput(false);
       onClose();
@@ -107,12 +105,16 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
     } catch (error: unknown) {
       setNewListName('');
       setShowCreateInput(false);
+      // Invalidate in case createList succeeded but addWord failed
+      await queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
       toast({
-        title: getErrorMessage(error, `List created but failed to save word`),
+        title: getErrorMessage(error, 'Something went wrong'),
         status: 'warning',
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -126,7 +128,7 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
     }
   };
 
-  const isLoading = createList.isPending || addWord.isPending;
+  const isLoading = isCreating || addWord.isPending;
 
   if (!isAuthenticated) {
     return (
