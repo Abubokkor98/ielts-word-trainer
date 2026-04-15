@@ -28,7 +28,7 @@ export function ActionCard({ href, title, description, icon: Icon }: ActionCardP
             bg="whiteAlpha.100"
             color="brand.400"
           >
-            <Icon size={28} strokeWidth={1.5} />
+            <Icon size={28} strokeWidth={1.5} aria-hidden="true" focusable={false} />
           </Box>
           <Heading size="md" color="brand.400">
             {title}

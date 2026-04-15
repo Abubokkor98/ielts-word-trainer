@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import {
   createRateLimiter,
-  moderateRateLimit,
 } from '../../core/middleware/rate-limit.middleware';
 import { authenticate } from '../auth/auth.middleware';
 import { WordListController } from './word-list.controller';
@@ -11,8 +10,14 @@ const router = Router();
 // All routes require authentication
 router.use(authenticate);
 
-// Read endpoints
-router.get('/', moderateRateLimit, WordListController.getAll);
+// Read endpoints with user-aware rate limiting (30 reads per min)
+const readRateLimit = createRateLimiter(
+  60 * 1000,
+  30,
+  'Too many requests, please try again shortly',
+);
+
+router.get('/', readRateLimit, WordListController.getAll);
 
 // Write endpoints with rate limiting (60 writes per 10 min)
 const writeRateLimit = createRateLimiter(

@@ -65,7 +65,7 @@ function FeatureCard({ icon: Icon, title, description }: FeatureCardProps) {
         bg="whiteAlpha.100"
         color="brand.400"
       >
-        <Icon size={28} strokeWidth={1.5} />
+        <Icon size={28} strokeWidth={1.5} aria-hidden="true" focusable={false} />
       </Box>
       <Heading size="md" color="white" mb={3}>
         {title}
