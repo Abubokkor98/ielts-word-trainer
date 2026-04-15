@@ -18,6 +18,7 @@ import { Bookmark, BookmarkCheck, Check, FolderPlus } from 'lucide-react';
 import type { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useAddWord, useCreateList, useWordLists } from '../hooks/use-word-lists';
+import type { WordList } from '../types';
 
 function getErrorMessage(error: unknown, fallback: string): string {
   const axiosError = error as AxiosError<{ message?: string }>;
@@ -36,7 +37,7 @@ interface SaveToListButtonProps {
 }
 
 export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToListButtonProps) {
-  const { data: lists = [] } = useWordLists();
+  const { data: lists = [] } = useWordLists(isAuthenticated);
   const createList = useCreateList();
   const addWord = useAddWord();
   const toast = useToast();
@@ -79,8 +80,20 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
     const trimmedName = newListName.trim();
     if (!trimmedName) return;
 
+    let newList: WordList;
     try {
-      const newList = await createList.mutateAsync(trimmedName);
+      newList = await createList.mutateAsync(trimmedName);
+    } catch (error: unknown) {
+      toast({
+        title: getErrorMessage(error, 'Failed to create list'),
+        status: 'warning',
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    try {
       await addWord.mutateAsync({ listId: newList._id, wordId });
       setNewListName('');
       setShowCreateInput(false);
@@ -93,7 +106,7 @@ export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToList
       });
     } catch (error: unknown) {
       toast({
-        title: getErrorMessage(error, 'Failed to create list'),
+        title: getErrorMessage(error, `List created but failed to save word`),
         status: 'warning',
         duration: 3000,
         isClosable: true,

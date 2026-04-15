@@ -5,12 +5,13 @@ import { wordListApi } from '../services/word-list.api';
 
 const QUERY_KEY = ['word-lists'] as const;
 
-export function useWordLists() {
+export function useWordLists(enabled = true) {
   return useQuery({
     queryKey: QUERY_KEY,
     queryFn: wordListApi.getLists,
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
+    enabled,
   });
 }
 

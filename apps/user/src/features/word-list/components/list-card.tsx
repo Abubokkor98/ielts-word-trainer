@@ -1,7 +1,14 @@
 'use client';
 
 import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
   Box,
+  Button,
   Collapse,
   Heading,
   HStack,
@@ -40,6 +47,8 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
   const removeWord = useRemoveWord();
   const toast = useToast();
   const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: true });
+  const { isOpen: isDeleteOpen, onOpen: onDeleteOpen, onClose: onDeleteClose } = useDisclosure();
+  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(list.name);
@@ -93,6 +102,7 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
   const handleDelete = async () => {
     try {
       await deleteList.mutateAsync(list._id);
+      onDeleteClose();
       toast({
         title: `"${list.name}" deleted`,
         status: 'info',
@@ -124,7 +134,8 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
   };
 
   return (
-    <Box>
+    <>
+      <Box>
       {/* Section Header */}
       <HStack
         justify="space-between"
@@ -204,7 +215,7 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
               icon={<Trash2 size={13} />}
               onClick={(e) => {
                 e.stopPropagation();
-                handleDelete();
+                onDeleteOpen();
               }}
               bg="gray.800"
               _hover={{ bg: 'whiteAlpha.100' }}
@@ -262,6 +273,7 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
                       h="20px"
                       opacity={0}
                       _groupHover={{ opacity: 1 }}
+                      _focusVisible={{ opacity: 1 }}
                       _hover={{ color: 'red.400', bg: 'whiteAlpha.200' }}
                       borderRadius="full"
                       transition="all 0.15s"
@@ -275,5 +287,38 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
         </Box>
       </Collapse>
     </Box>
+
+      {/* Delete Confirmation */}
+      <AlertDialog
+        isOpen={isDeleteOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onDeleteClose}
+        isCentered
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent bg="gray.800" borderColor="gray.700" borderWidth="1px">
+            <AlertDialogHeader fontSize="lg" fontWeight="600" color="white">
+              Delete List
+            </AlertDialogHeader>
+            <AlertDialogBody color="gray.300">
+              Are you sure you want to delete &quot;{list.name}&quot;? This will remove all saved words from this list.
+            </AlertDialogBody>
+            <AlertDialogFooter gap={3}>
+              <Button ref={cancelRef} onClick={onDeleteClose} variant="ghost" size="sm">
+                Cancel
+              </Button>
+              <Button
+                colorScheme="red"
+                onClick={handleDelete}
+                size="sm"
+                isLoading={deleteList.isPending}
+              >
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </>
   );
 }
