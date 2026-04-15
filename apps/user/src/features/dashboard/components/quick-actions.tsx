@@ -1,4 +1,5 @@
 import { SimpleGrid } from '@chakra-ui/react';
+import { BookOpen, BrainCircuit, BarChart3 } from 'lucide-react';
 import { ActionCard } from './action-card';
 
 export function QuickActions() {
@@ -8,19 +9,19 @@ export function QuickActions() {
         href="/vocabulary"
         title="Browse Vocabulary"
         description="Explore 3500+ IELTS words"
-        emoji="📚"
+        icon={BookOpen}
       />
       <ActionCard
         href="/quiz"
         title="Take a Quiz"
         description="Test your knowledge now"
-        emoji="🎯"
+        icon={BrainCircuit}
       />
       <ActionCard
         href="/analytics"
         title="View Analytics"
         description="Check your progress"
-        emoji="📊"
+        icon={BarChart3}
       />
     </SimpleGrid>
   );

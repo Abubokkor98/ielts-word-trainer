@@ -1,15 +1,16 @@
-import { Heading, Text } from '@chakra-ui/react';
+import { Box, Heading, Text } from '@chakra-ui/react';
 import { Card, CardContent, CardHeader } from '@ielts/ui';
+import type { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 
 interface ActionCardProps {
   href: string;
   title: string;
   description: string;
-  emoji: string;
+  icon: LucideIcon;
 }
 
-export function ActionCard({ href, title, description, emoji }: ActionCardProps) {
+export function ActionCard({ href, title, description, icon: Icon }: ActionCardProps) {
   return (
     <Link href={href} style={{ textDecoration: 'none' }} aria-label={`${title}: ${description}`}>
       <Card
@@ -19,9 +20,16 @@ export function ActionCard({ href, title, description, emoji }: ActionCardProps)
         tabIndex={0}
       >
         <CardHeader>
-          <Text fontSize="3xl" mb={2} aria-hidden="true">
-            {emoji}
-          </Text>
+          <Box
+            display="inline-flex"
+            p={3}
+            mb={2}
+            borderRadius="xl"
+            bg="whiteAlpha.100"
+            color="brand.400"
+          >
+            <Icon size={28} strokeWidth={1.5} />
+          </Box>
           <Heading size="md" color="brand.400">
             {title}
           </Heading>

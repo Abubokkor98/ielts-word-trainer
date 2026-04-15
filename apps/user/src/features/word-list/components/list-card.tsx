@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  Badge,
   Box,
+  Collapse,
   Heading,
   HStack,
   IconButton,
@@ -11,12 +11,13 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  SimpleGrid,
   Text,
+  useDisclosure,
   useToast,
-  VStack,
+  Wrap,
+  WrapItem,
 } from '@chakra-ui/react';
-import { MoreVertical, Pencil, Trash2, X } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronRight, MoreHorizontal, Pencil, Trash2, X } from 'lucide-react';
 import { useRef, useState } from 'react';
 import type { Word } from '../../vocabulary/types';
 import type { WordList } from '../types';
@@ -27,10 +28,10 @@ interface ListCardProps {
   onViewDetails: (word: Word) => void;
 }
 
-const DIFFICULTY_COLORS: Record<string, string> = {
-  beginner: 'green',
-  intermediate: 'blue',
-  advanced: 'purple',
+const DIFFICULTY_DOT_COLORS: Record<string, string> = {
+  beginner: 'green.400',
+  intermediate: 'blue.400',
+  advanced: 'purple.400',
 };
 
 export function ListCard({ list, onViewDetails }: ListCardProps) {
@@ -38,6 +39,7 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
   const deleteList = useDeleteList();
   const removeWord = useRemoveWord();
   const toast = useToast();
+  const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: true });
 
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(list.name);
@@ -107,7 +109,8 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
     }
   };
 
-  const handleRemoveWord = async (wordId: string) => {
+  const handleRemoveWord = async (wordId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     try {
       await removeWord.mutateAsync({ listId: list._id, wordId });
     } catch {
@@ -121,66 +124,90 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
   };
 
   return (
-    <Box
-      bg="gray.800"
-      borderWidth="1px"
-      borderColor="gray.700"
-      borderRadius="lg"
-      p={5}
-    >
-      {/* List Header */}
-      <HStack justify="space-between" mb={4}>
-        {isEditing ? (
-          <HStack flex={1}>
+    <Box>
+      {/* Section Header */}
+      <HStack
+        justify="space-between"
+        py={2.5}
+        px={1}
+        cursor="pointer"
+        _hover={{ bg: 'whiteAlpha.50' }}
+        borderRadius="lg"
+        transition="background 0.15s"
+        onClick={onToggle}
+      >
+        <HStack spacing={3} flex={1} minW={0}>
+          <Box color="gray.500" transition="transform 0.2s">
+            {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          </Box>
+
+          {isEditing ? (
             <Input
               ref={inputRef}
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
               onKeyDown={handleKeyDown}
               onBlur={handleSaveRename}
+              onClick={(e) => e.stopPropagation()}
               size="sm"
-              bg="gray.900"
+              bg="gray.800"
               borderColor="gray.600"
-              _focus={{ borderColor: 'brand.400' }}
-              maxW="300px"
+              borderRadius="lg"
+              _focus={{ borderColor: 'brand.400', boxShadow: '0 0 0 1px var(--chakra-colors-brand-400)' }}
+              maxW="240px"
             />
-          </HStack>
-        ) : (
-          <HStack spacing={3}>
-            <Heading size="md" color="white">
-              {list.name}
-            </Heading>
-            <Badge colorScheme="brand" variant="subtle" fontSize="xs">
-              {list.words.length} {list.words.length === 1 ? 'word' : 'words'}
-            </Badge>
-          </HStack>
-        )}
+          ) : (
+            <HStack spacing={2}>
+              <Heading size="sm" color="gray.200" fontWeight="600" noOfLines={1}>
+                {list.name}
+              </Heading>
+              <Text fontSize="xs" color="gray.600">
+                {list.words.length}
+              </Text>
+            </HStack>
+          )}
+        </HStack>
 
         <Menu>
           <MenuButton
             as={IconButton}
-            icon={<MoreVertical size={16} />}
+            icon={<MoreHorizontal size={15} />}
             variant="ghost"
-            size="sm"
-            color="gray.400"
-            _hover={{ color: 'white', bg: 'gray.700' }}
+            size="xs"
+            color="gray.600"
+            _hover={{ color: 'gray.300', bg: 'whiteAlpha.100' }}
             aria-label="List actions"
+            borderRadius="lg"
+            onClick={(e) => e.stopPropagation()}
           />
-          <MenuList bg="gray.800" borderColor="gray.700" minW="150px">
+          <MenuList
+            bg="gray.800"
+            borderColor="gray.700"
+            borderRadius="xl"
+            boxShadow="0 8px 32px rgba(0,0,0,0.4)"
+            minW="140px"
+            py={1}
+          >
             <MenuItem
-              icon={<Pencil size={14} />}
-              onClick={handleStartRename}
+              icon={<Pencil size={13} />}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleStartRename();
+              }}
               bg="gray.800"
-              _hover={{ bg: 'gray.700' }}
+              _hover={{ bg: 'whiteAlpha.100' }}
               fontSize="sm"
             >
               Rename
             </MenuItem>
             <MenuItem
-              icon={<Trash2 size={14} />}
-              onClick={handleDelete}
+              icon={<Trash2 size={13} />}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete();
+              }}
               bg="gray.800"
-              _hover={{ bg: 'gray.700' }}
+              _hover={{ bg: 'whiteAlpha.100' }}
               color="red.400"
               fontSize="sm"
             >
@@ -190,61 +217,63 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
         </Menu>
       </HStack>
 
-      {/* Word Cards */}
-      {list.words.length === 0 ? (
-        <Text color="gray.500" fontSize="sm" fontStyle="italic">
-          No words in this list yet. Browse the Vocabulary page to add words.
-        </Text>
-      ) : (
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={3}>
-          {list.words.map((word) => (
-            <HStack
-              key={word._id}
-              bg="gray.900"
-              px={3}
-              py={2}
-              borderRadius="md"
-              borderWidth="1px"
-              borderColor="gray.700"
-              justify="space-between"
-            >
-              <VStack
-                align="start"
-                spacing={0}
-                flex={1}
-                minW={0}
-                cursor="pointer"
-                onClick={() => onViewDetails(word)}
-                _hover={{ opacity: 0.8 }}
-              >
-                <HStack spacing={2}>
-                  <Text color="brand.400" fontWeight="600" fontSize="sm" noOfLines={1}>
-                    {word.word}
-                  </Text>
-                  <Badge
-                    colorScheme={DIFFICULTY_COLORS[word.difficulty] || 'gray'}
-                    fontSize="2xs"
-                  >
-                    {word.difficulty}
-                  </Badge>
-                </HStack>
-                <Text color="gray.400" fontSize="xs" noOfLines={1}>
-                  {word.meaning}
-                </Text>
-              </VStack>
-              <IconButton
-                aria-label="Remove word"
-                icon={<X size={14} />}
-                size="xs"
-                variant="ghost"
-                color="gray.500"
-                _hover={{ color: 'red.400', bg: 'gray.700' }}
-                onClick={() => handleRemoveWord(word._id)}
-              />
+      {/* Collapsible Content */}
+      <Collapse in={isOpen} animateOpacity>
+        <Box pl={8} pr={1} pb={3} pt={1}>
+          {list.words.length === 0 ? (
+            <HStack spacing={2} color="gray.600" py={1}>
+              <BookOpen size={14} />
+              <Text fontSize="sm">Empty - save words from Vocabulary</Text>
             </HStack>
-          ))}
-        </SimpleGrid>
-      )}
+          ) : (
+            <Wrap spacing={2}>
+              {list.words.map((word) => (
+                <WrapItem key={word._id}>
+                  <HStack
+                    bg="gray.800"
+                    pl={3}
+                    pr={1.5}
+                    py={1.5}
+                    borderRadius="full"
+                    spacing={2}
+                    cursor="pointer"
+                    role="group"
+                    transition="all 0.15s"
+                    _hover={{ bg: 'gray.700' }}
+                    onClick={() => onViewDetails(word)}
+                  >
+                    <Box
+                      w="6px"
+                      h="6px"
+                      borderRadius="full"
+                      bg={DIFFICULTY_DOT_COLORS[word.difficulty] || 'gray.500'}
+                      flexShrink={0}
+                    />
+                    <Text fontSize="sm" color="gray.200" fontWeight="500">
+                      {word.word}
+                    </Text>
+                    <IconButton
+                      aria-label="Remove word"
+                      icon={<X size={11} />}
+                      size="xs"
+                      variant="ghost"
+                      color="gray.600"
+                      minW="20px"
+                      h="20px"
+                      opacity={0}
+                      _groupHover={{ opacity: 1 }}
+                      _hover={{ color: 'red.400', bg: 'whiteAlpha.200' }}
+                      borderRadius="full"
+                      transition="all 0.15s"
+                      onClick={(e) => handleRemoveWord(word._id, e)}
+                    />
+                  </HStack>
+                </WrapItem>
+              ))}
+            </Wrap>
+          )}
+        </Box>
+      </Collapse>
     </Box>
   );
 }
