@@ -1,7 +1,8 @@
 import type { VocabularyResponse, Word } from '../types';
 
+// Server-only env var — always absolute, never exposed to client bundle
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api/v1';
+  process.env.API_BASE_URL || 'http://localhost:3333/api/v1';
 
 export const serverVocabularyApi = {
   /**
