@@ -62,7 +62,7 @@ export function VocabularyContainer() {
   const totalPages = data?.totalPages || 1;
 
   const handleViewDetails = (word: Word) => {
-    router.push(`/vocabulary/${word.word.toLowerCase()}`);
+    router.push(`/vocabulary/${encodeURIComponent(word.word.toLowerCase())}`);
   };
 
   const handleClearFilters = () => {

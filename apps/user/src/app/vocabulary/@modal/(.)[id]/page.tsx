@@ -5,6 +5,7 @@ import { WordDetailsModal } from '@ielts/ui';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
+import { safeDecodeURIComponent } from '@ielts/utils';
 
 import type { VocabularyResponse } from '../../../../features/vocabulary/types';
 import { vocabularyApi } from '../../../../features/vocabulary/services/vocabulary.api';
@@ -17,7 +18,12 @@ interface InterceptedWordPageProps {
 export default function InterceptedWordPage({ params }: InterceptedWordPageProps) {
   const router = useRouter();
   const { id } = use(params);
-  const decodedId = decodeURIComponent(id);
+  const decodedId = safeDecodeURIComponent(id);
+
+  if (!decodedId) {
+    router.replace('/vocabulary');
+    return null;
+  }
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 

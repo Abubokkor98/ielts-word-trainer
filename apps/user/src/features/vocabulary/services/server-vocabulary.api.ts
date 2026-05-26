@@ -4,6 +4,19 @@ import type { VocabularyResponse, Word } from '../types';
 const API_BASE_URL =
   process.env.API_BASE_URL || 'http://localhost:3333/api/v1';
 
+const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds to accommodate Vercel cold starts and concurrent build requests
+
+const fetchWithTimeout = (
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+  timeoutMs = DEFAULT_TIMEOUT_MS
+): Promise<Response> => {
+  return fetch(input, {
+    ...init,
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+};
+
 export const serverVocabularyApi = {
   /**
    * Fetches dynamic route parameter entries (e.g. paginated words) on the server.
@@ -11,7 +24,7 @@ export const serverVocabularyApi = {
    */
   getWords: async (page = 1, limit = 100): Promise<Word[]> => {
     try {
-      const response = await fetch(
+      const response = await fetchWithTimeout(
         `${API_BASE_URL}/words?page=${page}&limit=${limit}`,
         {
           next: { revalidate: 86400 }, // Cache lookups for 24 hours
@@ -39,7 +52,7 @@ export const serverVocabularyApi = {
     limit = 12
   ): Promise<VocabularyResponse> => {
     try {
-      const response = await fetch(
+      const response = await fetchWithTimeout(
         `${API_BASE_URL}/words?page=${page}&limit=${limit}`,
         {
           next: { revalidate: 60 }, // Match client staleTime (60s)
@@ -66,7 +79,8 @@ export const serverVocabularyApi = {
    */
   getWordById: async (id: string): Promise<Word | null> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/words/${id}`, {
+      const encodedId = encodeURIComponent(id);
+      const response = await fetchWithTimeout(`${API_BASE_URL}/words/${encodedId}`, {
         next: { revalidate: 86400 }, // Cache dynamic pages for 24 hours
       });
 

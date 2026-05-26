@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { safeDecodeURIComponent } from '@ielts/utils';
 
 import { WordDetailsView } from '../../../features/vocabulary/components/word-details-view';
 import { serverVocabularyApi } from '../../../features/vocabulary/services/server-vocabulary.api';
@@ -33,7 +34,14 @@ export async function generateMetadata({
   params,
 }: StandaloneWordPageProps): Promise<Metadata> {
   const { id } = await params;
-  const decodedId = decodeURIComponent(id);
+  const decodedId = safeDecodeURIComponent(id);
+
+  if (!decodedId) {
+    return {
+      title: 'Word Not Found',
+    };
+  }
+
   const word = await serverVocabularyApi.getWordById(decodedId);
 
   if (!word) {
@@ -48,7 +56,7 @@ export async function generateMetadata({
     title: `Meaning of "${capitalizedWord}" - Definition & Examples`,
     description: `Master the word "${word.word}" (${word.partOfSpeech}) for IELTS Band 8+. Meaning: ${word.meaning}.`,
     alternates: {
-      canonical: `/vocabulary/${encodeURIComponent(decodedId.toLowerCase())}`,
+      canonical: `/vocabulary/${encodeURIComponent(word.word.toLowerCase())}`,
     },
   };
 }
@@ -57,7 +65,12 @@ export default async function StandaloneWordPage({
   params,
 }: StandaloneWordPageProps) {
   const { id } = await params;
-  const decodedId = decodeURIComponent(id);
+  const decodedId = safeDecodeURIComponent(id);
+
+  if (!decodedId) {
+    notFound();
+  }
+
   const word = await serverVocabularyApi.getWordById(decodedId);
 
   if (!word) {

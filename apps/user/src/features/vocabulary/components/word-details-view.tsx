@@ -41,7 +41,7 @@ export function WordDetailsView({ word }: WordDetailsViewProps) {
     <Box bg="gray.900" minH="80vh" py={12}>
       <Container maxW="3xl">
         <Box display="flex" justifyContent="center" mb={8}>
-          <Link href="/vocabulary" passHref style={{ textDecoration: 'none' }}>
+          <Link href="/vocabulary" style={{ textDecoration: 'none' }}>
             <Button
               leftIcon={<ArrowLeft size={16} />}
               variant="ghost"
@@ -104,12 +104,8 @@ export function WordDetailsView({ word }: WordDetailsViewProps) {
                 {word.topics &&
                   word.topics.length > 0 &&
                   word.topics.map((topic) => {
-                    const topicName =
-                      typeof topic === 'object' && topic !== null
-                        ? topic.name
-                        : topic;
                     return (
-                      <WrapItem key={`topic-${topicName}`}>
+                      <WrapItem key={topic._id}>
                         <Badge
                           colorScheme="purple"
                           variant="subtle"
@@ -120,7 +116,7 @@ export function WordDetailsView({ word }: WordDetailsViewProps) {
                           textTransform="uppercase"
                           letterSpacing="wider"
                         >
-                          {topicName}
+                          {topic.name}
                         </Badge>
                       </WrapItem>
                     );
