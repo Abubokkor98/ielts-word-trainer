@@ -4,7 +4,7 @@ import { useAuthStore } from '@ielts/auth';
 import { WordDetailsModal } from '@ielts/ui';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { use } from 'react';
+import { use, useEffect } from 'react';
 import { safeDecodeURIComponent } from '@ielts/utils';
 
 import type { VocabularyResponse } from '../../../../features/vocabulary/types';
@@ -19,20 +19,28 @@ export default function InterceptedWordPage({ params }: InterceptedWordPageProps
   const router = useRouter();
   const { id } = use(params);
   const decodedId = safeDecodeURIComponent(id);
-
-  if (!decodedId) {
-    router.replace('/vocabulary');
-    return null;
-  }
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 
-  // Read the word instantly from TanStack Query's existing in-memory cache,
-  // with a robust background-fetch fallback if it's not found (e.g. soft nav from dashboard).
+  useEffect(() => {
+    if (!decodedId) {
+      router.replace('/vocabulary');
+    }
+  }, [decodedId, router]);
+
   const { data: wordData } = useQuery({
     queryKey: ['word', decodedId],
-    queryFn: () => vocabularyApi.getWordById(decodedId),
+    queryFn: () => {
+      if (!decodedId) {
+        throw new Error('Word ID is required');
+      }
+      return vocabularyApi.getWordById(decodedId);
+    },
     initialData: () => {
+      if (!decodedId) {
+        return undefined;
+      }
+
       const cachedQueries = queryClient.getQueriesData<VocabularyResponse>({
         queryKey: ['words'],
       });
@@ -54,6 +62,10 @@ export default function InterceptedWordPage({ params }: InterceptedWordPageProps
   const handleClose = () => {
     router.back();
   };
+
+  if (!decodedId) {
+    return null;
+  }
 
   return (
     <WordDetailsModal

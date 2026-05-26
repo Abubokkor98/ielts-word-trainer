@@ -41,16 +41,16 @@ export function WordDetailsView({ word }: WordDetailsViewProps) {
     <Box bg="gray.900" minH="80vh" py={12}>
       <Container maxW="3xl">
         <Box display="flex" justifyContent="center" mb={8}>
-          <Link href="/vocabulary" style={{ textDecoration: 'none' }}>
-            <Button
-              leftIcon={<ArrowLeft size={16} />}
-              variant="ghost"
-              color="gray.400"
-              _hover={{ color: 'gray.100', bg: 'gray.800' }}
-            >
-              Back to Library
-            </Button>
-          </Link>
+          <Button
+            as={Link}
+            href="/vocabulary"
+            leftIcon={<ArrowLeft size={16} />}
+            variant="ghost"
+            color="gray.400"
+            _hover={{ color: 'gray.100', bg: 'gray.800' }}
+          >
+            Back to Library
+          </Button>
         </Box>
 
         <Box

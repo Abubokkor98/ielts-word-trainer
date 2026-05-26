@@ -49,7 +49,7 @@ During the pull request review, the CodeRabbit automated review tool flagged thi
 * **Potential Issue / Major / Heavy Lift**:
   Enforce unique constraint on the normalized word to prevent ambiguous lookups.
 * **Analysis Chain**:
-  The pre-save hook normalizes the word field by lowecasing and trimming, but the schema does not enforce uniqueness. The findById function performs an exact normalized equality lookup by querying Word.findOne with the lowercase and trimmed version of the string. If duplicates already exist, findOne can return an arbitrary document, making the others unreachable.
+  The pre-save hook normalizes the word field by lowercasing and trimming, but the schema does not enforce uniqueness. The findById function performs an exact normalized equality lookup by querying Word.findOne with the lowercase and trimmed version of the string. If duplicates already exist, findOne can return an arbitrary document, making the others unreachable.
 * **Suggested Direction**:
   Change the word schema field options from indexed string to a unique indexed string:
 
