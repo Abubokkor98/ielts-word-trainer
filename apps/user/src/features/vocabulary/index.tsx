@@ -1,10 +1,10 @@
 'use client';
 
-import { Box, Container, Heading, Text, useDisclosure } from '@chakra-ui/react';
+import { Box, Container, Heading, Text } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
-import { Pagination, WordDetailsModal } from '@ielts/ui';
+import { Pagination } from '@ielts/ui';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   parseAsInteger,
   parseAsString,
@@ -17,7 +17,6 @@ import { VocabularyFilters } from './components/vocabulary-filters';
 import { VocabularyList } from './components/vocabulary-list';
 import { useVocabulary } from './hooks/use-vocabulary';
 import type { Word } from './types';
-import { SaveToListButton } from '../word-list/components/save-to-list-button';
 
 const DIFFICULTY_OPTIONS = [
   'all',
@@ -42,9 +41,6 @@ export function VocabularyContainer() {
   const debouncedWordSearch = useDebounce(filters.search, 500);
   const debouncedTopicSearch = useDebounce(filters.topic, 500);
 
-  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
   const { user } = useAuthStore();
   const router = useRouter();
 
@@ -66,8 +62,7 @@ export function VocabularyContainer() {
   const totalPages = data?.totalPages || 1;
 
   const handleViewDetails = (word: Word) => {
-    setSelectedWord(word);
-    onOpen();
+    router.push(`/vocabulary/${word.word.toLowerCase()}`);
   };
 
   const handleClearFilters = () => {
@@ -133,18 +128,6 @@ export function VocabularyContainer() {
             onPageChange={(newPage) => setFilters({ page: newPage })}
           />
         )}
-
-        <WordDetailsModal
-          isOpen={isOpen}
-          onClose={onClose}
-          word={selectedWord}
-          headerAction={
-            <SaveToListButton
-              wordId={selectedWord?._id ?? ''}
-              isAuthenticated={!!user}
-            />
-          }
-        />
       </Container>
     </Box>
   );

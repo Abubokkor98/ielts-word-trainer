@@ -58,8 +58,11 @@ const WordSchema = new Schema<IWord>(
 // Compound index for combined difficulty + modules filtering
 WordSchema.index({ difficulty: 1, modules: 1 });
 
-// Pre-save hook: Auto-populate searchableText for efficient searching
+// Pre-save hook: Auto-populate searchableText and normalize word to lowercase
 WordSchema.pre('save', function () {
+  if (this.word) {
+    this.word = this.word.toLowerCase().trim();
+  }
   this.searchableText = [this.word, ...(this.synonyms || []), ...(this.antonyms || [])]
     .join(' ')
     .toLowerCase();

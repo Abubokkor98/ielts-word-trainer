@@ -151,7 +151,12 @@ export class WordsService {
   }
 
   static async findById(id: string) {
-    return Word.findById(id).populate('topics');
+    if (mongoose.isValidObjectId(id)) {
+      return Word.findById(id).populate('topics');
+    }
+    return Word.findOne({
+      word: id.toLowerCase().trim(),
+    }).populate('topics');
   }
 
   static async update(id: string, input: Partial<CreateWordInput>) {
