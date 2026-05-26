@@ -17,3 +17,11 @@ export const formatDate = (date: Date | string): string => {
     day: 'numeric',
   });
 };
+
+export const safeDecodeURIComponent = (str: string): string | null => {
+  try {
+    return decodeURIComponent(str);
+  } catch {
+    return null;
+  }
+};
