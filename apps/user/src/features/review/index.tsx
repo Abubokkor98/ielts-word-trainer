@@ -62,7 +62,7 @@ export function ReviewContainer() {
   }
 
   return (
-    <div className="bg-background py-8 px-4 min-h-screen flex flex-col justify-start">
+    <div className="bg-background py-8 px-6 min-h-screen flex flex-col justify-start">
       <div className="max-w-[900px] mx-auto w-full flex flex-col space-y-6">
         <ReviewHeader
           currentIndex={currentIndex}
