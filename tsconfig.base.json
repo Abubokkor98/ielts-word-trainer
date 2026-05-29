@@ -17,6 +17,7 @@
     "paths": {
       "@ielts/shared": ["libs/shared/src/index.ts"],
       "@ielts/ui": ["libs/ui/src/index.ts"],
+      "@ielts/ui/*": ["libs/ui/src/*"],
       "@ielts/auth": ["libs/auth/src/index.ts"],
       "@ielts/utils": ["libs/utils/src/index.ts"]
     }

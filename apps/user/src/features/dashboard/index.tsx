@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Container, Heading, Text, VStack } from '@chakra-ui/react';
 import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -25,18 +24,12 @@ export function DashboardContainer() {
 
   const { user, analytics, srsStats, isLoading } = useDashboardData(isAuthenticated, localUser);
 
-  // Show loading during hydration
-  if (!hasHydrated) {
-    return <DashboardSkeleton />;
-  }
+  // Show loading during hydration or data fetching within the base layout wrapper
+  const isPageLoading = !hasHydrated || isLoading;
 
-  // Early return AFTER hydration check
-  if (!isAuthenticated) {
+  // Early return if not authenticated to prevent flash of content
+  if (hasHydrated && !isAuthenticated) {
     return null;
-  }
-
-  if (isLoading) {
-    return <DashboardSkeleton />;
   }
 
   const currentUser = user || localUser;
@@ -46,36 +39,41 @@ export function DashboardContainer() {
   const avgScore = analytics?.averageScore || 0;
 
   return (
-    <Box bg="gray.900" py={8}>
-      <Container maxW="7xl">
-        <VStack spacing={8} align="stretch">
-          <Box>
-            <Heading as="h1" size="2xl" color="gray.50" mb={2}>
-              Welcome back, {currentUser?.name}! 👋
-            </Heading>
-            <Text fontSize="lg" color="gray.400">
-              Ready to continue your IELTS journey?
-            </Text>
-          </Box>
+    <main className="bg-background py-8 w-full min-h-[80vh]">
+      <div className="container mx-auto px-6 max-w-[1324px]">
+        {isPageLoading ? (
+          <DashboardSkeleton />
+        ) : (
+          <div className="flex flex-col gap-8">
+            <header>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                Welcome back, {currentUser?.name}! 👋
+              </h1>
+              <p className="text-base text-muted-foreground">
+                Ready to continue your IELTS journey?
+              </p>
+            </header>
 
-          <DashboardStats
-            xp={xp}
-            streak={streak}
-            quizzesTaken={quizzesTaken}
-            avgScore={avgScore}
-            lastQuizDate={currentUser?.lastQuizDate}
-          />
+            <DashboardStats
+              xp={xp}
+              streak={streak}
+              quizzesTaken={quizzesTaken}
+              avgScore={avgScore}
+              lastQuizDate={currentUser?.lastQuizDate}
+            />
 
-          {/* SRS Review Section */}
-          {srsStats && <ReviewCard stats={srsStats} />}
+            {/* SRS Review Section */}
+            {srsStats && <ReviewCard stats={srsStats} />}
 
-          <Heading size="lg" color="gray.50">
-            Quick Actions
-          </Heading>
-
-          <QuickActions />
-        </VStack>
-      </Container>
-    </Box>
+            <section className="flex flex-col gap-4" aria-label="Quick Actions">
+              <h2 className="text-xl font-bold text-foreground">
+                Quick Actions
+              </h2>
+              <QuickActions />
+            </section>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

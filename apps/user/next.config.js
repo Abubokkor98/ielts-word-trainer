@@ -1,6 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   transpilePackages: ['@ielts/ui', '@ielts/shared', '@ielts/auth'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+    ],
+  },
 
   // Proxy API requests to backend to avoid cross-subdomain cookie issues
   async rewrites() {

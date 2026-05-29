@@ -2,12 +2,9 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import { Suspense } from 'react';
 import './global.css';
-import { ChakraUIProvider, ReactQueryProvider } from '@ielts/ui';
-import { UserFooter } from '../components/footer';
-import { UserNavbar } from '../components/navbar';
+import { ReactQueryProvider, Toaster } from '@ielts/ui';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { siteConfig } from '../lib/site-config';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -82,34 +79,14 @@ export const metadata: Metadata = {
   applicationName: siteConfig.name,
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${inter.className}`}
-        suppressHydrationWarning
-      >
+    <html lang="en" className="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
+      <body className={`${inter.variable} ${inter.className}`} suppressHydrationWarning>
         <ReactQueryProvider>
-          <ChakraUIProvider>
-            <div className="flex flex-col min-h-screen">
-              <Suspense
-                fallback={
-                  <div className="h-16 bg-[#171923] border-b border-gray-800" />
-                }
-              >
-                <UserNavbar />
-              </Suspense>
-              <main id="main-content" className="flex-1 flex flex-col">
-                <NuqsAdapter>{children}</NuqsAdapter>
-              </main>
-              <UserFooter />
-            </div>
-          </ChakraUIProvider>
+          <NuqsAdapter>{children}</NuqsAdapter>
         </ReactQueryProvider>
+        <Toaster />
         <Analytics />
         <SpeedInsights />
       </body>

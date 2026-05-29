@@ -1,130 +1,124 @@
 'use client';
 
-import {
-  Box,
-  Container,
-  Divider,
-  Heading,
-  HStack,
-  Icon,
-  Link as ChakraLink,
-  SimpleGrid,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { Github } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { ExternalLink, Github, Heart } from 'lucide-react';
 import Link from 'next/link';
-import type { FooterLink } from './footer.constants';
 import {
   APP_NAME,
   APP_TAGLINE,
   CREATOR_NAME,
-  getCurrentYear,
+  EXAM_GUIDES,
   EXTERNAL_LINKS,
-  GET_STARTED_LINKS,
-  QUICK_LINKS,
+  FREE_RESOURCES,
+  getCurrentYear,
+  PLATFORM_LINKS,
+  STUDY_TIPS,
 } from './footer.constants';
 
-interface FooterLinkColumnProps {
-  readonly title: string;
-  readonly links: readonly FooterLink[];
-}
-
-function FooterLinkColumn({ title, links }: FooterLinkColumnProps) {
-  return (
-    <VStack align={{ base: 'center', lg: 'flex-start' }} spacing={4}>
-      <Heading as="h3" size="sm" color="gray.200" letterSpacing="wider" textTransform="uppercase">
-        {title}
-      </Heading>
-      <VStack align={{ base: 'center', lg: 'flex-start' }} spacing={2}>
-        {links.map((link) => (
-          <ChakraLink
-            key={link.href}
-            as={Link}
-            href={link.href}
-            color="gray.400"
-            fontSize="sm"
-            transition="all 0.2s"
-            _hover={{ color: 'brand.400', textDecoration: 'none', transform: 'translateX(2px)' }}
-          >
-            {link.label}
-          </ChakraLink>
-        ))}
-      </VStack>
-    </VStack>
-  );
-}
+const ANIMATION_VARIANTS = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0 },
+};
 
 export function UserFooter() {
+  const currentYear = getCurrentYear();
+
   return (
-    <Box as="footer" bg="gray.900" borderTop="1px" borderColor="gray.700" aria-label="Site footer">
-      <Container maxW="7xl" pt={{ base: 8, md: 10 }} pb={6}>
-        {/* Top Section: Brand + Link Columns */}
-        <SimpleGrid columns={{ base: 1, lg: 3 }} spacing={{ base: 8, md: 12 }} mb={10}>
-          {/* Brand Column */}
-          <VStack align={{ base: 'center', lg: 'flex-start' }} spacing={4}>
-            <Heading as={Link} href="/" size="md" color="white" _hover={{ textDecoration: 'none' }}>
+    <footer className="ln-footer">
+      <div className="ln-footer-glow" />
+
+      <div className="ln-footer-separator" />
+
+      <motion.div
+        className="ln-footer-inner"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-60px' }}
+        variants={ANIMATION_VARIANTS}
+        transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+      >
+        <div className="ln-footer-top">
+          <div className="ln-footer-brand">
+            <Link href="/" className="ln-footer-logo-text">
               {APP_NAME}
-            </Heading>
-            <Text color="gray.400" fontSize="sm" lineHeight="tall" maxW={{ base: '280px', md: '420px' }} textAlign={{ base: 'center', lg: 'left' }}>
-              {APP_TAGLINE}
-            </Text>
-            {/* GitHub link in brand column */}
-            <ChakraLink
+            </Link>
+            <p className="ln-footer-tagline">{APP_TAGLINE}</p>
+            <a
               href={EXTERNAL_LINKS.github}
-              isExternal
-              display="inline-flex"
-              alignItems="center"
-              gap={2}
-              color="gray.400"
-              transition="all 0.2s"
-              _hover={{ color: 'brand.400', textDecoration: 'none' }}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ln-footer-github-link"
               aria-label="GitHub repository"
             >
-              <Icon as={Github} boxSize={5} />
-              <Text fontSize="sm">GitHub</Text>
-            </ChakraLink>
-          </VStack>
+              <Github size={16} />
+              <span>GitHub</span>
+            </a>
+          </div>
 
-          {/* Quick Links Column */}
-          <FooterLinkColumn title="Quick Links" links={QUICK_LINKS} />
+          <nav className="ln-footer-nav" aria-label="Footer navigation">
+            <div className="ln-footer-col">
+              <span className="ln-footer-col-title">Platform</span>
+              {PLATFORM_LINKS.map((link) => (
+                <Link key={link.href} href={link.href} className="ln-footer-link">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
 
-          {/* Get Started Column */}
-          <FooterLinkColumn title="Get Started" links={GET_STARTED_LINKS} />
-        </SimpleGrid>
+            <div className="ln-footer-col">
+              <span className="ln-footer-col-title">Guides</span>
+              {EXAM_GUIDES.map((link) => (
+                <Link key={link.href} href={link.href} className="ln-footer-link">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
 
-        {/* Divider */}
-        <Divider borderColor="gray.700" mb={6} />
+            <div className="ln-footer-col">
+              <span className="ln-footer-col-title">Free Resources</span>
+              {FREE_RESOURCES.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="ln-footer-link"
+                  {...(link.isExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  <span>{link.label}</span>
+                  {link.isExternal && <ExternalLink size={10} className="ln-footer-link-icon" />}
+                </Link>
+              ))}
+            </div>
 
-        {/* Bottom Bar */}
-        <HStack
-          justify={{ base: 'center', lg: 'space-between' }}
-          align="center"
-          flexDir={{ base: 'column', lg: 'row' }}
-          spacing={{ base: 3, lg: 0 }}
-        >
-          <Text color="gray.500" fontSize="sm">
-            © {getCurrentYear()} {APP_NAME}. All rights reserved.
-          </Text>
+            <div className="ln-footer-col">
+              <span className="ln-footer-col-title">Study Tips</span>
+              {STUDY_TIPS.map((link) => (
+                <Link key={link.href} href={link.href} className="ln-footer-link">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </nav>
+        </div>
 
-          <HStack spacing={1}>
-            <Text color="gray.500" fontSize="sm">
-              Built by
-            </Text>
-            <ChakraLink
+        <div className="ln-footer-divider" />
+
+        <div className="ln-footer-bottom">
+          <p className="ln-footer-attribution">
+            Created with <Heart size={12} className="ln-footer-heart" fill="currentColor" /> by{' '}
+            <a
               href={EXTERNAL_LINKS.portfolio}
-              isExternal
-              color="brand.400"
-              fontSize="sm"
-              fontWeight="600"
-              transition="all 0.2s"
-              _hover={{ color: 'brand.300', textDecoration: 'none' }}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ln-footer-creator"
             >
               {CREATOR_NAME}
-            </ChakraLink>
-          </HStack>
-        </HStack>
-      </Container>
-    </Box>
+            </a>
+          </p>
+          <p className="ln-footer-copy">
+            © {currentYear} {APP_NAME}
+          </p>
+        </div>
+      </motion.div>
+    </footer>
   );
 }

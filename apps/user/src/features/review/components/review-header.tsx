@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardBody, HStack, Progress, Text, VStack } from '@chakra-ui/react';
+import { Button, Card, CardContent, Progress } from '@ielts/ui';
 import { ArrowLeft } from 'lucide-react';
 
 interface ReviewHeaderProps {
@@ -17,39 +17,38 @@ export function ReviewHeader({
   onExit,
 }: ReviewHeaderProps) {
   return (
-    <Card bg="gray.800" borderColor="gray.700" borderWidth="1px" w="full">
-      <CardBody>
-        <VStack spacing={4} align="stretch">
-          <HStack justify="space-between">
-            <Button
-              variant="ghost"
-              colorScheme="brand"
-              leftIcon={<ArrowLeft size={20} />}
-              onClick={onExit}
-              px={{ base: 2, md: 4 }}
-            >
-              <Text display={{ base: 'none', md: 'inline' }}>Dashboard</Text>
-            </Button>
-            <VStack spacing={0}>
-              <Text fontWeight="semibold" color="gray.50" fontSize="lg">
-                Card {currentIndex + 1} of {totalCards}
-              </Text>
-              <Text fontSize="sm" color="gray.400">
-                {reviewedCount} reviewed
-              </Text>
-            </VStack>
-            <Box w={{ base: '40px', md: '120px' }} />{' '}
-            {/* Responsive Spacer matching button approx width */}
-          </HStack>
-          <Progress
-            value={progress}
-            colorScheme="brand"
-            size="sm"
-            borderRadius="full"
-            bg="gray.700"
-          />
-        </VStack>
-      </CardBody>
+    <Card className="border border-border bg-card/60 p-6 w-full shadow-md">
+      <CardContent className="p-0 space-y-4">
+        <div className="flex items-center justify-between w-full">
+          <Button
+            variant="ghost"
+            onClick={onExit}
+            className="text-violet-400 hover:text-violet-300 hover:bg-white/5 px-2 md:px-4"
+          >
+            <span className="flex items-center gap-2">
+              <ArrowLeft size={20} />
+              <span className="hidden md:inline">Dashboard</span>
+            </span>
+          </Button>
+          
+          <div className="flex flex-col items-center">
+            <span className="font-semibold text-foreground text-lg">
+              Card {currentIndex + 1} of {totalCards}
+            </span>
+            <span className="text-sm text-muted-foreground">
+              {reviewedCount} reviewed
+            </span>
+          </div>
+          
+          {/* Responsive Spacer matching exit button width */}
+          <div className="w-[40px] md:w-[120px] pointer-events-none" />
+        </div>
+        
+        <Progress
+          value={progress}
+          className="h-2 w-full bg-secondary"
+        />
+      </CardContent>
     </Card>
   );
 }

@@ -1,70 +1,51 @@
-import {
-  Box,
-  Card,
-  CardBody,
-  CardHeader,
-  Container,
-  HStack,
-  Skeleton,
-  VStack,
-} from '@chakra-ui/react';
+import { Card, CardContent, CardHeader, Skeleton } from '@ielts/ui';
 
 export function ReviewLoading() {
   return (
-    <Box bg="gray.900" py={8} px={4}>
-      <Container maxW="900px">
-        <VStack spacing={6}>
-          {/* Header Skeleton */}
-          <Card bg="gray.800" borderColor="gray.700" borderWidth="1px" w="full">
-            <CardBody>
-              <VStack spacing={4} align="stretch">
-                <HStack justify="space-between">
-                  <Skeleton height="40px" width="120px" borderRadius="md" />
-                  <VStack spacing={2}>
-                    <Skeleton height="24px" width="150px" borderRadius="md" />
-                    <Skeleton height="16px" width="100px" borderRadius="md" />
-                  </VStack>
-                  <Box w="120px" />
-                </HStack>
-                <Skeleton height="8px" borderRadius="full" />
-              </VStack>
-            </CardBody>
-          </Card>
+    <div className="bg-background py-8 px-4 min-h-screen">
+      <div className="max-w-[900px] mx-auto space-y-6">
+        {/* Header Skeleton */}
+        <Card className="border border-border bg-card/60 p-6">
+          <div className="flex flex-col space-y-4 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <Skeleton className="h-10 w-[120px] rounded-md" />
+              <div className="flex flex-col items-start sm:items-end space-y-2">
+                <Skeleton className="h-6 w-[150px] rounded-md" />
+                <Skeleton className="h-4 w-[100px] rounded-md" />
+              </div>
+              <div className="hidden sm:block w-[120px]" />
+            </div>
+            <Skeleton className="h-2 w-full rounded-full" />
+          </div>
+        </Card>
 
-          {/* Flashcard Skeleton */}
-          <Card
-            bg="gray.800"
-            borderColor="gray.700"
-            borderWidth="2px"
-            w="full"
-            minH="450px"
-          >
-            <CardHeader>
-              <HStack justify="space-between">
-                <Skeleton height="28px" width="100px" borderRadius="full" />
-                <HStack spacing={2}>
-                  <Skeleton height="24px" width="80px" borderRadius="full" />
-                  <Skeleton height="24px" width="80px" borderRadius="full" />
-                </HStack>
-              </HStack>
-            </CardHeader>
-            <CardBody>
-              <VStack spacing={8} justify="center" minH="320px" px={4}>
-                <VStack spacing={6} w="full">
-                  {/* Word skeleton */}
-                  <Skeleton height="60px" width="280px" borderRadius="md" />
-                  {/* Helper text skeleton */}
-                  <VStack spacing={2}>
-                    <Skeleton height="20px" width="180px" borderRadius="md" />
-                    <Skeleton height="40px" width="100px" borderRadius="md" />
-                    <Skeleton height="20px" width="160px" borderRadius="md" />
-                  </VStack>
-                </VStack>
-              </VStack>
-            </CardBody>
-          </Card>
-        </VStack>
-      </Container>
-    </Box>
+        {/* Flashcard Skeleton */}
+        <Card className="border-2 border-border bg-card/60 min-h-[450px]">
+          <CardHeader className="p-6">
+            <div className="flex justify-between items-center w-full">
+              <Skeleton className="h-7 w-[100px] rounded-full" />
+              <div className="flex space-x-2">
+                <Skeleton className="h-6 w-[80px] rounded-full" />
+                <Skeleton className="h-6 w-[80px] rounded-full" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-6 pt-0">
+            <div className="flex flex-col items-center justify-center min-h-[320px] space-y-8 px-4">
+              <div className="flex flex-col items-center space-y-6 w-full">
+                {/* Word skeleton */}
+                <Skeleton className="h-[60px] w-[280px] rounded-md" />
+                {/* Helper text skeleton */}
+                <div className="flex flex-col items-center space-y-2">
+                  <Skeleton className="h-5 w-[180px] rounded-md" />
+                  <Skeleton className="h-10 w-[100px] rounded-md" />
+                  <Skeleton className="h-5 w-[160px] rounded-md" />
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

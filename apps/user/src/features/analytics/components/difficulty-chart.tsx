@@ -1,5 +1,4 @@
-import { Heading } from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@ielts/ui';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { DifficultyAccuracy } from '../types';
 
@@ -13,23 +12,27 @@ export function DifficultyChart({ data }: DifficultyChartProps) {
   return (
     <Card>
       <CardHeader>
-        <Heading size="md" color="gray.50">
+        <CardTitle className="text-lg font-semibold text-foreground">
           Accuracy by Difficulty
-        </Heading>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" />
-            <XAxis dataKey="difficulty" stroke="#cbd5e0" />
-            <YAxis stroke="#cbd5e0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="difficulty" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
             <Tooltip
+              cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
               contentStyle={{
-                backgroundColor: '#2d3748',
-                border: '1px solid #4a5568',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+                color: 'hsl(var(--foreground))',
               }}
+              itemStyle={{ color: 'hsl(var(--primary))' }}
             />
-            <Bar dataKey="accuracy" fill="#1e88e5" />
+            <Bar dataKey="accuracy" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>

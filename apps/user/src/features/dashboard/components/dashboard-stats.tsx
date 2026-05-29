@@ -1,4 +1,3 @@
-import { SimpleGrid } from '@chakra-ui/react';
 import { formatRelativeTime } from '@ielts/shared';
 import { StatCard } from './stat-card';
 
@@ -20,12 +19,12 @@ export function DashboardStats({
   const lastQuiz = formatRelativeTime(lastQuizDate);
 
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 5 }} spacing={6}>
-      <StatCard label="Total XP" value={xp} color="brand.400" />
-      <StatCard label="Current Streak" value={streak} icon="🔥" color="orange.400" />
-      <StatCard label="Quizzes Taken" value={quizzesTaken} color="purple.400" />
-      <StatCard label="Average Score" value={`${avgScore}%`} color="green.400" />
-      <StatCard label="Last Quiz" value={lastQuiz} icon="📅" color="blue.400" />
-    </SimpleGrid>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      <StatCard label="Total XP" value={xp} className="text-primary" />
+      <StatCard label="Current Streak" value={streak} icon="🔥" className="text-primary" />
+      <StatCard label="Quizzes Taken" value={quizzesTaken} className="text-primary" />
+      <StatCard label="Average Score" value={`${avgScore}%`} className="text-primary" />
+      <StatCard label="Last Quiz" value={lastQuiz} icon="📅" className="text-foreground" />
+    </div>
   );
 }

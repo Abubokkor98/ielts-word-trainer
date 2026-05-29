@@ -1,4 +1,12 @@
-import { Box, Button, Container, Heading, Text, VStack } from '@chakra-ui/react';
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  TargetIcon,
+} from '@ielts/ui';
 
 interface QuizStartScreenProps {
   onStart: () => void;
@@ -14,78 +22,60 @@ export function QuizStartScreen({
   onDifficultyChange,
 }: QuizStartScreenProps) {
   return (
-    <Box
-      bg="gray.900"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      py={{ base: 6, md: 12 }}
-      flex="1"
-    >
-      <Container maxW="2xl" px={{ base: 4, md: 0 }}>
-        <VStack
-          spacing={{ base: 6, md: 8 }}
-          bg="gray.800"
-          p={{ base: 6, md: 12 }}
-          borderRadius="lg"
-          borderWidth="1px"
-          borderColor="gray.700"
-          w="full"
-        >
-          <Text fontSize={{ base: '5xl', md: '6xl' }}>🎯</Text>
-          <Heading as="h1" fontSize={{ base: '2xl', md: '3xl' }} color="gray.50" textAlign="center">
-            Ready to Test Your Vocabulary?
-          </Heading>
-          <Text fontSize={{ base: 'md', md: 'lg' }} color="gray.400" textAlign="center" maxW="md">
-            Challenge yourself with our interactive quiz featuring carefully selected IELTS
-            vocabulary
-          </Text>
-          <Box w="full" maxW="md">
-            <Text color="gray.300" fontWeight="600" mb={2} fontSize={{ base: 'sm', md: 'md' }}>
-              Select Difficulty Level
-            </Text>
-            <select
-              value={selectedDifficulty}
-              onChange={(e) => onDifficultyChange(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                borderRadius: '0.375rem',
-                backgroundColor: '#2D3748',
-                borderColor: '#4A5568',
-                color: '#F7FAFC',
-                borderWidth: '1px',
-                borderStyle: 'solid',
-                fontSize: '1rem',
-              }}
+    <main className="flex flex-col flex-1 items-center justify-center py-12 px-4 md:py-16 bg-background">
+      <section className="w-full max-w-md">
+        <article className="flex flex-col items-center text-center space-y-6 p-8 relative overflow-hidden group bg-card/95 rounded-2xl border border-border/40 shadow-2xl">
+          {/* Subtle glowing backdrop */}
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl pointer-events-none group-hover:bg-primary/30 transition-all duration-500" />
+          <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-500/15 rounded-full blur-3xl pointer-events-none group-hover:bg-purple-500/25 transition-all duration-500" />
+
+          <div className="inline-flex p-3.5 rounded-2xl bg-primary/10 border border-primary/20 text-primary w-fit mb-2">
+            <TargetIcon className="w-10 h-10" />
+          </div>
+
+          <div className="space-y-2">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground via-primary to-purple-400">
+              Ready to Test Your Vocabulary?
+            </h1>
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+              Challenge yourself with our interactive quiz featuring carefully selected IELTS
+              vocabulary.
+            </p>
+          </div>
+
+          <div className="w-full max-w-sm space-y-2 text-left">
+            <label
+              htmlFor="difficulty-select"
+              className="block text-sm font-semibold text-foreground/80 pl-1"
             >
-              <option value="mixed" style={{ background: '#1A202C' }}>
-                Mixed (All Levels)
-              </option>
-              <option value="beginner" style={{ background: '#1A202C' }}>
-                Beginner
-              </option>
-              <option value="intermediate" style={{ background: '#1A202C' }}>
-                Intermediate
-              </option>
-              <option value="advanced" style={{ background: '#1A202C' }}>
-                Advanced
-              </option>
-            </select>
-          </Box>
+              Select Difficulty Level
+            </label>
+            <Select value={selectedDifficulty} onValueChange={onDifficultyChange}>
+              <SelectTrigger
+                id="difficulty-select"
+                className="w-full p-3 h-12 rounded-lg bg-[#1B1722]/80 border border-border/80 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm font-medium cursor-pointer"
+              >
+                <SelectValue placeholder="Select difficulty" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1B1722] border-border/85">
+                <SelectItem value="mixed">Mixed (All Levels)</SelectItem>
+                <SelectItem value="beginner">Beginner</SelectItem>
+                <SelectItem value="intermediate">Intermediate</SelectItem>
+                <SelectItem value="advanced">Advanced</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button
             size="lg"
             onClick={onStart}
-            isLoading={isLoading}
-            loadingText="Loading..."
-            px={{ base: 8, md: 12 }}
-            py={6}
-            w={{ base: 'full', sm: 'auto' }}
+            disabled={isLoading}
+            className="w-full sm:w-auto px-10 py-6 text-base font-semibold shadow-lg hover:shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            Start New Quiz
+            {isLoading ? 'Loading...' : 'Start New Quiz'}
           </Button>
-        </VStack>
-      </Container>
-    </Box>
+        </article>
+      </section>
+    </main>
   );
 }

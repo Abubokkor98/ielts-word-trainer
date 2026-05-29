@@ -1,15 +1,8 @@
-import { Center, Spinner } from '@chakra-ui/react';
-
 export function PageLoadingFallback() {
   return (
-    <Center h="100vh" w="100%">
-      <Spinner
-        thickness="4px"
-        speed="0.65s"
-        emptyColor="gray.200"
-        color="blue.500"
-        size="xl"
-      />
-    </Center>
+    <div className="flex items-center justify-center h-screen w-full">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary/20 border-t-primary"></div>
+    </div>
   );
 }
+

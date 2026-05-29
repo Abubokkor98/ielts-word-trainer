@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
@@ -7,7 +7,7 @@ import type { ForgotPasswordCredentials, ResetPasswordCredentials } from '../typ
 
 export function usePasswordRecovery() {
   const router = useRouter();
-  const toast = useToast();
+  const { toast } = useToast();
 
   const forgotPasswordMutation = useMutation({
     mutationFn: (credentials: ForgotPasswordCredentials) => authApi.forgotPassword(credentials),
@@ -15,8 +15,6 @@ export function usePasswordRecovery() {
       toast({
         title: 'Check your email',
         description: 'We have sent you a password reset link.',
-        status: 'success',
-        duration: 5000,
       });
     },
     onError: (error: AxiosError<{ message: string; error?: string }>) => {
@@ -29,8 +27,7 @@ export function usePasswordRecovery() {
       toast({
         title: error.response?.status === 429 ? 'Rate Limit Exceeded' : 'Request failed',
         description: errorMessage,
-        status: 'error',
-        duration: 5000,
+        variant: 'destructive',
       });
     },
   });
@@ -41,8 +38,6 @@ export function usePasswordRecovery() {
       toast({
         title: 'Password reset successful',
         description: 'You can now login with your new password.',
-        status: 'success',
-        duration: 5000,
       });
       router.push('/login');
     },
@@ -50,8 +45,7 @@ export function usePasswordRecovery() {
       toast({
         title: 'Reset failed',
         description: error.response?.data?.message || 'Something went wrong',
-        status: 'error',
-        duration: 5000,
+        variant: 'destructive',
       });
     },
   });

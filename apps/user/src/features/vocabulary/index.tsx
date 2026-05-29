@@ -1,16 +1,10 @@
 'use client';
 
-import { Box, Container, Heading, Text } from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
 import { Pagination } from '@ielts/ui';
 import { useRouter } from 'next/navigation';
+import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
 import { useEffect } from 'react';
-import {
-  parseAsInteger,
-  parseAsString,
-  parseAsStringLiteral,
-  useQueryStates,
-} from 'nuqs';
 
 import { useDebounce } from '../../hooks/use-debounce';
 import { VocabularyFilters } from './components/vocabulary-filters';
@@ -18,12 +12,7 @@ import { VocabularyList } from './components/vocabulary-list';
 import { useVocabulary } from './hooks/use-vocabulary';
 import type { Word } from './types';
 
-const DIFFICULTY_OPTIONS = [
-  'all',
-  'beginner',
-  'intermediate',
-  'advanced',
-] as const;
+const DIFFICULTY_OPTIONS = ['all', 'beginner', 'intermediate', 'advanced'] as const;
 const MODULE_OPTIONS = ['reading', 'writing', 'listening', 'speaking'] as const;
 
 export function VocabularyContainer() {
@@ -35,7 +24,7 @@ export function VocabularyContainer() {
       search: parseAsString.withDefault(''),
       topic: parseAsString.withDefault(''),
     },
-    { history: 'push' }
+    { history: 'push' },
   );
 
   const debouncedWordSearch = useDebounce(filters.search, 500);
@@ -62,7 +51,7 @@ export function VocabularyContainer() {
   const totalPages = data?.totalPages || 1;
 
   const handleViewDetails = (word: Word) => {
-    router.push(`/vocabulary/${encodeURIComponent(word.word.toLowerCase())}`);
+    router.push(`/vocabulary/${encodeURIComponent(word.word.toLowerCase())}`, { scroll: false });
   };
 
   const handleClearFilters = () => {
@@ -76,15 +65,15 @@ export function VocabularyContainer() {
   };
 
   return (
-    <Box bg="gray.900" py={8}>
-      <Container maxW="7xl">
-        <Box mb={8} textAlign={{ base: 'center', lg: 'left' }}>
-          <Heading as="h1" size="2xl" color="gray.50" mb={2}>
+    <main className="dark w-full bg-background py-8 min-h-screen">
+      <div className="container max-w-[1324px] px-6 mx-auto">
+        <header className="mb-8 text-center lg:text-left">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-zinc-50 mb-2">
             Vocabulary Library
-          </Heading>
-          <Text fontSize="lg" color="gray.400" mb={6}>
+          </h1>
+          <p className="text-lg text-zinc-400 mb-6">
             Explore and master essential IELTS vocabulary
-          </Text>
+          </p>
 
           <VocabularyFilters
             difficulty={filters.difficulty}
@@ -104,7 +93,7 @@ export function VocabularyContainer() {
               setFilters({ module: val ?? null, page: 1 });
             }}
           />
-        </Box>
+        </header>
 
         <VocabularyList
           isLoading={isFetching}
@@ -112,23 +101,20 @@ export function VocabularyContainer() {
           onViewDetails={handleViewDetails}
           onClearFilters={handleClearFilters}
           hasActiveFilters={
-            !!(
-              filters.search ||
-              filters.topic ||
-              filters.difficulty !== 'all' ||
-              filters.module
-            )
+            !!(filters.search || filters.topic || filters.difficulty !== 'all' || filters.module)
           }
         />
 
         {!isFetching && words.length > 0 && (
-          <Pagination
-            currentPage={filters.page}
-            totalPages={totalPages}
-            onPageChange={(newPage) => setFilters({ page: newPage })}
-          />
+          <div className="mt-8 flex justify-center">
+            <Pagination
+              currentPage={filters.page}
+              totalPages={totalPages}
+              onPageChange={(newPage) => setFilters({ page: newPage })}
+            />
+          </div>
         )}
-      </Container>
-    </Box>
+      </div>
+    </main>
   );
 }

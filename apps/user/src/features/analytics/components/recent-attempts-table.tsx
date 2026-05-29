@@ -1,17 +1,16 @@
 import {
   Badge,
-  Box,
-  Heading,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
   Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-} from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@ielts/ui';
 import type { RecentAttempt } from '../types';
 
 interface RecentAttemptsTableProps {
@@ -21,7 +20,6 @@ interface RecentAttemptsTableProps {
 const formatDateTime = (dateString: string) => {
   const date = new Date(dateString);
 
-  // Full format for desktop
   const fullFormat = date
     .toLocaleString('en-US', {
       month: 'short',
@@ -33,7 +31,6 @@ const formatDateTime = (dateString: string) => {
     })
     .replace(',', ' at');
 
-  // Compact numeric format for mobile (1/19/26)
   const mobileDateOnly = date.toLocaleDateString('en-US', {
     month: 'numeric',
     day: 'numeric',
@@ -55,74 +52,55 @@ export function RecentAttemptsTable({ attempts }: RecentAttemptsTableProps) {
   return (
     <Card>
       <CardHeader>
-        <Heading size="md" color="gray.50">
+        <CardTitle className="text-lg font-semibold text-foreground">
           Recent Attempts
-        </Heading>
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <Box overflowX="auto">
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                <Th color="gray.400">Date</Th>
-                <Th color="gray.400">Difficulty</Th>
-                <Th color="gray.400" isNumeric>
-                  Score
-                </Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {attempts.map((attempt) => {
-                const { fullFormat, mobileDateOnly, timeOnly } = formatDateTime(
-                  attempt.completedAt
-                );
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead>Difficulty</TableHead>
+              <TableHead className="text-right">Score</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {attempts.map((attempt, index) => {
+              const { fullFormat, mobileDateOnly, timeOnly } = formatDateTime(
+                attempt.completedAt,
+              );
 
-                return (
-                  <Tr key={attempt._id}>
-                    <Td color="gray.300">
-                      {/* Desktop: Single line */}
-                      <Text
-                        display={{ base: 'none', md: 'block' }}
-                        whiteSpace="nowrap"
-                      >
-                        {fullFormat}
-                      </Text>
-                      {/* Mobile: Stacked */}
-                      <VStack
-                        align="start"
-                        spacing={0}
-                        display={{ base: 'flex', md: 'none' }}
-                      >
-                        <Text
-                          fontSize="sm"
-                          fontWeight="medium"
-                          whiteSpace="nowrap"
-                        >
-                          {mobileDateOnly}
-                        </Text>
-                        <Text
-                          fontSize="xs"
-                          color="gray.400"
-                          whiteSpace="nowrap"
-                        >
-                          {timeOnly}
-                        </Text>
-                      </VStack>
-                    </Td>
-                    <Td>
-                      <Badge>
-                        {attempt.difficulty?.toUpperCase() || 'MIXED'}
-                      </Badge>
-                    </Td>
-                    <Td color="gray.300" isNumeric>
-                      {attempt.score}
-                    </Td>
-                  </Tr>
-                );
-              })}
-            </Tbody>
-          </Table>
-        </Box>
+              return (
+                <TableRow key={attempt._id}>
+                  <TableCell className="text-foreground">
+                    {/* Desktop */}
+                    <span className="hidden md:inline whitespace-nowrap">
+                      {fullFormat}
+                    </span>
+                    {/* Mobile */}
+                    <span className="md:hidden flex flex-col">
+                      <span className="text-sm font-medium whitespace-nowrap">
+                        {mobileDateOnly}
+                      </span>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
+                        {timeOnly}
+                      </span>
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">
+                      {attempt.difficulty?.toUpperCase() || 'MIXED'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right text-foreground font-medium">
+                    {attempt.score}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );

@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Link as ChakraLink } from '@chakra-ui/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -14,23 +13,18 @@ export const NavLink = ({ href, children }: NavLinkProps) => {
   const isActive = pathname === href;
 
   return (
-    <ChakraLink
-      as={Link}
+    <Link
       href={href}
-      px={3}
-      py={2}
-      rounded="md"
-      fontWeight={isActive ? '600' : '500'}
-      color={isActive ? 'brand.400' : 'gray.300'}
-      _hover={{
-        textDecoration: 'none',
-        bg: 'gray.800',
-        color: 'white',
-      }}
       role="menuitem"
+      className={`px-3 py-1.5 text-[13px] uppercase font-mono tracking-wider rounded-xl transition-all duration-200
+        ${
+          isActive
+            ? 'text-white font-semibold bg-white/5 border border-white/10 shadow-sm'
+            : 'text-white/60 font-medium hover:text-white hover:bg-white/[0.03]'
+        }`}
     >
       {children}
-    </ChakraLink>
+    </Link>
   );
 };
 
@@ -48,61 +42,40 @@ export const MobileNavLink = ({ href, icon, children, onClick, color }: MobileNa
 
   const content = (
     <>
-      <Box fontSize="20px" color={color || (isActive ? 'brand.400' : 'gray.400')}>
+      <span
+        className={`shrink-0 transition-colors duration-150 ${color ? '' : isActive ? 'text-primary' : 'text-zinc-500 group-hover:text-zinc-300'}`}
+      >
         {icon}
-      </Box>
-      <Box flex="1">{children}</Box>
+      </span>
+      <span className="flex-1 text-left text-[13px] font-medium">
+        {children}
+      </span>
     </>
   );
 
+  const baseClassName = `group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors duration-150
+    ${
+      color ||
+      (isActive
+        ? 'text-primary bg-primary/[0.06]'
+        : 'text-zinc-300 hover:bg-white/[0.04] hover:text-white')
+    }`;
+
   if (href) {
     return (
-      <ChakraLink
-        as={Link}
-        href={href}
-        onClick={onClick}
-        display="flex"
-        alignItems="center"
-        gap={3}
-        px={4}
-        py={3}
-        rounded="md"
-        fontWeight={isActive ? '600' : '500'}
-        color={color || (isActive ? 'brand.400' : 'gray.300')}
-        _hover={{
-          bg: 'gray.800',
-          color: color || 'white',
-          textDecoration: 'none',
-        }}
-        minH="48px"
-        transition="all 0.2s"
-      >
+      <Link href={href} onClick={onClick} className={baseClassName}>
         {content}
-      </ChakraLink>
+      </Link>
     );
   }
 
   return (
-    <Box
+    <button
+      type="button"
       onClick={onClick}
-      display="flex"
-      alignItems="center"
-      gap={3}
-      px={4}
-      py={3}
-      rounded="md"
-      cursor="pointer"
-      fontWeight="500"
-      color={color || 'gray.300'}
-      _hover={{
-        bg: 'gray.800',
-        color: color || 'white',
-        textDecoration: 'none',
-      }}
-      minH="48px"
-      transition="all 0.2s"
+      className={`${baseClassName} w-full cursor-pointer`}
     >
       {content}
-    </Box>
+    </button>
   );
 };

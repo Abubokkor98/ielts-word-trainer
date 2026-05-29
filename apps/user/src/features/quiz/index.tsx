@@ -1,8 +1,8 @@
 'use client';
 
-import { useToast } from '@chakra-ui/react';
 import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
+import { useToast } from '@ielts/ui';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
@@ -17,7 +17,7 @@ import type { QuizAttempt } from './types';
 export function QuizContainer() {
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
   const router = useRouter();
-  const toast = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
   const { setLastQuizResult } = useQuizStore();
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('mixed');
@@ -44,8 +44,6 @@ export function QuizContainer() {
       toast({
         title: 'Quiz saved!',
         description: `You earned ${xpEarned} XP!`,
-        status: 'success',
-        duration: 4000,
       });
       queryClient.invalidateQueries({ queryKey: ['analytics', 'me'] });
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
@@ -56,8 +54,7 @@ export function QuizContainer() {
       toast({
         title: 'Failed to save quiz',
         description: "Your progress couldn't be saved.",
-        status: 'warning',
-        duration: 3000,
+        variant: 'destructive',
       });
     },
   });
@@ -127,8 +124,6 @@ export function QuizContainer() {
       toast({
         title: 'Login Required',
         description: 'Please login to take quizzes and track your progress',
-        status: 'info',
-        duration: 3000,
       });
       router.push('/login');
       return;

@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Container, Heading, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { AnalyticsEmptyState } from './components/analytics-empty-state';
 import { AnalyticsSkeleton } from './components/analytics-skeleton';
 import { AnalyticsStatCard } from './components/analytics-stat-card';
@@ -12,58 +11,56 @@ import { useAnalytics } from './hooks/use-analytics';
 export function AnalyticsContainer() {
   const { data: analytics, isLoading } = useAnalytics();
 
-  if (isLoading) {
-    return <AnalyticsSkeleton />;
-  }
-
-  if (!analytics || analytics.totalQuizzes === 0) {
-    return <AnalyticsEmptyState />;
-  }
-
   const overallAccuracy =
-    analytics.totalQuestionsAnswered > 0
+    analytics && analytics.totalQuestionsAnswered > 0
       ? Math.round((analytics.correctAnswers / analytics.totalQuestionsAnswered) * 100)
       : 0;
 
   return (
-    <Box bg="gray.900" py={8}>
-      <Container maxW="7xl">
-        <VStack align="stretch" spacing={8}>
-          <Box>
-            <Heading as="h1" size="2xl" color="gray.50" mb={2}>
-              Quiz Analytics
-            </Heading>
-            <Text fontSize="lg" color="gray.400">
-              Track your performance
-            </Text>
-          </Box>
+    <main className="bg-background py-8 w-full min-h-[80vh]">
+      <div className="container mx-auto px-6 max-w-[1324px]">
+        {isLoading ? (
+          <AnalyticsSkeleton />
+        ) : !analytics || analytics.totalQuizzes === 0 ? (
+          <AnalyticsEmptyState />
+        ) : (
+          <div className="flex flex-col gap-8">
+            <header>
+              <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                Quiz Analytics
+              </h1>
+              <p className="text-base text-muted-foreground">
+                Track your performance
+              </p>
+            </header>
 
-          <SimpleGrid columns={{ base: 1, md: 4 }} spacing={6}>
-            <AnalyticsStatCard
-              label="TOTAL QUIZZES"
-              value={analytics.totalQuizzes}
-              color="brand.400"
-            />
-            <AnalyticsStatCard
-              label="AVG SCORE"
-              value={`${analytics.averageScore}%`}
-              color="green.400" // Changed from success.400 to standard green.400 to match dashboard
-            />
-            <AnalyticsStatCard
-              label="BEST SCORE"
-              value={`${analytics.bestScore}%`}
-              color="orange.400" // Changed from warning.400 to orange.400
-            />
-            <AnalyticsStatCard label="ACCURACY" value={`${overallAccuracy}%`} color="brand.400" />
-          </SimpleGrid>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <AnalyticsStatCard
+                label="TOTAL QUIZZES"
+                value={analytics.totalQuizzes}
+              />
+              <AnalyticsStatCard
+                label="AVG SCORE"
+                value={`${analytics.averageScore}%`}
+              />
+              <AnalyticsStatCard
+                label="BEST SCORE"
+                value={`${analytics.bestScore}%`}
+              />
+              <AnalyticsStatCard
+                label="ACCURACY"
+                value={`${overallAccuracy}%`}
+              />
+            </div>
 
-          <PerformanceChart data={analytics.performanceOverTime} />
+            <PerformanceChart data={analytics.performanceOverTime} />
 
-          <DifficultyChart data={analytics.accuracyByDifficulty} />
+            <DifficultyChart data={analytics.accuracyByDifficulty} />
 
-          <RecentAttemptsTable attempts={analytics.recentAttempts} />
-        </VStack>
-      </Container>
-    </Box>
+            <RecentAttemptsTable attempts={analytics.recentAttempts} />
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

@@ -1,19 +1,15 @@
-import { Box, Container, SimpleGrid, Skeleton, VStack } from '@chakra-ui/react';
+import { Skeleton } from '@ielts/ui';
 
 export function DashboardSkeleton() {
   return (
-    <Box bg="gray.900" py={8}>
-      <Container maxW="7xl">
-        <VStack spacing={8} align="stretch">
-          <Skeleton height="60px" />
-          <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={6}>
-            {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} height="120px" />
-            ))}
-          </SimpleGrid>
-          <Skeleton height="200px" />
-        </VStack>
-      </Container>
-    </Box>
+    <div className="flex flex-col gap-8 w-full">
+      <Skeleton className="h-[60px] w-full rounded-xl" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} className="h-[120px] w-full rounded-xl" />
+        ))}
+      </div>
+      <Skeleton className="h-[200px] w-full rounded-xl" />
+    </div>
   );
 }

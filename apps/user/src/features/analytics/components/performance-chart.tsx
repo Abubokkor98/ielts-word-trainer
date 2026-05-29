@@ -1,5 +1,4 @@
-import { Heading } from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@ielts/ui';
 import {
   CartesianGrid,
   Line,
@@ -21,23 +20,27 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
   return (
     <Card>
       <CardHeader>
-        <Heading size="md" color="gray.50">
+        <CardTitle className="text-lg font-semibold text-foreground">
           Performance Trend
-        </Heading>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#4a5568" />
-            <XAxis dataKey="date" stroke="#cbd5e0" />
-            <YAxis stroke="#cbd5e0" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+            <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
             <Tooltip
+              cursor={{ stroke: 'rgba(255, 255, 255, 0.1)', strokeWidth: 1, strokeDasharray: '3 3' }}
               contentStyle={{
-                backgroundColor: '#2d3748',
-                border: '1px solid #4a5568',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                borderRadius: '8px',
+                color: 'hsl(var(--foreground))',
               }}
+              itemStyle={{ color: 'hsl(var(--primary))' }}
             />
-            <Line type="monotone" dataKey="score" stroke="#1e88e5" strokeWidth={2} />
+            <Line type="monotone" dataKey="score" stroke="hsl(var(--primary))" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </CardContent>
