@@ -20,7 +20,7 @@ export function ProfileContainer() {
 
   return (
     <main className="bg-background py-8 w-full min-h-[80vh]">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-6 max-w-6xl">
         {isLoading ? (
           <ProfileSkeleton />
         ) : isError || !profile ? (

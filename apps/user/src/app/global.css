@@ -479,7 +479,7 @@
 .ln-test-section {
   position: relative;
   width: 100%;
-  padding: 0 0 80px;
+  padding: 0;
   background: #120f17;
   z-index: 4;
   overflow: hidden;
@@ -708,7 +708,7 @@
 .ln-cta-section {
   position: relative;
   width: 100%;
-  padding: 100px 0 120px;
+  padding: 0 0 120px;
   background: #120f17;
   z-index: 4;
   overflow: hidden;
@@ -835,7 +835,7 @@
 
 @media (max-width: 600px) {
   .ln-cta-section {
-    padding: 72px 0 96px;
+    padding: 0 0 96px;
   }
 
   .ln-cta-card {
@@ -970,6 +970,7 @@
 .ln-footer-col {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
   min-width: 140px;
 }
@@ -985,9 +986,8 @@
 }
 
 .ln-footer-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-block;
+  width: fit-content;
   font-family: "Geist", sans-serif;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
@@ -1000,6 +1000,10 @@
 }
 
 .ln-footer-link-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 4px;
+  margin-top: -2px;
   opacity: 0.5;
   transition: opacity 0.2s ease;
 }
@@ -1034,27 +1038,8 @@
 }
 
 .ln-footer-heart {
-  color: #a855f7;
+  color: #ffffff;
   display: inline-block;
-  animation: footerHeartBeat 1.2s infinite;
-}
-
-@keyframes footerHeartBeat {
-  0% {
-    transform: scale(1);
-  }
-  14% {
-    transform: scale(1.12);
-  }
-  28% {
-    transform: scale(1);
-  }
-  42% {
-    transform: scale(1.12);
-  }
-  70% {
-    transform: scale(1);
-  }
 }
 
 .ln-footer-creator {
@@ -1065,7 +1050,7 @@
 }
 
 .ln-footer-creator:hover {
-  color: #a855f7;
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .ln-footer-copy {
@@ -1101,9 +1086,16 @@
     margin-bottom: 40px;
   }
 
-  .ln-footer-col {
+  .ln-footer-nav {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px 16px;
     width: 100%;
-    min-width: 100%;
+  }
+
+  .ln-footer-col {
+    width: auto;
+    min-width: 0;
   }
 
   .ln-footer-divider {
@@ -1323,5 +1315,306 @@
 .list-empty-state:hover {
   border-color: rgba(168, 85, 247, 0.25);
   background: rgba(168, 85, 247, 0.008);
+}
+
+/* ══════════════════════════════════════════════
+   404 Not Found Page
+   ══════════════════════════════════════════════ */
+
+.nf-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #120f17;
+  overflow: hidden;
+  padding: 32px 20px;
+}
+
+/* Noise texture */
+.nf-noise {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 128px 128px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Container */
+.nf-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 540px;
+  width: 100%;
+}
+
+/* Giant error code */
+.nf-error-code {
+  font-family: 'Geist Mono', monospace;
+  font-size: clamp(96px, 18vw, 160px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin: 0 0 -28px;
+  background: linear-gradient(
+    180deg,
+    rgba(168, 85, 247, 0.25) 0%,
+    rgba(168, 85, 247, 0.04) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  user-select: none;
+  animation: nfCodeReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes nfCodeReveal {
+  from { opacity: 0; transform: translateY(24px) scale(0.92); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+/* Card wrapper with animated border */
+.nf-card-wrapper {
+  position: relative;
+  width: 100%;
+  animation: nfCardSlideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+@keyframes nfCardSlideUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nf-card-border {
+  position: absolute;
+  inset: -1px;
+  border-radius: 22px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--cta-angle),
+    transparent 0%,
+    rgba(168, 85, 247, 0.4) 12%,
+    transparent 24%,
+    transparent 50%,
+    rgba(180, 151, 207, 0.35) 62%,
+    transparent 74%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  animation: cta-border-spin 8s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Main dictionary card */
+.nf-card {
+  position: relative;
+  z-index: 1;
+  padding: 36px 32px 28px;
+  border-radius: 22px;
+  background: rgba(18, 15, 23, 0.85);
+  backdrop-filter: blur(32px) saturate(1.3);
+  -webkit-backdrop-filter: blur(32px) saturate(1.3);
+  box-shadow:
+    0 4px 48px rgba(0, 0, 0, 0.35),
+    inset 0 0.5px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* Header */
+.nf-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nf-word {
+  font-family: 'Geist', sans-serif;
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.nf-pos-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: 9999px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Divider */
+.nf-divider {
+  width: 100%;
+  height: 1px;
+  margin: 20px 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 30%,
+    rgba(255, 255, 255, 0.08) 70%,
+    transparent 100%
+  );
+}
+
+/* Content sections */
+.nf-section {
+  margin-bottom: 16px;
+}
+
+.nf-label {
+  display: block;
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.25);
+  margin-bottom: 8px;
+}
+
+.nf-definition {
+  font-family: 'Geist', sans-serif;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+.nf-example {
+  font-family: 'Geist', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+  margin: 0;
+  padding-left: 14px;
+  border-left: 2px solid rgba(168, 85, 247, 0.2);
+}
+
+.nf-em {
+  color: #a855f7;
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* Synonyms */
+.nf-synonyms {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.nf-synonym-badge {
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nf-page .nf-synonyms .nf-synonym-badge {
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nf-page .nf-synonyms .nf-synonym-badge:hover {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(168, 85, 247, 0.08);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+/* Action buttons */
+.nf-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.nf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  height: 42px;
+  padding: 0 20px;
+  transition: all 0.2s ease;
+}
+
+.nf-page .nf-actions .nf-btn.nf-btn--primary {
+  background: rgba(168, 85, 247, 0.05);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.08);
+}
+
+.nf-page .nf-actions .nf-btn.nf-btn--primary:hover {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: #a855f7;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.18);
+}
+
+.nf-page .nf-actions .nf-btn.nf-btn--ghost {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nf-page .nf-actions .nf-btn.nf-btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 540px) {
+  .nf-card {
+    padding: 28px 22px 24px;
+  }
+
+  .nf-error-code {
+    margin-bottom: -20px;
+  }
+
+  .nf-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nf-btn {
+    justify-content: center;
+    width: 100%;
+  }
 }
 

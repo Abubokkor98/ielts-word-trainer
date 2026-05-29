@@ -93,7 +93,7 @@ export function WordListContainer() {
 
   return (
     <div className="bg-background min-h-[85vh] py-12 w-full text-foreground relative">
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
+      <div className="container mx-auto px-6 max-w-6xl relative z-10">
         <motion.div
           initial="hidden"
           animate="show"
