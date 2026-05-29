@@ -15,18 +15,33 @@ const config: ThemeConfig = {
 const theme = extendTheme({
   config,
   colors: {
-    // Primary brand color - Blue spectrum for trust and professionalism
+    // Primary brand color - Purple spectrum matching React Bits for modern visual design
     brand: {
-      50: '#e3f2fd',
-      100: '#bbdefb',
-      200: '#90caf9',
-      300: '#64b5f6',
-      400: '#42a5f5',
-      500: '#2196f3', // Primary - 4.5:1 on dark backgrounds
-      600: '#1e88e5', // 7:1 on dark backgrounds (AAA)
-      700: '#1976d2',
-      800: '#1565c0',
-      900: '#0d47a1',
+      50: '#faf5ff',
+      100: '#e9d5ff',
+      200: '#d8b4fe',
+      300: '#c084fc',
+      400: '#a855f7', // brand purple primary
+      500: '#9333ea', // Primary - 7:1 on dark backgrounds (AAA)
+      600: '#7c3aed',
+      700: '#6d28d9',
+      800: '#5b21b6',
+      900: '#4c1d95',
+    },
+    // Gray spectrum custom tailored to match React Bits dark theme (#120F17 background, #1B1722 cards, #2F293A borders)
+    gray: {
+      50: '#fafafa',
+      100: '#f4f4f5',
+      200: '#e4e4e7',
+      300: '#cccccc',
+      400: '#a1a1aa',
+      500: '#716b7a',
+      600: '#373044', // hover bg
+      700: '#2f293a', // Primary border color
+      750: '#241f2e',
+      800: '#1b1722', // Card background color
+      850: '#15121b', // Elevated card / background shade
+      900: '#120f17', // Main body background color
     },
     // Success states
     success: {
@@ -54,8 +69,8 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: 'gray.900', // #1a202c
-        color: 'gray.50', // #f7fafc - 15.8:1 contrast (AAA)
+        bg: 'gray.900', // #120f17 - React Bits Main Background
+        color: 'gray.100', // f4f4f5 - High contrast readable text
       },
       '*::placeholder': {
         color: 'gray.500',

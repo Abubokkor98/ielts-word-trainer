@@ -1,14 +1,18 @@
-import { Box, Container, Skeleton, VStack } from '@chakra-ui/react';
+import { Skeleton } from '@ielts/ui';
 
 export function ProfileSkeleton() {
   return (
-    <Box bg="gray.900" py={8}>
-      <Container maxW="6xl">
-        <VStack spacing={8} align="stretch">
-          <Skeleton height="60px" />
-          <Skeleton height="400px" />
-        </VStack>
-      </Container>
-    </Box>
+    <div className="flex flex-col gap-8 w-full">
+      <Skeleton className="h-[60px] w-full rounded-xl" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="flex flex-col gap-6">
+          <Skeleton className="h-[200px] w-full rounded-xl" />
+          <Skeleton className="h-[250px] w-full rounded-xl" />
+        </div>
+        <div className="flex flex-col gap-6">
+          <Skeleton className="h-[300px] w-full rounded-xl" />
+        </div>
+      </div>
+    </div>
   );
 }

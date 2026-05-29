@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { useQuery } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { useEffect, useRef, useState } from 'react';
@@ -19,7 +19,7 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
   const [questionStartTime, setQuestionStartTime] = useState<Date | null>(null);
   const [questionAnswers, setQuestionAnswers] = useState<Map<number, QuestionAnswer>>(new Map());
 
-  const toast = useToast();
+  const { toast } = useToast();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -56,15 +56,12 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
         toast({
           title: 'Not Enough Words',
           description: 'You need to learn more vocabulary before taking a quiz.',
-          status: 'info',
-          duration: 4000,
         });
       } else {
         toast({
           title: 'Failed to Generate Quiz',
           description: error.response?.data?.message || 'Please try again',
-          status: 'error',
-          duration: 4000,
+          variant: 'destructive',
         });
       }
       return;
@@ -96,18 +93,15 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
       else qualityRating = 3;
     }
 
-    if (!isCorrect) {
-      toast({ title: 'Incorrect', status: 'error', duration: 1500 });
-    } else {
-      toast({ title: 'Correct!', status: 'success', duration: 1500 });
-    }
+    const correctOptionText =
+      currentQuestion.options.find((opt) => opt.id === currentQuestion.correctAnswer)?.text || '';
+
+    // We rely on the inline UI for correct/incorrect feedback instead of toasts.
 
     const timeSpentMs = questionStartTime ? Date.now() - questionStartTime.getTime() : 0;
 
     const selectedOptionText =
       currentQuestion.options.find((opt) => opt.id === optionId)?.text || '';
-    const correctOptionText =
-      currentQuestion.options.find((opt) => opt.id === currentQuestion.correctAnswer)?.text || '';
 
     setQuestionAnswers((prev) => {
       const newMap = new Map(prev);

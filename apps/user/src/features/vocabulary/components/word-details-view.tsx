@@ -1,22 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  Box,
-  Button,
-  Container,
-  Divider,
-  Heading,
-  HStack,
-  SimpleGrid,
-  Stack,
-  Text,
-  VStack,
-  Wrap,
-  WrapItem,
-} from '@chakra-ui/react';
 import { useAuthStore } from '@ielts/auth';
-import { PronunciationButton } from '@ielts/ui';
+import { Badge, Button, cn, PronunciationButton, Separator } from '@ielts/ui';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -27,240 +12,168 @@ interface WordDetailsViewProps {
   word: Word;
 }
 
+const difficultyStyles: Record<string, string> = {
+  beginner: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/10',
+  intermediate: 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/10',
+  advanced: 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/10',
+};
+
 export function WordDetailsView({ word }: WordDetailsViewProps) {
   const { user } = useAuthStore();
 
-  const difficultyColorScheme =
-    word.difficulty === 'beginner'
-      ? 'green'
-      : word.difficulty === 'intermediate'
-      ? 'orange'
-      : 'red';
-
   return (
-    <Box bg="gray.900" minH="80vh" py={12}>
-      <Container maxW="3xl">
-        <Box display="flex" justifyContent="center" mb={8}>
-          <Button
-            as={Link}
-            href="/vocabulary"
-            leftIcon={<ArrowLeft size={16} />}
-            variant="ghost"
-            color="gray.400"
-            _hover={{ color: 'gray.100', bg: 'gray.800' }}
-          >
-            Back to Library
-          </Button>
-        </Box>
+    <main className="dark w-full bg-background min-h-[80vh] py-12">
+      <div className="container max-w-3xl px-6 mx-auto">
+        <div className="flex justify-center mb-8">
+          <Link href="/vocabulary">
+            <Button
+              variant="ghost"
+              className="text-muted-foreground hover:text-foreground hover:bg-accent gap-2"
+            >
+              <ArrowLeft size={16} />
+              Back to Library
+            </Button>
+          </Link>
+        </div>
 
-        <Box
-          bg="gray.800"
-          borderRadius="lg"
-          p={8}
-          borderWidth="1px"
-          borderColor="gray.700"
-          boxShadow="lg"
-        >
-          <HStack justify="space-between" align="start" mb={6}>
-            <VStack align="stretch" spacing={2} w="full">
-              <HStack spacing={3} align="center" flexWrap="wrap" mb={2}>
-                <Heading as="h1" size="2xl" color="brand.400" lineHeight="shorter">
+        <article className="bg-card/50 rounded-lg p-8 border border-border shadow-lg">
+          <header className="flex justify-between items-start gap-4 mb-6">
+            <div className="flex flex-col gap-2 w-full">
+              <div className="flex flex-wrap items-center gap-3 mb-3">
+                <h1 className="text-3xl sm:text-4xl font-extrabold text-primary leading-tight">
                   {word.word}
-                </Heading>
+                </h1>
                 <PronunciationButton word={word.word} size="sm" />
-                <SaveToListButton
-                  wordId={word._id}
-                  isAuthenticated={!!user}
-                />
+                <SaveToListButton wordId={word._id} isAuthenticated={!!user} />
                 {word.partOfSpeech && (
-                  <Badge
-                    colorScheme="blue"
-                    variant="solid"
-                    fontSize="sm"
-                    px={2}
-                    py={0.5}
-                    borderRadius="md"
-                    textTransform="uppercase"
-                  >
+                  <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/10 text-xs px-2.5 py-0.5 rounded-md uppercase font-semibold">
                     {word.partOfSpeech}
                   </Badge>
                 )}
-              </HStack>
+              </div>
 
-              <Wrap spacing={2}>
-                <WrapItem>
-                  <Badge
-                    colorScheme={difficultyColorScheme}
-                    fontSize="xs"
-                    px={2}
-                    py={1}
-                    borderRadius="md"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
-                  >
-                    {word.difficulty}
-                  </Badge>
-                </WrapItem>
+              <div className="flex flex-wrap gap-2">
+                <Badge
+                  className={cn(
+                    'capitalize border font-medium px-2.5 py-1 rounded-md text-xs',
+                    difficultyStyles[word.difficulty] ||
+                      'bg-muted text-muted-foreground border-border',
+                  )}
+                >
+                  {word.difficulty}
+                </Badge>
                 {word.topics &&
                   word.topics.length > 0 &&
-                  word.topics.map((topic) => {
-                    return (
-                      <WrapItem key={topic._id}>
-                        <Badge
-                          colorScheme="purple"
-                          variant="subtle"
-                          fontSize="xs"
-                          px={2}
-                          py={1}
-                          borderRadius="full"
-                          textTransform="uppercase"
-                          letterSpacing="wider"
-                        >
-                          {topic.name}
-                        </Badge>
-                      </WrapItem>
-                    );
-                  })}
-              </Wrap>
-            </VStack>
-          </HStack>
+                  word.topics.map((topic) => (
+                    <Badge
+                      key={topic._id}
+                      className="bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/10 text-xs px-2.5 py-1 rounded-full uppercase font-medium"
+                    >
+                      {topic.name}
+                    </Badge>
+                  ))}
+              </div>
+            </div>
+          </header>
 
-          <Divider borderColor="gray.700" mb={6} />
+          <Separator className="my-6 bg-border" />
 
-          <Stack spacing={6}>
-            <Box>
-              <Heading
-                as="h2"
-                size="xs"
-                color="gray.400"
-                textTransform="uppercase"
-                letterSpacing="wider"
-                mb={2}
+          <div className="flex flex-col gap-6">
+            <section aria-labelledby="definition-title">
+              <h2
+                id="definition-title"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
               >
                 Definition
-              </Heading>
-              <Text fontSize="lg" color="gray.100">
-                {word.meaning}
-              </Text>
-            </Box>
+              </h2>
+              <p className="text-lg text-foreground font-sans">{word.meaning}</p>
+            </section>
 
-            <Box>
-              <Heading
-                as="h2"
-                size="xs"
-                color="gray.400"
-                textTransform="uppercase"
-                letterSpacing="wider"
-                mb={2}
+            <section aria-labelledby="example-title">
+              <h2
+                id="example-title"
+                className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
               >
                 Example Sentence
-              </Heading>
-              <Text fontSize="md" color="gray.300" fontStyle="italic">
+              </h2>
+              <p className="text-md text-muted-foreground/80 italic font-serif">
                 "{word.exampleSentence}"
-              </Text>
-            </Box>
+              </p>
+            </section>
 
             {/* Synonyms & Antonyms - Two Column Layout */}
             {((word.synonyms && word.synonyms.length > 0) ||
               (word.antonyms && word.antonyms.length > 0)) && (
-              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Synonyms */}
                 {word.synonyms && word.synonyms.length > 0 && (
-                  <Box>
-                    <Heading
-                      as="h2"
-                      size="xs"
-                      color="gray.400"
-                      textTransform="uppercase"
-                      letterSpacing="wider"
-                      mb={2}
+                  <section aria-labelledby="synonyms-title">
+                    <h2
+                      id="synonyms-title"
+                      className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
                     >
                       Synonyms
-                    </Heading>
-                    <Wrap spacing={1.5}>
+                    </h2>
+                    <div className="flex flex-wrap gap-1.5">
                       {word.synonyms.map((syn) => (
-                        <WrapItem key={syn}>
-                          <Badge
-                            colorScheme="green"
-                            fontSize="xs"
-                            px={2.5}
-                            py={1}
-                            borderRadius="md"
-                          >
-                            {syn}
-                          </Badge>
-                        </WrapItem>
+                        <Badge
+                          key={syn}
+                          className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/10 text-xs px-2.5 py-1 rounded-md"
+                        >
+                          {syn}
+                        </Badge>
                       ))}
-                    </Wrap>
-                  </Box>
+                    </div>
+                  </section>
                 )}
 
                 {/* Antonyms */}
                 {word.antonyms && word.antonyms.length > 0 && (
-                  <Box>
-                    <Heading
-                      as="h2"
-                      size="xs"
-                      color="gray.400"
-                      textTransform="uppercase"
-                      letterSpacing="wider"
-                      mb={2}
+                  <section aria-labelledby="antonyms-title">
+                    <h2
+                      id="antonyms-title"
+                      className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
                     >
                       Antonyms
-                    </Heading>
-                    <Wrap spacing={1.5}>
+                    </h2>
+                    <div className="flex flex-wrap gap-1.5">
                       {word.antonyms.map((ant) => (
-                        <WrapItem key={ant}>
-                          <Badge
-                            colorScheme="red"
-                            fontSize="xs"
-                            px={2.5}
-                            py={1}
-                            borderRadius="md"
-                          >
-                            {ant}
-                          </Badge>
-                        </WrapItem>
+                        <Badge
+                          key={ant}
+                          className="bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/10 text-xs px-2.5 py-1 rounded-md"
+                        >
+                          {ant}
+                        </Badge>
                       ))}
-                    </Wrap>
-                  </Box>
+                    </div>
+                  </section>
                 )}
-              </SimpleGrid>
+              </div>
             )}
 
             {word.modules && word.modules.length > 0 && (
-              <Box>
-                <Heading
-                  as="h2"
-                  size="xs"
-                  color="gray.400"
-                  textTransform="uppercase"
-                  letterSpacing="wider"
-                  mb={2}
+              <section aria-labelledby="module-focus-title">
+                <h2
+                  id="module-focus-title"
+                  className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
                 >
                   IELTS Module Focus
-                </Heading>
-                <Wrap spacing={2}>
+                </h2>
+                <div className="flex flex-wrap gap-2">
                   {word.modules.map((mod) => (
-                    <WrapItem key={mod}>
-                      <Badge
-                        colorScheme="orange"
-                        variant="outline"
-                        px={2.5}
-                        py={1}
-                        borderRadius="md"
-                        textTransform="capitalize"
-                      >
-                        {mod}
-                      </Badge>
-                    </WrapItem>
+                    <Badge
+                      key={mod}
+                      className="bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/10 text-xs px-2.5 py-1 rounded-md capitalize font-medium"
+                    >
+                      {mod}
+                    </Badge>
                   ))}
-                </Wrap>
-              </Box>
+                </div>
+              </section>
             )}
-          </Stack>
-        </Box>
-      </Container>
-    </Box>
+          </div>
+        </article>
+      </div>
+    </main>
   );
 }

@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
@@ -9,7 +9,7 @@ import type { LoginCredentials } from '../types';
 export function useLogin() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const toast = useToast();
+  const { toast } = useToast();
   const { setUser, setToken } = useAuthStore();
 
   return useMutation({
@@ -24,11 +24,8 @@ export function useLogin() {
         if (!cookieCheck.data?.data?.cookiesValid) {
           toast({
             title: 'Warning: Session may not persist',
-            description:
-              'Cookies were not set correctly. You may be logged out on refresh.',
-            status: 'warning',
-            duration: 5000,
-            isClosable: true,
+            description: 'Cookies were not set correctly. You may be logged out on refresh.',
+            variant: 'destructive',
           });
         }
       } catch (error) {
@@ -39,8 +36,6 @@ export function useLogin() {
       toast({
         title: 'Login successful!',
         description: `Welcome back, ${data.data.name}!`,
-        status: 'success',
-        duration: 3000,
       });
 
       // Get redirect URL from query params, default to home page
@@ -48,9 +43,7 @@ export function useLogin() {
 
       // Security: Ensure redirect is a relative path (not external URL or protocol-relative)
       const safeRedirect =
-        redirectTo.startsWith('/') && !redirectTo.startsWith('//')
-          ? redirectTo
-          : '/';
+        redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/';
 
       router.push(safeRedirect);
     },
@@ -58,8 +51,7 @@ export function useLogin() {
       toast({
         title: 'Login failed',
         description: error.response?.data?.message || 'Invalid credentials',
-        status: 'error',
-        duration: 5000,
+        variant: 'destructive',
       });
     },
   });

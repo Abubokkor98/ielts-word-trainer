@@ -9,7 +9,10 @@ export class QuizAnalyticsService {
     }
     const userObjectId = new mongoose.Types.ObjectId(userId);
 
-    const [statsResult, recentAttempts, difficultyStats, topicStats] =
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const [statsResult, recentAttempts, difficultyStats, topicStats, trendAttempts] =
       await Promise.all([
         // 1. Overall Stats Aggregation (Optimized)
         QuizAttempt.aggregate([
@@ -57,6 +60,11 @@ export class QuizAnalyticsService {
             },
           },
         ]),
+
+        // 5. Trend attempts (Last 7 days)
+        QuizAttempt.find({ userId: userObjectId, createdAt: { $gte: sevenDaysAgo } })
+          .sort({ createdAt: -1 })
+          .lean(),
       ]);
 
     // Handle empty state
@@ -100,12 +108,11 @@ export class QuizAnalyticsService {
       return acc;
     }, {} as Record<string, any>);
 
-    // Format Trend (last 10)
-    const progressTrend = [...recentAttempts]
+    // Format Trend (last 7 days)
+    const progressTrend = [...trendAttempts]
       .reverse() // Oldest to newest
       .map((attempt, index) => ({
-        attempt:
-          statsResult[0].totalAttempts - recentAttempts.length + index + 1, // Approximation for graph X-axis
+        attempt: index + 1, // Approximation for graph X-axis
         score:
           attempt.totalQuestions > 0
             ? ((attempt.score / attempt.totalQuestions) * 100).toFixed(1)

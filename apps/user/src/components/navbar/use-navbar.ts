@@ -1,9 +1,5 @@
-import { useDisclosure, useToast } from '@chakra-ui/react';
-import {
-  axiosInstance,
-  selectIsAuthenticated,
-  useAuthStore,
-} from '@ielts/auth';
+import { useToast } from '@ielts/ui';
+import { axiosInstance, selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { useQuizStore } from '@ielts/shared';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -21,7 +17,10 @@ interface SrsStats {
 }
 
 export function useNavbar() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
+  const onOpen = () => setIsOpen(true);
+  const onClose = () => setIsOpen(false);
+
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
@@ -29,15 +28,17 @@ export function useNavbar() {
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
 
   const router = useRouter();
-  const toast = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 0);
+      setIsScrolled(window.scrollY > 50);
     };
+
+    handleScroll();
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -73,8 +74,6 @@ export function useNavbar() {
 
       toast({
         title: 'Logged out successfully',
-        status: 'success',
-        duration: 2000,
       });
 
       router.push('/');
@@ -83,15 +82,13 @@ export function useNavbar() {
       console.error('Logout failed:', error);
 
       const errorMessage = axios.isAxiosError(error)
-        ? error.response?.data?.error ?? 'Failed to logout. Please try again.'
+        ? (error.response?.data?.error ?? 'Failed to logout. Please try again.')
         : 'Failed to logout. Please try again.';
 
       toast({
         title: 'Logout failed',
         description: errorMessage,
-        status: 'error',
-        duration: 4000,
-        isClosable: true,
+        variant: 'destructive',
       });
 
       // Don't clear state - user stays logged in

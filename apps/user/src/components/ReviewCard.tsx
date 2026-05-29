@@ -1,5 +1,4 @@
-import { Box, Button, Heading, HStack, SimpleGrid, Text } from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, cn } from '@ielts/ui';
 import Link from 'next/link';
 
 interface ReviewCardProps {
@@ -17,53 +16,90 @@ export const ReviewCard = ({ stats }: ReviewCardProps) => {
 
   return (
     <Card
-      bg="gradient"
-      borderWidth="2px"
-      borderColor={isDue ? 'brand.500' : 'green.500'}
-      position="relative"
-      overflow="hidden"
+      className={cn(
+        "relative overflow-hidden border-2 transition-all duration-300",
+        isDue
+          ? "border-violet-500/30 bg-card/50 shadow-[0_0_30px_rgba(139,92,246,0.05)]"
+          : "border-emerald-500/30 bg-card/50 shadow-[0_0_30px_rgba(16,185,129,0.05)]"
+      )}
     >
-      <CardHeader>
-        <HStack justify="space-between" align="center" wrap="wrap" gap={4}>
-          <Box>
-            <HStack mb={1}>
-              <Text fontSize="2xl">{isDue ? '📝' : '🎉'}</Text>
-              <Heading size="md" color="gray.50">
+      {/* Premium subtle gradient glows inside the cards */}
+      <div
+        className={cn(
+          "absolute -right-24 -top-24 w-48 h-48 rounded-full blur-[80px] pointer-events-none opacity-40",
+          isDue ? "bg-violet-500" : "bg-emerald-500"
+        )}
+      />
+      <div
+        className={cn(
+          "absolute -left-24 -bottom-24 w-48 h-48 rounded-full blur-[80px] pointer-events-none opacity-20",
+          isDue ? "bg-purple-500" : "bg-teal-500"
+        )}
+      />
+
+      <CardHeader className="p-6 pb-4 relative z-10">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <span className="text-2xl" role="img" aria-label={isDue ? "notepad" : "tada"}>
+                {isDue ? '📝' : '🎉'}
+              </span>
+              <h3 className="text-xl font-bold tracking-tight text-foreground">
                 {isDue ? 'Daily Review' : 'All Caught Up!'}
-              </Heading>
-            </HStack>
-            <Text color="gray.400">
+              </h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
               {isDue
                 ? `You have ${stats.dueToday} word${stats.dueToday > 1 ? 's' : ''} ready to review`
                 : 'Great job! You have no words due for review right now.'}
-            </Text>
-          </Box>
-          <Link href="/review">
+            </p>
+          </div>
+          <Link href="/review" className={cn(!isDue && "pointer-events-none")}>
             <Button
               size="lg"
-              colorScheme={isDue ? 'brand' : 'green'}
-              bg={isDue ? 'brand.500' : 'green.600'}
-              _hover={{ bg: isDue ? 'brand.600' : 'green.700' }}
-              isDisabled={!isDue}
-              rightIcon={isDue ? <span>→</span> : undefined}
+              disabled={!isDue}
+              className={cn(
+                "w-full sm:w-auto font-semibold shadow-md transition-all duration-300 group",
+                isDue
+                  ? "bg-violet-600 text-white hover:bg-violet-500 hover:shadow-violet-500/20 active:scale-95"
+                  : "bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 cursor-not-allowed"
+              )}
             >
-              {isDue ? 'Start Review' : 'Review Ahead'}
+              {isDue ? (
+                <span className="flex items-center gap-2">
+                  Start Review 
+                  <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                </span>
+              ) : (
+                'Review Ahead'
+              )}
             </Button>
           </Link>
-        </HStack>
+        </div>
       </CardHeader>
-      <CardContent>
-        <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4} mt={2}>
-          <StatBox label="Learning" value={stats.learning} color="blue.400" bg="blue.900" />
-          <StatBox label="Reviewing" value={stats.reviewing} color="yellow.400" bg="yellow.900" />
-          <StatBox label="Mastered" value={stats.mastered} color="green.400" bg="green.900" />
+      <CardContent className="p-6 pt-0 relative z-10">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+          <StatBox
+            label="Learning"
+            value={stats.learning}
+            textColor="text-sky-400"
+          />
+          <StatBox
+            label="Reviewing"
+            value={stats.reviewing}
+            textColor="text-amber-400"
+          />
+          <StatBox
+            label="Mastered"
+            value={stats.mastered}
+            textColor="text-emerald-400"
+          />
           <StatBox
             label="Total Words"
             value={stats.totalWords}
-            color="purple.400"
-            bg="purple.900"
+            textColor="text-violet-400"
           />
-        </SimpleGrid>
+        </div>
       </CardContent>
     </Card>
   );
@@ -72,29 +108,20 @@ export const ReviewCard = ({ stats }: ReviewCardProps) => {
 const StatBox = ({
   label,
   value,
-  color,
-  bg,
+  textColor,
 }: {
   label: string;
   value: number;
-  color: string;
-  bg: string;
+  textColor: string;
 }) => (
-  <Box
-    textAlign="center"
-    p={3}
-    bg="gray.800"
-    borderRadius="lg"
-    borderWidth="1px"
-    borderColor="gray.700"
-    transition="all 0.2s"
-    _hover={{ borderColor: color, bg: bg }}
+  <div
+    className="text-center p-4 rounded-xl border border-border bg-background/60 transition-all duration-300 hover:border-[rgba(255,255,255,0.15)] hover:-translate-y-0.5"
   >
-    <Text color={color} fontSize="2xl" fontWeight="bold">
+    <p className={cn("text-2xl font-bold tracking-tight mb-0.5", textColor)}>
       {value || 0}
-    </Text>
-    <Text color="gray.400" fontSize="xs" fontWeight="bold" textTransform="uppercase">
+    </p>
+    <span className="text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider">
       {label}
-    </Text>
-  </Box>
+    </span>
+  </div>
 );

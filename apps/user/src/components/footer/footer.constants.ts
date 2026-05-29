@@ -1,19 +1,59 @@
 export interface FooterLink {
   readonly label: string;
   readonly href: string;
+  readonly isExternal?: boolean;
 }
 
-export const QUICK_LINKS: readonly FooterLink[] = [
-  { label: 'Home', href: '/' },
-  { label: 'Vocabulary', href: '/vocabulary' },
-  { label: 'Quiz', href: '/quiz' },
-  { label: 'Dashboard', href: '/dashboard' },
+export const PLATFORM_LINKS: readonly FooterLink[] = [
+  { label: 'About Us', href: '/about' },
+  { label: 'Contact Us', href: '/contact' },
+  { label: 'Feedback', href: '/feedback' },
+  { label: 'Terms & Conditions', href: '/terms' },
+  { label: 'Privacy Policy', href: '/privacy' },
 ] as const;
 
+export const EXAM_GUIDES: readonly FooterLink[] = [
+  { label: 'Band Score Guide', href: '/guides/band-scores' },
+  { label: 'IELTS Test Format', href: '/guides/test-format' },
+  { label: 'Academic vs General', href: '/guides/academic-vs-general' },
+  { label: 'Writing Criteria', href: '/guides/writing-criteria' },
+  { label: 'Speaking Criteria', href: '/guides/speaking-criteria' },
+  { label: 'Listening & Reading', href: '/guides/listening-reading-scoring' },
+] as const;
 
-export const GET_STARTED_LINKS: readonly FooterLink[] = [
-  { label: 'Create Account', href: '/register' },
-  { label: 'Sign In', href: '/login' },
+export const FREE_RESOURCES: readonly FooterLink[] = [
+  {
+    label: 'IELTS Practice Tests',
+    href: 'https://www.ielts.org/for-test-takers/sample-test-questions',
+    isExternal: true,
+  },
+  {
+    label: 'British Council Prep',
+    href: 'https://learnenglish.britishcouncil.org/skills/listening',
+    isExternal: true,
+  },
+  {
+    label: 'IDP IELTS Prep',
+    href: 'https://www.idp.com/global/ielts/preparation',
+    isExternal: true,
+  },
+  {
+    label: 'Cambridge IELTS',
+    href: 'https://www.cambridgeenglish.org/exams-and-tests/ielts/preparation/',
+    isExternal: true,
+  },
+  {
+    label: 'Band Descriptors',
+    href: 'https://www.ielts.org/for-researchers/band-descriptors',
+    isExternal: true,
+  },
+  { label: 'Our Methodology', href: '/guides/methodology' },
+] as const;
+
+export const STUDY_TIPS: readonly FooterLink[] = [
+  { label: 'Spaced Repetition', href: '/guides/spaced-repetition' },
+  { label: 'How to Learn Vocab', href: '/guides/vocabulary-strategy' },
+  { label: 'Topic-Based Lists', href: '/vocabulary' },
 ] as const;
 
 export const EXTERNAL_LINKS = {

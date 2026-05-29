@@ -1,5 +1,4 @@
-import { Button, FormControl, FormLabel, Heading, Input, VStack } from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@ielts/ui';
 import { useState } from 'react';
 import type { UpdateProfileRequest, UserProfile } from '../types';
 
@@ -20,27 +19,33 @@ export function UpdateProfileForm({ profile, onUpdate, isLoading }: UpdateProfil
   return (
     <Card>
       <CardHeader>
-        <Heading size="md" color="gray.50">
+        <CardTitle className="text-lg font-semibold text-foreground">
           Update Profile
-        </Heading>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
-          <VStack spacing={4}>
-            <FormControl>
-              <FormLabel color="gray.300" fontSize="sm">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="displayName" className="text-sm font-medium text-muted-foreground">
                 Display Name
-              </FormLabel>
+              </Label>
               <Input
+                id="displayName"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
+                className="bg-background text-foreground border-input focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
               />
-            </FormControl>
-            <Button type="submit" isLoading={isLoading} width="full">
-              Save Changes
+            </div>
+            <Button
+              type="submit"
+              disabled={isLoading || !name.trim()}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              {isLoading ? 'Saving Changes...' : 'Save Changes'}
             </Button>
-          </VStack>
+          </div>
         </form>
       </CardContent>
     </Card>

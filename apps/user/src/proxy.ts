@@ -9,16 +9,9 @@ export function proxy(request: NextRequest) {
 
   // Define protected and auth routes
   const protectedRoutes = ['/dashboard', '/profile', '/analytics', '/review'];
-  const authRoutes = [
-    '/login',
-    '/register',
-    '/forgot-password',
-    '/reset-password',
-  ];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
 
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
   // Redirect unauthenticated users away from protected routes

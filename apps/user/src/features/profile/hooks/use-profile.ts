@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
@@ -7,7 +7,7 @@ import type { ChangePasswordRequest, UpdateProfileRequest } from '../types';
 
 export function useProfile() {
   const queryClient = useQueryClient();
-  const toast = useToast();
+  const { toast } = useToast();
   const { setUser } = useAuthStore();
 
   const {
@@ -41,13 +41,13 @@ export function useProfile() {
       }
 
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
-      toast({ title: 'Profile updated!', status: 'success' });
+      toast({ title: 'Profile updated!' });
     },
     onError: (err: AxiosError<{ message: string }>) => {
       toast({
         title: 'Update failed',
         description: err.response?.data?.message || 'Something went wrong',
-        status: 'error',
+        variant: 'destructive',
       });
     },
   });
@@ -55,13 +55,13 @@ export function useProfile() {
   const changePasswordMutation = useMutation({
     mutationFn: (payload: ChangePasswordRequest) => profileApi.changePassword(payload),
     onSuccess: () => {
-      toast({ title: 'Password changed successfully!', status: 'success' });
+      toast({ title: 'Password changed successfully!' });
     },
     onError: (err: AxiosError<{ message: string }>) => {
       toast({
         title: 'Password change failed',
         description: err.response?.data?.message || 'Something went wrong',
-        status: 'error',
+        variant: 'destructive',
       });
     },
   });

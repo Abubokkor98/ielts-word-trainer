@@ -1,5 +1,4 @@
-import { Box, Heading, Text, VStack } from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@ielts/ui';
 import type { UserProfile } from '../types';
 
 interface ProfileInfoCardProps {
@@ -10,29 +9,29 @@ export function ProfileInfoCard({ profile }: ProfileInfoCardProps) {
   return (
     <Card>
       <CardHeader>
-        <Heading size="md" color="gray.50">
+        <CardTitle className="text-lg font-semibold text-foreground">
           Profile Information
-        </Heading>
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <VStack spacing={3} align="stretch">
-          <Box>
-            <Text fontSize="xs" color="gray.500" mb={1} textTransform="uppercase" fontWeight="600">
+        <div className="flex flex-col gap-4">
+          <div>
+            <span className="text-xs text-muted-foreground mb-1 uppercase font-semibold tracking-wider block">
               Name
-            </Text>
-            <Text color="gray.200" fontSize="md">
+            </span>
+            <p className="text-foreground text-sm font-medium">
               {profile.name}
-            </Text>
-          </Box>
-          <Box>
-            <Text fontSize="xs" color="gray.500" mb={1} textTransform="uppercase" fontWeight="600">
+            </p>
+          </div>
+          <div>
+            <span className="text-xs text-muted-foreground mb-1 uppercase font-semibold tracking-wider block">
               Email
-            </Text>
-            <Text color="gray.200" fontSize="md">
+            </span>
+            <p className="text-foreground text-sm font-medium">
               {profile.email}
-            </Text>
-          </Box>
-        </VStack>
+            </p>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

@@ -1,24 +1,23 @@
-import { Heading, Text, VStack } from '@chakra-ui/react';
-import { Card, CardContent } from '@ielts/ui';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, cn } from '@ielts/ui';
 
 interface AnalyticsStatCardProps {
   label: string;
   value: string | number;
-  color: string;
+  className?: string;
 }
 
-export function AnalyticsStatCard({ label, value, color }: AnalyticsStatCardProps) {
+export function AnalyticsStatCard({ label, value, className }: AnalyticsStatCardProps) {
   return (
     <Card>
-      <CardContent>
-        <VStack align="start" spacing={1}>
-          <Text fontSize="sm" color="gray.400" fontWeight="600">
-            {label}
-          </Text>
-          <Heading size="2xl" color={color}>
-            {value}
-          </Heading>
-        </VStack>
+      <CardHeader className="p-6 pb-2">
+        <CardDescription className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          {label}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="p-6 pt-0">
+        <CardTitle className={cn("text-3xl font-bold leading-none tracking-tight", className || "text-primary")}>
+          {value}
+        </CardTitle>
       </CardContent>
     </Card>
   );

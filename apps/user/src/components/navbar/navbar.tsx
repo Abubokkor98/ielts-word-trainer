@@ -1,9 +1,8 @@
 'use client';
 
-import { Box, Container, Flex, Heading, HStack, IconButton } from '@chakra-ui/react';
 import { UserMenu } from '@ielts/ui';
-import { Menu } from 'lucide-react';
 import Link from 'next/link';
+import * as React from 'react';
 import { DesktopNav } from './desktop-nav';
 import { MobileNav } from './mobile-nav';
 import { useNavbar } from './use-navbar';
@@ -12,82 +11,86 @@ export const UserNavbar = () => {
   const { isOpen, onOpen, onClose, isAuthenticated, user, handleLogout, dueCount, isScrolled } =
     useNavbar();
 
+  const toggleMenu = () => {
+    if (isOpen) {
+      onClose();
+    } else {
+      onOpen();
+    }
+  };
+
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const activeScrolled = mounted && isScrolled;
+
   return (
     <>
       {/* Skip to main content link for screen readers */}
       <a
         href="#main-content"
-        style={{
-          position: 'absolute',
-          left: '-9999px',
-          zIndex: 999,
-        }}
-        onFocus={(e) => {
-          e.currentTarget.style.left = '0';
-          e.currentTarget.style.top = '0';
-          e.currentTarget.style.padding = '1rem';
-          e.currentTarget.style.background = '#1a202c';
-          e.currentTarget.style.color = '#fff';
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.left = '-9999px';
-        }}
+        className="absolute -top-[9999px] focus:top-0 focus:left-0 focus:p-4 focus:bg-[#1a202c] focus:text-white z-[999] transition-all"
       >
         Skip to main content
       </a>
 
-      {/* Main Navbar */}
-      <Box
-        bg={isScrolled ? 'rgba(17, 24, 39, 0.8)' : 'gray.900'}
-        backdropFilter={isScrolled ? 'blur(12px)' : 'none'}
-        transition="all 0.3s ease"
-        borderBottom="1px"
-        borderColor={isScrolled ? 'whiteAlpha.200' : 'gray.800'}
-        position="sticky"
-        top="0"
-        zIndex={10}
-        as="nav"
-        role="navigation"
-        aria-label="Main navigation"
-      >
-        <Container maxW="7xl">
-          <Flex h={16} alignItems="center" justifyContent="space-between">
-            {/* Logo and Desktop Navigation */}
-            <HStack spacing={8} alignItems="center">
-              <Heading
-                as={Link}
-                href="/"
-                size="md"
-                color="white"
-                fontWeight="bold"
-                _hover={{ textDecoration: 'none' }}
-              >
-                IELTS Master
-              </Heading>
+      {/* Main Navbar Wrapper matching React Bits */}
+      <header className="fixed top-5 left-0 right-0 z-[1500] flex flex-col items-center px-6 font-mono pointer-events-none">
+        <div
+          className={`w-full h-14 flex items-center justify-between px-5 border rounded-[16px] transition-all duration-500 pointer-events-auto relative
+            ${
+              activeScrolled
+                ? 'max-w-[1276px] shadow-2xl shadow-black/20'
+                : 'max-w-[1680px] bg-transparent border-transparent'
+            }`}
+          style={
+            activeScrolled
+              ? {
+                  backgroundColor: 'rgba(18, 15, 23, 0.45)',
+                  borderColor: 'rgba(255, 255, 255, 0.04)',
+                  backdropFilter: 'blur(24px) saturate(1.4)',
+                  WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
+                }
+              : undefined
+          }
+        >
+          {/* Logo and Desktop Navigation */}
+          <div className="flex items-center gap-6">
+            <Link
+              href="/"
+              className="text-white font-mono font-bold text-sm tracking-wider uppercase hover:opacity-85 transition-opacity"
+            >
+              IELTS VOCABS
+            </Link>
 
-              <DesktopNav isAuthenticated={isAuthenticated} dueCount={dueCount} />
-            </HStack>
+            <span className="text-white/20 font-light text-lg select-none">/</span>
 
-            {/* User Menu - Right Side (Desktop Only) */}
-            <Flex alignItems="center" display={{ base: 'none', lg: 'flex' }}>
+            <DesktopNav isAuthenticated={isAuthenticated} dueCount={dueCount} />
+          </div>
+
+          {/* Right Controls */}
+          <div className="flex items-center gap-3">
+            {/* User Menu - Desktop Only */}
+            <div className="hidden lg:flex items-center">
               <UserMenu user={user} onLogout={handleLogout} />
-            </Flex>
+            </div>
 
-            {/* Mobile hamburger menu - Right Side */}
-            <IconButton
-              size="md"
-              icon={<Menu size={24} />}
-              aria-label="Open menu"
-              display={{ base: 'flex', lg: 'none' }}
-              variant="ghost"
-              color="white"
-              onClick={onOpen}
-              minW="48px"
-              minH="48px"
-            />
-          </Flex>
-        </Container>
-      </Box>
+            {/* Mobile hamburger — morphs into X when open */}
+            <button
+              type="button"
+              onClick={toggleMenu}
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+              className={`mobile-hamburger${isOpen ? ' open' : ''}`}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          </div>
+        </div>
+      </header>
 
       {/* Mobile Drawer Navigation */}
       <MobileNav

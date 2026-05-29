@@ -1,6 +1,6 @@
 'use client';
-import { Link as ChakraLink, FormControl, FormLabel, Text, VStack } from '@chakra-ui/react';
-import { Button, Card, CardContent, CardHeader, Input } from '@ielts/ui';
+
+import { Button, Card, CardContent, CardHeader, Input, Label } from '@ielts/ui';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useLogin } from '../hooks/use-login';
@@ -16,61 +16,67 @@ export function LoginForm() {
   };
 
   return (
-    <Card maxW="md" w="full" p={8}>
-      <CardHeader>
-        <VStack spacing={2} textAlign="center">
-          <Text fontSize="3xl" fontWeight="bold" color="gray.50">
+    <Card className="w-full max-w-md p-8 bg-card border-border">
+      <CardHeader className="p-0 pb-6">
+        <div className="flex flex-col gap-2 text-center">
+          <h1 className="text-3xl font-bold text-foreground">
             Welcome Back!
-          </Text>
-          <Text color="gray.400" fontSize="md">
+          </h1>
+          <p className="text-sm text-muted-foreground">
             Login to continue your learning journey
-          </Text>
-        </VStack>
+          </p>
+        </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-0">
         <form onSubmit={handleSubmit}>
-          <VStack spacing={6}>
-            <FormControl isRequired>
-              <FormLabel fontWeight="bold" color="gray.300">
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-2">
+              <Label htmlFor="email" className="font-semibold text-muted-foreground">
                 Email
-              </FormLabel>
+              </Label>
               <Input
+                id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="your@email.com"
+                required
+                className="bg-background text-foreground border-input"
               />
-            </FormControl>
+            </div>
 
-            <FormControl isRequired>
-              <FormLabel fontWeight="bold" color="gray.300">
+            <div className="grid gap-2">
+              <Label htmlFor="password" className="font-semibold text-muted-foreground">
                 Password
-              </FormLabel>
+              </Label>
               <Input
+                id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                required
+                className="bg-background text-foreground border-input"
               />
-            </FormControl>
+            </div>
 
-            <Button type="submit" width="100%" isLoading={loginMutation.isPending}>
-              Login
+            <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+              {loginMutation.isPending ? 'Logging in...' : 'Login'}
             </Button>
 
-            <Text color="gray.400" textAlign="center" fontSize="sm">
-              <ChakraLink as={Link} href="/forgot-password" color="brand.400" fontWeight="600">
+            <div className="text-center text-sm text-muted-foreground">
+              <Link href="/forgot-password" className="text-primary hover:underline font-semibold transition-colors">
                 Forgot password?
-              </ChakraLink>
-            </Text>
+              </Link>
+            </div>
 
-            <Text color="gray.400" textAlign="center">
+            <div className="text-center text-sm text-muted-foreground">
               Don't have an account?{' '}
-              <ChakraLink as={Link} href="/register" color="brand.400" fontWeight="bold">
+              <Link href="/register" className="text-primary hover:underline font-bold transition-colors">
                 Sign up
-              </ChakraLink>
-            </Text>
-          </VStack>
+              </Link>
+            </div>
+          </div>
         </form>
       </CardContent>
     </Card>

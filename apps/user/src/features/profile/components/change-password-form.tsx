@@ -1,5 +1,4 @@
-import { Button, FormControl, FormLabel, Heading, Input, useToast, VStack } from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, useToast } from '@ielts/ui';
 import { useState } from 'react';
 import type { ChangePasswordRequest } from '../types';
 
@@ -9,7 +8,7 @@ interface ChangePasswordFormProps {
 }
 
 export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswordFormProps) {
-  const toast = useToast();
+  const { toast } = useToast();
   const [passwords, setPasswords] = useState({
     current: '',
     new: '',
@@ -19,11 +18,17 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (passwords.new !== passwords.confirm) {
-      toast({ title: 'Passwords do not match', status: 'error' });
+      toast({
+        title: 'Passwords do not match',
+        variant: 'destructive',
+      });
       return;
     }
     if (passwords.new.length < 6) {
-      toast({ title: 'Password too short (min 6 chars)', status: 'error' });
+      toast({
+        title: 'Password too short (min 6 chars)',
+        variant: 'destructive',
+      });
       return;
     }
 
@@ -38,19 +43,21 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
   return (
     <Card>
       <CardHeader>
-        <Heading size="md" color="gray.50">
+        <CardTitle className="text-lg font-semibold text-foreground">
           Change Password
-        </Heading>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
-          <VStack spacing={4}>
-            <FormControl isRequired>
-              <FormLabel color="gray.300" fontSize="sm">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="currentPassword" className="text-sm font-medium text-muted-foreground">
                 Current Password
-              </FormLabel>
+              </Label>
               <Input
+                id="currentPassword"
                 type="password"
+                required
                 value={passwords.current}
                 onChange={(e) =>
                   setPasswords({
@@ -59,14 +66,17 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
                   })
                 }
                 placeholder="Enter current password"
+                className="bg-background text-foreground border-input focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
               />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel color="gray.300" fontSize="sm">
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="newPassword" className="text-sm font-medium text-muted-foreground">
                 New Password
-              </FormLabel>
+              </Label>
               <Input
+                id="newPassword"
                 type="password"
+                required
                 value={passwords.new}
                 onChange={(e) =>
                   setPasswords({
@@ -75,14 +85,17 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
                   })
                 }
                 placeholder="Enter new password"
+                className="bg-background text-foreground border-input focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
               />
-            </FormControl>
-            <FormControl isRequired>
-              <FormLabel color="gray.300" fontSize="sm">
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="confirmPassword" className="text-sm font-medium text-muted-foreground">
                 Confirm New Password
-              </FormLabel>
+              </Label>
               <Input
+                id="confirmPassword"
                 type="password"
+                required
                 value={passwords.confirm}
                 onChange={(e) =>
                   setPasswords({
@@ -91,12 +104,17 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
                   })
                 }
                 placeholder="Confirm new password"
+                className="bg-background text-foreground border-input focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
               />
-            </FormControl>
-            <Button type="submit" isLoading={isLoading} width="full">
-              Update Password
+            </div>
+            <Button
+              type="submit"
+              disabled={isLoading || !passwords.current || !passwords.new || !passwords.confirm}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+            >
+              {isLoading ? 'Updating Password...' : 'Update Password'}
             </Button>
-          </VStack>
+          </div>
         </form>
       </CardContent>
     </Card>

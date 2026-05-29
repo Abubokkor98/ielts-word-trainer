@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Container, VStack } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Flashcard } from './components/flashcard';
@@ -63,22 +62,20 @@ export function ReviewContainer() {
   }
 
   return (
-    <Box bg="gray.900" py={8} px={4}>
-      <Container maxW="900px">
-        <VStack spacing={6}>
-          <ReviewHeader
-            currentIndex={currentIndex}
-            totalCards={words.length}
-            reviewedCount={reviewedCount}
-            progress={progress}
-            onExit={handleRestart}
-          />
+    <div className="bg-background py-8 px-4 min-h-screen flex flex-col justify-start">
+      <div className="max-w-[900px] mx-auto w-full flex flex-col space-y-6">
+        <ReviewHeader
+          currentIndex={currentIndex}
+          totalCards={words.length}
+          reviewedCount={reviewedCount}
+          progress={progress}
+          onExit={handleRestart}
+        />
 
-          <Flashcard word={currentWord} isFlipped={isFlipped} onFlip={flipCard} />
+        <Flashcard word={currentWord} isFlipped={isFlipped} onFlip={flipCard} />
 
-          {isFlipped && <RatingButtons onRating={handleRating} isSubmitting={isSubmitting} />}
-        </VStack>
-      </Container>
-    </Box>
+        {isFlipped && <RatingButtons onRating={handleRating} isSubmitting={isSubmitting} />}
+      </div>
+    </div>
   );
 }

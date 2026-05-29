@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Container, Heading, SimpleGrid, Text, VStack } from '@chakra-ui/react';
 import { ChangePasswordForm } from './components/change-password-form';
 import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileInfoCard } from './components/profile-info-card';
@@ -19,48 +18,48 @@ export function ProfileContainer() {
     isChangingPassword,
   } = useProfile();
 
-  if (isLoading) {
-    return <ProfileSkeleton />;
-  }
-
-  if (isError || !profile) {
-    return <ProfileErrorState />;
-  }
-
   return (
-    <Box bg="gray.900" py={8}>
-      <Container maxW="6xl">
-        <VStack align="stretch" spacing={6}>
-          {/* Header */}
-          <Box>
-            <Heading as="h1" size="xl" color="gray.50" mb={1}>
-              Account Settings
-            </Heading>
-            <Text color="gray.400">Manage your profile and preferences</Text>
-          </Box>
+    <main className="bg-background py-8 w-full min-h-[80vh]">
+      <div className="container mx-auto px-4 max-w-6xl">
+        {isLoading ? (
+          <ProfileSkeleton />
+        ) : isError || !profile ? (
+          <ProfileErrorState />
+        ) : (
+          <div className="flex flex-col gap-6">
+            {/* Header */}
+            <header>
+              <h1 className="text-2xl font-bold text-foreground mb-1">
+                Account Settings
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Manage your profile and preferences
+              </p>
+            </header>
 
-          {/* Two Column Layout */}
-          <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={6}>
-            {/* Left Column */}
-            <VStack spacing={6} align="stretch">
-              <ProfileInfoCard profile={profile} />
-              <UpdateProfileForm
-                profile={profile}
-                onUpdate={updateProfile}
-                isLoading={isUpdatingProfile}
-              />
-            </VStack>
+            {/* Two Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Left Column */}
+              <section className="flex flex-col gap-6" aria-label="Profile Info and Update">
+                <ProfileInfoCard profile={profile} />
+                <UpdateProfileForm
+                  profile={profile}
+                  onUpdate={updateProfile}
+                  isLoading={isUpdatingProfile}
+                />
+              </section>
 
-            {/* Right Column */}
-            <VStack spacing={6} align="stretch">
-              <ChangePasswordForm
-                onChangePassword={changePassword}
-                isLoading={isChangingPassword}
-              />
-            </VStack>
-          </SimpleGrid>
-        </VStack>
-      </Container>
-    </Box>
+              {/* Right Column */}
+              <section className="flex flex-col gap-6" aria-label="Security Settings">
+                <ChangePasswordForm
+                  onChangePassword={changePassword}
+                  isLoading={isChangingPassword}
+                />
+              </section>
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

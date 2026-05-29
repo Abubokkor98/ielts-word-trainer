@@ -13,10 +13,9 @@ export const wordListApi = {
   },
 
   renameList: async (listId: string, name: string): Promise<WordList> => {
-    const { data } = await axiosInstance.patch<{ data: WordList }>(
-      `/word-lists/${listId}`,
-      { name },
-    );
+    const { data } = await axiosInstance.patch<{ data: WordList }>(`/word-lists/${listId}`, {
+      name,
+    });
     return data.data;
   },
 
@@ -25,10 +24,9 @@ export const wordListApi = {
   },
 
   addWord: async (listId: string, wordId: string): Promise<WordList> => {
-    const { data } = await axiosInstance.post<{ data: WordList }>(
-      `/word-lists/${listId}/words`,
-      { wordId },
-    );
+    const { data } = await axiosInstance.post<{ data: WordList }>(`/word-lists/${listId}/words`, {
+      wordId,
+    });
     return data.data;
   },
 

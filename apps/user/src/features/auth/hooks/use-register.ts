@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
@@ -8,7 +8,7 @@ import type { RegisterCredentials } from '../types';
 
 export function useRegister() {
   const router = useRouter();
-  const toast = useToast();
+  const { toast } = useToast();
   const { setUser, setToken } = useAuthStore();
 
   return useMutation({
@@ -20,8 +20,6 @@ export function useRegister() {
       toast({
         title: 'Registration successful!',
         description: 'Welcome to IELTS Word Trainer!',
-        status: 'success',
-        duration: 3000,
       });
 
       router.push('/vocabulary');
@@ -30,8 +28,7 @@ export function useRegister() {
       toast({
         title: 'Registration failed',
         description: error.response?.data?.message || 'Something went wrong',
-        status: 'error',
-        duration: 5000,
+        variant: 'destructive',
       });
     },
   });

@@ -1,22 +1,7 @@
 'use client';
 
-import {
-  Badge,
-  Box,
-  Divider,
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerOverlay,
-  Flex,
-  Heading,
-  IconButton,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
 import type { User as AuthUser } from '@ielts/auth';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
   BarChart2,
   Book,
@@ -30,9 +15,13 @@ import {
   Settings,
   User,
   UserPlus,
-  X,
 } from 'lucide-react';
+import * as React from 'react';
 import { MobileNavLink } from './nav-links';
+
+// ============================================================================
+// Types
+// ============================================================================
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -43,6 +32,43 @@ interface MobileNavProps {
   dueCount: number;
 }
 
+// ============================================================================
+// Constants & Configuration
+// ============================================================================
+
+const PUBLIC_LINKS = [
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/vocabulary', label: 'Vocabulary', icon: Book },
+  { href: '/quiz', label: 'Quiz', icon: HelpCircle },
+];
+
+const AUTH_LINKS = [
+  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/my-lists', label: 'My Lists', icon: List },
+  { href: '/profile', label: 'Profile', icon: User },
+  { href: '/review', label: 'Review', icon: RotateCcw, hasBadge: true },
+  { href: '/analytics', label: 'Analytics', icon: BarChart2 },
+];
+
+// ============================================================================
+// Animation Config — top dropdown
+// ============================================================================
+
+const BACKDROP_VARIANTS = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+const DROPDOWN_VARIANTS = {
+  hidden: { opacity: 0, y: -8, scale: 0.96 },
+  visible: { opacity: 1, y: 0, scale: 1 },
+  exit: { opacity: 0, y: -4, scale: 0.96 },
+};
+
+// ============================================================================
+// Component
+// ============================================================================
+
 export const MobileNav = ({
   isOpen,
   onClose,
@@ -51,135 +77,141 @@ export const MobileNav = ({
   onLogout,
   dueCount,
 }: MobileNavProps) => {
+  const shouldReduceMotion = useReducedMotion();
+
+  // Prevent background body scrolling when mobile menu is open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Close on escape key
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  const transitionConfig = shouldReduceMotion
+    ? { duration: 0.05 }
+    : { duration: 0.2, ease: [0.16, 1, 0.3, 1] };
+
   return (
-    <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="xs">
-      <DrawerOverlay bg="blackAlpha.700" backdropFilter="blur(4px)" />
-      <DrawerContent
-        bg="rgba(17, 24, 39, 0.85)"
-        backdropFilter="blur(16px) saturate(180%)"
-        borderLeft="1px solid"
-        borderColor="whiteAlpha.200"
-        boxShadow="0 8px 32px 0 rgba(0, 0, 0, 0.37)"
-      >
-        <DrawerHeader borderBottomWidth="1px" borderColor="whiteAlpha.200">
-          <Flex justify="space-between" align="center">
-            <Heading size="md" color="white">
-              Menu
-            </Heading>
-            <IconButton
-              aria-label="Close menu"
-              icon={<X size={20} />}
-              onClick={onClose}
-              variant="ghost"
-              size="sm"
-              color="gray.400"
-              _hover={{ color: 'white', bg: 'gray.800' }}
-              minW="48px"
-              minH="48px"
-            />
-          </Flex>
-        </DrawerHeader>
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop — subtle, just dims */}
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={BACKDROP_VARIANTS}
+            transition={{ duration: 0.15 }}
+            onClick={onClose}
+            className="fixed inset-0 z-[1999] bg-black/40"
+            aria-hidden="true"
+          />
 
-        <DrawerBody px={2} py={4}>
-          <VStack spacing={1} align="stretch">
-            {/* Public Navigation */}
-            <MobileNavLink href="/" icon={<Home size={20} />} onClick={onClose}>
-              Home
-            </MobileNavLink>
-            <MobileNavLink href="/vocabulary" icon={<Book size={20} />} onClick={onClose}>
-              Vocabulary
-            </MobileNavLink>
-            <MobileNavLink href="/quiz" icon={<HelpCircle size={20} />} onClick={onClose}>
-              Quiz
-            </MobileNavLink>
-
-            <Divider my={2} borderColor="whiteAlpha.200" />
-
-            {/* Authenticated Navigation */}
-            {isAuthenticated ? (
-              <>
-                <Box px={4} py={2}>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="bold"
-                    color="gray.500"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
-                  >
-                    User Account
-                  </Text>
-                </Box>
-                <MobileNavLink
-                  href="/dashboard"
-                  icon={<LayoutDashboard size={20} />}
-                  onClick={onClose}
-                >
-                  Dashboard
-                </MobileNavLink>
-                <MobileNavLink href="/my-lists" icon={<List size={20} />} onClick={onClose}>
-                  My Lists
-                </MobileNavLink>
-                <MobileNavLink href="/profile" icon={<User size={20} />} onClick={onClose}>
-                  Profile Settings
-                </MobileNavLink>
-                <MobileNavLink href="/review" icon={<RotateCcw size={20} />} onClick={onClose}>
-                  <Flex justify="space-between" w="full" align="center">
-                    <Text>Review</Text>
-                    {dueCount > 0 && (
-                      <Badge colorScheme="red" variant="solid" borderRadius="full" fontSize="xs">
-                        {dueCount}
-                      </Badge>
-                    )}
-                  </Flex>
-                </MobileNavLink>
-                <MobileNavLink href="/analytics" icon={<BarChart2 size={20} />} onClick={onClose}>
-                  Analytics
-                </MobileNavLink>
-                {user?.role === 'admin' && (
-                  <MobileNavLink href="/admin" icon={<Settings size={20} />} onClick={onClose}>
-                    Admin Panel
+          {/* Dropdown — positioned below the navbar */}
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation Menu"
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={DROPDOWN_VARIANTS}
+            transition={transitionConfig}
+            className="fixed left-6 right-6 top-[84px] z-[2001] mx-auto max-w-[1276px] origin-top rounded-[16px] border border-white/[0.04] bg-[#120F17]/45 backdrop-blur-[24px] backdrop-saturate-[1.4] shadow-2xl shadow-black/20 overflow-hidden"
+          >
+            {/* Navigation links */}
+            <nav className="p-1.5" aria-label="Mobile Navigation">
+              <div className="flex flex-col gap-0.5">
+                {PUBLIC_LINKS.map(({ href, label, icon: Icon }) => (
+                  <MobileNavLink key={href} href={href} icon={<Icon size={16} />} onClick={onClose}>
+                    {label}
                   </MobileNavLink>
+                ))}
+
+                {isAuthenticated && (
+                  <>
+                    <div className="h-px bg-white/[0.06] my-1.5 mx-2" />
+
+                    {AUTH_LINKS.map(({ href, label, icon: Icon, hasBadge }) => (
+                      <MobileNavLink
+                        key={href}
+                        href={href}
+                        icon={<Icon size={16} />}
+                        onClick={onClose}
+                      >
+                        {hasBadge && dueCount > 0 ? (
+                          <span className="flex items-center justify-between w-full">
+                            <span>{label}</span>
+                            <span className="text-[11px] font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-full px-2 py-0.5 leading-none">
+                              {dueCount}
+                            </span>
+                          </span>
+                        ) : (
+                          label
+                        )}
+                      </MobileNavLink>
+                    ))}
+
+                    {user?.role === 'admin' && (
+                      <MobileNavLink href="/admin" icon={<Settings size={16} />} onClick={onClose}>
+                        Admin Panel
+                      </MobileNavLink>
+                    )}
+                  </>
                 )}
 
-                <MobileNavLink icon={<LogOut size={20} />} onClick={onLogout} color="red.400">
-                  Sign Out
-                </MobileNavLink>
-              </>
-            ) : (
+                {!isAuthenticated && (
+                  <>
+                    <div className="h-px bg-white/[0.06] my-1.5 mx-2" />
+
+                    <MobileNavLink href="/login" icon={<LogIn size={16} />} onClick={onClose}>
+                      Login
+                    </MobileNavLink>
+                    <MobileNavLink href="/register" icon={<UserPlus size={16} />} onClick={onClose}>
+                      Sign Up
+                    </MobileNavLink>
+                  </>
+                )}
+              </div>
+            </nav>
+
+            {/* Sign out at the bottom */}
+            {isAuthenticated && (
               <>
-                <Box px={4} py={2}>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="bold"
-                    color="gray.500"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
+                <div className="h-px bg-white/[0.06] mx-1.5 my-1" />
+                <div className="p-1.5 pt-0">
+                  <MobileNavLink
+                    icon={<LogOut size={16} />}
+                    onClick={onLogout}
+                    color="text-red-400/70 hover:text-red-400 hover:bg-red-500/[0.06]"
                   >
-                    Account
-                  </Text>
-                </Box>
-                <MobileNavLink href="/login" icon={<LogIn size={20} />} onClick={onClose}>
-                  Login
-                </MobileNavLink>
-                <MobileNavLink
-                  href="/register"
-                  icon={<UserPlus size={20} />}
-                  onClick={onClose}
-                  color="brand.400"
-                >
-                  Sign Up
-                </MobileNavLink>
+                    Sign Out
+                  </MobileNavLink>
+                </div>
               </>
             )}
-          </VStack>
-        </DrawerBody>
-
-        <DrawerFooter borderTopWidth="1px" borderColor="whiteAlpha.200" justifyContent="center">
-          <Text fontSize="xs" color="gray.500">
-            IELTS Vocabulary Builder
-          </Text>
-        </DrawerFooter>
-      </DrawerContent>
-    </Drawer>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   );
 };

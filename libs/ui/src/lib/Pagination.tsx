@@ -1,4 +1,5 @@
-import { Button, HStack, Text } from '@chakra-ui/react';
+import { cn } from '@ielts/ui/lib/utils';
+import { Button } from '../components/ui/button';
 
 interface PaginationProps {
   currentPage: number;
@@ -73,16 +74,21 @@ export function Pagination({
   siblingCount = 1,
 }: PaginationProps) {
   const pageNumbers = generatePageNumbers(currentPage, totalPages, siblingCount);
+  const isFirstPage = currentPage === 1;
+  const isLastPage = currentPage === totalPages;
 
   return (
-    <HStack justify="center" spacing={2} mt={10}>
+    <nav aria-label="Pagination" className="flex items-center justify-center gap-2 mt-10">
       {/* Previous Button */}
       <Button
         onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-        isDisabled={currentPage === 1}
+        disabled={isFirstPage}
         variant="outline"
         size="sm"
-        colorScheme="brand"
+        className={cn(
+          'border-primary text-primary hover:bg-primary/10 hover:text-primary',
+          isFirstPage && 'opacity-50 pointer-events-none',
+        )}
       >
         Previous
       </Button>
@@ -92,9 +98,9 @@ export function Pagination({
         if (page === ELLIPSIS) {
           return (
             // biome-ignore lint/suspicious/noArrayIndexKey: Index is stable for static elements
-            <Text key={`ellipsis-${index}`} color="gray.500" px={2}>
+            <span key={`ellipsis-${index}`} className="px-2 text-muted-foreground select-none">
               {ELLIPSIS}
-            </Text>
+            </span>
           );
         }
 
@@ -105,10 +111,14 @@ export function Pagination({
           <Button
             key={page}
             onClick={() => onPageChange(pageNum)}
-            variant={isActive ? 'solid' : 'outline'}
-            colorScheme={isActive ? 'brand' : 'gray'}
+            variant={isActive ? 'default' : 'outline'}
             size="sm"
-            minW="40px"
+            className={cn(
+              'min-w-[40px]',
+              isActive
+                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                : 'border-primary text-primary hover:bg-primary/10 hover:text-primary',
+            )}
           >
             {pageNum}
           </Button>
@@ -118,13 +128,16 @@ export function Pagination({
       {/* Next Button */}
       <Button
         onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-        isDisabled={currentPage === totalPages}
+        disabled={isLastPage}
         variant="outline"
         size="sm"
-        colorScheme="brand"
+        className={cn(
+          'border-primary text-primary hover:bg-primary/10 hover:text-primary',
+          isLastPage && 'opacity-50 pointer-events-none',
+        )}
       >
         Next
       </Button>
-    </HStack>
+    </nav>
   );
 }

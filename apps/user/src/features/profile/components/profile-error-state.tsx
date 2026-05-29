@@ -1,11 +1,9 @@
-import { Box, Container, Text } from '@chakra-ui/react';
-
 export function ProfileErrorState() {
   return (
-    <Box bg="gray.900" py={8}>
-      <Container maxW="5xl">
-        <Text color="red.400">Failed to load profile data.</Text>
-      </Container>
-    </Box>
+    <div role="alert" className="p-4 rounded-lg bg-destructive/10 border border-destructive/20 w-full">
+      <p className="text-sm font-medium text-destructive">
+        Failed to load profile data. Please try again later.
+      </p>
+    </div>
   );
 }

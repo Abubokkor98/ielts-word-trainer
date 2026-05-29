@@ -1,323 +1,251 @@
-'use client';
-
-import {
-  Box,
-  HStack,
-  IconButton,
-  Input,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
-  Text,
-  useDisclosure,
-  useToast,
-  VStack,
-} from '@chakra-ui/react';
+import { Button, cn, Input, Popover, PopoverContent, PopoverTrigger, useToast } from '@ielts/ui';
 import { Bookmark, BookmarkCheck, Check, FolderPlus } from 'lucide-react';
-import type { AxiosError } from 'axios';
-import { useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { useAddWord, useWordLists, WORD_LISTS_QUERY_KEY } from '../hooks/use-word-lists';
-import { wordListApi } from '../services/word-list.api';
+import { useSaveToList } from '../hooks/use-save-to-list';
+import type { WordList } from '../types';
 
-function getErrorMessage(error: unknown, fallback: string): string {
-  const axiosError = error as AxiosError<{ message?: string }>;
-  if (axiosError?.response?.data?.message) {
-    return axiosError.response.data.message;
-  }
-  if (error instanceof Error) {
-    return error.message;
-  }
-  return fallback;
-}
+// ============================================================================
+// Types
+// ============================================================================
 
 interface SaveToListButtonProps {
   wordId: string;
   isAuthenticated?: boolean;
 }
 
+interface SaveToListHeaderProps {
+  showCreateInput: boolean;
+  onToggleCreateInput: () => void;
+}
 
-export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToListButtonProps) {
-  const { data: lists = [] } = useWordLists(isAuthenticated);
-  const queryClient = useQueryClient();
-  const addWord = useAddWord();
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+interface SaveToListItemsProps {
+  lists: WordList[];
+  listsContainingWord: Set<string>;
+  isLoading: boolean;
+  showCreateInput: boolean;
+  onAddToList: (listId: string, listName: string) => void;
+}
 
-  const [newListName, setNewListName] = useState('');
-  const [showCreateInput, setShowCreateInput] = useState(false);
+interface CreateListFormProps {
+  newListName: string;
+  isLoading: boolean;
+  onChangeName: (name: string) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onCreate: () => void;
+}
 
-  const isBookmarked = lists.some((list) =>
-    list.words.some((w) => w._id === wordId),
+// ============================================================================
+// Sub-components
+// ============================================================================
+
+function SaveToListHeader({ showCreateInput, onToggleCreateInput }: SaveToListHeaderProps) {
+  return (
+    <div className="flex items-center justify-between px-4 py-3.5 border-b border-border bg-card/20">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/80">
+        Save word to list
+      </span>
+      <button
+        type="button"
+        onClick={onToggleCreateInput}
+        className={cn(
+          'flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-md transition-all border',
+          showCreateInput
+            ? 'border-destructive/20 text-destructive bg-destructive/5 hover:bg-destructive/10'
+            : 'border-primary/20 text-primary bg-primary/5 hover:bg-primary/10',
+        )}
+      >
+        <FolderPlus size={14} />
+        {showCreateInput ? 'Cancel' : 'New List'}
+      </button>
+    </div>
   );
+}
 
-  const listsContainingWord = new Set(
-    lists
-      .filter((list) => list.words.some((w) => w._id === wordId))
-      .map((list) => list._id),
-  );
-
-  const handleAddToList = async (listId: string, listName: string) => {
-    try {
-      await addWord.mutateAsync({ listId, wordId });
-      toast({
-        title: `Saved to "${listName}"`,
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
-      onClose();
-    } catch (error: unknown) {
-      toast({
-        title: getErrorMessage(error, 'Failed to save word'),
-        status: 'warning',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
-
-  const [isCreating, setIsCreating] = useState(false);
-
-  const handleCreateAndAdd = async () => {
-    const trimmedName = newListName.trim();
-    if (!trimmedName) return;
-
-    setIsCreating(true);
-    try {
-      // Use raw API to avoid auto-invalidation showing list before word is added
-      const newList = await wordListApi.createList(trimmedName);
-      await wordListApi.addWord(newList._id, wordId);
-
-      // Single cache invalidation after both operations complete
-      await queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
-
-      setNewListName('');
-      setShowCreateInput(false);
-      onClose();
-      toast({
-        title: `Created "${trimmedName}" and saved word`,
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-      });
-    } catch (error: unknown) {
-      setNewListName('');
-      setShowCreateInput(false);
-      // Invalidate in case createList succeeded but addWord failed
-      await queryClient.invalidateQueries({ queryKey: WORD_LISTS_QUERY_KEY });
-      toast({
-        title: getErrorMessage(error, 'Something went wrong'),
-        status: 'warning',
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleCreateAndAdd();
-    }
-    if (e.key === 'Escape') {
-      setShowCreateInput(false);
-      setNewListName('');
-    }
-  };
-
-  const isLoading = isCreating || addWord.isPending;
-
-  if (!isAuthenticated) {
+function SaveToListItems({
+  lists,
+  listsContainingWord,
+  isLoading,
+  showCreateInput,
+  onAddToList,
+}: SaveToListItemsProps) {
+  if (lists.length === 0 && !showCreateInput) {
     return (
-      <IconButton
-        aria-label="Save to list"
-        icon={<Bookmark size={18} />}
-        size="sm"
-        colorScheme="brand"
-        variant="ghost"
-        _hover={{ bg: 'brand.600' }}
-        alignSelf="center"
-        onClick={() => {
-          toast({
-            title: 'Login required',
-            description: 'Please log in to save words to your lists.',
-            status: 'info',
-            duration: 3000,
-            isClosable: true,
-          });
-        }}
-      />
+      <div className="px-4 py-8 text-center flex flex-col items-center justify-center">
+        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center border border-border text-muted-foreground mb-3">
+          <FolderPlus size={18} className="stroke-[1.5]" />
+        </div>
+        <p className="text-sm font-semibold text-foreground">No lists yet</p>
+        <p className="text-xs text-muted-foreground/60 mt-1 max-w-[20ch]">
+          Create your first list to start saving words.
+        </p>
+      </div>
     );
   }
 
   return (
-    <Popover placement="bottom-start" isLazy isOpen={isOpen} onOpen={onOpen} onClose={onClose} strategy="fixed">
-      <PopoverTrigger>
-        <Box>
-          <IconButton
-            aria-label={isBookmarked ? 'Already saved' : 'Save to list'}
-            icon={
-              isBookmarked
-                ? <BookmarkCheck size={18} />
-                : <Bookmark size={18} />
-            }
-            size="sm"
-            colorScheme="brand"
-            variant="ghost"
-            _hover={{ bg: 'brand.600' }}
-            alignSelf="center"
-          />
-        </Box>
+    <div className="flex flex-col max-h-[220px] overflow-y-auto py-1.5 scrollbar-thin scrollbar-thumb-zinc-800">
+      {lists.map((list) => {
+        const isInList = listsContainingWord.has(list._id);
+        return (
+          <button
+            type="button"
+            key={list._id}
+            className="flex items-center justify-between px-4 py-2.5 hover:bg-accent/40 text-left transition-colors w-full focus:outline-none focus:bg-accent/40 group"
+            onClick={() => {
+              if (!isLoading) {
+                onAddToList(list._id, list.name);
+              }
+            }}
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              {/* Custom Animated Checkbox */}
+              <div
+                className={cn(
+                  'h-4 w-4 rounded border flex items-center justify-center transition-all duration-200 flex-shrink-0',
+                  isInList
+                    ? 'bg-primary border-primary text-primary-foreground shadow-sm shadow-purple-500/20'
+                    : 'border-zinc-700 bg-zinc-900/30 group-hover:border-zinc-500',
+                )}
+              >
+                {isInList && <Check className="h-3 w-3 stroke-[3]" />}
+              </div>
+
+              <span
+                className={cn(
+                  'text-sm truncate transition-colors',
+                  isInList
+                    ? 'text-foreground font-semibold'
+                    : 'text-muted-foreground group-hover:text-zinc-200',
+                )}
+              >
+                {list.name}
+              </span>
+            </div>
+
+            {/* Word Count Pill Badge */}
+            <span className="text-[10px] text-muted-foreground font-mono bg-zinc-900/80 px-2 py-0.5 rounded-full border border-border">
+              {list.words.length} {list.words.length === 1 ? 'word' : 'words'}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function CreateListForm({
+  newListName,
+  isLoading,
+  onChangeName,
+  onKeyDown,
+  onCreate,
+}: CreateListFormProps) {
+  return (
+    <div className="px-4 py-3.5 border-t border-border bg-card/10 flex flex-col gap-2.5">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+        Create New List
+      </span>
+      <div className="flex gap-2">
+        <Input
+          placeholder="e.g. Essay Vocabulary"
+          value={newListName}
+          onChange={(e) => onChangeName(e.target.value)}
+          onKeyDown={onKeyDown}
+          className="bg-[#120f17] border-border text-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0 focus-visible:border-primary h-9 text-xs placeholder:text-zinc-600"
+          autoFocus
+        />
+        <Button
+          size="sm"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-md px-3.5 flex-shrink-0 text-xs font-semibold"
+          disabled={!newListName.trim() || isLoading}
+          onClick={onCreate}
+        >
+          Create
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
+export function SaveToListButton({ wordId, isAuthenticated = false }: SaveToListButtonProps) {
+  const { toast } = useToast();
+  const {
+    lists,
+    isOpen,
+    setIsOpen,
+    newListName,
+    setNewListName,
+    showCreateInput,
+    setShowCreateInput,
+    isBookmarked,
+    listsContainingWord,
+    isLoading,
+    handleAddToList,
+    handleCreateAndAdd,
+    handleKeyDown,
+  } = useSaveToList({ wordId, isAuthenticated });
+
+  if (!isAuthenticated) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-primary hover:bg-primary/10 hover:text-primary flex-shrink-0"
+        aria-label="Save to list"
+        onClick={() => {
+          toast({
+            title: 'Login required',
+            description: 'Please log in to save words to your lists.',
+          });
+        }}
+      >
+        <Bookmark size={18} />
+      </Button>
+    );
+  }
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-primary hover:bg-primary/10 hover:text-primary flex-shrink-0"
+          aria-label={isBookmarked ? 'Already saved' : 'Save to list'}
+        >
+          {isBookmarked ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+        </Button>
       </PopoverTrigger>
       <PopoverContent
-        bg="gray.800"
-        borderColor="gray.600"
-        borderWidth="1px"
-        w={{ base: '260px', sm: '280px' }}
-        maxW="calc(100vw - 32px)"
-        borderRadius="xl"
-        boxShadow="0 8px 32px rgba(0,0,0,0.4)"
+        className="dark w-[260px] sm:w-[280px] bg-popover border-border rounded-xl p-0 shadow-lg shadow-black/40 outline-none z-[2000]"
+        align="start"
         onClick={(e) => e.stopPropagation()}
-        _focus={{ outline: 'none' }}
       >
-        <PopoverBody p={0}>
-          {/* Header */}
-          <HStack
-            px={4}
-            py={3}
-            borderBottomWidth="1px"
-            borderColor="gray.700"
-            justify="space-between"
-          >
-            <Text fontSize="sm" fontWeight="700" color="gray.200" letterSpacing="wide">
-              Save to list
-            </Text>
-            <Box
-              as="button"
-              onClick={() => setShowCreateInput(!showCreateInput)}
-              color="brand.400"
-              _hover={{ color: 'brand.300' }}
-              transition="color 0.15s"
-              cursor="pointer"
-              display="flex"
-              alignItems="center"
-              gap={1}
-            >
-              <FolderPlus size={15} />
-              <Text fontSize="xs" fontWeight="600">
-                New
-              </Text>
-            </Box>
-          </HStack>
+        <SaveToListHeader
+          showCreateInput={showCreateInput}
+          onToggleCreateInput={() => setShowCreateInput(!showCreateInput)}
+        />
 
-          {/* List Items */}
-          <VStack spacing={0} align="stretch" maxH="220px" overflowY="auto" py={1}>
-            {lists.length === 0 && !showCreateInput && (
-              <Box px={4} py={6} textAlign="center">
-                <Text fontSize="sm" color="gray.500">
-                  No lists yet
-                </Text>
-                <Text fontSize="xs" color="gray.600" mt={1}>
-                  Tap &quot;New&quot; to create your first list
-                </Text>
-              </Box>
-            )}
-            {lists.map((list) => {
-              const isInList = listsContainingWord.has(list._id);
-              return (
-                <HStack
-                  key={list._id}
-                  px={4}
-                  py={2.5}
-                  cursor="pointer"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Save to ${list.name}`}
-                  _hover={{ bg: 'whiteAlpha.100' }}
-                  _focusVisible={{ bg: 'whiteAlpha.100', outline: 'none' }}
-                  onClick={() => {
-                    if (!isLoading) {
-                      handleAddToList(list._id, list.name);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if ((e.key === 'Enter' || e.key === ' ') && !isLoading) {
-                      e.preventDefault();
-                      handleAddToList(list._id, list.name);
-                    }
-                  }}
-                  justify="space-between"
-                  transition="background 0.15s"
-                >
-                  <HStack spacing={3} flex={1} minW={0}>
-                    <Box
-                      w="8px"
-                      h="8px"
-                      borderRadius="full"
-                      bg={isInList ? 'brand.400' : 'gray.600'}
-                      flexShrink={0}
-                      transition="background 0.2s"
-                    />
-                    <Text
-                      fontSize="sm"
-                      noOfLines={1}
-                      color={isInList ? 'white' : 'gray.300'}
-                      fontWeight={isInList ? '600' : '400'}
-                    >
-                      {list.name}
-                    </Text>
-                  </HStack>
-                  {isInList && (
-                    <Check
-                      size={15}
-                      color="var(--chakra-colors-brand-400)"
-                      strokeWidth={3}
-                    />
-                  )}
-                </HStack>
-              );
-            })}
-          </VStack>
+        <SaveToListItems
+          lists={lists}
+          listsContainingWord={listsContainingWord}
+          isLoading={isLoading}
+          showCreateInput={showCreateInput}
+          onAddToList={handleAddToList}
+        />
 
-          {/* Create New List */}
-          {showCreateInput && (
-            <Box
-              px={3}
-              py={3}
-              borderTopWidth="1px"
-              borderColor="gray.700"
-            >
-              <HStack spacing={2}>
-                <Input
-                  size="sm"
-                  placeholder="List name"
-                  value={newListName}
-                  onChange={(e) => setNewListName(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  bg="gray.900"
-                  borderColor="gray.600"
-                  borderRadius="lg"
-                  _focus={{ borderColor: 'brand.400', boxShadow: '0 0 0 1px var(--chakra-colors-brand-400)' }}
-                  _placeholder={{ color: 'gray.500' }}
-                  autoFocus
-                />
-                <IconButton
-                  aria-label="Create list"
-                  icon={<FolderPlus size={16} />}
-                  size="sm"
-                  colorScheme="brand"
-                  borderRadius="lg"
-                  isDisabled={!newListName.trim() || isLoading}
-                  isLoading={isLoading}
-                  onClick={handleCreateAndAdd}
-                />
-              </HStack>
-            </Box>
-          )}
-        </PopoverBody>
+        {showCreateInput && (
+          <CreateListForm
+            newListName={newListName}
+            isLoading={isLoading}
+            onChangeName={setNewListName}
+            onKeyDown={handleKeyDown}
+            onCreate={handleCreateAndAdd}
+          />
+        )}
       </PopoverContent>
     </Popover>
   );

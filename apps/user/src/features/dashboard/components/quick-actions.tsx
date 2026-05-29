@@ -1,10 +1,9 @@
-import { SimpleGrid } from '@chakra-ui/react';
-import { BookOpen, BrainCircuit, BarChart3 } from 'lucide-react';
+import { BarChart3, BookOpen, BrainCircuit } from 'lucide-react';
 import { ActionCard } from './action-card';
 
 export function QuickActions() {
   return (
-    <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <ActionCard
         href="/vocabulary"
         title="Browse Vocabulary"
@@ -23,6 +22,6 @@ export function QuickActions() {
         description="Check your progress"
         icon={BarChart3}
       />
-    </SimpleGrid>
+    </div>
   );
 }

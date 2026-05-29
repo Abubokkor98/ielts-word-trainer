@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
 import { reviewApi } from '../services/review.api';
@@ -13,7 +13,7 @@ export function useReviewSession() {
   const [sessionComplete, setSessionComplete] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const toast = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const fetchDueWords = useCallback(async () => {
@@ -38,8 +38,7 @@ export function useReviewSession() {
       console.error('Error fetching due words:', error);
       toast({
         title: 'Failed to load due words',
-        status: 'error',
-        duration: 3000,
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -69,8 +68,7 @@ export function useReviewSession() {
       } catch (_error) {
         toast({
           title: 'Failed to submit review',
-          status: 'error',
-          duration: 3000,
+          variant: 'destructive',
         });
       } finally {
         setIsSubmitting(false);
