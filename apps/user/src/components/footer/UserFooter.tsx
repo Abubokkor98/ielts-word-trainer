@@ -66,6 +66,15 @@ export function UserFooter() {
             </div>
 
             <div className="ln-footer-col">
+              <span className="ln-footer-col-title">Study Tips</span>
+              {STUDY_TIPS.map((link) => (
+                <Link key={link.href} href={link.href} className="ln-footer-link">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="ln-footer-col">
               <span className="ln-footer-col-title">Guides</span>
               {EXAM_GUIDES.map((link) => (
                 <Link key={link.href} href={link.href} className="ln-footer-link">
@@ -85,15 +94,6 @@ export function UserFooter() {
                 >
                   <span>{link.label}</span>
                   {link.isExternal && <ExternalLink size={10} className="ln-footer-link-icon" />}
-                </Link>
-              ))}
-            </div>
-
-            <div className="ln-footer-col">
-              <span className="ln-footer-col-title">Study Tips</span>
-              {STUDY_TIPS.map((link) => (
-                <Link key={link.href} href={link.href} className="ln-footer-link">
-                  {link.label}
                 </Link>
               ))}
             </div>

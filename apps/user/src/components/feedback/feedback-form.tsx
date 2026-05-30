@@ -190,7 +190,7 @@ export function FeedbackForm() {
                   <Label className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-wider">
                     Category
                   </Label>
-                  <div className="grid grid-cols-2 gap-1.5">
+                  <div className="grid grid-cols-2 gap-1.5 sm:gap-2">
                     {TYPE_OPTIONS.map((opt) => {
                       const Icon = opt.icon;
                       const isActive = feedbackType === opt.id;
@@ -200,14 +200,16 @@ export function FeedbackForm() {
                           type="button"
                           variant="outline"
                           onClick={() => setFeedbackType(opt.id)}
-                          className={`px-2 py-2 h-auto rounded-lg border flex items-center gap-2 transition-all duration-300 select-none ${
+                          className={`px-2 py-2.5 sm:px-3 h-auto rounded-xl border flex items-center justify-start gap-1.5 sm:gap-2 transition-all duration-300 select-none ${
                             isActive
                               ? 'bg-primary/10 border-primary text-white shadow-md shadow-primary/5 hover:bg-primary/20'
                               : 'bg-white/[0.01] border-white/5 text-zinc-400 hover:border-white/10 hover:text-white hover:bg-white/[0.03]'
                           }`}
                         >
                           <Icon size={14} className={isActive ? 'text-primary' : 'text-zinc-500'} />
-                          <span className="text-xs font-semibold">{opt.label}</span>
+                          <span className="text-[11px] sm:text-xs font-semibold leading-tight text-left truncate sm:overflow-visible">
+                            {opt.label}
+                          </span>
                         </Button>
                       );
                     })}
@@ -216,10 +218,17 @@ export function FeedbackForm() {
 
                 {/* Emoji rating */}
                 <div className="flex flex-col gap-1.5">
-                  <Label className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-wider">
-                    Experience Rating
-                  </Label>
-                  <div className="flex gap-1.5">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-wider">
+                      Experience Rating
+                    </Label>
+                    {rating !== null && (
+                      <span className="text-xs font-semibold text-primary animate-pulse transition-all duration-300">
+                        {RATING_OPTIONS.find((r) => r.score === rating)?.label}
+                      </span>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-5 gap-1.5">
                     {RATING_OPTIONS.map((opt) => {
                       const isActive = rating === opt.score;
                       return (
@@ -228,15 +237,17 @@ export function FeedbackForm() {
                           type="button"
                           variant="outline"
                           onClick={() => setRating(opt.score)}
-                          className={`flex-1 py-1.5 h-auto rounded-lg border flex flex-col items-center gap-0.5 transition-all duration-300 ${
+                          className={`flex-1 min-w-0 px-0 sm:px-2 py-2 sm:py-1.5 h-auto rounded-xl border flex flex-col items-center justify-center gap-0.5 transition-all duration-300 ${
                             isActive
-                              ? 'bg-primary/10 border-primary text-white hover:bg-primary/20'
+                              ? 'bg-primary/10 border-primary text-white scale-105 shadow-md shadow-primary/5 hover:bg-primary/20'
                               : 'bg-white/[0.01] border-white/5 text-zinc-500 hover:border-white/10 hover:scale-105 hover:bg-white/[0.03]'
                           }`}
                           title={opt.label}
                         >
-                          <span className="text-lg">{opt.emoji}</span>
-                          <span className="text-[9px] font-mono tracking-tight font-medium text-zinc-400">
+                          <span className="text-lg sm:text-xl transition-transform duration-300 transform active:scale-95">
+                            {opt.emoji}
+                          </span>
+                          <span className="hidden sm:inline text-[9px] font-mono tracking-tight font-medium text-zinc-400">
                             {opt.label}
                           </span>
                         </Button>
