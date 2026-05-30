@@ -29,12 +29,12 @@ export const FREE_RESOURCES: readonly FooterLink[] = [
   },
   {
     label: 'British Council Prep',
-    href: 'https://learnenglish.britishcouncil.org/skills/listening',
+    href: 'https://learnenglish.britishcouncil.org/free-resources',
     isExternal: true,
   },
   {
     label: 'IDP IELTS Prep',
-    href: 'https://www.idp.com/global/ielts/preparation',
+    href: 'https://ielts.idp.com/prepare',
     isExternal: true,
   },
   {
@@ -43,14 +43,24 @@ export const FREE_RESOURCES: readonly FooterLink[] = [
     isExternal: true,
   },
   {
-    label: 'Band Descriptors',
-    href: 'https://www.ielts.org/for-researchers/band-descriptors',
+    label: 'Band Score Guide',
+    href: 'https://www.ielts.org/for-test-takers/how-ielts-is-scored',
     isExternal: true,
   },
-  { label: 'Our Methodology', href: '/guides/methodology' },
+  {
+    label: 'British Council Vocab',
+    href: 'https://learnenglish.britishcouncil.org/vocabulary',
+    isExternal: true,
+  },
+  {
+    label: 'IDP 500+ IELTS Words',
+    href: 'https://ielts.idp.com/prepare/vocabulary-words-for-ielts',
+    isExternal: true,
+  },
 ] as const;
 
 export const STUDY_TIPS: readonly FooterLink[] = [
+  { label: 'Our Methodology', href: '/guides/methodology' },
   { label: 'Spaced Repetition', href: '/guides/spaced-repetition' },
   { label: 'How to Learn Vocab', href: '/guides/vocabulary-strategy' },
   { label: 'Topic-Based Lists', href: '/vocabulary' },
