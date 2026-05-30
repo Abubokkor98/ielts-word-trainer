@@ -47,7 +47,7 @@ const CARD_VARIANTS = {
 
 export function HowItWorksSection() {
   return (
-    <section className="w-full bg-background relative z-10" aria-label="How It Works">
+    <section className="w-full bg-background relative z-10 py-16 sm:py-24" aria-label="How It Works">
       <div className="container max-w-[1324px] px-6 mx-auto">
         {/* Section Title & Subtitle */}
         <header className="text-center mb-16 flex flex-col items-center">

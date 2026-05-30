@@ -33,7 +33,7 @@ const STAT_VARIANTS = {
 
 export function StatsSection() {
   return (
-    <section className="w-full bg-[#120f17] relative z-10 py-6 sm:py-8" aria-label="Key Statistics">
+    <section className="w-full bg-[#120f17] relative z-10 py-16 sm:py-24" aria-label="Key Statistics">
       <div className="container max-w-[1324px] px-6 mx-auto">
         <div className="ln-cta-card-wrapper">
           <div className="ln-cta-card-border" />
