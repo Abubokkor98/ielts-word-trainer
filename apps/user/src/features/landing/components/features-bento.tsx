@@ -64,7 +64,7 @@ const CARD_VARIANTS = {
 
 export function FeaturesBentoSection() {
   return (
-    <section className="w-full bg-[#0e0b13] relative z-10 py-20 sm:py-24" aria-label="Features">
+    <section className="w-full bg-[#0e0b13] relative z-10 py-16 sm:py-24" aria-label="Features">
       <div className="container max-w-[1324px] px-6 mx-auto">
         {/* Section Header */}
         <header className="text-center mb-12 flex flex-col items-center">

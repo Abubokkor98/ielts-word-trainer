@@ -7,7 +7,7 @@ import { TestimonialsSection } from './components/testimonials';
 
 export function LandingContainer() {
   return (
-    <div className="dark bg-background pb-6 sm:pb-12 flex flex-col gap-12 sm:gap-20 overflow-hidden w-full">
+    <div className="dark bg-background pb-6 sm:pb-12 flex flex-col overflow-hidden w-full">
       <HeroSection />
       <StatsSection />
       <HowItWorksSection />

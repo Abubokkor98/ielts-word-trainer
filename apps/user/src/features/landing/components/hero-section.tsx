@@ -1,6 +1,5 @@
 'use client';
 
-import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
 import { Button } from '@ielts/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Layers, RotateCcw, Sparkles, Volume2 } from 'lucide-react';
@@ -14,7 +13,10 @@ interface WordCategoryPreset {
   category: string;
   word: string;
   type: string;
-  phonetic: string;
+  definition: string;
+  example: string;
+  synonyms: string[];
+  antonyms: string[];
 }
 
 const CATEGORY_PRESETS: Record<string, WordCategoryPreset> = {
@@ -22,24 +24,32 @@ const CATEGORY_PRESETS: Record<string, WordCategoryPreset> = {
     category: 'Academic Words',
     word: 'Ubiquitous',
     type: 'adjective',
-    phonetic: '/juːˈbɪkwɪtəs/',
+    definition: 'Present, appearing, or found everywhere.',
+    example: 'Mobile phones are now ubiquitous in modern society.',
+    synonyms: ['omnipresent', 'pervasive', 'universal'],
+    antonyms: ['rare', 'scarce', 'uncommon'],
   },
   'General Training': {
     category: 'General Training',
     word: 'Ambiguous',
     type: 'adjective',
-    phonetic: '/æmˈbɪɡjuəs/',
+    definition: 'Open to more than one interpretation; having a double meaning.',
+    example: 'The election result was ambiguous, leading to a recount.',
+    synonyms: ['vague', 'unclear', 'equivocal'],
+    antonyms: ['clear', 'precise', 'unambiguous'],
   },
   'High-Band Idioms': {
     category: 'High-Band Idioms',
     word: 'Burn the midnight oil',
     type: 'idiom',
-    phonetic: '/bɜːn ðə ˈmɪdnaɪt ɔɪl/',
+    definition: 'To read or work late into the night.',
+    example: 'I had to burn the midnight oil to prepare for my IELTS speaking exam.',
+    synonyms: ['stay up late', 'pull an all-nighter', 'work late'],
+    antonyms: ['turn in early', 'sleep early'],
   },
 };
 
 export function HeroSection() {
-  const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
   // Minimal states
   const [selectedCategory, setSelectedCategory] = React.useState<string>('Academic Words');
@@ -196,21 +206,12 @@ export function HeroSection() {
               className="mt-10 flex flex-wrap gap-4"
               aria-label="Primary Hero Actions"
             >
-              {!isAuthenticated ? (
-                <Link
-                  href="/vocabulary"
-                  className="ielts-master-btn inline-flex items-center justify-center bg-primary text-primary-foreground shadow hover:bg-primary/90 glow-button h-11 px-8 rounded-xl font-semibold tracking-wide transition-all duration-300"
-                >
-                  Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              ) : (
-                <Link
-                  href="/vocabulary"
-                  className="ielts-master-btn inline-flex items-center justify-center bg-primary text-primary-foreground shadow hover:bg-primary/90 glow-button h-11 px-8 rounded-xl font-semibold tracking-wide transition-all duration-300"
-                >
-                  Start Learning <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              )}
+              <Link
+                href="/vocabulary"
+                className="ielts-master-btn inline-flex items-center justify-center bg-primary text-primary-foreground shadow hover:bg-primary/90 glow-button h-11 px-8 rounded-xl font-semibold tracking-wide transition-all duration-300"
+              >
+                Start Learning <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </motion.nav>
           </header>
 
@@ -283,9 +284,9 @@ export function HeroSection() {
               </header>
 
               {/* Central Flashcard Display Area */}
-              <section className="p-6 flex flex-col">
-                <div className="flex items-center justify-between">
-                  <div className="min-h-[72px] flex flex-col justify-center">
+              <section className="p-6 flex flex-col gap-5 min-h-[420px]">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex flex-col justify-center">
                     <AnimatePresence mode="wait">
                       <motion.h2
                         key={currentWord.word}
@@ -309,7 +310,6 @@ export function HeroSection() {
                         className="flex items-center gap-2 mt-1 text-xs font-mono"
                       >
                         <span className="text-primary font-bold">{currentWord.type}</span>
-                        <span className="text-zinc-400 font-semibold">{currentWord.phonetic}</span>
                       </motion.div>
                     </AnimatePresence>
                   </div>
@@ -319,7 +319,7 @@ export function HeroSection() {
                     variant="ghost"
                     size="icon"
                     onClick={triggerAudioWave}
-                    className="h-10 w-10 rounded-full border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white shadow-sm"
+                    className="h-10 w-10 rounded-full border border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10 hover:text-white shadow-sm flex-shrink-0 animate-fade-in"
                     aria-label="Listen Pronunciation"
                   >
                     <Volume2
@@ -328,9 +328,86 @@ export function HeroSection() {
                   </Button>
                 </div>
 
+                {/* Definition */}
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500">Definition</span>
+                  <AnimatePresence mode="wait">
+                    <motion.p
+                      key={currentWord.word}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.25 }}
+                      className="text-sm text-zinc-200 leading-relaxed"
+                    >
+                      {currentWord.definition}
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
+
+                {/* Example */}
+                <div className="flex flex-col gap-1.5">
+                  <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500">Example</span>
+                  <AnimatePresence mode="wait">
+                    <motion.p
+                      key={currentWord.word}
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      transition={{ duration: 0.25 }}
+                      className="text-sm text-zinc-300 italic border-l-2 border-primary/30 pl-3 leading-relaxed"
+                    >
+                      "{currentWord.example}"
+                    </motion.p>
+                  </AnimatePresence>
+                </div>
+
+                {/* Synonyms & Antonyms */}
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500">Synonyms</span>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentWord.word}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="flex flex-wrap gap-1.5"
+                      >
+                        {currentWord.synonyms.map((syn) => (
+                          <span key={syn} className="text-[11px] font-mono font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-md px-1.5 py-0.5">
+                            {syn}
+                          </span>
+                        ))}
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-[10px] font-mono font-bold tracking-wider uppercase text-zinc-500">Antonyms</span>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentWord.word}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="flex flex-wrap gap-1.5"
+                      >
+                        {currentWord.antonyms.map((ant) => (
+                          <span key={ant} className="text-[11px] font-mono font-medium text-zinc-400 bg-zinc-500/10 border border-zinc-500/20 rounded-md px-1.5 py-0.5">
+                            {ant}
+                          </span>
+                        ))}
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                </div>
+
                 {/* Audio Wave Visualizer Animation */}
                 <div
-                  className="h-4 flex items-center gap-0.5 mt-4 overflow-hidden select-none"
+                  className="h-4 flex items-center gap-0.5 mt-auto overflow-hidden select-none"
                   aria-hidden="true"
                 >
                   {Array.from({ length: 24 }, (_, idx) => `wave-bar-${idx}`).map((barId, i) => (
