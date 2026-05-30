@@ -44,6 +44,12 @@ const publicRoutes = [
   '/',
   '/vocabulary',
   '/quiz',
+  '/about',
+  '/contact',
+  '/feedback',
+  '/terms',
+  '/privacy',
+  '/guides',
 ];
 
 const isPublicRoute = (path: string) =>
