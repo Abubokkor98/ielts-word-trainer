@@ -4,7 +4,7 @@ import { useScrollSpy } from '../../terms/use-scroll-spy';
 import { GUIDE_SECTIONS } from './speaking-criteria.constants';
 import { SpeakingCriteriaHero } from './speaking-criteria-hero';
 import { SpeakingCriteriaSections } from './speaking-criteria-sections';
-import { SpeakingCriteriaSidebar } from './speaking-criteria-sidebar';
+import { ScrollspySidebar } from '../../ui/scrollspy-sidebar';
 
 // ============================================================================
 // Component
@@ -18,7 +18,7 @@ export function SpeakingCriteriaContent() {
     <div className="container max-w-[1024px] px-6 mx-auto relative z-10">
       <SpeakingCriteriaHero />
       <div className="flex flex-col lg:flex-row gap-8 items-start relative mt-8">
-        <SpeakingCriteriaSidebar sections={GUIDE_SECTIONS} activeId={activeId} />
+        <ScrollspySidebar sections={GUIDE_SECTIONS} activeId={activeId} ariaLabel="Speaking Criteria Table of Contents" />
         <SpeakingCriteriaSections sections={GUIDE_SECTIONS} />
       </div>
     </div>

@@ -1,23 +1,37 @@
 'use client';
 
 import { cn } from '@ielts/ui';
-import type { GuideSectionData } from './writing-criteria.constants';
+import type { MouseEvent } from 'react';
 
 // ============================================================================
-// Types
+// Types & Interfaces
 // ============================================================================
 
-interface WritingCriteriaSidebarProps {
-  readonly sections: readonly GuideSectionData[];
+export interface SidebarSection {
+  readonly id: string;
+  readonly title: string;
+  readonly number: string;
+}
+
+interface ScrollspySidebarProps {
+  readonly sections: readonly SidebarSection[];
   readonly activeId: string;
+  readonly ariaLabel?: string;
+  readonly title?: string;
 }
 
 // ============================================================================
 // Component
 // ============================================================================
 
-export function WritingCriteriaSidebar({ sections, activeId }: WritingCriteriaSidebarProps) {
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+export function ScrollspySidebar({
+  sections,
+  activeId,
+  ariaLabel = 'Table of Contents',
+  title = 'Table of Contents',
+}: ScrollspySidebarProps) {
+  // Smooth scroll handler to scroll with offset
+  const handleClick = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
@@ -36,9 +50,9 @@ export function WritingCriteriaSidebar({ sections, activeId }: WritingCriteriaSi
 
   return (
     <aside className="hidden lg:block lg:w-1/4 lg:sticky lg:top-28 h-fit pr-4 self-start">
-      <nav aria-label="Writing Criteria Table of Contents" className="space-y-6">
+      <nav aria-label={ariaLabel} className="space-y-6">
         <h2 className="text-xs font-mono font-bold tracking-wider text-zinc-500 uppercase pb-2 border-b border-[var(--rb-border-subtle)]">
-          Table of Contents
+          {title}
         </h2>
         <ul className="space-y-3 list-none p-0 m-0">
           {sections.map((section) => {
