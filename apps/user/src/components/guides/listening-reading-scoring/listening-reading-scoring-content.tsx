@@ -7,12 +7,17 @@ import { ListeningReadingScoringSections } from './listening-reading-scoring-sec
 import { ScrollspySidebar } from '../../ui/scrollspy-sidebar';
 
 // ============================================================================
+// Constants
+// ============================================================================
+
+const SECTION_IDS = GUIDE_SECTIONS.map((section) => section.id);
+
+// ============================================================================
 // Component
 // ============================================================================
 
 export function ListeningReadingScoringContent() {
-  const sectionIds = GUIDE_SECTIONS.map((section) => section.id);
-  const activeId = useScrollSpy(sectionIds);
+  const activeId = useScrollSpy(SECTION_IDS);
 
   return (
     <div className="container max-w-[1024px] px-6 mx-auto relative z-10">

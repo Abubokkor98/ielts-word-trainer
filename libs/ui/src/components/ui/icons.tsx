@@ -1,3 +1,5 @@
+import * as React from "react"
+import { cn } from "@ielts/ui/lib/utils"
 
 export const TrophyIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -9,7 +11,7 @@ export const TrophyIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-label="Trophy icon"
-    className={`w-12 h-12 ${className || ''}`}
+    className={cn("w-12 h-12", className)}
     {...props}
   >
     <title>Quiz success trophy icon</title>
@@ -31,7 +33,7 @@ export const BookOpenIcon = ({ className, ...props }: React.SVGProps<SVGSVGEleme
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-label="Open book icon"
-    className={`w-12 h-12 ${className || ''}`}
+    className={cn("w-12 h-12", className)}
     {...props}
   >
     <title>Review open book icon</title>
@@ -50,7 +52,7 @@ export const LightbulbIcon = ({ className, ...props }: React.SVGProps<SVGSVGElem
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-label="Lightbulb icon"
-    className={`w-6 h-6 ${className || ''}`}
+    className={cn("w-6 h-6", className)}
     {...props}
   >
     <title>Difficulty recommendation lightbulb icon</title>
@@ -70,7 +72,7 @@ export const TargetIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-label="Target icon"
-    className={`w-12 h-12 ${className || ''}`}
+    className={cn("w-12 h-12", className)}
     {...props}
   >
     <title>Quiz target icon</title>
@@ -90,7 +92,7 @@ export const CheckIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement>
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-label="Check icon"
-    className={`w-5 h-5 ${className || ''}`}
+    className={cn("w-5 h-5", className)}
     {...props}
   >
     <title>Correct answer checkmark icon</title>
@@ -108,7 +110,7 @@ export const CrossIcon = ({ className, ...props }: React.SVGProps<SVGSVGElement>
     strokeLinecap="round"
     strokeLinejoin="round"
     aria-label="Cross icon"
-    className={`w-5 h-5 ${className || ''}`}
+    className={cn("w-5 h-5", className)}
     {...props}
   >
     <title>Incorrect answer crossmark icon</title>

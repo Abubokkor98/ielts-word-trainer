@@ -54,27 +54,29 @@ export const ReviewCard = ({ stats }: ReviewCardProps) => {
                 : 'Great job! You have no words due for review right now.'}
             </p>
           </div>
-          <Link href="/review" className={cn(!isDue && "pointer-events-none")}>
-            <Button
-              size="lg"
-              disabled={!isDue}
-              className={cn(
-                "w-full sm:w-auto font-semibold shadow-md transition-all duration-300 group",
-                isDue
-                  ? "bg-violet-600 text-white hover:bg-violet-500 hover:shadow-violet-500/20 active:scale-95"
-                  : "bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 cursor-not-allowed"
-              )}
-            >
-              {isDue ? (
+          {isDue ? (
+            <Link href="/review">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto font-semibold shadow-md transition-all duration-300 group bg-violet-600 text-white hover:bg-violet-500 hover:shadow-violet-500/20 active:scale-95"
+              >
                 <span className="flex items-center gap-2">
                   Start Review 
                   <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
                 </span>
-              ) : (
-                'Review Ahead'
-              )}
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              size="lg"
+              disabled
+              aria-disabled="true"
+              tabIndex={-1}
+              className="w-full sm:w-auto font-semibold shadow-md transition-all duration-300 bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 cursor-not-allowed"
+            >
+              Review Ahead
             </Button>
-          </Link>
+          )}
         </div>
       </CardHeader>
       <CardContent className="p-6 pt-0 relative z-10">

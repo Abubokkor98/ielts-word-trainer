@@ -338,7 +338,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
           </Table>
         </div>
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
-          Total Core Test Time: 2 hours 44 minutes (Listening + Reading + Writing) + Speaking
+          Total Core Test Time: 2 hours 40 minutes (Listening + Reading + Writing) + Speaking
         </p>
       </div>
     ),

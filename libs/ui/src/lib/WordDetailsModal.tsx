@@ -2,7 +2,7 @@
 
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
-import { Dialog, DialogContent, DialogTitle } from '../components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../components/ui/dialog';
 import { PronunciationButton } from '../components/pronunciation-button';
 import { cn } from './utils';
 
@@ -40,7 +40,10 @@ export function WordDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="bg-[#1b1722] border-[#2f293a] text-[#f4f4f5] max-w-lg shadow-2xl rounded-lg p-0 overflow-hidden" aria-describedby={undefined}>
+      <DialogContent className="bg-[#1b1722] border-[#2f293a] text-[#f4f4f5] max-w-lg shadow-2xl rounded-lg p-0 overflow-hidden">
+        <DialogDescription className="sr-only">
+          Details for the vocabulary word {word.word} including meaning, pronunciation, part of speech, and examples.
+        </DialogDescription>
         {/* Compact Header */}
         <div className="pb-3 pt-4 px-6 border-b border-[#2f293a] flex flex-col gap-2">
           <div className="flex items-center gap-3 flex-wrap">

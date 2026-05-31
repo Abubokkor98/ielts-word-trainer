@@ -32,19 +32,27 @@ export function ScrollspySidebar({
 }: ScrollspySidebarProps) {
   // Smooth scroll handler to scroll with offset
   const handleClick = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
+    // Only intercept plain left clicks (no meta/ctrl/shift/alt keys)
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+      return;
+    }
+
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const offset = 120; // Matches scrollspy offset
-      const bodyRect = document.body.getBoundingClientRect().top;
-      const elementRect = element.getBoundingClientRect().top;
-      const elementPosition = elementRect - bodyRect;
+      const offset = 140; // Matches scrollspy offset (140)
+      const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - offset;
 
       window.scrollTo({
         top: offsetPosition,
         behavior: 'smooth',
       });
+
+      // Safely update the URL hash
+      if (typeof window !== 'undefined' && window.history) {
+        window.history.pushState(null, '', `#${id}`);
+      }
     }
   };
 

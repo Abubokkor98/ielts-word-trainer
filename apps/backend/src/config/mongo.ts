@@ -10,10 +10,12 @@ export const connectToDatabase = async () => {
     return;
   }
 
-  try {
-    dns.setServers(['8.8.8.8', '1.1.1.1']);
-  } catch (e) {
-    console.warn('Failed to set custom DNS servers, using system default:', e);
+  if (process.env.ENABLE_CUSTOM_DNS === 'true') {
+    try {
+      dns.setServers(['8.8.8.8', '1.1.1.1']);
+    } catch (e) {
+      console.warn('Failed to set custom DNS servers, using system default:', e);
+    }
   }
 
   try {

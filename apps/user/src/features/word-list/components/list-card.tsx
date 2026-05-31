@@ -216,7 +216,6 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
                   size="icon"
                   className="h-7 w-7 text-muted-foreground/60 hover:text-foreground hover:bg-white/5 rounded-lg transition-colors"
                   aria-label="List actions"
-                  onClick={() => setIsMenuOpen(true)}
                 >
                   <MoreHorizontal size={14} />
                 </Button>

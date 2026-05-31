@@ -59,7 +59,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'task-achievement-response',
     number: '2',
-    title: '1. Task Achievement / Task Response',
+    title: 'Task Achievement / Task Response',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
@@ -103,7 +103,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'coherence-cohesion',
     number: '3',
-    title: '2. Coherence and Cohesion',
+    title: 'Coherence and Cohesion',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
@@ -161,7 +161,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'lexical-resource',
     number: '4',
-    title: '3. Lexical Resource (Vocabulary)',
+    title: 'Lexical Resource (Vocabulary)',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -226,7 +226,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'grammatical-range-accuracy',
     number: '5',
-    title: '4. Grammatical Range and Accuracy',
+    title: 'Grammatical Range and Accuracy',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">

@@ -59,8 +59,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                 { band: '2', skill: 'Intermittent', descriptor: 'Intermittent user', meaning: 'Great difficulty understanding spoken and written English.' },
                 { band: '1', skill: 'Non-user', descriptor: 'Non-user', meaning: 'No ability to use the language except a few isolated words.' },
                 { band: '0', skill: '—', descriptor: 'Did not attempt the test', meaning: 'Did not answer the questions.' },
-              ].map((row, idx) => (
-                <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === 9 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+              ].map((row, idx, arr) => (
+                <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                   <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
                   <TableCell className="font-semibold text-white text-xs sm:text-sm">{row.skill}</TableCell>
                   <TableCell className="text-zinc-300 font-medium text-xs sm:text-sm">{row.descriptor}</TableCell>
@@ -104,8 +104,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                 { l: '6.5', r: '6.5', w: '5.0', s: '7.0', avg: '6.25', band: '6.5' },
                 { l: '4.0', r: '3.5', w: '4.0', s: '4.0', avg: '3.875', band: '4.0' },
                 { l: '6.5', r: '6.5', w: '5.5', s: '6.0', avg: '6.125', band: '6.0' },
-              ].map((row, idx) => (
-                <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === 2 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+              ].map((row, idx, arr) => (
+                <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                   <TableCell className="text-zinc-300 font-mono text-xs sm:text-sm">{row.l}</TableCell>
                   <TableCell className="text-zinc-300 font-mono text-xs sm:text-sm">{row.r}</TableCell>
                   <TableCell className="text-zinc-300 font-mono text-xs sm:text-sm">{row.w}</TableCell>
@@ -144,8 +144,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                 { type: 'Postgraduate (most universities)', band: '6.5–7.0', section: '6.0–6.5' },
                 { type: 'Top-tier universities (Oxford, Cambridge, Ivy League)', band: '7.0–7.5', section: '7.0' },
                 { type: 'English language programs', band: '4.5–5.5', section: '4.5' },
-              ].map((row, idx) => (
-                <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === 3 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+              ].map((row, idx, arr) => (
+                <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                   <TableCell className="font-medium text-white text-xs sm:text-sm">{row.type}</TableCell>
                   <TableCell className="text-primary font-semibold text-xs sm:text-sm">{row.band}</TableCell>
                   <TableCell className="text-zinc-400 font-mono text-xs sm:text-sm">{row.section}</TableCell>
@@ -190,8 +190,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { clb: '8', r: '6.5', w: '6.5', l: '7.5', s: '6.5', points: 'Good points' },
                   { clb: '7', r: '6.0', w: '6.0', l: '6.0', s: '6.0', points: 'Minimum requirement' },
                   { clb: '6', r: '5.0', w: '5.5', l: '5.5', s: '5.5', points: 'Reduced points' },
-                ].map((row, idx) => (
-                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === 4 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-mono font-bold text-white text-xs sm:text-sm">CLB {row.clb}</TableCell>
                     <TableCell className="text-zinc-300 font-mono text-xs sm:text-sm">{row.r}</TableCell>
                     <TableCell className="text-zinc-300 font-mono text-xs sm:text-sm">{row.w}</TableCell>
@@ -227,8 +227,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { level: 'Competent English', score: '6.0 in all sections', points: 'Minimum requirement' },
                   { level: 'Proficient English', score: '7.0 in all sections', points: '+10 points' },
                   { level: 'Superior English', score: '8.0 in all sections', points: '+20 points' },
-                ].map((row, idx) => (
-                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === 2 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-semibold text-white text-xs sm:text-sm">{row.level}</TableCell>
                     <TableCell className="text-zinc-300 font-mono text-xs sm:text-sm">{row.score}</TableCell>
                     <TableCell className="text-right font-bold text-primary text-xs sm:text-sm">{row.points}</TableCell>
@@ -261,8 +261,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { cefr: 'B1', score: '4.0 in all four components', visa: 'Basic worker, some study visas' },
                   { cefr: 'B2', score: '5.5 in all four components', visa: 'Skilled worker, student visas' },
                   { cefr: 'C1', score: '7.0 in all four components', visa: 'Highly skilled, professional visas' },
-                ].map((row, idx) => (
-                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === 2 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-bold text-white text-xs sm:text-sm">CEFR {row.cefr}</TableCell>
                     <TableCell className="text-zinc-300 font-mono text-xs sm:text-sm">{row.score}</TableCell>
                     <TableCell className="text-right text-zinc-400 text-xs sm:text-sm font-medium">{row.visa}</TableCell>
