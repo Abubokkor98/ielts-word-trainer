@@ -13,11 +13,14 @@ export interface SidebarSection {
   readonly number: string;
 }
 
+const DEFAULT_SCROLL_OFFSET = 140;
+
 interface ScrollspySidebarProps {
   readonly sections: readonly SidebarSection[];
   readonly activeId: string;
   readonly ariaLabel?: string;
   readonly title?: string;
+  readonly scrollOffset?: number;
 }
 
 // ============================================================================
@@ -29,6 +32,7 @@ export function ScrollspySidebar({
   activeId,
   ariaLabel = 'Table of Contents',
   title = 'Table of Contents',
+  scrollOffset = DEFAULT_SCROLL_OFFSET,
 }: ScrollspySidebarProps) {
   // Smooth scroll handler to scroll with offset
   const handleClick = (e: MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -40,7 +44,7 @@ export function ScrollspySidebar({
     e.preventDefault();
     const element = document.getElementById(id);
     if (element) {
-      const offset = 140; // Matches scrollspy offset (140)
+      const offset = scrollOffset;
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - offset;
 

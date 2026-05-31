@@ -39,7 +39,7 @@ export function DeleteConfirmationModal({
   // Close on escape key
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && !isPending) {
         onClose();
       }
     };
@@ -49,7 +49,7 @@ export function DeleteConfirmationModal({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isPending]);
 
   // Set initial focus to Cancel button for better keyboard UX
   useEffect(() => {
@@ -73,7 +73,7 @@ export function DeleteConfirmationModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/80 backdrop-blur-md"
-            onClick={onClose}
+            onClick={() => !isPending && onClose()}
           />
           {/* Dialog Card */}
           <motion.div
@@ -98,6 +98,7 @@ export function DeleteConfirmationModal({
                 size="sm"
                 className="h-8 text-xs font-semibold rounded-lg bg-zinc-900 border-border/80 hover:bg-zinc-800 text-foreground"
                 onClick={onClose}
+                disabled={isPending}
               >
                 Cancel
               </Button>

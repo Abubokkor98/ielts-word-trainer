@@ -49,15 +49,18 @@ const CATEGORY_PRESETS: Record<string, WordCategoryPreset> = {
   },
 };
 
+const CATEGORY_KEYS = Object.keys(CATEGORY_PRESETS);
+const DEFAULT_CATEGORY = CATEGORY_KEYS[0];
+
 export function HeroSection() {
 
   // Minimal states
-  const [selectedCategory, setSelectedCategory] = React.useState<string>('Academic Words');
+  const [selectedCategory, setSelectedCategory] = React.useState<string>(DEFAULT_CATEGORY);
   const [isAudioPlaying, setIsAudioPlaying] = React.useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = React.useState<boolean>(false);
   const dropdownRef = React.useRef<HTMLDivElement>(null);
 
-  const currentWord = CATEGORY_PRESETS[selectedCategory] || CATEGORY_PRESETS['Academic Words'];
+  const currentWord = CATEGORY_PRESETS[selectedCategory] || CATEGORY_PRESETS[DEFAULT_CATEGORY];
 
   // Actual Text-To-Speech Pronunciation Player
   const triggerAudioWave = () => {
@@ -84,7 +87,7 @@ export function HeroSection() {
   };
 
   const handleResetCard = () => {
-    setSelectedCategory('Academic Words');
+    setSelectedCategory(DEFAULT_CATEGORY);
     setIsAudioPlaying(false);
   };
 
@@ -261,7 +264,7 @@ export function HeroSection() {
                         exit={{ opacity: 0, y: 5 }}
                         className="absolute right-0 top-full mt-2 w-48 rounded-lg bg-[#1a1622] border border-white/10 shadow-2xl z-50 overflow-hidden flex flex-col p-1"
                       >
-                        {['Academic Words', 'General Training', 'High-Band Idioms'].map((cat) => (
+                        {CATEGORY_KEYS.map((cat) => (
                           <Button
                             key={cat}
                             variant="ghost"
