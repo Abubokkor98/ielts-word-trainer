@@ -2,7 +2,7 @@
 
 import { Button } from '@ielts/ui';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 // ============================================================================
@@ -29,11 +29,37 @@ export function DeleteConfirmationModal({
   onConfirm,
 }: DeleteConfirmationModalProps) {
   const [mounted, setMounted] = useState(false);
+  const cancelBtnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setMounted(true);
     return () => setMounted(false);
   }, []);
+
+  // Close on escape key
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  // Set initial focus to Cancel button for better keyboard UX
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        cancelBtnRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   if (!mounted) return null;
 
@@ -51,19 +77,23 @@ export function DeleteConfirmationModal({
           />
           {/* Dialog Card */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-dialog-title"
             initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: 'spring', duration: 0.4 }}
             className="w-full max-w-sm glass-panel border border-border p-6 rounded-2xl shadow-2xl relative z-10"
           >
-            <h3 className="text-base font-bold text-foreground mb-2">Delete Collection</h3>
+            <h3 id="delete-dialog-title" className="text-base font-bold text-foreground mb-2">Delete Collection</h3>
             <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
               Are you sure you want to delete &quot;{listName}&quot;? This action is permanent and
               will remove all saved words from this collection.
             </p>
             <div className="flex justify-end gap-2.5">
               <Button
+                ref={cancelBtnRef}
                 variant="outline"
                 size="sm"
                 className="h-8 text-xs font-semibold rounded-lg bg-zinc-900 border-border/80 hover:bg-zinc-800 text-foreground"

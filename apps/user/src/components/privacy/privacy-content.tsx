@@ -7,12 +7,17 @@ import { PrivacySections } from './privacy-sections';
 import { ScrollspySidebar } from '../ui/scrollspy-sidebar';
 
 // ============================================================================
+// Constants & Configuration
+// ============================================================================
+
+const SECTION_IDS = PRIVACY_SECTIONS.map((section) => section.id);
+
+// ============================================================================
 // Component
 // ============================================================================
 
 export function PrivacyContent() {
-  const sectionIds = PRIVACY_SECTIONS.map((section) => section.id);
-  const activeId = useScrollSpy(sectionIds);
+  const activeId = useScrollSpy(SECTION_IDS);
 
   return (
     <div className="container max-w-[1024px] px-6 mx-auto relative z-10">

@@ -34,7 +34,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'fluency-coherence',
     number: '2',
-    title: '1. Fluency and Coherence',
+    title: 'Fluency and Coherence',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -55,8 +55,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { band: '7', desc: 'Speaks at length with some repetition or self-correction; hesitation is usually content-related rather than searching for vocabulary/grammar; coherence is generally logical' },
                   { band: '6', desc: 'Willing to speak at length; may lose coherence due to occasional hesitation, repetition, or self-correction; uses a range of discourse markers though sometimes inappropriately' },
                   { band: '5', desc: 'Maintains flow but may lose coherence due to frequent language-related hesitation; overuses specific discourse markers; speaks mostly in simple, short sentence structures' },
-                ].map((row, idx) => (
-                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === 3 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
                     <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
                   </TableRow>
@@ -84,8 +84,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { band: 'Band 6', desc: 'Content-related hesitation (thinking of what to say next), some visible self-correction' },
                   { band: 'Band 7', desc: 'Occasional repetition of phrases, mostly smooth transitions between different arguments' },
                   { band: 'Band 8', desc: 'Effortless and natural fluency, minimal language search, near-native discourse markers' },
-                ].map((row, idx) => (
-                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === 3 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-semibold text-white text-xs sm:text-sm">{row.band}</TableCell>
                     <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
                   </TableRow>
@@ -100,7 +100,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'lexical-resource',
     number: '3',
-    title: '2. Lexical Resource (Vocabulary Usage)',
+    title: 'Lexical Resource (Vocabulary Usage)',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -121,8 +121,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { band: '7', desc: 'Sufficient vocabulary for unfamiliar topics; uses less common and idiomatic items; shows awareness of style and collocation; occasional errors' },
                   { band: '6', desc: 'Adequate vocabulary for the task; uses some less common items; attempts to use idiomatic language and collocations but with noticeable inaccuracies' },
                   { band: '5', desc: 'Adequate for familiar and simple topics; limited vocabulary range; frequent errors in word choice; needs repetition or rephrasing for clarity' },
-                ].map((row, idx) => (
-                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === 3 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
                     <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
                   </TableRow>
@@ -161,7 +161,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'grammatical-range',
     number: '4',
-    title: '3. Grammatical Range and Accuracy',
+    title: 'Grammatical Range and Accuracy',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -182,8 +182,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { band: '7', desc: 'Uses a variety of complex structures; frequent error-free sentences; has good control over grammar despite some minor, repetitive errors' },
                   { band: '6', desc: 'Uses a mix of simple and complex sentence forms; makes some errors in grammar, but they do not impede or block communication' },
                   { band: '5', desc: 'Uses only a limited range of simple structures; attempts complex sentences but they are often inaccurate; grammatical errors impede communication' },
-                ].map((row, idx) => (
-                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === 3 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
                     <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
                   </TableRow>
@@ -211,8 +211,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { band: 'Band 6', desc: 'Attempts complex sentences but with noticeable errors; inconsistent tense use' },
                   { band: 'Band 7', desc: 'Good variety of structures with mostly accurate tenses and clauses' },
                   { band: 'Band 8', desc: 'Wide range of advanced structures (conditionals, passive) with rare, unsystematic errors' },
-                ].map((row, idx) => (
-                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === 3 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-semibold text-white text-xs sm:text-sm">{row.band}</TableCell>
                     <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
                   </TableRow>
@@ -227,7 +227,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'pronunciation',
     number: '5',
-    title: '4. Pronunciation',
+    title: 'Pronunciation',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -248,8 +248,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                   { band: '7', desc: 'Easy to understand throughout; uses some pronunciation features successfully (connected speech, intonation); L1 accent has minimal effect on clarity' },
                   { band: '6', desc: 'Generally easy to understand; uses some pronunciation features appropriately; L1 accent may cause occasional effort for the listener' },
                   { band: '5', desc: 'Some parts of speech are hard to understand; limited use of pronunciation features; L1 accent causes frequent listener effort' },
-                ].map((row, idx) => (
-                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === 3 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+                ].map((row, idx, arr) => (
+                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                     <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
                     <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
                   </TableRow>
@@ -311,8 +311,8 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
                 { criterion: 'Lexical Resource', weight: '25%', b5: 'Limited vocabulary, word choice errors', b6: 'Adequate for task, attempts idioms', b7: 'Less common/idiomatic items skillfully', b8: 'Wide range, precise selections' },
                 { criterion: 'Grammar', weight: '25%', b5: 'Limited structures, frequent errors', b6: 'Mix of simple/complex, some errors', b7: 'Complex structures, frequent error-free', b8: 'Wide range of structures, mostly error-free' },
                 { criterion: 'Pronunciation', weight: '25%', b5: 'Hard to understand, accent causes effort', b6: 'Generally clear, L1 accent occasional effort', b7: 'Easy to understand, good features', b8: 'Easy throughout, native-like accent traces' },
-              ].map((row, idx) => (
-                <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === 3 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
+              ].map((row, idx, arr) => (
+                <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
                   <TableCell className="font-semibold text-white text-xs sm:text-sm">{row.criterion}</TableCell>
                   <TableCell className="text-primary font-mono text-xs sm:text-sm font-semibold">{row.weight}</TableCell>
                   <TableCell className="text-zinc-400 text-xs sm:text-sm">{row.b5}</TableCell>

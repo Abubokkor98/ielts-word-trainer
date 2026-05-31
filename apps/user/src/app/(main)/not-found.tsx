@@ -54,15 +54,16 @@ export default function NotFound() {
                 </p>
               </div>
 
-              <Link href="/vocabulary" className="w-full mt-4 block">
-                <Button
-                  size="lg"
-                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 flex gap-2 items-center justify-center font-semibold"
-                >
+              <Button
+                asChild
+                size="lg"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 flex gap-2 items-center justify-center font-semibold mt-4"
+              >
+                <Link href="/vocabulary">
                   <ArrowLeft size={20} />
                   Back to Learning
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>

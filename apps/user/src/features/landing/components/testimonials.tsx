@@ -189,8 +189,8 @@ function ScrollingColumn({ testimonials, direction, className = '' }: ColumnProp
   return (
     <div className={`ln-test-col ${className}`}>
       <ul className={`ln-test-col-scroll ${scrollClass}`}>
-        {SET_PREFIXES.map((prefix) => (
-          <li className="ln-test-col-set" key={prefix}>
+        {SET_PREFIXES.map((prefix, idx) => (
+          <li className="ln-test-col-set" key={prefix} aria-hidden={idx > 0 ? 'true' : undefined}>
             {testimonials.map((testimonial) => (
               <TestimonialCard key={`${prefix}-${testimonial.handle}`} testimonial={testimonial} />
             ))}

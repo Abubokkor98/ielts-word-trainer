@@ -7,12 +7,17 @@ import { ScrollspySidebar } from '../ui/scrollspy-sidebar';
 import { useScrollSpy } from './use-scroll-spy';
 
 // ============================================================================
+// Constants & Configuration
+// ============================================================================
+
+const SECTION_IDS = TERMS_SECTIONS.map((section) => section.id);
+
+// ============================================================================
 // Component
 // ============================================================================
 
 export function TermsContent() {
-  const sectionIds = TERMS_SECTIONS.map((section) => section.id);
-  const activeId = useScrollSpy(sectionIds);
+  const activeId = useScrollSpy(SECTION_IDS);
 
   return (
     <div className="container max-w-[1024px] px-6 mx-auto relative z-10">

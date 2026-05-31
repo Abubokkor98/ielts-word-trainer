@@ -43,7 +43,11 @@ export function useLogin() {
 
       // Security: Ensure redirect is a relative path (not external URL or protocol-relative)
       const safeRedirect =
-        redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/';
+        redirectTo.startsWith('/') &&
+        (redirectTo.length === 1 ||
+          (redirectTo[1] !== '/' && redirectTo[1] !== '\\'))
+          ? redirectTo
+          : '/';
 
       router.push(safeRedirect);
     },

@@ -26,9 +26,19 @@ export function Flashcard({ word, isFlipped, onFlip }: FlashcardProps) {
     e.stopPropagation();
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isFlipped && (e.key === 'Enter' || e.key === ' ')) {
+      if (e.key === ' ') {
+        e.preventDefault();
+      }
+      onFlip();
+    }
+  };
+
   return (
     <Card
       onClick={() => !isFlipped && onFlip()}
+      onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
       className={cn(

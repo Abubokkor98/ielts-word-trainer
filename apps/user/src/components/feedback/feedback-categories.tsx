@@ -14,7 +14,9 @@ interface FeedbackCategory {
   readonly description: string;
   readonly questions: readonly string[];
   readonly colSpan: string;
-  readonly accentClass: string;
+  readonly gradientClasses: string;
+  readonly textColorClass: string;
+  readonly borderColorClass: string;
   readonly tip?: string;
 }
 
@@ -34,7 +36,9 @@ const CATEGORIES: readonly FeedbackCategory[] = [
       "Is there anything you're particularly impressed with?",
     ],
     colSpan: 'md:col-span-6',
-    accentClass: 'from-emerald-500/20 to-teal-500/20 text-emerald-400 border-emerald-500/20',
+    gradientClasses: 'from-emerald-500/20 to-teal-500/20',
+    textColorClass: 'text-emerald-400',
+    borderColorClass: 'border-emerald-500/20',
   },
   {
     icon: RefreshCw,
@@ -47,7 +51,9 @@ const CATEGORIES: readonly FeedbackCategory[] = [
       'What would make your learning experience smoother?',
     ],
     colSpan: 'md:col-span-6',
-    accentClass: 'from-blue-500/20 to-cyan-500/20 text-blue-400 border-blue-500/20',
+    gradientClasses: 'from-blue-500/20 to-cyan-500/20',
+    textColorClass: 'text-blue-400',
+    borderColorClass: 'border-blue-500/20',
   },
   {
     icon: Lightbulb,
@@ -59,7 +65,9 @@ const CATEGORIES: readonly FeedbackCategory[] = [
       'How can we better support your IELTS preparation goals?',
     ],
     colSpan: 'md:col-span-6',
-    accentClass: 'from-purple-500/20 to-pink-500/20 text-purple-400 border-purple-500/20',
+    gradientClasses: 'from-purple-500/20 to-pink-500/20',
+    textColorClass: 'text-purple-400',
+    borderColorClass: 'border-purple-500/20',
   },
   {
     icon: Bug,
@@ -71,7 +79,9 @@ const CATEGORIES: readonly FeedbackCategory[] = [
       'Can you reproduce the bug consistently?',
     ],
     colSpan: 'md:col-span-6',
-    accentClass: 'from-amber-500/20 to-red-500/20 text-amber-400 border-amber-500/20',
+    gradientClasses: 'from-amber-500/20 to-red-500/20',
+    textColorClass: 'text-amber-400',
+    borderColorClass: 'border-amber-500/20',
     tip: 'Pro tip: For technical bugs, submitting a GitHub Issue is often the fastest way to get it fixed.',
   },
 ] as const;
@@ -115,7 +125,6 @@ export function FeedbackCategories() {
       <ul className="grid grid-cols-1 md:grid-cols-12 gap-6 list-none p-0 m-0">
         {CATEGORIES.map((category, index) => {
           const IconComponent = category.icon;
-          const accentColorClass = category.accentClass.split(' ')[2];
           return (
             <motion.li
               key={category.title}
@@ -134,7 +143,7 @@ export function FeedbackCategories() {
                 <div className="flex flex-col h-full">
                   <header className="flex items-center gap-3 mb-4">
                     <div
-                      className={`inline-flex p-3 rounded-xl bg-gradient-to-tr ${category.accentClass.split(' ').slice(0, 2).join(' ')} border ${category.accentClass.split(' ')[3]} ${accentColorClass}`}
+                      className={`inline-flex p-3 rounded-xl bg-gradient-to-tr ${category.gradientClasses} border ${category.borderColorClass} ${category.textColorClass}`}
                     >
                       <IconComponent size={22} />
                     </div>
@@ -152,7 +161,7 @@ export function FeedbackCategories() {
                       <li key={question} className="flex items-start gap-2.5">
                         <CheckCircle2
                           size={16}
-                          className={`flex-shrink-0 mt-0.5 ${accentColorClass}`}
+                          className={`flex-shrink-0 mt-0.5 ${category.textColorClass}`}
                           aria-hidden="true"
                         />
                         <span className="text-xs sm:text-sm text-zinc-400 leading-normal">

@@ -14,7 +14,9 @@ interface CategoryItem {
   readonly description: string;
   readonly details?: readonly string[];
   readonly colSpan: string;
-  readonly accentColor: string;
+  readonly gradientColor: string;
+  readonly textColor: string;
+  readonly borderColor: string;
 }
 
 // ============================================================================
@@ -28,7 +30,9 @@ const CATEGORIES: readonly CategoryItem[] = [
     description:
       "Have a question about how to use IELTS Vocabs, need help with your account, or want to know more about our features? Send us an email and we'll get back to you promptly.",
     colSpan: 'md:col-span-12 lg:col-span-4',
-    accentColor: 'from-blue-500/20 to-indigo-500/20 text-blue-400 border-blue-500/20',
+    gradientColor: 'from-blue-500/20 to-indigo-500/20',
+    textColor: 'text-blue-400',
+    borderColor: 'border-blue-500/20',
   },
   {
     icon: Bug,
@@ -42,7 +46,9 @@ const CATEGORIES: readonly CategoryItem[] = [
       'You can contribute to the fix by providing additional details',
     ],
     colSpan: 'md:col-span-12 lg:col-span-8',
-    accentColor: 'from-amber-500/20 to-red-500/20 text-amber-400 border-amber-500/20',
+    gradientColor: 'from-amber-500/20 to-red-500/20',
+    textColor: 'text-amber-400',
+    borderColor: 'border-amber-500/20',
   },
   {
     icon: Sparkles,
@@ -55,7 +61,9 @@ const CATEGORIES: readonly CategoryItem[] = [
       'Any examples or mockups (optional but helpful)',
     ],
     colSpan: 'md:col-span-12 lg:col-span-12',
-    accentColor: 'from-purple-500/20 to-pink-500/20 text-purple-400 border-purple-500/20',
+    gradientColor: 'from-purple-500/20 to-pink-500/20',
+    textColor: 'text-purple-400',
+    borderColor: 'border-purple-500/20',
   },
 ] as const;
 
@@ -115,7 +123,7 @@ export function ContactCategories() {
               <article className="glass-card rounded-[24px] p-6 sm:p-8 h-full flex flex-col justify-between hover:border-[var(--glass-border-hover)] transition-all duration-300 relative overflow-hidden group">
                 <div className="flex flex-col h-full">
                   <header className="flex items-center gap-3 mb-4">
-                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-tr ${category.accentColor} border`}>
+                    <div className={`inline-flex p-3 rounded-xl bg-gradient-to-tr ${category.gradientColor} border ${category.borderColor} ${category.textColor}`}>
                       <IconComponent size={22} />
                     </div>
                     <h3 className="text-lg font-bold text-white tracking-tight">
@@ -133,7 +141,7 @@ export function ContactCategories() {
                         <li key={detail} className="flex items-start gap-2.5">
                           <CheckCircle2
                             size={16}
-                            className={`flex-shrink-0 mt-0.5 ${category.accentColor.split(' ')[2]}`}
+                            className={`flex-shrink-0 mt-0.5 ${category.textColor}`}
                             aria-hidden="true"
                           />
                           <span className="text-xs sm:text-sm text-zinc-400 leading-normal">

@@ -260,13 +260,13 @@
   .animate-marquee {
     display: flex;
     width: max-content;
-    animation: marqueeScroll 25s linear infinite;
+    animation: marquee-scroll 25s linear infinite;
   }
 
   .animate-marquee-reverse {
     display: flex;
     width: max-content;
-    animation: marqueeScrollRev 28s linear infinite;
+    animation: marquee-scroll-rev 28s linear infinite;
   }
 
   .animate-marquee:hover,
@@ -276,21 +276,21 @@
 
   /* Pulse loader effect */
   .animate-pulse-think {
-    animation: thinkPulse 1.2s infinite ease-in-out;
+    animation: think-pulse 1.2s infinite ease-in-out;
   }
 
   /* Monospace terminal cursor */
   .animate-cursor {
-    animation: cursorBlink 0.8s infinite;
+    animation: cursor-blink 0.8s infinite;
   }
 
   /* Vertical scrolling columns for testimonials */
   .animate-test-scroll-up {
-    animation: testScrollUp 35s linear infinite;
+    animation: test-scroll-up 35s linear infinite;
   }
 
   .animate-test-scroll-down {
-    animation: testScrollDown 35s linear infinite;
+    animation: test-scroll-down 35s linear infinite;
   }
 
   .animate-test-scroll-up:hover,
@@ -300,7 +300,7 @@
 }
 
 /* Base keyframes declared at standard CSS root level */
-@keyframes marqueeScroll {
+@keyframes marquee-scroll {
   0% {
     transform: translateX(0);
   }
@@ -309,7 +309,7 @@
   }
 }
 
-@keyframes marqueeScrollRev {
+@keyframes marquee-scroll-rev {
   0% {
     transform: translateX(-50%);
   }
@@ -318,7 +318,7 @@
   }
 }
 
-@keyframes testScrollUp {
+@keyframes test-scroll-up {
   0% {
     transform: translateY(0);
   }
@@ -327,7 +327,7 @@
   }
 }
 
-@keyframes testScrollDown {
+@keyframes test-scroll-down {
   0% {
     transform: translateY(-33.333%);
   }
@@ -336,7 +336,7 @@
   }
 }
 
-@keyframes spinCW {
+@keyframes spin-cw {
   0% {
     transform: rotate(0deg);
   }
@@ -345,7 +345,7 @@
   }
 }
 
-@keyframes spinCCW {
+@keyframes spin-ccw {
   0% {
     transform: rotate(0deg);
   }
@@ -354,7 +354,7 @@
   }
 }
 
-@keyframes cursorBlink {
+@keyframes cursor-blink {
   0%,
   100% {
     opacity: 1;
@@ -364,7 +364,7 @@
   }
 }
 
-@keyframes thinkPulse {
+@keyframes think-pulse {
   0%,
   100% {
     opacity: 0.2;
@@ -385,7 +385,7 @@
   }
 }
 
-@keyframes heroTextFadeIn {
+@keyframes hero-text-fade-in {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -544,11 +544,11 @@
 }
 
 .ln-test-col-scroll--up {
-  animation: testScrollUp 35s linear infinite;
+  animation: test-scroll-up 35s linear infinite;
 }
 
 .ln-test-col-scroll--down {
-  animation: testScrollDown 35s linear infinite;
+  animation: test-scroll-down 35s linear infinite;
 }
 
 .ln-test-col-scroll--up:hover,
@@ -620,7 +620,7 @@
 }
 
 .ln-test-text {
-  font-family: "Geist", sans-serif;
+  font-family: Geist, sans-serif;
   font-size: 13.5px;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.6);
@@ -940,7 +940,7 @@
 }
 
 .ln-footer-tagline {
-  font-family: "Geist", sans-serif;
+  font-family: Geist, sans-serif;
   font-size: 13px;
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.35);
@@ -996,7 +996,7 @@
 .ln-footer-link {
   display: inline-block;
   width: fit-content;
-  font-family: "Geist", sans-serif;
+  font-family: Geist, sans-serif;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.5);
   text-decoration: none;
@@ -1039,7 +1039,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-family: "Geist", sans-serif;
+  font-family: Geist, sans-serif;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.25);
   margin: 0;
@@ -1450,7 +1450,7 @@
 }
 
 .nf-word {
-  font-family: 'Geist', sans-serif;
+  font-family: Geist, sans-serif;
   font-size: clamp(22px, 4vw, 28px);
   font-weight: 700;
   color: #ffffff;
@@ -1506,7 +1506,7 @@
 }
 
 .nf-definition {
-  font-family: 'Geist', sans-serif;
+  font-family: Geist, sans-serif;
   font-size: 14.5px;
   line-height: 1.65;
   color: rgba(255, 255, 255, 0.6);
@@ -1514,7 +1514,7 @@
 }
 
 .nf-example {
-  font-family: 'Geist', sans-serif;
+  font-family: Geist, sans-serif;
   font-size: 13.5px;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.4);

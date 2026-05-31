@@ -9,6 +9,7 @@ import type { Word } from '../vocabulary/types';
 import { ListCard } from './components/list-card';
 import { SaveToListButton } from './components/save-to-list-button';
 import { useCreateList, useWordLists } from './hooks/use-word-lists';
+import { useAuthStore, useIsAuthenticated } from '@ielts/auth';
 
 // ============================================================================
 // Animation Variants
@@ -43,7 +44,9 @@ const itemVariants = {
 // ============================================================================
 
 export function WordListContainer() {
-  const { data: lists = [], isLoading } = useWordLists();
+  const isAuthenticated = useIsAuthenticated();
+  const hasHydrated = useAuthStore((state) => state.hasHydrated);
+  const { data: lists = [], isLoading } = useWordLists(isAuthenticated && hasHydrated);
   const createList = useCreateList();
   const { toast } = useToast();
   

@@ -17,6 +17,8 @@ const TRANSITION_CONFIG = {
   ease: [0.21, 0.47, 0.32, 0.98],
 } as const;
 
+const PRIVACY_LAST_UPDATED = 'May 30, 2026';
+
 // ============================================================================
 // Component
 // ============================================================================
@@ -43,7 +45,7 @@ export function PrivacyHero() {
         variant="secondary"
         className="mt-6 px-4 py-2 text-xs sm:text-sm font-normal text-zinc-400 rounded-full"
       >
-        📅 Last Updated: May 30, 2026
+        📅 Last Updated: {PRIVACY_LAST_UPDATED}
       </Badge>
     </motion.header>
   );

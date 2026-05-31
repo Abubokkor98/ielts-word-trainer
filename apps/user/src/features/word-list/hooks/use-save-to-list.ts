@@ -56,6 +56,7 @@ export function useSaveToList({ wordId, isAuthenticated }: UseSaveToListParams) 
   };
 
   const handleCreateAndAdd = async () => {
+    if (isCreating) return;
     const trimmedName = newListName.trim();
     if (!trimmedName) return;
 
