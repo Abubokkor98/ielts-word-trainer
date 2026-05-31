@@ -36,14 +36,14 @@ export function AcademicVsGeneralSections({ sections }: AcademicVsGeneralSection
         <motion.section
           key={section.id}
           id={section.id}
-          className="scroll-mt-28 sm:scroll-mt-32"
+          className="scroll-mt-[140px]"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-80px' }}
           variants={SECTION_VARIANTS}
           transition={{
             ...TRANSITION_CONFIG,
-            delay: index === 0 ? 0 : 0.05,
+            delay: index * 0.05,
           }}
           aria-labelledby={`heading-${section.id}`}
         >

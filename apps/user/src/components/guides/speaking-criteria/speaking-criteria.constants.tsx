@@ -8,6 +8,8 @@ import {
 } from '@ielts/ui';
 import type { ReactNode } from 'react';
 
+import { BandTable } from './band-table';
+
 export interface GuideSectionData {
   readonly id: string;
   readonly title: string;
@@ -41,58 +43,31 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
             What it means: How smoothly you speak, the speed/tempo of speech, logical progression of thoughts, and the ability to keep talking without excessive or unnatural hesitation.
           </p>
-          <div className="overflow-x-auto my-4 border border-[var(--rb-border-subtle)] rounded-xl bg-zinc-900/20">
-            <Table>
-              <TableHeader className="bg-zinc-900/50">
-                <TableRow className="border-[var(--rb-border-subtle)] hover:bg-transparent">
-                  <TableHead className="w-[60px] text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Band</TableHead>
-                  <TableHead className="text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Description of Fluency & Coherence</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  { band: '8', desc: 'Speaks at length fluently and effortlessly; only occasional repetition or self-correction; hesitation is minimal and content-related; coherence is easy to follow with logical progression' },
-                  { band: '7', desc: 'Speaks at length with some repetition or self-correction; hesitation is usually content-related rather than searching for vocabulary/grammar; coherence is generally logical' },
-                  { band: '6', desc: 'Willing to speak at length; may lose coherence due to occasional hesitation, repetition, or self-correction; uses a range of discourse markers though sometimes inappropriately' },
-                  { band: '5', desc: 'Maintains flow but may lose coherence due to frequent language-related hesitation; overuses specific discourse markers; speaks mostly in simple, short sentence structures' },
-                ].map((row, idx, arr) => (
-                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
-                    <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
-                    <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <BandTable
+            headerLabel="Description of Fluency & Coherence"
+            rows={[
+              { band: '8', desc: 'Speaks at length fluently and effortlessly; only occasional repetition or self-correction; hesitation is minimal and content-related; coherence is easy to follow with logical progression' },
+              { band: '7', desc: 'Speaks at length with some repetition or self-correction; hesitation is usually content-related rather than searching for vocabulary/grammar; coherence is generally logical' },
+              { band: '6', desc: 'Willing to speak at length; may lose coherence due to occasional hesitation, repetition, or self-correction; uses a range of discourse markers though sometimes inappropriately' },
+              { band: '5', desc: 'Maintains flow but may lose coherence due to frequent language-related hesitation; overuses specific discourse markers; speaks mostly in simple, short sentence structures' },
+            ]}
+          />
         </div>
 
         <div className="space-y-3">
           <h4 className="text-xs font-semibold text-white tracking-wide border-l-2 border-primary pl-2 uppercase font-mono">
             Common Mistakes & Flow Indicators
           </h4>
-          <div className="overflow-x-auto my-4 border border-[var(--rb-border-subtle)] rounded-xl bg-zinc-900/20">
-            <Table>
-              <TableHeader className="bg-zinc-900/50">
-                <TableRow className="border-[var(--rb-border-subtle)] hover:bg-transparent">
-                  <TableHead className="w-1/4 text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Band</TableHead>
-                  <TableHead className="text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Flow Characteristics</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  { band: 'Band 5', desc: 'Long pauses, searching for vocabulary, overusing fillers (um, uh, like) to stay active' },
-                  { band: 'Band 6', desc: 'Content-related hesitation (thinking of what to say next), some visible self-correction' },
-                  { band: 'Band 7', desc: 'Occasional repetition of phrases, mostly smooth transitions between different arguments' },
-                  { band: 'Band 8', desc: 'Effortless and natural fluency, minimal language search, near-native discourse markers' },
-                ].map((row, idx, arr) => (
-                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
-                    <TableCell className="font-semibold text-white text-xs sm:text-sm">{row.band}</TableCell>
-                    <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <BandTable
+            headerLabel="Flow Characteristics"
+            variant="wide"
+            rows={[
+              { band: 'Band 5', desc: 'Long pauses, searching for vocabulary, overusing fillers (um, uh, like) to stay active' },
+              { band: 'Band 6', desc: 'Content-related hesitation (thinking of what to say next), some visible self-correction' },
+              { band: 'Band 7', desc: 'Occasional repetition of phrases, mostly smooth transitions between different arguments' },
+              { band: 'Band 8', desc: 'Effortless and natural fluency, minimal language search, near-native discourse markers' },
+            ]}
+          />
         </div>
       </div>
     ),
@@ -107,29 +82,15 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
             What it means: Vocabulary range, ability to use less common words, precise context selection, idiomatic language, and paraphrasing effectively when stuck.
           </p>
-          <div className="overflow-x-auto my-4 border border-[var(--rb-border-subtle)] rounded-xl bg-zinc-900/20">
-            <Table>
-              <TableHeader className="bg-zinc-900/50">
-                <TableRow className="border-[var(--rb-border-subtle)] hover:bg-transparent">
-                  <TableHead className="w-[60px] text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Band</TableHead>
-                  <TableHead className="text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Description of Vocabulary Range</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  { band: '8', desc: 'Uses a wide vocabulary range; rarely selects words wrongly; uses less common and idiomatic items skillfully with minor inaccuracies in collocations' },
-                  { band: '7', desc: 'Sufficient vocabulary for unfamiliar topics; uses less common and idiomatic items; shows awareness of style and collocation; occasional errors' },
-                  { band: '6', desc: 'Adequate vocabulary for the task; uses some less common items; attempts to use idiomatic language and collocations but with noticeable inaccuracies' },
-                  { band: '5', desc: 'Adequate for familiar and simple topics; limited vocabulary range; frequent errors in word choice; needs repetition or rephrasing for clarity' },
-                ].map((row, idx, arr) => (
-                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
-                    <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
-                    <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <BandTable
+            headerLabel="Description of Vocabulary Range"
+            rows={[
+              { band: '8', desc: 'Uses a wide vocabulary range; rarely selects words wrongly; uses less common and idiomatic items skillfully with minor inaccuracies in collocations' },
+              { band: '7', desc: 'Sufficient vocabulary for unfamiliar topics; uses less common and idiomatic items; shows awareness of style and collocation; occasional errors' },
+              { band: '6', desc: 'Adequate vocabulary for the task; uses some less common items; attempts to use idiomatic language and collocations but with noticeable inaccuracies' },
+              { band: '5', desc: 'Adequate for familiar and simple topics; limited vocabulary range; frequent errors in word choice; needs repetition or rephrasing for clarity' },
+            ]}
+          />
         </div>
 
         {/* How our app helps */}
@@ -168,58 +129,31 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
             What it means: Variety of sentence structures attempted (simple, compound, and complex), error frequency, and the correct use of tenses.
           </p>
-          <div className="overflow-x-auto my-4 border border-[var(--rb-border-subtle)] rounded-xl bg-zinc-900/20">
-            <Table>
-              <TableHeader className="bg-zinc-900/50">
-                <TableRow className="border-[var(--rb-border-subtle)] hover:bg-transparent">
-                  <TableHead className="w-[60px] text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Band</TableHead>
-                  <TableHead className="text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Description of Grammatical Usage</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  { band: '8', desc: 'Uses a wide range of structures; majority of sentences are completely error-free; makes only very occasional or minor systematic errors' },
-                  { band: '7', desc: 'Uses a variety of complex structures; frequent error-free sentences; has good control over grammar despite some minor, repetitive errors' },
-                  { band: '6', desc: 'Uses a mix of simple and complex sentence forms; makes some errors in grammar, but they do not impede or block communication' },
-                  { band: '5', desc: 'Uses only a limited range of simple structures; attempts complex sentences but they are often inaccurate; grammatical errors impede communication' },
-                ].map((row, idx, arr) => (
-                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
-                    <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
-                    <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <BandTable
+            headerLabel="Description of Grammatical Usage"
+            rows={[
+              { band: '8', desc: 'Uses a wide range of structures; majority of sentences are completely error-free; makes only very occasional or minor systematic errors' },
+              { band: '7', desc: 'Uses a variety of complex structures; frequent error-free sentences; has good control over grammar despite some minor, repetitive errors' },
+              { band: '6', desc: 'Uses a mix of simple and complex sentence forms; makes some errors in grammar, but they do not impede or block communication' },
+              { band: '5', desc: 'Uses only a limited range of simple structures; attempts complex sentences but they are often inaccurate; grammatical errors impede communication' },
+            ]}
+          />
         </div>
 
         <div className="space-y-3">
           <h4 className="text-xs font-semibold text-white tracking-wide border-l-2 border-primary pl-2 uppercase font-mono">
             Common Mistakes & Structural Indicators
           </h4>
-          <div className="overflow-x-auto my-4 border border-[var(--rb-border-subtle)] rounded-xl bg-zinc-900/20">
-            <Table>
-              <TableHeader className="bg-zinc-900/50">
-                <TableRow className="border-[var(--rb-border-subtle)] hover:bg-transparent">
-                  <TableHead className="w-1/4 text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Band</TableHead>
-                  <TableHead className="text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Grammar Characteristics</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  { band: 'Band 5', desc: 'Relies mostly on simple sentences; frequent tense errors (e.g., mixing past and present)' },
-                  { band: 'Band 6', desc: 'Attempts complex sentences but with noticeable errors; inconsistent tense use' },
-                  { band: 'Band 7', desc: 'Good variety of structures with mostly accurate tenses and clauses' },
-                  { band: 'Band 8', desc: 'Wide range of advanced structures (conditionals, passive) with rare, unsystematic errors' },
-                ].map((row, idx, arr) => (
-                  <TableRow key={idx} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
-                    <TableCell className="font-semibold text-white text-xs sm:text-sm">{row.band}</TableCell>
-                    <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <BandTable
+            headerLabel="Grammar Characteristics"
+            variant="wide"
+            rows={[
+              { band: 'Band 5', desc: 'Relies mostly on simple sentences; frequent tense errors (e.g., mixing past and present)' },
+              { band: 'Band 6', desc: 'Attempts complex sentences but with noticeable errors; inconsistent tense use' },
+              { band: 'Band 7', desc: 'Good variety of structures with mostly accurate tenses and clauses' },
+              { band: 'Band 8', desc: 'Wide range of advanced structures (conditionals, passive) with rare, unsystematic errors' },
+            ]}
+          />
         </div>
       </div>
     ),
@@ -234,29 +168,15 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
             What it means: Individual sounds, word stress, sentence stress, intonation, rhythm, and overall clarity.
           </p>
-          <div className="overflow-x-auto my-4 border border-[var(--rb-border-subtle)] rounded-xl bg-zinc-900/20">
-            <Table>
-              <TableHeader className="bg-zinc-900/50">
-                <TableRow className="border-[var(--rb-border-subtle)] hover:bg-transparent">
-                  <TableHead className="w-[60px] text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Band</TableHead>
-                  <TableHead className="text-zinc-200 font-semibold font-mono text-xs uppercase tracking-wider">Description of Pronunciation Clarity</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {[
-                  { band: '8', desc: 'Easy to understand throughout; uses a wide range of pronunciation features successfully; native-like features with minor accent traces; listener understanding never affected' },
-                  { band: '7', desc: 'Easy to understand throughout; uses some pronunciation features successfully (connected speech, intonation); L1 accent has minimal effect on clarity' },
-                  { band: '6', desc: 'Generally easy to understand; uses some pronunciation features appropriately; L1 accent may cause occasional effort for the listener' },
-                  { band: '5', desc: 'Some parts of speech are hard to understand; limited use of pronunciation features; L1 accent causes frequent listener effort' },
-                ].map((row, idx, arr) => (
-                  <TableRow key={row.band} className={`hover:bg-zinc-800/20 ${idx === arr.length - 1 ? 'border-none' : 'border-[var(--rb-border-subtle)]'}`}>
-                    <TableCell className="font-mono font-bold text-primary text-xs sm:text-sm">{row.band}</TableCell>
-                    <TableCell className="text-zinc-300 text-xs sm:text-sm leading-relaxed">{row.desc}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <BandTable
+            headerLabel="Description of Pronunciation Clarity"
+            rows={[
+              { band: '8', desc: 'Easy to understand throughout; uses a wide range of pronunciation features successfully; native-like features with minor accent traces; listener understanding never affected' },
+              { band: '7', desc: 'Easy to understand throughout; uses some pronunciation features successfully (connected speech, intonation); L1 accent has minimal effect on clarity' },
+              { band: '6', desc: 'Generally easy to understand; uses some pronunciation features appropriately; L1 accent may cause occasional effort for the listener' },
+              { band: '5', desc: 'Some parts of speech are hard to understand; limited use of pronunciation features; L1 accent causes frequent listener effort' },
+            ]}
+          />
         </div>
 
         <div className="space-y-3">

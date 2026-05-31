@@ -70,8 +70,6 @@ export const ReviewCard = ({ stats }: ReviewCardProps) => {
             <Button
               size="lg"
               disabled
-              aria-disabled="true"
-              tabIndex={-1}
               className="w-full sm:w-auto font-semibold shadow-md transition-all duration-300 bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 cursor-not-allowed"
             >
               Review Ahead
