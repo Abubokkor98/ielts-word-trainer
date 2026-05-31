@@ -37,7 +37,12 @@ export const UserNavbar = () => {
       </a>
 
       {/* Main Navbar Wrapper matching React Bits */}
-      <header className="fixed top-5 left-0 right-0 z-[1500] flex flex-col items-center px-6 font-mono pointer-events-none">
+      <header
+        className="fixed top-5 left-0 z-[1500] flex flex-col items-center px-6 font-mono pointer-events-none"
+        style={{
+          right: 'var(--removed-body-scroll-bar-size, 0px)',
+        }}
+      >
         <div
           className={`w-full h-14 flex items-center justify-between px-5 border rounded-[16px] transition-all duration-500 pointer-events-auto relative
             ${
