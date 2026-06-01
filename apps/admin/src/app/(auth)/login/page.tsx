@@ -1,7 +1,7 @@
 'use client';
 
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { Button, Card, CardContent, Input, Label, useToast } from '@ielts/ui';
+import { Button, Card, CardContent, Input, Label, PasswordInput, useToast } from '@ielts/ui';
 import { useMutation } from '@tanstack/react-query';
 import { Shield } from 'lucide-react';
 import Link from 'next/link';
@@ -120,15 +120,13 @@ export default function LoginPage() {
                       Forgot Password?
                     </Link>
                   </div>
-                  <Input
+                  <PasswordInput
                     id="password"
-                    type="password"
                     autoComplete="current-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="bg-background text-foreground border-input"
                   />
                 </div>
               </div>

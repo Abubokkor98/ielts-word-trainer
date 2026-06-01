@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, CardContent, CardHeader, Input, Label, useToast } from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, Input, Label, PasswordInput, useToast } from '@ielts/ui';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
@@ -71,14 +71,12 @@ export function ResetPasswordForm() {
               <Label htmlFor="password" className="font-semibold text-muted-foreground">
                 New Password
               </Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min 6 characters"
                 required
-                className="bg-background text-foreground border-input"
               />
             </div>
 
@@ -86,14 +84,12 @@ export function ResetPasswordForm() {
               <Label htmlFor="confirmPassword" className="font-semibold text-muted-foreground">
                 Confirm Password
               </Label>
-              <Input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm password"
                 required
-                className="bg-background text-foreground border-input"
               />
             </div>
 

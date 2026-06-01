@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, CardContent, CardHeader, Input, Label } from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, Input, Label, PasswordInput } from '@ielts/ui';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useLogin } from '../hooks/use-login';
@@ -50,15 +50,13 @@ export function LoginForm() {
               <Label htmlFor="password" className="font-semibold text-muted-foreground">
                 Password
               </Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="bg-background text-foreground border-input"
               />
             </div>
 
