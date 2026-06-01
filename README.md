@@ -4,7 +4,7 @@ A comprehensive, free web-based platform designed to help IELTS candidates maste
 
 ## Live Demo
 
-**User App**: [https://ieltsvocabs.vercel.app](https://ieltsvocabs.vercel.app)  
+**User App**: [https://www.ieltsvocabs.com](https://www.ieltsvocabs.com)  
 **Admin Panel**: [https://admin-ieltsvocabs.vercel.app](https://admin-ieltsvocabs.vercel.app)
 
 ## Table of Contents
