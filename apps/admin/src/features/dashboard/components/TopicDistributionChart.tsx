@@ -1,5 +1,4 @@
-import { Box, Flex, Heading, Skeleton, Text } from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Skeleton } from '@ielts/ui';
 import { useVocabularyOverview } from '../hooks/use-vocabulary-analytics';
 
 export const TopicDistributionChart = () => {
@@ -7,27 +6,23 @@ export const TopicDistributionChart = () => {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <Heading size="sm">Words by Topic</Heading>
-        </CardHeader>
-        <CardContent>
-          <Skeleton height="300px" w="full" />
-        </CardContent>
-      </Card>
+      <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+        <header>
+          <h3 className="text-sm font-bold text-foreground">Words by Topic</h3>
+        </header>
+        <Skeleton className="h-[300px] w-full bg-white/5 rounded-xl" />
+      </section>
     );
   }
 
   if (isError || !overview) {
     return (
-      <Card>
-        <CardHeader>
-          <Heading size="sm">Words by Topic</Heading>
-        </CardHeader>
-        <CardContent>
-          <Text color="red.500">Failed to load topic distribution</Text>
-        </CardContent>
-      </Card>
+      <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+        <header>
+          <h3 className="text-sm font-bold text-foreground">Words by Topic</h3>
+        </header>
+        <p className="text-sm text-red-400">Failed to load topic distribution</p>
+      </section>
     );
   }
 
@@ -35,14 +30,12 @@ export const TopicDistributionChart = () => {
 
   if (byTopic.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <Heading size="sm">Words by Topic</Heading>
-        </CardHeader>
-        <CardContent>
-          <Text color="gray.500">No topics found</Text>
-        </CardContent>
-      </Card>
+      <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+        <header>
+          <h3 className="text-sm font-bold text-foreground">Words by Topic</h3>
+        </header>
+        <p className="text-sm text-muted-foreground">No topics found</p>
+      </section>
     );
   }
 
@@ -50,94 +43,53 @@ export const TopicDistributionChart = () => {
   const topTopics = byTopic.slice(0, 8);
   const maxCount = Math.max(...topTopics.map((t) => t.count));
 
-  const colors = [
-    'blue.500',
-    'green.500',
-    'purple.500',
-    'orange.500',
-    'pink.500',
-    'teal.500',
-    'red.500',
-    'cyan.500',
-  ];
   return (
-    <Card>
-      <CardHeader>
-        <Heading size="sm" mb={1}>
+    <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+      <header>
+        <h3 className="text-sm font-bold text-foreground">
           Words by Topic
-        </Heading>
-        <Text fontSize="xs" color="gray.500">
+        </h3>
+        <p className="text-xs text-muted-foreground">
           Top {topTopics.length} most populated topics
-        </Text>
-      </CardHeader>
-      <CardContent>
-        <Flex direction="column" gap={3}>
-          {topTopics.map((topic, index) => {
-            const percentage = maxCount > 0 ? (topic.count / maxCount) * 100 : 0;
-            const color = colors[index % colors.length];
+        </p>
+      </header>
+      <div className="flex flex-col gap-3">
+        {topTopics.map((topic) => {
+          const percentage = maxCount > 0 ? (topic.count / maxCount) * 100 : 0;
 
-            return (
-              <Box
-                key={topic.topicId}
-                p={3}
-                bg="gray.50"
-                _dark={{ bg: 'gray.800' }}
-                borderRadius="lg"
-                borderLeft="3px solid"
-                borderColor={color}
-              >
-                <Flex justify="space-between" align="center" mb={2}>
-                  <Text
-                    fontSize="sm"
-                    fontWeight="600"
-                    color="gray.900"
-                    _dark={{ color: 'white' }}
-                    noOfLines={1}
-                    flex="1"
-                    mr={3}
-                  >
-                    {topic.topicName}
-                  </Text>
-                  <Text fontSize="lg" fontWeight="bold" color={color}>
-                    {topic.count}
-                  </Text>
-                </Flex>
-                <Box
-                  w="full"
-                  h="8px"
-                  bg="gray.200"
-                  _dark={{ bg: 'gray.700' }}
-                  borderRadius="full"
-                  overflow="hidden"
-                >
-                  <Box
-                    h="full"
-                    w={`${percentage}%`}
-                    bg={color}
-                    borderRadius="full"
-                    transition="width 0.5s ease-in-out"
-                  />
-                </Box>
-              </Box>
-            );
-          })}
-        </Flex>
+          return (
+            <div
+              key={topic.topicId}
+              className="p-3 border border-border rounded-lg bg-transparent flex flex-col gap-2 transition-all duration-200 hover:border-muted-foreground/20"
+            >
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-semibold text-foreground truncate mr-3 flex-1">
+                  {topic.topicName}
+                </span>
+                <span className="text-base font-extrabold text-foreground">
+                  {topic.count}
+                </span>
+              </div>
+              
+              {/* Progress bar */}
+              <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
+                <div
+                  style={{ width: `${percentage}%` }}
+                  className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {byTopic.length > 8 && (
-          <Box
-            mt={3}
-            p={2}
-            bg="gray.100"
-            _dark={{ bg: 'gray.900' }}
-            borderRadius="md"
-            textAlign="center"
-          >
-            <Text fontSize="xs" color="gray.600" _dark={{ color: 'gray.400' }}>
-              +{byTopic.length - 8} more topics
-            </Text>
-          </Box>
-        )}
-      </CardContent>
-    </Card>
+      {byTopic.length > 8 && (
+        <div className="p-2 bg-accent/20 rounded-lg border border-border text-center">
+          <span className="text-[11px] font-semibold text-muted-foreground">
+            +{byTopic.length - 8} more topics
+          </span>
+        </div>
+      )}
+    </section>
   );
 };

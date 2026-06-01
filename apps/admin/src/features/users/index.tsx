@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Text, useDisclosure, VStack } from '@chakra-ui/react';
 import { Card, CardContent, Pagination } from '@ielts/ui';
 import { useEffect, useState } from 'react';
 import { BanUserDialog } from './components/BanUserDialog';
@@ -17,7 +16,7 @@ export function UsersContainer() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
   // Modal State
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Ban Confirmation State
@@ -49,7 +48,7 @@ export function UsersContainer() {
 
   const handleViewUser = (user: User) => {
     setSelectedUser(user);
-    onOpen();
+    setIsModalOpen(true);
   };
 
   const handleStatusChange = (
@@ -78,41 +77,41 @@ export function UsersContainer() {
   };
 
   return (
-    <Box>
-      <VStack spacing={8} align="stretch">
-        <UserHeader onExport={exportUsers} />
+    <div className="space-y-6">
+      <UserHeader onExport={exportUsers} />
 
-        {isError && (
-          <Text color="red.500">
-            Failed to load users. Please try again later.
-          </Text>
-        )}
+      {isError && (
+        <p className="text-sm text-destructive font-medium">
+          Failed to load users. Please try again later.
+        </p>
+      )}
 
-        <Card>
+      <Card className="border border-border bg-transparent shadow-none">
+        <CardContent className="p-6 space-y-4">
           <UserSearch search={search} onSearchChange={setSearch} />
 
-          <CardContent>
-            <UserTable
-              isLoading={isLoading}
-              users={usersData?.users}
-              onViewUser={handleViewUser}
-              onStatusChange={handleStatusChange}
-              onBanUser={handleBanUser}
-            />
+          <UserTable
+            isLoading={isLoading}
+            users={usersData?.users}
+            onViewUser={handleViewUser}
+            onStatusChange={handleStatusChange}
+            onBanUser={handleBanUser}
+          />
 
-            {!isLoading && usersData?.users && usersData.users.length > 0 && (
+          {!isLoading && usersData?.users && usersData.users.length > 0 && (
+            <div className="pt-4 border-t border-border flex justify-end">
               <Pagination
                 currentPage={page}
                 totalPages={usersData?.pagination.totalPages || 1}
                 onPageChange={setPage}
               />
-            )}
-          </CardContent>
-        </Card>
-      </VStack>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* User Detail Modal */}
-      <UserDetailModal isOpen={isOpen} onClose={onClose} user={selectedUser} />
+      <UserDetailModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} user={selectedUser} />
 
       {/* Ban Confirmation Dialog */}
       <BanUserDialog
@@ -121,6 +120,6 @@ export function UsersContainer() {
         onConfirm={confirmBan}
         user={userToBan}
       />
-    </Box>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@chakra-ui/react';
+import { useToast } from './use-toast';
 import { useIsViewer } from '@ielts/auth';
 
 /**
@@ -18,7 +18,7 @@ import { useIsViewer } from '@ielts/auth';
  */
 export const useViewerRestriction = () => {
   const isViewer = useIsViewer();
-  const toast = useToast();
+  const { toast } = useToast();
 
   const checkRestriction = (action: 'create' | 'edit' | 'delete' = 'edit') => {
     if (isViewer) {
@@ -31,9 +31,7 @@ export const useViewerRestriction = () => {
       toast({
         title: 'Action Not Allowed',
         description: `Demo accounts cannot ${actionText} data. All write operations are disabled in demo mode.`,
-        status: 'warning',
-        duration: 4000,
-        isClosable: true,
+        variant: 'destructive',
       });
       return true; // Action is blocked
     }

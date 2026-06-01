@@ -1,19 +1,16 @@
 import {
   Badge,
-  Box,
-  HStack,
-  IconButton,
+  Button,
+  Pagination,
   Skeleton,
   Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-} from '@chakra-ui/react';
-import { Pagination } from '@ielts/ui';
-import { Edit2, Trash2 } from 'lucide-react';
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@ielts/ui';
+import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import type { Word, WordsResponse } from '../types';
 
 interface VocabularyTableProps {
@@ -37,77 +34,79 @@ export function VocabularyTable({
 }: VocabularyTableProps) {
   if (isLoading) {
     return (
-      <VStack spacing={2}>
+      <div className="space-y-4 py-2">
         {[1, 2, 3, 4, 5].map((i) => (
-          <Skeleton key={i} height="50px" w="full" />
+          <Skeleton key={i} className="h-12 w-full rounded-lg" />
         ))}
-      </VStack>
+      </div>
     );
   }
 
   return (
-    <>
-      <Box overflowX="auto">
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Word</Th>
-              <Th>Meaning</Th>
-              <Th>Difficulty</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
+    <div className="flex flex-col gap-6">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="w-[20%] text-foreground font-semibold">Word</TableHead>
+              <TableHead className="w-[50%] text-foreground font-semibold">Meaning</TableHead>
+              <TableHead className="w-[15%] text-foreground font-semibold">Difficulty</TableHead>
+              <TableHead className="w-[15%] text-right text-foreground font-semibold">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {wordsData?.words.map((word: Word) => (
-              <Tr key={word._id}>
-                <Td fontWeight="600">{word.word}</Td>
-                <Td
-                  maxW="300px"
-                  isTruncated
-                  color="gray.500"
-                  title={word.meaning}
-                >
+              <TableRow key={word._id} className="hover:bg-muted/40 transition-colors">
+                <TableCell className="font-semibold text-foreground">{word.word}</TableCell>
+                <TableCell className="max-w-[300px] truncate text-muted-foreground" title={word.meaning}>
                   {word.meaning}
-                </Td>
-                <Td>
+                </TableCell>
+                <TableCell>
                   <Badge
-                    colorScheme={
+                    variant={
                       word.difficulty === 'beginner'
-                        ? 'green'
+                        ? 'outline'
                         : word.difficulty === 'intermediate'
-                        ? 'blue'
-                        : 'purple'
+                        ? 'secondary'
+                        : 'default'
                     }
+                    className="capitalize px-2.5 py-0.5 text-xs font-semibold"
                   >
                     {word.difficulty}
                   </Badge>
-                </Td>
-                <Td>
-                  <HStack spacing={2}>
-                    <IconButton
-                      aria-label="Edit word"
-                      icon={<Edit2 size={16} />}
-                      size="sm"
-                      colorScheme="blue"
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
                       variant="ghost"
+                      size="icon"
                       onClick={() => onEdit(word)}
-                    />
-                    <IconButton
-                      aria-label="Delete word"
-                      icon={<Trash2 size={16} />}
-                      size="sm"
-                      colorScheme="red"
+                      className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg"
+                      aria-label="Edit word"
+                    >
+                      <Edit2 size={16} />
+                    </Button>
+                    <Button
                       variant="ghost"
+                      size="icon"
                       onClick={() => onDelete(word._id)}
-                      isLoading={deletingId === word._id}
-                    />
-                  </HStack>
-                </Td>
-              </Tr>
+                      disabled={deletingId === word._id}
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                      aria-label="Delete word"
+                    >
+                      {deletingId === word._id ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <Trash2 size={16} />
+                      )}
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
             ))}
-          </Tbody>
+          </TableBody>
         </Table>
-      </Box>
+      </div>
 
       {wordsData && (
         <Pagination
@@ -116,6 +115,7 @@ export function VocabularyTable({
           onPageChange={onPageChange}
         />
       )}
-    </>
+    </div>
   );
 }
+

@@ -1,4 +1,3 @@
-import { Box } from '@chakra-ui/react';
 import { CardHeader, Input } from '@ielts/ui';
 import { Search } from 'lucide-react';
 
@@ -9,24 +8,18 @@ interface UserSearchProps {
 
 export function UserSearch({ search, onSearchChange }: UserSearchProps) {
   return (
-    <CardHeader>
-      <Box position="relative" maxW="400px">
+    <CardHeader className="p-0 pb-4">
+      <div className="relative w-full max-w-[400px]">
         <Input
           placeholder="Search users..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          pl={10}
+          className="pl-10 border-border"
         />
-        <Box
-          position="absolute"
-          left={3}
-          top="50%"
-          transform="translateY(-50%)"
-          color="gray.400"
-        >
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
           <Search size={16} />
-        </Box>
-      </Box>
+        </div>
+      </div>
     </CardHeader>
   );
 }

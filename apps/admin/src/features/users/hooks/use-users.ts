@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '../services/users.api';
@@ -15,7 +15,7 @@ export function useUsers(params: UsersQueryParams) {
 }
 
 export function useUserManagement() {
-  const toast = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const updateStatus = useMutation({
@@ -29,7 +29,6 @@ export function useUserManagement() {
     onSuccess: (_, variables) => {
       toast({
         title: `User ${variables.status === 'banned' ? 'banned' : 'activated'}`,
-        status: 'success',
       });
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
@@ -41,8 +40,7 @@ export function useUserManagement() {
       toast({
         title: isForbidden ? 'Action Not Allowed' : 'Update failed',
         description: message,
-        status: isForbidden ? 'warning' : 'error',
-        duration: 4000,
+        variant: 'destructive',
       });
     },
   });
@@ -58,7 +56,7 @@ export function useUserManagement() {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      toast({ title: 'Export successful', status: 'success' });
+      toast({ title: 'Export successful' });
     } catch (error: any) {
       const message = error?.response?.data?.message || 'Export failed';
       const isForbidden = error?.response?.status === 403;
@@ -66,8 +64,7 @@ export function useUserManagement() {
       toast({
         title: isForbidden ? 'Action Not Allowed' : 'Export failed',
         description: message,
-        status: isForbidden ? 'warning' : 'error',
-        duration: 4000,
+        variant: 'destructive',
       });
     }
   };
@@ -77,3 +74,4 @@ export function useUserManagement() {
     exportUsers,
   };
 }
+

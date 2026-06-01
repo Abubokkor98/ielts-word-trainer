@@ -1,17 +1,9 @@
 'use client';
 
-import {
-  Box,
-  Link as ChakraLink,
-  FormControl,
-  FormLabel,
-  Text,
-  useToast,
-  VStack,
-} from '@chakra-ui/react';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
-import { Button, Card, CardContent, CardHeader, Input } from '@ielts/ui';
+import { Button, Card, CardContent, Input, Label, useToast } from '@ielts/ui';
 import { useMutation } from '@tanstack/react-query';
+import { Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -20,7 +12,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
-  const toast = useToast();
+  const { toast } = useToast();
   const { setUser, setToken } = useAuthStore();
 
   const loginMutation = useMutation({
@@ -52,37 +44,26 @@ export default function LoginPage() {
         if (!cookieCheck.data?.data?.cookiesValid) {
           toast({
             title: 'Warning: Session may not persist',
-            description:
-              'Cookies were not set correctly. You may be logged out on refresh.',
-            status: 'warning',
-            duration: 5000,
-            isClosable: true,
+            description: 'Cookies were not set correctly. You may be logged out on refresh.',
+            variant: 'destructive',
           });
         }
       } catch (error) {
         console.warn('Cookie verification failed:', error);
-        // Don't block login on verification failure
       }
 
       toast({
         title: 'Login successful!',
         description: `Welcome back, ${data.data.name}!`,
-        status: 'success',
-        duration: 3000,
       });
 
       router.push('/dashboard');
     },
-    onError: (
-      error: Error | { response?: { data?: { message?: string } } }
-    ) => {
+    onError: (error: Error | { response?: { data?: { message?: string } } }) => {
       toast({
         title: 'Login failed',
-        description:
-          ('response' in error && error.response?.data?.message) ||
-          'Invalid credentials',
-        status: 'error',
-        duration: 5000,
+        description: ('response' in error && error.response?.data?.message) || 'Invalid credentials',
+        variant: 'destructive',
       });
     },
   });
@@ -93,101 +74,100 @@ export default function LoginPage() {
   };
 
   return (
-    <Box
-      minH="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      bg="gray.900"
-      py={12}
-      px={4}
-    >
-      <Card maxW="md" w="full" p={8}>
-        <CardHeader>
-          <VStack spacing={2} textAlign="center">
-            <Text fontSize="3xl" fontWeight="bold" color="gray.50">
-              Admin Portal
-            </Text>
-            <Text color="gray.400" fontSize="md">
-              Secure login for administrators only
-            </Text>
-          </VStack>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <VStack spacing={6}>
-              <FormControl isRequired>
-                <FormLabel fontWeight="bold" color="gray.300">
-                  Email
-                </FormLabel>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@email.com"
-                />
-              </FormControl>
+    <main className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex flex-col items-center text-center space-y-2 mb-8">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 mb-2">
+            <Shield className="h-8 w-8 text-primary" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Admin Portal
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Secure login for administrators only
+          </p>
+        </div>
 
-              <FormControl isRequired>
-                <FormLabel fontWeight="bold" color="gray.300">
-                  Password
-                </FormLabel>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                />
-                <Box textAlign="right" mt={1}>
-                  <ChakraLink
-                    as={Link}
-                    href="/forgot-password"
-                    color="brand.400"
-                    fontSize="sm"
-                    fontWeight="500"
-                  >
-                    Forgot Password?
-                  </ChakraLink>
-                </Box>
-              </FormControl>
+        <Card className="border-border bg-card shadow-2xl glass-card">
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email" className="font-semibold text-muted-foreground">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="admin@email.com"
+                    required
+                    className="bg-background text-foreground border-input"
+                  />
+                </div>
 
-              <Button
-                type="submit"
-                width="100%"
-                isLoading={loginMutation.isPending}
-              >
-                Admin Login
-              </Button>
+                <div className="grid gap-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="font-semibold text-muted-foreground">
+                      Password
+                    </Label>
+                    <Link
+                      href="/forgot-password"
+                      className="text-xs font-semibold text-primary hover:underline transition-colors"
+                    >
+                      Forgot Password?
+                    </Link>
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    className="bg-background text-foreground border-input"
+                  />
+                </div>
+              </div>
 
-              <Button
-                variant="outline"
-                width="100%"
-                onClick={() => {
-                  setEmail('demo@admin.com');
-                  setPassword('demo123');
-                }}
-                colorScheme="gray"
-              >
-                🎯 Try Demo Credentials (Read-Only)
-              </Button>
-
-              <Text color="gray.400" textAlign="center" fontSize="sm">
-                <ChakraLink
-                  as={Link}
-                  href={
-                    process.env.NEXT_PUBLIC_USER_APP_URL ||
-                    'http://localhost:3000'
-                  }
-                  color="brand.400"
-                  fontWeight="600"
+              <div className="space-y-4 pt-2">
+                <Button
+                  type="submit"
+                  className="w-full glow-button"
+                  disabled={loginMutation.isPending}
                 >
-                  Regular user? Go to User Portal
-                </ChakraLink>
-              </Text>
-            </VStack>
-          </form>
-        </CardContent>
-      </Card>
-    </Box>
+                  {loginMutation.isPending ? 'Logging in...' : 'Admin Login'}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full border-primary/20 hover:bg-primary/5 text-muted-foreground hover:text-foreground transition-all"
+                  onClick={() => {
+                    setEmail('demo@admin.com');
+                    setPassword('demo123');
+                  }}
+                >
+                  🎯 Try Demo Credentials (Read-Only)
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        <p className="text-center text-sm text-muted-foreground">
+          Regular user?{' '}
+          <Link
+            href={process.env.NEXT_PUBLIC_USER_APP_URL || 'http://localhost:3000'}
+            className="text-primary font-semibold hover:underline transition-colors"
+          >
+            Go to User Portal
+          </Link>
+        </p>
+      </div>
+    </main>
   );
 }

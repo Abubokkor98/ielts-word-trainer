@@ -1,25 +1,16 @@
 'use client';
 
-import {
-  Avatar,
-  Box,
-  Flex,
-  HStack,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  Text,
-} from '@chakra-ui/react';
 import { LogOut, Settings } from 'lucide-react';
 import Link from 'next/link';
-import { useSidebarTheme } from './sidebar.config';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useLogout } from './useLogout';
 
-/**
- * User information interface
- * Minimal interface for what the footer needs to display
- */
 export interface User {
   name?: string;
   avatar?: string;
@@ -36,79 +27,65 @@ export const SidebarFooter = ({
   isCollapsed,
   onSettingsClick,
 }: SidebarFooterProps) => {
-  const theme = useSidebarTheme();
-  const footerTheme = theme.footer;
   const { logout } = useLogout();
 
   const displayName = user?.name || 'Admin User';
-  const avatar = (user as any)?.avatar;
+  const avatarUrl = user?.avatar;
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <Box
-      p={footerTheme.padding}
-      borderTop="1px"
-      borderColor={footerTheme.borderColor}
-    >
-      <Menu>
-        <MenuButton
-          as={Flex}
-          p={2}
-          borderRadius="lg"
-          cursor="pointer"
-          _hover={{ bg: footerTheme.hoverBg }}
-          w="full"
-          justifyContent={isCollapsed ? 'center' : 'flex-start'}
-          alignItems="center"
-        >
-          <HStack spacing={3}>
-            <Avatar size="sm" name={displayName} src={avatar} />
-            {!isCollapsed && (
-              <Box textAlign="left">
-                <Text
-                  fontSize={footerTheme.userName.fontSize}
-                  fontWeight={footerTheme.userName.fontWeight}
-                  color={footerTheme.userName.color}
-                  isTruncated
-                  maxW="120px"
-                >
-                  {displayName}
-                </Text>
-                <Text
-                  fontSize={footerTheme.userRole.fontSize}
-                  color={footerTheme.userRole.color}
-                >
-                  Administrator
-                </Text>
-              </Box>
-            )}
-          </HStack>
-        </MenuButton>
-        <MenuList
-          bg={footerTheme.menu.bg}
-          borderColor={footerTheme.menu.borderColor}
-        >
-          <MenuItem
-            as={Link}
-            href="/dashboard/settings"
-            icon={<Settings size={16} />}
-            bg={footerTheme.menu.item.bg}
-            _hover={{ bg: footerTheme.menu.item.hoverBg }}
-            color={footerTheme.menu.item.color}
-            onClick={onSettingsClick}
+    <footer className="p-3 border-t border-border">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="flex items-center w-full p-2 rounded-md cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors duration-200 focus:outline-none focus-visible:ring-1 focus-visible:ring-primary"
           >
-            Settings
-          </MenuItem>
-          <MenuItem
-            icon={<LogOut size={16} />}
+            <div className="flex items-center gap-3 w-full">
+              <Avatar className="h-8 w-8 shrink-0 rounded-md">
+                {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold rounded-md">
+                  {initial}
+                </AvatarFallback>
+              </Avatar>
+              
+              {!isCollapsed && (
+                <div className="text-left flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate leading-tight">
+                    {displayName}
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-tight truncate">
+                    Administrator
+                  </p>
+                </div>
+              )}
+            </div>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          sideOffset={8}
+          className="w-56"
+        >
+          <DropdownMenuItem asChild>
+            <Link
+              href="/dashboard/settings"
+              onClick={onSettingsClick}
+              className="flex items-center gap-2 cursor-pointer w-full"
+            >
+              <Settings className="h-4 w-4 text-muted-foreground" />
+              <span>Account Settings</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem
             onClick={logout}
-            color={footerTheme.menu.item.logoutColor}
-            bg={footerTheme.menu.item.bg}
-            _hover={{ bg: footerTheme.menu.item.hoverBg }}
+            className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive w-full"
           >
-            Logout
-          </MenuItem>
-        </MenuList>
-      </Menu>
-    </Box>
+            <LogOut className="h-4 w-4" />
+            <span>Sign out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </footer>
   );
-};
+}

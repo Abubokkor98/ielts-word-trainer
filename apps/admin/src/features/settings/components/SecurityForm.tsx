@@ -1,19 +1,13 @@
-import {
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  useToast,
-  VStack,
-} from '@chakra-ui/react';
+'use client';
+
+import { Button, Input, Label, useToast } from '@ielts/ui';
 import { axiosInstance } from '@ielts/auth';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import type { PasswordFormData } from '../types';
 
 export function SecurityForm() {
-  const toast = useToast();
+  const { toast } = useToast();
 
   const {
     register,
@@ -27,7 +21,7 @@ export function SecurityForm() {
       await axiosInstance.post('/admin/change-password', data);
     },
     onSuccess: () => {
-      toast({ title: 'Password changed successfully', status: 'success' });
+      toast({ title: 'Password changed successfully' });
       reset();
     },
     onError: (error: unknown) => {
@@ -35,7 +29,7 @@ export function SecurityForm() {
       toast({
         title: 'Failed to change password',
         description: err.response?.data?.message || 'An error occurred',
-        status: 'error',
+        variant: 'destructive',
       });
     },
   });
@@ -48,52 +42,63 @@ export function SecurityForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <VStack spacing={6} align="start" maxW="lg">
-        <FormControl isRequired isInvalid={!!errors.currentPassword}>
-          <FormLabel>Current Password</FormLabel>
-          <Input
-            type="password"
-            {...register('currentPassword', {
-              required: 'Current password is required',
-            })}
-          />
-          <FormErrorMessage>{errors.currentPassword?.message}</FormErrorMessage>
-        </FormControl>
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="currentPassword">Current Password</Label>
+        <Input
+          id="currentPassword"
+          type="password"
+          {...register('currentPassword', {
+            required: 'Current password is required',
+          })}
+          className={errors.currentPassword ? 'border-destructive focus-visible:ring-destructive' : ''}
+        />
+        {errors.currentPassword && (
+          <p className="text-xs text-destructive">{errors.currentPassword.message}</p>
+        )}
+      </div>
 
-        <FormControl isRequired isInvalid={!!errors.newPassword}>
-          <FormLabel>New Password</FormLabel>
-          <Input
-            type="password"
-            {...register('newPassword', {
-              required: true,
-              minLength: { value: 6, message: 'Minimum 6 characters' },
-            })}
-          />
-          <FormErrorMessage>{errors.newPassword?.message}</FormErrorMessage>
-        </FormControl>
+      <div className="space-y-2">
+        <Label htmlFor="newPassword">New Password</Label>
+        <Input
+          id="newPassword"
+          type="password"
+          {...register('newPassword', {
+            required: 'New password is required',
+            minLength: { value: 6, message: 'Minimum 6 characters' },
+          })}
+          className={errors.newPassword ? 'border-destructive focus-visible:ring-destructive' : ''}
+        />
+        {errors.newPassword && (
+          <p className="text-xs text-destructive">{errors.newPassword.message}</p>
+        )}
+      </div>
 
-        <FormControl isRequired isInvalid={!!errors.confirmPassword}>
-          <FormLabel>Confirm New Password</FormLabel>
-          <Input
-            type="password"
-            {...register('confirmPassword', {
-              required: true,
-              validate: (value, formValues) =>
-                value === formValues.newPassword || 'Passwords do not match',
-            })}
-          />
-          <FormErrorMessage>{errors.confirmPassword?.message}</FormErrorMessage>
-        </FormControl>
+      <div className="space-y-2">
+        <Label htmlFor="confirmPassword">Confirm New Password</Label>
+        <Input
+          id="confirmPassword"
+          type="password"
+          {...register('confirmPassword', {
+            required: 'Confirming password is required',
+            validate: (value, formValues) =>
+              value === formValues.newPassword || 'Passwords do not match',
+          })}
+          className={errors.confirmPassword ? 'border-destructive focus-visible:ring-destructive' : ''}
+        />
+        {errors.confirmPassword && (
+          <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>
+        )}
+      </div>
 
-        <Button
-          type="submit"
-          colorScheme="brand"
-          isLoading={changePasswordMutation.isPending}
-        >
-          Update Password
-        </Button>
-      </VStack>
+      <Button
+        type="submit"
+        disabled={changePasswordMutation.isPending}
+        className="px-6"
+      >
+        {changePasswordMutation.isPending ? 'Updating...' : 'Update Password'}
+      </Button>
     </form>
   );
 }
+

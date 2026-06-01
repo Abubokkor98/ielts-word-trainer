@@ -1,7 +1,13 @@
-import { Box, HStack, Select } from '@chakra-ui/react';
-import { CardHeader, Input } from '@ielts/ui';
-import { Filter, Search } from 'lucide-react';
-import type { ChangeEvent } from 'react';
+import {
+  CardHeader,
+  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@ielts/ui';
+import { Search } from 'lucide-react';
 
 type Difficulty = 'all' | 'beginner' | 'intermediate' | 'advanced';
 
@@ -18,44 +24,38 @@ export function VocabularyFilters({
   difficulty,
   onDifficultyChange,
 }: VocabularyFiltersProps) {
-  const handleDifficultyChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    onDifficultyChange(e.target.value as Difficulty);
-  };
-
   return (
-    <CardHeader>
-      <HStack spacing={4}>
-        <Box position="relative" w="full" maxW="300px">
+    <CardHeader className="p-6 pb-0">
+      <div className="flex flex-row items-center gap-4">
+        <div className="relative w-full max-w-[300px]">
           <Input
             placeholder="Search words..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            pl={10}
+            className="pl-10 bg-transparent border-border hover:border-primary/50 focus-visible:ring-primary"
             aria-label="Search words"
           />
-          <Box
-            position="absolute"
-            left={3}
-            top="50%"
-            transform="translateY(-50%)"
-            color="gray.400"
-          >
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
             <Search size={16} />
-          </Box>
-        </Box>
+          </div>
+        </div>
+
         <Select
           value={difficulty}
-          onChange={handleDifficultyChange}
-          w="180px"
-          icon={<Filter size={16} />}
-          aria-label="Filter by difficulty"
+          onValueChange={(value) => onDifficultyChange(value as Difficulty)}
         >
-          <option value="all">All Levels</option>
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
+          <SelectTrigger className="w-[180px] bg-transparent border-border hover:border-primary/50 focus:ring-primary">
+            <SelectValue placeholder="All Levels" />
+          </SelectTrigger>
+          <SelectContent className="border border-border bg-card">
+            <SelectItem value="all">All Levels</SelectItem>
+            <SelectItem value="beginner">Beginner</SelectItem>
+            <SelectItem value="intermediate">Intermediate</SelectItem>
+            <SelectItem value="advanced">Advanced</SelectItem>
+          </SelectContent>
         </Select>
-      </HStack>
+      </div>
     </CardHeader>
   );
 }
+

@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, useDisclosure, VStack } from '@chakra-ui/react';
 import { Card, CardContent } from '@ielts/ui';
 import { useEffect, useState } from 'react';
 import { DeleteWordDialog } from './components/DeleteWordDialog';
@@ -30,8 +29,7 @@ export function VocabularyContainer() {
 
   // Edit Mode State
   const [editingWord, setEditingWord] = useState<Word | null>(null);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDifficultyChange = (value: Difficulty) => {
     setDifficulty(value);
@@ -79,46 +77,44 @@ export function VocabularyContainer() {
 
   const handleEdit = (word: Word) => {
     setEditingWord(word);
-    onOpen();
+    setIsModalOpen(true);
   };
 
   const handleAdd = () => {
     setEditingWord(null);
-    onOpen();
+    setIsModalOpen(true);
   };
 
   return (
-    <Box>
-      <VStack spacing={8} align="stretch">
-        <VocabularyHeader
-          onAdd={handleAdd}
-          uploadCSV={uploadCSV}
-          uploadCSVAtomic={uploadCSVAtomic}
-        />
+    <div className="space-y-8">
+      <VocabularyHeader
+        onAdd={handleAdd}
+        uploadCSV={uploadCSV}
+        uploadCSVAtomic={uploadCSVAtomic}
+      />
 
-        <Card>
-          <VocabularyFilters
-            search={search}
-            onSearchChange={setSearch}
-            difficulty={difficulty}
-            onDifficultyChange={handleDifficultyChange}
+      <Card className="border border-border bg-card">
+        <VocabularyFilters
+          search={search}
+          onSearchChange={setSearch}
+          difficulty={difficulty}
+          onDifficultyChange={handleDifficultyChange}
+        />
+        <CardContent className="p-6">
+          <VocabularyTable
+            isLoading={isLoading}
+            wordsData={wordsData}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            deletingId={deletingId}
+            page={page}
+            onPageChange={setPage}
           />
-          <CardContent>
-            <VocabularyTable
-              isLoading={isLoading}
-              wordsData={wordsData}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              deletingId={deletingId}
-              page={page}
-              onPageChange={setPage}
-            />
-          </CardContent>
-        </Card>
-      </VStack>
+        </CardContent>
+      </Card>
 
       {/* Word Modal for Add and Edit */}
-      <WordModal isOpen={isOpen} onClose={onClose} initialData={editingWord} />
+      <WordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} initialData={editingWord} />
 
       {/* Delete Confirmation Alert Dialog */}
       <DeleteWordDialog
@@ -127,6 +123,7 @@ export function VocabularyContainer() {
         onConfirm={confirmDelete}
         isLoading={deleteWord.isPending}
       />
-    </Box>
+    </div>
   );
 }
+

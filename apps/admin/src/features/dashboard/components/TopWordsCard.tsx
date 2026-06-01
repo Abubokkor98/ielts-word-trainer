@@ -1,18 +1,4 @@
-import {
-  Badge,
-  Box,
-  Heading,
-  Skeleton,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-} from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Skeleton } from '@ielts/ui';
 import { TrendingUp } from 'lucide-react';
 import { useTopWords } from '../hooks/use-vocabulary-analytics';
 
@@ -21,115 +7,99 @@ export const TopWordsCard = () => {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <Heading size="sm">Top Performing Words</Heading>
-        </CardHeader>
-        <CardContent>
-          <VStack spacing={2}>
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} height="40px" w="full" />
-            ))}
-          </VStack>
-        </CardContent>
-      </Card>
+      <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+        <header>
+          <h3 className="text-sm font-bold text-foreground">Top Performing Words</h3>
+        </header>
+        <div className="space-y-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <Skeleton key={i} className="h-10 w-full bg-white/5 rounded-lg" />
+          ))}
+        </div>
+      </section>
     );
   }
 
   if (isError || !data) {
     return (
-      <Card>
-        <CardHeader>
-          <Heading size="sm">Top Performing Words</Heading>
-        </CardHeader>
-        <CardContent>
-          <Text color="red.500">Failed to load top words</Text>
-        </CardContent>
-      </Card>
+      <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+        <header>
+          <h3 className="text-sm font-bold text-foreground">Top Performing Words</h3>
+        </header>
+        <p className="text-sm text-red-400">Failed to load top words</p>
+      </section>
     );
   }
 
   if (data.words.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <Heading size="sm">Top Performing Words</Heading>
-        </CardHeader>
-        <CardContent>
-          <Text color="gray.500">
-            No top words data available (requires ≥10 attempts per word)
-          </Text>
-        </CardContent>
-      </Card>
+      <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+        <header>
+          <h3 className="text-sm font-bold text-foreground">Top Performing Words</h3>
+        </header>
+        <p className="text-sm text-muted-foreground">
+          No top words data available (requires ≥10 attempts per word)
+        </p>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <Heading size="sm">
-          <Box as="span" display="inline-flex" alignItems="center" gap={2}>
-            <TrendingUp size={18} />
-            Top Performing Words
-          </Box>
-        </Heading>
-        <Text fontSize="xs" color="gray.500">
+    <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+      <header>
+        <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-primary" />
+          <span>Top Performing Words</span>
+        </h3>
+        <p className="text-xs text-muted-foreground mt-1">
           Words with ≥80% accuracy (minimum 10 attempts)
-        </Text>
-      </CardHeader>
-      <CardContent>
-        <Box overflowX="auto">
-          <Table variant="simple" size="sm">
-            <Thead>
-              <Tr>
-                <Th>Word</Th>
-                <Th>Meaning</Th>
-                <Th>Difficulty</Th>
-                <Th isNumeric>Accuracy</Th>
-                <Th isNumeric>Attempts</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {data.words.map((word) => (
-                <Tr key={word.wordId}>
-                  <Td fontWeight="600">{word.word}</Td>
-                  <Td maxW="300px" isTruncated color="gray.600">
-                    {word.meaning}
-                  </Td>
-                  <Td>
-                    <Badge
-                      colorScheme={
-                        word.difficulty === 'beginner'
-                          ? 'green'
-                          : word.difficulty === 'intermediate'
-                          ? 'blue'
-                          : 'purple'
-                      }
-                      fontSize="xs"
-                    >
-                      {word.difficulty}
-                    </Badge>
-                  </Td>
-                  <Td isNumeric>
-                    <Text fontWeight="600" color="green.600">
-                      {word.accuracy}%
-                    </Text>
-                  </Td>
-                  <Td isNumeric color="gray.600">
-                    {word.attempts}
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </Box>
+        </p>
+      </header>
+      
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse text-xs text-zinc-300">
+          <thead>
+            <tr className="border-b border-border text-[10px] uppercase tracking-wider text-muted-foreground">
+              <th className="py-2.5 font-semibold">Word</th>
+              <th className="py-2.5 font-semibold">Meaning</th>
+              <th className="py-2.5 font-semibold">Difficulty</th>
+              <th className="py-2.5 font-semibold text-right">Accuracy</th>
+              <th className="py-2.5 font-semibold text-right">Attempts</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {data.words.map((word) => (
+              <tr key={word.wordId} className="hover:bg-white/5 transition-colors">
+                <td className="py-2.5 font-bold text-foreground">{word.word}</td>
+                <td className="py-2.5 max-w-[200px] truncate text-muted-foreground">
+                  {word.meaning}
+                </td>
+                <td className="py-2.5">
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${
+                    word.difficulty === 'beginner'
+                      ? 'bg-muted/30 text-muted-foreground border-muted/50'
+                      : word.difficulty === 'intermediate'
+                      ? 'bg-primary/10 text-primary border-primary/20'
+                      : 'bg-destructive/10 text-destructive border-destructive/20'
+                  }`}>
+                    {word.difficulty}
+                  </span>
+                </td>
+                <td className="py-2.5 text-right font-extrabold text-primary">
+                  {word.accuracy}%
+                </td>
+                <td className="py-2.5 text-right text-muted-foreground font-medium">
+                  {word.attempts}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-        <Box mt={3} pt={3} borderTop="1px solid" borderColor="gray.200">
-          <Text fontSize="xs" color="gray.500">
-            Showing {data.words.length} top performing words
-          </Text>
-        </Box>
-      </CardContent>
-    </Card>
+      <footer className="pt-3 border-t border-border text-[10px] text-muted-foreground">
+        Showing {data.words.length} top performing words
+      </footer>
+    </section>
   );
 };

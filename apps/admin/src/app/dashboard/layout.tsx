@@ -2,7 +2,7 @@
 
 import { Sidebar } from '@ielts/ui';
 import { useIsViewer } from '@ielts/auth';
-import { Alert, AlertIcon, Box, Text } from '@chakra-ui/react';
+import { Info } from 'lucide-react';
 import { useState } from 'react';
 
 export default function DashboardLayout({
@@ -14,7 +14,7 @@ export default function DashboardLayout({
   const isViewer = useIsViewer();
 
   return (
-    <div className="flex min-h-screen bg-gray-900">
+    <div className="flex min-h-screen bg-background text-foreground">
       <Sidebar
         isCollapsed={isCollapsed}
         onToggle={() => setIsCollapsed(!isCollapsed)}
@@ -26,25 +26,18 @@ export default function DashboardLayout({
         }`}
       >
         {isViewer && (
-          <Alert
-            status="info"
-            mb={6}
-            borderRadius="md"
-            bg="blue.900"
-            borderColor="blue.700"
-            borderWidth="1px"
-          >
-            <AlertIcon color="blue.300" />
-            <Box>
-              <Text fontWeight="bold" color="blue.100">
+          <section className="mb-6 p-4 rounded-xl border border-primary/30 bg-primary/10 text-primary-foreground flex gap-3 items-start glass-card">
+            <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-primary-foreground text-sm">
                 Demo Mode (Read-Only Access)
-              </Text>
-              <Text fontSize="sm" color="blue.200" mt={1}>
+              </h4>
+              <p className="text-xs text-muted-foreground mt-1">
                 You're viewing as a demo user. All create, edit, and delete
                 operations are disabled to protect production data.
-              </Text>
-            </Box>
-          </Alert>
+              </p>
+            </div>
+          </section>
         )}
         {children}
       </main>

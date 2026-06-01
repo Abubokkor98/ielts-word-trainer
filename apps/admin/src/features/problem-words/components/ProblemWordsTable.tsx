@@ -1,6 +1,12 @@
-import { Badge, Box, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@ielts/ui';
 import type { ProblemWord } from '../../dashboard/types';
-import { getDifficultyColorScheme } from '../../dashboard/utils/difficulty';
 import { ProblemWordsTableSkeleton } from './ProblemWordsTableSkeleton';
 
 interface ProblemWordsTableProps {
@@ -12,43 +18,49 @@ export function ProblemWordsTable({
   isLoading,
   words,
 }: ProblemWordsTableProps) {
+  const getDifficultyBadgeClass = (diff: string) => {
+    if (diff === 'beginner') return 'bg-muted/30 text-muted-foreground border-muted/50';
+    if (diff === 'intermediate') return 'bg-primary/10 text-primary border-primary/20';
+    return 'bg-destructive/10 text-destructive border-destructive/20';
+  };
+
   return (
-    <Box overflowX="auto">
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Word</Th>
-            <Th>Meaning</Th>
-            <Th>Difficulty</Th>
-            <Th isNumeric>Accuracy</Th>
-            <Th isNumeric>Attempts</Th>
-            <Th>Last Updated</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Word</TableHead>
+            <TableHead>Meaning</TableHead>
+            <TableHead>Difficulty</TableHead>
+            <TableHead className="text-right">Accuracy</TableHead>
+            <TableHead className="text-right">Attempts</TableHead>
+            <TableHead>Last Updated</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {isLoading ? (
             <ProblemWordsTableSkeleton />
           ) : (
             words.map((pw) => (
-              <Tr key={pw.wordId}>
-                <Td fontWeight="bold">{pw.word}</Td>
-                <Td maxW="300px" isTruncated title={pw.meaning}>
+              <TableRow key={pw.wordId}>
+                <TableCell className="font-bold text-foreground">{pw.word}</TableCell>
+                <TableCell className="max-w-[300px] truncate" title={pw.meaning}>
                   {pw.meaning}
-                </Td>
-                <Td>
-                  <Badge colorScheme={getDifficultyColorScheme(pw.difficulty)}>
+                </TableCell>
+                <TableCell>
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide border ${getDifficultyBadgeClass(pw.difficulty)}`}>
                     {pw.difficulty}
-                  </Badge>
-                </Td>
-                <Td isNumeric>
-                  <Badge colorScheme="red" fontSize="md">
+                  </span>
+                </TableCell>
+                <TableCell className="text-right">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-red-500/10 text-red-400 border border-red-500/20">
                     {pw.accuracy}%
-                  </Badge>
-                </Td>
-                <Td isNumeric fontWeight="semibold">
+                  </span>
+                </TableCell>
+                <TableCell className="text-right font-semibold">
                   {pw.attempts}
-                </Td>
-                <Td fontSize="sm" color="gray.500">
+                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">
                   {pw.lastUpdated
                     ? new Date(pw.lastUpdated).toLocaleDateString('en-US', {
                         year: 'numeric',
@@ -56,12 +68,12 @@ export function ProblemWordsTable({
                         day: 'numeric',
                       })
                     : '-'}
-                </Td>
-              </Tr>
+                </TableCell>
+              </TableRow>
             ))
           )}
-        </Tbody>
+        </TableBody>
       </Table>
-    </Box>
+    </div>
   );
 }

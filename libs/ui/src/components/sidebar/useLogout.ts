@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '../../hooks/use-toast';
 import { axiosInstance, useAuthStore } from '@ielts/auth';
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 
 export const useLogout = () => {
   const { logout: clearAuth } = useAuthStore();
-  const toast = useToast();
+  const { toast } = useToast();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -24,9 +24,7 @@ export const useLogout = () => {
       // Show success toast
       toast({
         title: 'Logged out successfully',
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
+        description: 'You have been logged out of the admin panel.',
       });
 
       // Navigate to home
@@ -40,9 +38,7 @@ export const useLogout = () => {
       toast({
         title: 'Logout failed',
         description: errorMessage,
-        status: 'error',
-        duration: 4000,
-        isClosable: true,
+        variant: 'destructive',
       });
     }
   };

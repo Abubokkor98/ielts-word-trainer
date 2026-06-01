@@ -1,6 +1,5 @@
-import { Heading, HStack, Text, useToast, VStack } from '@chakra-ui/react';
-import { Button } from '@ielts/ui';
-import { Plus, Upload } from 'lucide-react';
+import { Button, useToast } from '@ielts/ui';
+import { Plus, Upload, Loader2 } from 'lucide-react';
 import { useRef } from 'react';
 import type { UseMutationResult } from '@tanstack/react-query';
 
@@ -15,7 +14,7 @@ export function VocabularyHeader({
   uploadCSV,
   uploadCSVAtomic,
 }: VocabularyHeaderProps) {
-  const toast = useToast();
+  const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const atomicFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -36,7 +35,7 @@ export function VocabularyHeader({
       if (!isCsv) {
         toast({
           title: 'Please select a valid CSV file',
-          status: 'error',
+          variant: 'destructive',
         });
         e.target.value = '';
         return;
@@ -58,7 +57,7 @@ export function VocabularyHeader({
       if (!isCsv) {
         toast({
           title: 'Please select a valid CSV file',
-          status: 'error',
+          variant: 'destructive',
         });
         e.target.value = '';
         return;
@@ -72,63 +71,76 @@ export function VocabularyHeader({
   };
 
   return (
-    <HStack justify="space-between">
-      <Heading size="lg">Vocabulary Management</Heading>
-      <HStack spacing={3}>
-        {/* Partial Import Input */}
-        <input
-          type="file"
-          accept=".csv"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-        />
-        {/* Atomic Import Input */}
-        <input
-          type="file"
-          accept=".csv"
-          ref={atomicFileInputRef}
-          style={{ display: 'none' }}
-          onChange={handleAtomicFileChange}
-        />
+    <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          Vocabulary Management
+        </h1>
+      </div>
 
-        <VStack align="stretch" spacing={2}>
-          <HStack spacing={2}>
-            <Button
-              leftIcon={<Upload size={16} />}
-              variant="outline"
-              colorScheme="blue"
-              size="sm"
-              onClick={handleImportClick}
-              isLoading={uploadCSV.isPending}
-            >
-              Import CSV (Partial)
-            </Button>
-            <Button
-              leftIcon={<Upload size={16} />}
-              variant="outline"
-              colorScheme="purple"
-              size="sm"
-              onClick={handleAtomicImportClick}
-              isLoading={uploadCSVAtomic.isPending}
-            >
-              Import CSV (All-or-Nothing)
-            </Button>
-            <Button
-              leftIcon={<Plus size={16} />}
-              colorScheme="brand"
-              size="sm"
-              onClick={onAdd}
-            >
-              Add Word
-            </Button>
-          </HStack>
-          <Text fontSize="xs" color="gray.500">
-            Partial: Imports valid words, skips errors • All-or-Nothing: All
-            succeed or all fail
-          </Text>
-        </VStack>
-      </HStack>
-    </HStack>
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Partial Import Input */}
+          <input
+            type="file"
+            accept=".csv"
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          {/* Atomic Import Input */}
+          <input
+            type="file"
+            accept=".csv"
+            ref={atomicFileInputRef}
+            className="hidden"
+            onChange={handleAtomicFileChange}
+          />
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleImportClick}
+            disabled={uploadCSV.isPending}
+            className="rounded-lg px-4 border-border hover:bg-muted text-foreground"
+          >
+            {uploadCSV.isPending ? (
+              <Loader2 size={16} className="mr-2 animate-spin" />
+            ) : (
+              <Upload size={16} className="mr-2" />
+            )}
+            Import CSV (Partial)
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleAtomicImportClick}
+            disabled={uploadCSVAtomic.isPending}
+            className="rounded-lg px-4 border-border hover:bg-muted text-foreground"
+          >
+            {uploadCSVAtomic.isPending ? (
+              <Loader2 size={16} className="mr-2 animate-spin" />
+            ) : (
+              <Upload size={16} className="mr-2" />
+            )}
+            Import CSV (All-or-Nothing)
+          </Button>
+
+          <Button
+            size="sm"
+            onClick={onAdd}
+            className="rounded-lg px-4 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+          >
+            <Plus size={16} className="mr-2" />
+            Add Word
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Partial: Imports valid words, skips errors • All-or-Nothing: All succeed or all fail
+        </p>
+      </div>
+    </header>
   );
 }
+

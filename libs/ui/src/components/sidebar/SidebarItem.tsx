@@ -1,8 +1,6 @@
 'use client';
 
-import { Icon, Link as ChakraLink, Text, Tooltip } from '@chakra-ui/react';
 import Link from 'next/link';
-import { useSidebarTheme } from './sidebar.config';
 
 export interface SidebarItemProps {
   icon: React.ElementType;
@@ -14,78 +12,42 @@ export interface SidebarItemProps {
 }
 
 export const SidebarItem = ({
-  icon,
+  icon: Icon,
   label,
   href,
   isActive,
   isCollapsed,
-  showTooltip,
 }: SidebarItemProps) => {
-  const theme = useSidebarTheme();
-
-  const itemTheme = theme.item;
-
-  // Determine visual state based on active prop
-  const backgroundColor = isActive ? itemTheme.active.bg : 'transparent';
-  const textColor = isActive
-    ? itemTheme.active.color
-    : itemTheme.inactive.color;
-  const fontWeight = isActive
-    ? itemTheme.active.fontWeight
-    : itemTheme.inactive.fontWeight;
-
-  const content = (
-    <ChakraLink
-      as={Link}
-      href={href}
-      display="flex"
-      alignItems="center"
-      justifyContent={isCollapsed ? 'center' : 'flex-start'}
-      w="full"
-      px={itemTheme.spacing.px}
-      py={itemTheme.spacing.py}
-      mb={itemTheme.spacing.mb}
-      position="relative"
-      borderRadius={itemTheme.borderRadius}
-      bg={backgroundColor}
-      color={textColor}
-      fontWeight={fontWeight}
-      transition={itemTheme.transition}
-      _hover={{
-        bg: isActive ? itemTheme.active.bg : itemTheme.hover.bg,
-        color: isActive ? itemTheme.active.color : itemTheme.hover.color,
-        textDecoration: 'none',
-      }}
-      _active={{
-        bg: isActive ? itemTheme.active.bg : itemTheme.activePress.bg,
-      }}
-    >
-      <Icon
-        as={icon}
-        boxSize={itemTheme.spacing.iconSize}
-        color="currentColor" // Inherits text color
-      />
-      {!isCollapsed && (
-        <Text ml={itemTheme.spacing.labelMarginLeft} fontSize="sm">
-          {label}
-        </Text>
-      )}
-    </ChakraLink>
-  );
-
-  // Conditionally wrap with tooltip based on showTooltip prop
-  if (showTooltip) {
-    return (
-      <Tooltip
-        label={label}
-        placement={theme.tooltip.placement}
-        hasArrow={theme.tooltip.hasArrow}
-        gutter={theme.tooltip.gutter}
+  return (
+    <li>
+      <Link
+        href={href}
+        className={`flex items-center w-full px-3 py-2.5 rounded-md transition-colors duration-200 group relative outline-none focus-visible:ring-1 focus-visible:ring-primary ${
+          isActive
+            ? 'bg-primary/10 text-primary font-medium'
+            : 'text-muted-foreground hover:text-foreground hover:bg-accent/50 font-medium'
+        }`}
+        title={isCollapsed ? label : undefined}
       >
-        {content}
-      </Tooltip>
-    );
-  }
+        <Icon
+          className={`h-4 w-4 shrink-0 mr-3 ${
+            isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+          }`}
+        />
+        
+        {!isCollapsed && (
+          <span className="text-sm tracking-wide">
+            {label}
+          </span>
+        )}
 
-  return content;
+        {/* Tooltip on collapsed hover */}
+        {isCollapsed && (
+          <div className="absolute left-14 scale-0 rounded bg-popover px-2 py-1 text-xs font-medium text-popover-foreground group-hover:scale-100 transition-transform duration-200 z-50 border border-border shadow-md whitespace-nowrap">
+            {label}
+          </div>
+        )}
+      </Link>
+    </li>
+  );
 };

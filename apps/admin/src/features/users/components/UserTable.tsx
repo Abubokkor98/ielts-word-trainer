@@ -1,17 +1,15 @@
 import {
   Avatar,
+  AvatarFallback,
   Badge,
-  Box,
-  HStack,
-  IconButton,
+  Button,
   Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-} from '@chakra-ui/react';
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@ielts/ui';
 import { Ban, Calendar, CheckCircle, Eye, Mail } from 'lucide-react';
 import { UserTableSkeleton } from './UserTableSkeleton';
 import type { User } from '../types';
@@ -31,99 +29,109 @@ export function UserTable({
   onStatusChange,
   onBanUser,
 }: UserTableProps) {
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  };
+
   return (
-    <Box overflowX="auto" pb={4}>
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>User</Th>
-            <Th>Status</Th>
-            <Th>XP</Th>
-            <Th>Joined</Th>
-            <Th>Action</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>User</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>XP</TableHead>
+            <TableHead>Joined</TableHead>
+            <TableHead>Action</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {isLoading ? (
             <UserTableSkeleton />
           ) : users && users.length > 0 ? (
             users.map((u: User) => (
-              <Tr key={u._id}>
-                <Td>
-                  <HStack>
-                    <Avatar size="sm" name={u.name} />
-                    <Box>
-                      <Text fontWeight="600">{u.name}</Text>
-                      <HStack spacing={1} color="gray.500" fontSize="xs">
-                        <Mail size={12} />
-                        <Text>{u.email}</Text>
-                      </HStack>
-                    </Box>
-                  </HStack>
-                </Td>
+              <TableRow key={u._id}>
+                <TableCell>
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="text-xs bg-primary/10 text-primary font-bold">
+                        {getInitials(u.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <span className="font-bold text-foreground block leading-tight">{u.name}</span>
+                      <div className="flex items-center gap-1 text-[11px] text-muted-foreground mt-0.5">
+                        <Mail size={10} />
+                        <span>{u.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                </TableCell>
 
-                <Td>
+                <TableCell>
                   <Badge
-                    variant="subtle"
-                    colorScheme={
-                      u.status === 'active'
-                        ? 'green'
-                        : u.status === 'banned'
-                        ? 'red'
-                        : 'green'
-                    }
+                    variant={u.status === 'banned' ? 'destructive' : 'secondary'}
                   >
                     {u.status === 'banned' ? 'Banned' : 'Active'}
                   </Badge>
-                </Td>
-                <Td fontWeight="bold">{u.xp || 0}</Td>
-                <Td>
-                  <HStack spacing={1} color="gray.500" fontSize="sm">
-                    <Calendar size={14} />
-                    <Text>{new Date(u.createdAt).toLocaleDateString()}</Text>
-                  </HStack>
-                </Td>
-                <Td>
-                  <HStack spacing={2}>
-                    <IconButton
+                </TableCell>
+                <TableCell className="font-bold text-foreground">{u.xp || 0}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Calendar size={12} />
+                    <span>{new Date(u.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Button
                       aria-label="View user details"
-                      icon={<Eye size={16} />}
-                      size="sm"
                       variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
                       onClick={() => onViewUser(u)}
-                    />
+                    >
+                      <Eye size={16} />
+                    </Button>
                     {u.status === 'banned' ? (
-                      <IconButton
+                      <Button
                         aria-label="Activate user"
-                        icon={<CheckCircle size={16} />}
-                        size="sm"
-                        colorScheme="green"
                         variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-emerald-400 hover:bg-emerald-500/10"
                         onClick={() => onStatusChange(u._id, 'active')}
-                      />
+                      >
+                        <CheckCircle size={16} />
+                      </Button>
                     ) : (
-                      <IconButton
+                      <Button
                         aria-label="Ban user"
-                        icon={<Ban size={16} />}
-                        size="sm"
-                        colorScheme="red"
                         variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:bg-destructive/10"
                         onClick={() => onBanUser(u)}
-                      />
+                      >
+                        <Ban size={16} />
+                      </Button>
                     )}
-                  </HStack>
-                </Td>
-              </Tr>
+                  </div>
+                </TableCell>
+              </TableRow>
             ))
           ) : (
-            <Tr>
-              <Td colSpan={5} textAlign="center" py={8}>
-                <Text color="gray.500">No users found</Text>
-              </Td>
-            </Tr>
+            <TableRow>
+              <TableCell colSpan={5} className="text-center py-6 text-muted-foreground">
+                No users found
+              </TableCell>
+            </TableRow>
           )}
-        </Tbody>
+        </TableBody>
       </Table>
-    </Box>
+    </div>
   );
 }

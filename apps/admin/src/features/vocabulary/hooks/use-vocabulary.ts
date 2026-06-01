@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { vocabularyApi } from '../services/vocabulary.api';
@@ -15,13 +15,13 @@ export function useVocabulary(params: WordsQueryParams) {
 }
 
 export function useVocabularyCRUD() {
-  const toast = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const deleteWord = useMutation({
     mutationFn: vocabularyApi.deleteWord,
     onSuccess: () => {
-      toast({ title: 'Word deleted successfully', status: 'success' });
+      toast({ title: 'Word deleted successfully' });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
     },
     onError: (error: any) => {
@@ -31,8 +31,7 @@ export function useVocabularyCRUD() {
       toast({
         title: isForbidden ? 'Action Not Allowed' : 'Failed to delete word',
         description: message,
-        status: isForbidden ? 'warning' : 'error',
-        duration: 4000,
+        variant: 'destructive',
       });
     },
   });
@@ -44,8 +43,6 @@ export function useVocabularyCRUD() {
       toast({
         title: 'Import Complete',
         description: message,
-        status: 'success',
-        duration: 5000,
       });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
     },
@@ -55,9 +52,7 @@ export function useVocabularyCRUD() {
       toast({
         title: 'Import Failed',
         description: message,
-        status: 'error',
-        duration: 7000,
-        isClosable: true,
+        variant: 'destructive',
       });
     },
   });
@@ -69,8 +64,6 @@ export function useVocabularyCRUD() {
       toast({
         title: 'Atomic Import Successful',
         description: message,
-        status: 'success',
-        duration: 5000,
       });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
     },
@@ -81,9 +74,7 @@ export function useVocabularyCRUD() {
       toast({
         title: 'Atomic Import Failed',
         description: message,
-        status: 'error',
-        duration: 7000,
-        isClosable: true,
+        variant: 'destructive',
       });
     },
   });
@@ -94,3 +85,4 @@ export function useVocabularyCRUD() {
     uploadCSVAtomic,
   };
 }
+

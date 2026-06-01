@@ -1,7 +1,7 @@
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Inter } from 'next/font/google';
 import './global.css';
-import { ChakraUIProvider, ReactQueryProvider } from '@ielts/ui';
+import { ReactQueryProvider, Toaster } from '@ielts/ui';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -19,14 +19,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${inter.className}`}
         suppressHydrationWarning
       >
         <ReactQueryProvider>
-          <ChakraUIProvider>{children}</ChakraUIProvider>
+          {children}
         </ReactQueryProvider>
+        <Toaster />
         <SpeedInsights />
       </body>
     </html>
