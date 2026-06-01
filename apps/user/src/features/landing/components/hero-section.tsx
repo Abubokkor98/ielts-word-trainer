@@ -227,7 +227,7 @@ export function HeroSection() {
           </header>
 
           {/* RIGHT COLUMN: Minimal Interactive Vocabulary Card (React Bits Glassmorphism Card 100% same) */}
-          <div className="lg:col-span-5 flex justify-center items-center">
+          <div className="lg:col-span-5 flex justify-center lg:justify-end items-center">
             <motion.article
               initial={{ opacity: 0, scale: 0.95, y: 24 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

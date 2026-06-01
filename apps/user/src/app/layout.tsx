@@ -6,6 +6,7 @@ import './global.css';
 import { ReactQueryProvider, Toaster } from '@ielts/ui';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { siteConfig } from '../lib/site-config';
+import { CONTACT_LINKS } from '@ielts/shared';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -33,9 +34,9 @@ export const metadata: Metadata = {
     'IELTS practice',
   ],
 
-  authors: [{ name: 'Abu Bokkor Siddik' }],
+  authors: [{ name: CONTACT_LINKS.creatorName }],
 
-  creator: 'Abu Bokkor Siddik',
+  creator: CONTACT_LINKS.creatorName,
 
   robots: {
     index: true,

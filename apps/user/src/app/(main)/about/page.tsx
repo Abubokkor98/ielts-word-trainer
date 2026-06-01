@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { AboutContent } from '../../../components/about/about-content';
 
+import { CONTACT_LINKS } from '@ielts/shared';
+
 export const metadata: Metadata = {
   title: 'About Us',
   description:
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
     'free IELTS vocabulary',
     'spaced repetition IELTS',
     'open source IELTS prep',
-    'Abu Bokkor Siddik',
+    CONTACT_LINKS.creatorName,
   ],
   alternates: {
     canonical: '/about',

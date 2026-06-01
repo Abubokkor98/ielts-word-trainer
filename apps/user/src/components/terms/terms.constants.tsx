@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { CONTACT_LINKS } from '@ielts/shared';
 
 export interface TermsSectionData {
   readonly id: string;
@@ -18,7 +19,7 @@ export const TERMS_SECTIONS: readonly TermsSectionData[] = [
           By accessing or using IELTS Vocabs (the &ldquo;Service&rdquo;), you agree to be bound by these Terms and Conditions (&ldquo;Terms&rdquo;). If you do not agree to these Terms, please do not use the Service.
         </p>
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
-          These Terms constitute a legal agreement between you (&ldquo;User,&rdquo; &ldquo;you,&rdquo; or &ldquo;your&rdquo;) and Abu Bokkor Siddik (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), the developer of IELTS Vocabs.
+          These Terms constitute a legal agreement between you (&ldquo;User,&rdquo; &ldquo;you,&rdquo; or &ldquo;your&rdquo;) and {CONTACT_LINKS.creatorName} (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;), the developer of IELTS Vocabs.
         </p>
       </div>
     ),
@@ -80,7 +81,7 @@ export const TERMS_SECTIONS: readonly TermsSectionData[] = [
         <div className="space-y-2">
           <h4 className="text-sm font-semibold text-white tracking-wide">Our License:</h4>
           <ul className="list-disc pl-5 space-y-1.5 text-sm sm:text-base text-zinc-300">
-            <li>IELTS Vocabs and its source code are the exclusive proprietary property of Abu Bokkor Siddik.</li>
+            <li>IELTS Vocabs and its source code are the exclusive proprietary property of {CONTACT_LINKS.creatorName}.</li>
             <li>Subject to your compliance with these Terms, you are granted a limited, personal, non-exclusive, non-transferable, and revocable license to access, view, and use the software for personal and educational purposes only.</li>
             <li>You may not sell, sublicense, rent, lease, distribute, or publish copies of this software or its source code, nor use it for any commercial purposes without explicit written permission from the author.</li>
             <li>You may not modify, distribute modified versions, disassemble, or reverse engineer any part of the software.</li>
@@ -205,10 +206,10 @@ export const TERMS_SECTIONS: readonly TermsSectionData[] = [
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
           For questions about these Terms, please contact us at{' '}
           <a
-            href="mailto:support@ielts-vocabs.com"
+            href={`mailto:${CONTACT_LINKS.supportEmail}`}
             className="text-primary hover:text-primary-hover font-medium underline underline-offset-4 decoration-primary/30 transition-colors"
           >
-            support@ielts-vocabs.com
+            {CONTACT_LINKS.supportEmail}
           </a>
           .
         </p>

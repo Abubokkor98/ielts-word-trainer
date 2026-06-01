@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { TermsContent } from '../../../components/terms/terms-content';
 
+import { CONTACT_LINKS } from '@ielts/shared';
+
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
   description:
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
     'IELTS Vocabs Terms & Conditions',
     'free IELTS prep terms',
     'spaced repetition IELTS terms',
-    'Abu Bokkor Siddik terms',
+    `${CONTACT_LINKS.creatorName} terms`,
   ],
   alternates: {
     canonical: '/terms',

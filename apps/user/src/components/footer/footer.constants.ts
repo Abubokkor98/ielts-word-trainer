@@ -1,3 +1,5 @@
+import { CONTACT_LINKS } from '@ielts/shared';
+
 export interface FooterLink {
   readonly label: string;
   readonly href: string;
@@ -67,13 +69,13 @@ export const STUDY_TIPS: readonly FooterLink[] = [
 ] as const;
 
 export const EXTERNAL_LINKS = {
-  portfolio: 'https://abubokkor.vercel.app',
-  github: 'https://github.com/Abubokkor98/ielts-word-trainer',
+  portfolio: CONTACT_LINKS.developer.portfolio,
+  github: CONTACT_LINKS.githubRepo,
 } as const;
 
 export const getCurrentYear = () => new Date().getFullYear();
 
-export const CREATOR_NAME = 'Abu Bokkor Siddik';
+export const CREATOR_NAME = CONTACT_LINKS.creatorName;
 export const APP_NAME = 'IELTS Vocabs';
 export const APP_TAGLINE =
   'Master 3500+ IELTS vocabulary words with spaced repetition and adaptive quizzes. Free forever.';
