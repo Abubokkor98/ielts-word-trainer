@@ -170,11 +170,9 @@ export function FeedbackForm() {
       deviceInfo,
     };
 
-    console.log('Submitting feedback:', payload);
 
     try {
       const response = await axiosInstance.post('/feedback', payload);
-      console.log('Feedback response:', response.data);
 
       setStatus('success');
       toast({
@@ -182,7 +180,6 @@ export function FeedbackForm() {
         description: 'Your feedback has been successfully submitted.',
       });
     } catch (err) {
-      console.error('Feedback submission error:', err);
       const axiosError = err as AxiosError<{ message?: string; errors?: { path: string; message: string }[] }>;
       let errorMessage = axiosError.response?.data?.message || 'An error occurred while submitting feedback. Please try again.';
 

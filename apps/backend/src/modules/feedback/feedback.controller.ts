@@ -27,8 +27,8 @@ export class FeedbackController {
 
   static async getAll(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const page = parseInt(req.query.page as string, 10) || 1;
-      const limit = parseInt(req.query.limit as string, 10) || 20;
+      const page = Math.max(parseInt(req.query.page as string, 10) || 1, 1);
+      const limit = Math.min(Math.max(parseInt(req.query.limit as string, 10) || 20, 1), 100);
       const filters = {
         feedbackType: req.query.feedbackType as string,
         status: req.query.status as string,
