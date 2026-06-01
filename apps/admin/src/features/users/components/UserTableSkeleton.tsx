@@ -1,43 +1,43 @@
-import { Box, HStack, Skeleton, Td, Tr } from '@chakra-ui/react';
+import { TableCell, TableRow, Skeleton } from '@ielts/ui';
 
 export const UserTableSkeleton = () => {
   return (
     <>
       {[1, 2, 3, 4, 5].map((i) => (
-        <Tr key={i}>
+        <TableRow key={i}>
           {/* User (Avatar + Name + Email) */}
-          <Td>
-            <HStack>
-              <Skeleton borderRadius="full" boxSize="32px" />
-              <Box>
-                <Skeleton height="16px" width="120px" mb={1} />
-                <Skeleton height="12px" width="180px" />
-              </Box>
-            </HStack>
-          </Td>
+          <TableCell>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-[120px]" />
+                <Skeleton className="h-3 w-[180px]" />
+              </div>
+            </div>
+          </TableCell>
           {/* Status Badge */}
-          <Td>
-            <Skeleton height="24px" width="70px" borderRadius="md" />
-          </Td>
+          <TableCell>
+            <Skeleton className="h-6 w-[70px] rounded-md" />
+          </TableCell>
           {/* XP */}
-          <Td>
-            <Skeleton height="20px" width="50px" />
-          </Td>
+          <TableCell>
+            <Skeleton className="h-5 w-[50px]" />
+          </TableCell>
           {/* Joined */}
-          <Td>
-            <HStack spacing={1}>
-              <Skeleton height="14px" width="14px" />
-              <Skeleton height="14px" width="90px" />
-            </HStack>
-          </Td>
+          <TableCell>
+            <div className="flex items-center gap-1.5">
+              <Skeleton className="h-3.5 w-3.5" />
+              <Skeleton className="h-3.5 w-[90px]" />
+            </div>
+          </TableCell>
           {/* Actions */}
-          <Td>
-            <HStack spacing={2}>
-              <Skeleton height="32px" width="32px" borderRadius="md" />
-              <Skeleton height="32px" width="32px" borderRadius="md" />
-            </HStack>
-          </Td>
-        </Tr>
+          <TableCell>
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-8 w-8 rounded-md" />
+              <Skeleton className="h-8 w-8 rounded-md" />
+            </div>
+          </TableCell>
+        </TableRow>
       ))}
     </>
   );

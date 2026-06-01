@@ -1,20 +1,5 @@
-import {
-  Box,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputRightElement,
-  List,
-  ListItem,
-  Spinner,
-  Tag,
-  TagCloseButton,
-  TagLabel,
-  Wrap,
-} from '@chakra-ui/react';
-import { ChevronDown } from 'lucide-react';
+import { Badge, Button, Input, Label } from '@ielts/ui';
+import { ChevronDown, Loader2, X } from 'lucide-react';
 import {
   type Control,
   Controller,
@@ -46,16 +31,11 @@ export function TopicsField({ control, error, isOpen, setValue, watch }: TopicsF
     handleTopicSelect,
     handleTopicInputKeyDown,
     handleRemoveTopic,
-    dropdownBg,
-    dropdownBorder,
-    dropdownHoverBg,
-    dropdownTextColor,
-    placeholderColor,
   } = useTopicAutocomplete({ isOpen, setValue, watch });
 
   return (
-    <FormControl position="relative" isInvalid={!!error}>
-      <FormLabel>Topics (Select at least one) *</FormLabel>
+    <div className="relative w-full space-y-2">
+      <Label className="text-sm font-semibold">Topics (Select at least one) *</Label>
 
       <Controller
         name="topics"
@@ -68,17 +48,29 @@ export function TopicsField({ control, error, isOpen, setValue, watch }: TopicsF
           <>
             {/* Display selected topics */}
             {field.value && field.value.length > 0 && (
-              <Wrap mb={2}>
+              <div className="flex flex-wrap gap-2 mb-3">
                 {field.value.map((topicName) => (
-                  <Tag key={topicName} size="md" colorScheme="brand" borderRadius="full">
-                    <TagLabel>{topicName}</TagLabel>
-                    <TagCloseButton onClick={() => handleRemoveTopic(topicName)} />
-                  </Tag>
+                  <Badge
+                    key={topicName}
+                    variant="secondary"
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-foreground bg-secondary/80 border border-border"
+                  >
+                    <span>{topicName}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => handleRemoveTopic(topicName)}
+                      className="text-muted-foreground hover:text-foreground hover:bg-muted rounded-full p-0 h-4 w-4 flex items-center justify-center transition-colors"
+                      aria-label={`Remove topic ${topicName}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
                 ))}
-              </Wrap>
+              </div>
             )}
 
-            <InputGroup>
+            <div className="relative">
               <Input
                 ref={topicInputRef}
                 value={topicInput}
@@ -94,61 +86,64 @@ export function TopicsField({ control, error, isOpen, setValue, watch }: TopicsF
                   setUserHasTyped(false);
                 }}
                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                className={`pr-10 ${
+                  error ? 'border-destructive focus-visible:ring-destructive' : ''
+                }`}
               />
-              <InputRightElement pointerEvents="none">
-                <ChevronDown size={16} color="gray" />
-              </InputRightElement>
-            </InputGroup>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                <ChevronDown size={16} />
+              </div>
+            </div>
           </>
         )}
       />
-      <FormErrorMessage>{error?.message}</FormErrorMessage>
+      {error && (
+        <p className="text-xs text-destructive">{error.message}</p>
+      )}
 
       {/* Topic Suggestions Dropdown */}
       {showSuggestions && (
-        <Box
-          position="absolute"
-          zIndex={1500}
-          width="100%"
-          maxH="200px"
-          overflowY="auto"
-          bg={dropdownBg}
-          border="1px solid"
-          borderColor={dropdownBorder}
-          borderRadius="md"
-          mt={1}
-          boxShadow="lg"
-        >
+        <div className="absolute z-[150] w-full max-h-[200px] overflow-y-auto bg-card border border-border rounded-lg mt-1.5 shadow-lg">
           {isTopicsLoading && (
-            <Box p={2} color={dropdownTextColor}>
-              <Spinner size="sm" /> Loading topics...
-            </Box>
+            <div className="flex items-center gap-2 p-3 text-sm text-muted-foreground">
+              <Loader2 size={16} className="animate-spin text-primary" />
+              <span>Loading topics...</span>
+            </div>
           )}
 
           {!isTopicsLoading && filteredTopics.length === 0 && (
-            <Box p={2} color={placeholderColor} fontSize="sm">
+            <div className="p-3 text-sm text-muted-foreground">
               No matching topics. Press Enter to add "{topicInput}"
-            </Box>
+            </div>
           )}
 
-          <List>
+          <div role="listbox" className="divide-y divide-border/40">
             {filteredTopics.map((topic) => (
-              <ListItem
+              <div
                 key={topic._id}
-                px={4}
-                py={2}
-                cursor="pointer"
-                color={dropdownTextColor}
-                _hover={{ bg: dropdownHoverBg }}
+                role="option"
+                aria-selected={false}
+                tabIndex={0}
+                onMouseDown={(e) => {
+                  // Prevent onBlur from firing before click is processed
+                  e.preventDefault();
+                }}
                 onClick={() => handleTopicSelect(topic.name)}
-                transition="background 0.2s"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleTopicSelect(topic.name);
+                  }
+                }}
+                className="px-4 py-2.5 text-sm text-foreground cursor-pointer hover:bg-muted focus:bg-muted focus:outline-none transition-colors"
               >
                 {topic.name}
-              </ListItem>
+              </div>
             ))}
-          </List>
-        </Box>
+          </div>
+        </div>
       )}
-    </FormControl>
+    </div>
   );
 }
+

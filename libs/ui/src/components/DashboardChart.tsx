@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, useColorModeValue } from '@chakra-ui/react';
 import {
   Area,
   AreaChart,
@@ -31,10 +30,10 @@ export const DashboardChart = ({
   xAxisKey,
   height = 300,
 }: DashboardChartProps) => {
-  const gridColor = useColorModeValue('#E2E8F0', '#2D3748');
-  const textColor = useColorModeValue('#4A5568', '#A0AEC0');
-  const tooltipBg = useColorModeValue('white', '#1A202C');
-  const tooltipBorder = useColorModeValue('#E2E8F0', '#2D3748');
+  const gridColor = '#2f293a';
+  const textColor = '#aaaaaa';
+  const tooltipBg = '#1b1722';
+  const tooltipBorder = '#2f293a';
 
   const CommonProps = {
     data,
@@ -43,7 +42,7 @@ export const DashboardChart = ({
 
   const AxisProps = {
     stroke: textColor,
-    fontSize: 12,
+    fontSize: 11,
     tickLine: false,
     axisLine: false,
   };
@@ -51,23 +50,21 @@ export const DashboardChart = ({
   const TooltipContent = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <Box
-          bg={tooltipBg}
-          p={3}
-          border="1px solid"
-          borderColor={tooltipBorder}
-          borderRadius="md"
-          boxShadow="lg"
+        <div
+          style={{ backgroundColor: tooltipBg, borderColor: tooltipBorder }}
+          className="p-3 border rounded-xl shadow-xl glass-card text-xs text-zinc-300 font-medium"
         >
-          <Box fontWeight="bold" mb={2} color={textColor} fontSize="sm">
+          <div className="font-bold mb-2 text-zinc-100">
             {label}
-          </Box>
-          {payload.map((entry: any) => (
-            <Box key={`${entry.dataKey}-${entry.value}`} color={entry.color} fontSize="sm">
-              {entry.name}: {entry.value}
-            </Box>
-          ))}
-        </Box>
+          </div>
+          <div className="space-y-1">
+            {payload.map((entry: any) => (
+              <div key={`${entry.dataKey}-${entry.value}`} style={{ color: entry.color }}>
+                {entry.name}: {entry.value}
+              </div>
+            ))}
+          </div>
+        </div>
       );
     }
     return null;
@@ -81,7 +78,7 @@ export const DashboardChart = ({
             <defs>
               {dataKeys.map((k, _i) => (
                 <linearGradient key={k.key} id={`color${k.key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={k.color} stopOpacity={0.8} />
+                  <stop offset="5%" stopColor={k.color} stopOpacity={0.4} />
                   <stop offset="95%" stopColor={k.color} stopOpacity={0} />
                 </linearGradient>
               ))}
@@ -90,7 +87,7 @@ export const DashboardChart = ({
             <XAxis dataKey={xAxisKey} {...AxisProps} dy={10} />
             <YAxis {...AxisProps} dx={-10} />
             <Tooltip content={<TooltipContent />} cursor={{ fill: 'transparent' }} />
-            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+            <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} />
             {dataKeys.map((k) => (
               <Area
                 key={k.key}
@@ -110,8 +107,8 @@ export const DashboardChart = ({
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false} />
             <XAxis dataKey={xAxisKey} {...AxisProps} dy={10} />
             <YAxis {...AxisProps} dx={-10} />
-            <Tooltip content={<TooltipContent />} cursor={{ fill: 'white', opacity: 0.05 }} />
-            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+            <Tooltip content={<TooltipContent />} cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }} />
+            <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} />
             {dataKeys.map((k) => (
               <Bar
                 key={k.key}
@@ -130,14 +127,14 @@ export const DashboardChart = ({
             <XAxis dataKey={xAxisKey} {...AxisProps} dy={10} />
             <YAxis {...AxisProps} dx={-10} />
             <Tooltip content={<TooltipContent />} />
-            <Legend wrapperStyle={{ paddingTop: '20px' }} />
+            <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} />
             {dataKeys.map((k) => (
               <Line
                 key={k.key}
                 type="monotone"
                 dataKey={k.key}
                 stroke={k.color}
-                strokeWidth={3}
+                strokeWidth={2}
                 dot={{ r: 4, fill: k.color }}
                 activeDot={{ r: 6 }}
                 name={k.name || k.key}

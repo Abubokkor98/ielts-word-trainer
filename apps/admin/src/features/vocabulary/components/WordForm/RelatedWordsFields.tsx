@@ -1,4 +1,4 @@
-import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
+import { Input, Label } from '@ielts/ui';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 import type { WordFormData } from '../../types';
 
@@ -9,28 +9,37 @@ interface RelatedWordsFieldsProps {
 
 export function RelatedWordsFields({ register, errors }: RelatedWordsFieldsProps) {
   return (
-    <>
-      <FormControl isInvalid={!!errors.synonyms}>
-        <FormLabel>Synonyms (comma separated) *</FormLabel>
+    <div className="w-full space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="synonyms-input">Synonyms (comma separated) *</Label>
         <Input
+          id="synonyms-input"
           {...register('synonyms', {
             required: 'Synonyms are required',
           })}
           placeholder="transient, fleeting, short-lived"
+          className={errors.synonyms ? 'border-destructive focus-visible:ring-destructive' : ''}
         />
-        <FormErrorMessage>{errors.synonyms?.message}</FormErrorMessage>
-      </FormControl>
+        {errors.synonyms && (
+          <p className="text-xs text-destructive">{errors.synonyms.message}</p>
+        )}
+      </div>
 
-      <FormControl isInvalid={!!errors.antonyms}>
-        <FormLabel>Antonyms (comma separated) *</FormLabel>
+      <div className="space-y-2">
+        <Label htmlFor="antonyms-input">Antonyms (comma separated) *</Label>
         <Input
+          id="antonyms-input"
           {...register('antonyms', {
             required: 'Antonyms are required',
           })}
           placeholder="permanent, long-lived"
+          className={errors.antonyms ? 'border-destructive focus-visible:ring-destructive' : ''}
         />
-        <FormErrorMessage>{errors.antonyms?.message}</FormErrorMessage>
-      </FormControl>
-    </>
+        {errors.antonyms && (
+          <p className="text-xs text-destructive">{errors.antonyms.message}</p>
+        )}
+      </div>
+    </div>
   );
 }
+

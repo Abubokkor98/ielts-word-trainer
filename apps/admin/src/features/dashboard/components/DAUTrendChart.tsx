@@ -1,5 +1,3 @@
-import { Box, Heading, useColorModeValue } from '@chakra-ui/react';
-import { Card, CardContent } from '@ielts/ui';
 import {
   CartesianGrid,
   Line,
@@ -16,61 +14,64 @@ interface DAUTrendChartProps {
 }
 
 export const DAUTrendChart = ({ data }: DAUTrendChartProps) => {
-  const lineColor = useColorModeValue('#3182CE', '#63B3ED');
-  const axisColor = useColorModeValue('#718096', '#A0AEC0');
-  const gridColor = useColorModeValue('#E2E8F0', '#4A5568');
-  const tooltipBg = useColorModeValue('white', '#2D3748');
+  const lineColor = 'hsl(var(--primary))';
+  const axisColor = 'hsl(var(--muted-foreground))';
+  const gridColor = 'hsl(var(--border))';
+  const tooltipBg = 'hsl(var(--card))';
 
   return (
-    <Card>
-      <CardContent>
-        <Heading size="sm" mb={4}>
-          📈 Daily Active Users (Last 7 Days)
-        </Heading>
-        <Box height="250px" width="100%">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
-              <XAxis
-                dataKey="date"
-                stroke={axisColor}
-                fontSize={12}
-                tickFormatter={(date) =>
-                  new Date(date).toLocaleDateString('en-US', {
-                    weekday: 'short',
-                  })
-                }
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                stroke={axisColor}
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: tooltipBg,
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                  border: 'none',
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="count"
-                stroke={lineColor}
-                strokeWidth={3}
-                dot={{ r: 4, fill: lineColor, strokeWidth: 2, stroke: '#fff' }}
-                activeDot={{ r: 6 }}
-                animationDuration={1000}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </Box>
-      </CardContent>
-    </Card>
+    <figure className="glass-card border border-border bg-card/50 p-6 rounded-2xl">
+      <figcaption className="mb-4">
+        <h3 className="text-sm font-bold text-card-foreground flex items-center gap-2">
+          <span role="img" aria-label="Line Graph">📈</span>
+          <span>Daily Active Users (Last 7 Days)</span>
+        </h3>
+      </figcaption>
+      <div className="h-[250px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+            <XAxis
+              dataKey="date"
+              stroke={axisColor}
+              fontSize={11}
+              tickFormatter={(date) =>
+                new Date(date).toLocaleDateString('en-US', {
+                  weekday: 'short',
+                })
+              }
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              stroke={axisColor}
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              allowDecimals={false}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: tooltipBg,
+                borderRadius: '12px',
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
+                border: '1px solid hsl(var(--border))',
+                color: 'hsl(var(--card-foreground))',
+                fontSize: '12px',
+              }}
+            />
+            <Line
+              type="monotone"
+              dataKey="count"
+              stroke={lineColor}
+              strokeWidth={2.5}
+              dot={{ r: 4, fill: lineColor, strokeWidth: 2, stroke: 'hsl(var(--background))' }}
+              activeDot={{ r: 6 }}
+              animationDuration={1000}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </figure>
   );
 };

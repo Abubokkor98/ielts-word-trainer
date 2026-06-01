@@ -1,21 +1,12 @@
 import {
   Avatar,
+  AvatarFallback,
   Badge,
-  Box,
-  Divider,
-  Grid,
-  GridItem,
-  HStack,
-  Icon,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalOverlay,
-  Text,
-  useColorModeValue,
-  VStack,
-} from '@chakra-ui/react';
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@ielts/ui';
 import { Award, Calendar, Flame, Mail, Shield } from 'lucide-react';
 import type { User } from '../types';
 
@@ -26,160 +17,119 @@ interface UserDetailModalProps {
 }
 
 export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps) {
-  const bgCard = useColorModeValue('white', 'gray.800');
-  const bgStats = useColorModeValue('gray.50', 'gray.700');
-  const textColor = useColorModeValue('gray.600', 'gray.400');
-  const headingColor = useColorModeValue('gray.800', 'white');
-  const dividerColor = useColorModeValue('gray.100', 'gray.700');
-  const borderColor = useColorModeValue('gray.100', 'gray.600');
-  // Reuse bgStats for statsBg since they use same colors
   if (!user) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
-      <ModalOverlay backdropFilter="blur(8px)" />
-      <ModalContent bg={bgCard} borderRadius="2xl" boxShadow="xl" overflow="hidden">
-        <ModalCloseButton zIndex={10} color="white" />
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-lg overflow-hidden rounded-2xl border border-border bg-card p-0 shadow-xl">
+        {/* Banner with gradient for premium feel */}
+        <div className="relative h-28 bg-gradient-to-r from-primary to-primary/80">
+          <div className="absolute -bottom-10 left-1/2 -translate-x-1/2">
+            <Avatar className="h-20 w-20 border-4 border-card bg-primary text-primary-foreground shadow-lg">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xl font-bold flex items-center justify-center">
+                {user.name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
 
-        {/* Helper Banner for premium feel */}
-        <Box h="100px" bgGradient="linear(to-r, brand.500, brand.600)" position="relative">
-          <Box position="absolute" bottom="-40px" left="50%" transform="translateX(-50%)">
-            <Avatar
-              size="2xl"
-              name={user.name}
-              border="4px solid"
-              borderColor={bgCard}
-              bg="brand.500"
-              color="white"
-              showBorder
-            />
-          </Box>
-        </Box>
-
-        <ModalBody pt={12} pb={8} px={8}>
-          <VStack spacing={6}>
+        <div className="px-8 pb-8 pt-12">
+          <div className="flex flex-col gap-6">
             {/* User Info Header */}
-            <VStack spacing={1} mt={2}>
-              <Text fontSize="2xl" fontWeight="bold" color={headingColor}>
+            <DialogHeader className="flex flex-col items-center gap-1 p-0 text-center sm:text-center">
+              <DialogTitle className="text-2xl font-bold text-foreground">
                 {user.name}
-              </Text>
-              <HStack color={textColor} fontSize="sm">
-                <Mail size={14} />
-                <Text>{user.email}</Text>
-              </HStack>
+              </DialogTitle>
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Mail size={14} className="shrink-0" />
+                <span>{user.email}</span>
+              </div>
 
-              <HStack spacing={2} mt={2}>
-                <Badge px={3} py={1} borderRadius="full" colorScheme="blue" variant="subtle">
+              <div className="mt-2 flex items-center gap-2">
+                <Badge variant="secondary" className="px-3 py-1 text-xs uppercase tracking-wider">
                   {user.role || 'USER'}
                 </Badge>
                 <Badge
-                  px={3}
-                  py={1}
-                  borderRadius="full"
-                  colorScheme={
-                    user.status === 'active' ? 'green' : user.status === 'banned' ? 'red' : 'gray'
+                  variant={
+                    user.status === 'active'
+                      ? 'outline'
+                      : user.status === 'banned'
+                      ? 'destructive'
+                      : 'secondary'
                   }
-                  variant="subtle"
+                  className="px-3 py-1 text-xs uppercase tracking-wider"
                 >
                   {user.status || 'active'}
                 </Badge>
-              </HStack>
-            </VStack>
+              </div>
+            </DialogHeader>
 
-            <Divider borderColor={dividerColor} />
+            <hr className="border-border" />
 
             {/* Stats Grid */}
-            <Grid templateColumns="repeat(2, 1fr)" gap={4} w="full">
-              <GridItem>
-                <Box
-                  bg={bgStats}
-                  p={4}
-                  borderRadius="xl"
-                  border="1px solid"
-                  borderColor={borderColor}
-                  textAlign="center"
-                >
-                  <Icon as={Award} w={6} h={6} color="brand.500" mb={2} />
-                  <Text fontSize="2xl" fontWeight="bold" color={headingColor}>
-                    {user.xp || 0}
-                  </Text>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="bold"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
-                    color="gray.500"
-                  >
-                    Total XP
-                  </Text>
-                </Box>
-              </GridItem>
-              <GridItem>
-                <Box
-                  bg={bgStats}
-                  p={4}
-                  borderRadius="xl"
-                  border="1px solid"
-                  borderColor={borderColor}
-                  textAlign="center"
-                >
-                  <Icon as={Flame} w={6} h={6} color="orange.400" mb={2} />
-                  <Text fontSize="2xl" fontWeight="bold" color={headingColor}>
-                    {user.streak || 0}
-                  </Text>
-                  <Text
-                    fontSize="xs"
-                    fontWeight="bold"
-                    textTransform="uppercase"
-                    letterSpacing="wider"
-                    color="gray.500"
-                  >
-                    Streak Days
-                  </Text>
-                </Box>
-              </GridItem>
-            </Grid>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col items-center rounded-xl border border-border bg-muted/30 p-4 text-center">
+                <Award className="mb-2 h-6 w-6 text-primary" />
+                <span className="text-2xl font-bold text-foreground">
+                  {user.xp || 0}
+                </span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Total XP
+                </span>
+              </div>
+              <div className="flex flex-col items-center rounded-xl border border-border bg-muted/30 p-4 text-center">
+                <Flame className="mb-2 h-6 w-6 text-primary" />
+                <span className="text-2xl font-bold text-foreground">
+                  {user.streak || 0}
+                </span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Streak Days
+                </span>
+              </div>
+            </div>
 
             {/* Timestamps */}
-            <VStack w="full" bg={bgStats} p={4} borderRadius="lg" align="start" spacing={3}>
-              <HStack color={textColor} fontSize="sm">
-                <Icon as={Calendar} size={16} />
-                <Text fontWeight="medium">Member Since:</Text>
-                <Text>
+            <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/30 p-4">
+              <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                <Calendar size={16} className="shrink-0 text-primary" />
+                <span className="font-medium text-foreground">Member Since:</span>
+                <span>
                   {new Date(user.createdAt).toLocaleDateString(undefined, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
                   })}
-                </Text>
-              </HStack>
+                </span>
+              </div>
               {user.lastQuizDate && (
-                <HStack color={textColor} fontSize="sm">
-                  <Icon as={Award} size={16} />
-                  <Text fontWeight="medium">Last Activity:</Text>
-                  <Text>
+                <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                  <Award size={16} className="shrink-0 text-primary" />
+                  <span className="font-medium text-foreground">Last Activity:</span>
+                  <span>
                     {new Date(user.lastQuizDate).toLocaleDateString(undefined, {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })}
-                  </Text>
-                </HStack>
+                  </span>
+                </div>
               )}
-              <HStack color={textColor} fontSize="sm">
-                <Icon as={Shield} size={16} />
-                <Text fontWeight="medium">Account Status:</Text>
-                <Text
-                  textTransform="capitalize"
-                  color={user.status === 'banned' ? 'red.500' : 'inherit'}
+              <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+                <Shield size={16} className="shrink-0 text-primary" />
+                <span className="font-medium text-foreground">Account Status:</span>
+                <span
+                  className={`capitalize font-medium ${
+                    user.status === 'banned' ? 'text-destructive' : 'text-foreground'
+                  }`}
                 >
                   {user.status === 'banned' ? 'Restricted (Banned)' : 'Good Standing'}
-                </Text>
-              </HStack>
-            </VStack>
-          </VStack>
-        </ModalBody>
-      </ModalContent>
-    </Modal>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
+

@@ -1,4 +1,4 @@
-import { useToast } from '@chakra-ui/react';
+import { useToast } from '@ielts/ui';
 import { axiosInstance } from '@ielts/auth';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
@@ -13,7 +13,7 @@ export function useWordMutation({
   initialData,
   onSuccess,
 }: UseWordMutationProps) {
-  const toast = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -50,8 +50,6 @@ export function useWordMutation({
         title: initialData
           ? 'Word updated successfully'
           : 'Word added successfully',
-        status: 'success',
-        duration: 3000,
       });
       queryClient.invalidateQueries({ queryKey: ['admin', 'words'] });
       queryClient.invalidateQueries({ queryKey: ['topics'] });
@@ -68,11 +66,11 @@ export function useWordMutation({
           ? 'Failed to update word'
           : 'Failed to add word',
         description: message,
-        status: isForbidden ? 'warning' : 'error',
-        duration: 4000,
+        variant: 'destructive',
       });
     },
   });
 
   return mutation;
 }
+

@@ -1,5 +1,4 @@
-import { Box, Flex, Heading, Skeleton, Text } from '@chakra-ui/react';
-import { Card, CardContent, CardHeader } from '@ielts/ui';
+import { Skeleton } from '@ielts/ui';
 import { useVocabularyOverview } from '../hooks/use-vocabulary-analytics';
 
 export const DifficultyDistributionChart = () => {
@@ -7,123 +6,89 @@ export const DifficultyDistributionChart = () => {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <Heading size="sm">Words by Difficulty</Heading>
-        </CardHeader>
-        <CardContent>
-          <Skeleton height="280px" w="full" />
-        </CardContent>
-      </Card>
+      <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+        <header>
+          <h3 className="text-sm font-bold text-foreground">Words by Difficulty</h3>
+        </header>
+        <Skeleton className="h-[280px] w-full bg-white/5 rounded-xl" />
+      </section>
     );
   }
 
   if (isError || !overview) {
     return (
-      <Card>
-        <CardHeader>
-          <Heading size="sm">Words by Difficulty</Heading>
-        </CardHeader>
-        <CardContent>
-          <Text color="red.500">Failed to load difficulty distribution</Text>
-        </CardContent>
-      </Card>
+      <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+        <header>
+          <h3 className="text-sm font-bold text-foreground">Words by Difficulty</h3>
+        </header>
+        <p className="text-sm text-red-400">Failed to load difficulty distribution</p>
+      </section>
     );
   }
 
   const { byDifficulty } = overview;
 
   const difficulties = [
-    {
-      name: 'Beginner',
-      count: byDifficulty.beginner,
-      color: 'green.500',
-    },
-    {
-      name: 'Intermediate',
-      count: byDifficulty.intermediate,
-      color: 'blue.500',
-    },
-    {
-      name: 'Advanced',
-      count: byDifficulty.advanced,
-      color: 'purple.500',
-    },
+    { name: 'Beginner', count: byDifficulty.beginner },
+    { name: 'Intermediate', count: byDifficulty.intermediate },
+    { name: 'Advanced', count: byDifficulty.advanced },
   ];
 
   const total = difficulties.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <Card>
-      <CardHeader>
-        <Heading size="sm" mb={1}>
+    <section className="border border-border bg-transparent p-6 rounded-xl space-y-4">
+      <header>
+        <h3 className="text-sm font-bold text-foreground">
           Words by Difficulty
-        </Heading>
-        <Text fontSize="xs" color="gray.500">
+        </h3>
+        <p className="text-xs text-muted-foreground">
           Learning progression distribution
-        </Text>
-      </CardHeader>
-      <CardContent>
-        <Flex direction="column" gap={4}>
-          {difficulties.map((difficulty) => {
-            const percentage = total > 0 ? (difficulty.count / total) * 100 : 0;
-            return (
-              <Box
-                key={difficulty.name}
-                p={4}
-                bg="gray.50"
-                _dark={{ bg: 'gray.800' }}
-                borderRadius="lg"
-                borderLeft="4px solid"
-                borderColor={difficulty.color}
-              >
-                <Flex justify="space-between" align="center" mb={3}>
-                  <Text fontSize="md" fontWeight="700" color="gray.900" _dark={{ color: 'white' }}>
-                    {difficulty.name}
-                  </Text>
-                  <Flex align="baseline" gap={2}>
-                    <Text fontSize="2xl" fontWeight="bold" color={difficulty.color}>
-                      {difficulty.count.toLocaleString()}
-                    </Text>
-                    <Text fontSize="sm" color="gray.600" _dark={{ color: 'gray.400' }}>
-                      ({percentage.toFixed(1)}%)
-                    </Text>
-                  </Flex>
-                </Flex>
-                <Box
-                  w="full"
-                  h="12px"
-                  bg="gray.200"
-                  _dark={{ bg: 'gray.700' }}
-                  borderRadius="full"
-                  overflow="hidden"
-                >
-                  <Box
-                    h="full"
-                    w={`${percentage}%`}
-                    bg={difficulty.color}
-                    borderRadius="full"
-                    transition="width 0.5s ease-in-out"
-                    boxShadow="sm"
-                  />
-                </Box>
-              </Box>
-            );
-          })}
-        </Flex>
+        </p>
+      </header>
+      <div className="flex flex-col gap-3">
+        {difficulties.map((difficulty) => {
+          const percentage = total > 0 ? (difficulty.count / total) * 100 : 0;
+          return (
+            <div
+              key={difficulty.name}
+              className="p-3 border border-border rounded-lg bg-transparent flex flex-col gap-2 transition-all duration-200 hover:border-muted-foreground/20"
+            >
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-bold text-foreground">
+                  {difficulty.name}
+                </span>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-base font-extrabold text-foreground">
+                    {difficulty.count.toLocaleString()}
+                  </span>
+                  <span className="text-[10px] text-muted-foreground">
+                    ({percentage.toFixed(1)}%)
+                  </span>
+                </div>
+              </div>
+              
+              {/* Progress track */}
+              <div className="w-full h-2 bg-muted/30 rounded-full overflow-hidden">
+                <div
+                  style={{ width: `${percentage}%` }}
+                  className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Total summary */}
-        <Box mt={4} p={3} bg="gray.100" _dark={{ bg: 'gray.900' }} borderRadius="md">
-          <Flex justify="space-between" align="center">
-            <Text fontSize="sm" fontWeight="600" color="gray.700" _dark={{ color: 'gray.300' }}>
-              Total (unique words)
-            </Text>
-            <Text fontSize="lg" fontWeight="bold" color="gray.900" _dark={{ color: 'white' }}>
-              {total.toLocaleString()}
-            </Text>
-          </Flex>
-        </Box>
-      </CardContent>
-    </Card>
+      {/* Total summary */}
+      <div className="p-3 bg-accent/20 rounded-lg border border-border flex justify-between items-center">
+        <span className="text-[11px] font-bold text-muted-foreground uppercase">
+          Total (unique words)
+        </span>
+        <span className="text-base font-extrabold text-foreground">
+          {total.toLocaleString()}
+        </span>
+      </div>
+    </section>
   );
 };

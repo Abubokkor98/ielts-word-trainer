@@ -1,7 +1,6 @@
 export { Sidebar } from './components/sidebar';
 export type { SidebarProps } from './components/sidebar';
 export { ResetPasswordForm } from './components/auth/ResetPasswordForm';
-export { ChakraUIProvider } from './providers/chakra-provider';
 export { DashboardChart } from './components/DashboardChart';
 export { useViewerRestriction } from './hooks/useViewerRestriction';
 export { ReactQueryProvider } from './providers/react-query-provider';
@@ -32,4 +31,3 @@ export { Pagination } from './lib/Pagination';
 export { UserMenu } from './lib/UserMenu';
 export * from './lib/utils';
 export { WordDetailsModal } from './lib/WordDetailsModal';
-export { default as theme } from './theme';

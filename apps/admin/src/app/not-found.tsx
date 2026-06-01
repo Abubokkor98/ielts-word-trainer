@@ -1,44 +1,33 @@
 'use client';
 
-import { Box, Button, Container, Heading, Text, VStack } from '@chakra-ui/react';
+import { Button } from '@ielts/ui';
 import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <Box
-      minH="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      bg="gray.50"
-      _dark={{ bg: 'gray.900' }}
-    >
-      <Container maxW="container.md">
-        <VStack spacing={8} textAlign="center">
-          <Heading size="4xl" color="brand.500" _dark={{ color: 'brand.400' }}>
-            404
-          </Heading>
+    <main className="min-h-screen flex items-center justify-center bg-background text-foreground">
+      <div className="max-w-md w-full px-6 text-center space-y-8">
+        <h1 className="text-8xl font-extrabold text-primary tracking-tighter">
+          404
+        </h1>
 
-          <VStack spacing={4}>
-            <Heading size="lg" color="gray.800" _dark={{ color: 'gray.100' }}>
-              Page Not Found
-            </Heading>
-            <Text color="gray.600" _dark={{ color: 'gray.400' }} fontSize="lg">
-              The resource you are looking for does not exist or has been moved.
-            </Text>
-          </VStack>
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold tracking-tight">
+            Page Not Found
+          </h2>
+          <p className="text-muted-foreground text-base leading-relaxed">
+            The resource you are looking for does not exist or has been moved.
+          </p>
+        </div>
 
-          <Button
-            as={Link}
-            href="/dashboard"
-            colorScheme="brand"
-            size="lg"
-            _hover={{ textDecoration: 'none' }}
-          >
-            Return to Dashboard
+        <div>
+          <Button asChild size="lg" className="rounded-xl">
+            <Link href="/dashboard">
+              Return to Dashboard
+            </Link>
           </Button>
-        </VStack>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </main>
   );
 }

@@ -1,14 +1,11 @@
 import {
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  Text,
-} from '@chakra-ui/react';
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@ielts/ui';
 import { Button } from '@ielts/ui';
-import { useRef } from 'react';
 
 interface DeleteAdminDialogProps {
   isOpen: boolean;
@@ -23,54 +20,37 @@ export function DeleteAdminDialog({
   onConfirm,
   adminName,
 }: DeleteAdminDialogProps) {
-  const cancelRef = useRef<HTMLButtonElement>(null);
-
   return (
-    <AlertDialog
-      isOpen={isOpen}
-      leastDestructiveRef={cancelRef}
-      onClose={onClose}
-      isCentered
-      motionPreset="slideInBottom"
-    >
-      <AlertDialogOverlay bg="blackAlpha.300" backdropFilter="blur(2px)">
-        <AlertDialogContent borderRadius="xl" boxShadow="2xl">
-          <AlertDialogHeader
-            fontSize="lg"
-            fontWeight="bold"
-            color="red.500"
-            pt={8}
-            pb={0}
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md rounded-xl p-6 border border-border bg-card">
+        <DialogHeader className="text-center sm:text-center pb-2">
+          <DialogTitle className="text-lg font-bold text-destructive">
+            Delete Admin
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="py-4 text-center text-sm text-muted-foreground leading-relaxed">
+          Are you sure you want to delete <strong>{adminName}</strong>? <br />
+          This action cannot be undone.
+        </div>
+
+        <DialogFooter className="flex flex-row justify-center sm:justify-center gap-3 pt-2">
+          <Button
+            onClick={onClose}
+            variant="outline"
+            className="rounded-lg px-6"
           >
-            <Text>Delete Admin</Text>
-          </AlertDialogHeader>
-
-          <AlertDialogBody textAlign="center" color="gray.500" py={6}>
-            Are you sure you want to delete <strong>{adminName}</strong>? <br />
-            This action cannot be undone.
-          </AlertDialogBody>
-
-          <AlertDialogFooter justifyContent="center" pb={8} gap={3}>
-            <Button
-              ref={cancelRef}
-              onClick={onClose}
-              variant="outline"
-              borderRadius="lg"
-              px={6}
-            >
-              Cancel
-            </Button>
-            <Button
-              colorScheme="red"
-              onClick={onConfirm}
-              borderRadius="lg"
-              px={6}
-            >
-              Delete Admin
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialogOverlay>
-    </AlertDialog>
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={onConfirm}
+            className="rounded-lg px-6"
+          >
+            Delete Admin
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,4 +1,3 @@
-import { useColorModeValue } from '@chakra-ui/react';
 import { axiosInstance } from '@ielts/auth';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
@@ -24,13 +23,6 @@ export function useTopicAutocomplete({ isOpen, setValue, watch }: UseTopicAutoco
   const [topicInput, setTopicInput] = useState('');
   const topicInputRef = useRef<HTMLInputElement | null>(null);
   const currentTopicsValue = watch('topics');
-
-  // Theme-aware colors
-  const dropdownBg = useColorModeValue('white', 'gray.700');
-  const dropdownBorder = useColorModeValue('gray.200', 'gray.600');
-  const dropdownHoverBg = useColorModeValue('gray.100', 'gray.600');
-  const dropdownTextColor = useColorModeValue('black', 'white');
-  const placeholderColor = useColorModeValue('gray.500', 'gray.400');
 
   // Fetch Topics for Autocomplete
   const { data: topicsData, isLoading: isTopicsLoading } = useQuery({
@@ -106,11 +98,6 @@ export function useTopicAutocomplete({ isOpen, setValue, watch }: UseTopicAutoco
     handleTopicSelect,
     handleTopicInputKeyDown,
     handleRemoveTopic,
-    // Theme colors
-    dropdownBg,
-    dropdownBorder,
-    dropdownHoverBg,
-    dropdownTextColor,
-    placeholderColor,
   };
 }
+

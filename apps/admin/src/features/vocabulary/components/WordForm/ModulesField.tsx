@@ -1,11 +1,4 @@
-import {
-  Checkbox,
-  CheckboxGroup,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Stack,
-} from '@chakra-ui/react';
+import { Label } from '@ielts/ui';
 import { type Control, Controller, type FieldErrors } from 'react-hook-form';
 import type { WordFormData } from '../../types';
 
@@ -14,10 +7,20 @@ interface ModulesFieldProps {
   error?: FieldErrors<WordFormData>['modules'];
 }
 
+const AVAILABLE_MODULES: {
+  id: 'reading' | 'writing' | 'listening' | 'speaking';
+  label: string;
+}[] = [
+  { id: 'reading', label: 'Reading' },
+  { id: 'writing', label: 'Writing' },
+  { id: 'listening', label: 'Listening' },
+  { id: 'speaking', label: 'Speaking' },
+];
+
 export function ModulesField({ control, error }: ModulesFieldProps) {
   return (
-    <FormControl isInvalid={!!error}>
-      <FormLabel>Modules (Select at least one) *</FormLabel>
+    <div className="w-full space-y-2">
+      <Label className="text-sm font-semibold">Modules (Select at least one) *</Label>
       <Controller
         name="modules"
         control={control}
@@ -26,17 +29,39 @@ export function ModulesField({ control, error }: ModulesFieldProps) {
             value && value.length > 0 ? true : 'At least one module must be selected',
         }}
         render={({ field }) => (
-          <CheckboxGroup value={field.value} onChange={field.onChange}>
-            <Stack spacing={2}>
-              <Checkbox value="reading">Reading</Checkbox>
-              <Checkbox value="writing">Writing</Checkbox>
-              <Checkbox value="listening">Listening</Checkbox>
-              <Checkbox value="speaking">Speaking</Checkbox>
-            </Stack>
-          </CheckboxGroup>
+          <div className="flex flex-col gap-2.5">
+            {AVAILABLE_MODULES.map((mod) => {
+              const isChecked = field.value?.includes(mod.id) || false;
+              return (
+                <label
+                  key={mod.id}
+                  className="flex items-center gap-2 text-sm text-foreground cursor-pointer select-none"
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={(e) => {
+                      const checked = e.target.checked;
+                      const currentValue = field.value || [];
+                      if (checked) {
+                        field.onChange([...currentValue, mod.id]);
+                      } else {
+                        field.onChange(currentValue.filter((m: string) => m !== mod.id));
+                      }
+                    }}
+                    className="h-4 w-4 rounded border-border bg-transparent text-primary focus:ring-primary focus:ring-offset-background"
+                  />
+                  <span>{mod.label}</span>
+                </label>
+              );
+            })}
+          </div>
         )}
       />
-      <FormErrorMessage>{error?.message}</FormErrorMessage>
-    </FormControl>
+      {error && (
+        <p className="text-xs text-destructive">{error.message}</p>
+      )}
+    </div>
   );
 }
+

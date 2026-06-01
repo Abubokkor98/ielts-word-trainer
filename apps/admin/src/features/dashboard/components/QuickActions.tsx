@@ -1,11 +1,10 @@
-import { Heading, Text, useToast, VStack } from '@chakra-ui/react';
 import { axiosInstance } from '@ielts/auth';
-import { Button, Card, CardContent } from '@ielts/ui';
-import { Download } from 'lucide-react';
+import { Button, useToast } from '@ielts/ui';
+import { Download, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
 export const QuickActions = () => {
-  const toast = useToast();
+  const { toast } = useToast();
   const [isExporting, setIsExporting] = useState(false);
 
   const handleExport = async () => {
@@ -26,15 +25,13 @@ export const QuickActions = () => {
 
       toast({
         title: 'Export successful',
-        status: 'success',
-        duration: 3000,
+        description: 'User data has been exported successfully.',
       });
     } catch (error) {
       toast({
         title: 'Export failed',
-        description: 'Could not export user data',
-        status: 'error',
-        duration: 3000,
+        description: 'Could not export user data. Please try again.',
+        variant: 'destructive',
       });
     } finally {
       setIsExporting(false);
@@ -42,27 +39,31 @@ export const QuickActions = () => {
   };
 
   return (
-    <Card h="full">
-      <CardContent>
-        <Heading size="sm" mb={2}>
+    <section className="glass-card border border-border bg-card/50 p-6 rounded-2xl h-full space-y-4">
+      <header>
+        <h3 className="text-sm font-bold text-foreground">
           Data Tools
-        </Heading>
-        <Text fontSize="xs" color="gray.500" mb={4}>
+        </h3>
+        <p className="text-xs text-muted-foreground mt-1">
           Manage platform data and exports
-        </Text>
-        <VStack align="stretch" spacing={3}>
-          <Button
-            variant="outline"
-            leftIcon={<Download size={16} />}
-            isLoading={isExporting}
-            onClick={handleExport}
-            width="full"
-            justifyContent="flex-start"
-          >
-            Export All User Data (CSV)
-          </Button>
-        </VStack>
-      </CardContent>
-    </Card>
+        </p>
+      </header>
+      
+      <div className="space-y-3">
+        <Button
+          variant="outline"
+          disabled={isExporting}
+          onClick={handleExport}
+          className="w-full justify-start text-muted-foreground hover:text-foreground border-border hover:bg-accent hover:text-accent-foreground"
+        >
+          {isExporting ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin text-primary" />
+          ) : (
+            <Download className="h-4 w-4 mr-2 text-primary" />
+          )}
+          <span>{isExporting ? 'Exporting...' : 'Export All User Data (CSV)'}</span>
+        </Button>
+      </div>
+    </section>
   );
 };

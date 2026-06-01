@@ -1,6 +1,5 @@
 'use client';
 
-import { Box, Heading, VStack } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 
 interface DashboardSectionProps {
@@ -15,34 +14,24 @@ export function DashboardSection({
   children,
 }: DashboardSectionProps) {
   return (
-    <Box as="section" w="full">
-      <VStack align="stretch" spacing={4}>
-        {(title || subtitle) && (
-          <Box mb={2}>
-            {title && (
-              <Heading
-                size="lg"
-                fontWeight="bold"
-                color="gray.700"
-                _dark={{ color: 'gray.100' }}
-              >
-                {title}
-              </Heading>
-            )}
-            {subtitle && (
-              <Box
-                fontSize="md"
-                color="gray.500"
-                _dark={{ color: 'gray.400' }}
-                mt={1}
-              >
-                {subtitle}
-              </Box>
-            )}
-          </Box>
-        )}
+    <section className="w-full space-y-4">
+      {(title || subtitle) && (
+        <div className="mb-2">
+          {title && (
+            <h2 className="text-2xl font-bold text-foreground tracking-tight">
+              {title}
+            </h2>
+          )}
+          {subtitle && (
+            <p className="text-sm text-muted-foreground mt-1">
+              {subtitle}
+            </p>
+          )}
+        </div>
+      )}
+      <div>
         {children}
-      </VStack>
-    </Box>
+      </div>
+    </section>
   );
 }

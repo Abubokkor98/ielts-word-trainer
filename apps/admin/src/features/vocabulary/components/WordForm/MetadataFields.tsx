@@ -1,4 +1,4 @@
-import { FormControl, FormErrorMessage, FormLabel, Input, Select } from '@chakra-ui/react';
+import { Input, Label } from '@ielts/ui';
 import type { FieldErrors, UseFormRegister } from 'react-hook-form';
 import type { WordFormData } from '../../types';
 
@@ -9,32 +9,43 @@ interface MetadataFieldsProps {
 
 export function MetadataFields({ register, errors }: MetadataFieldsProps) {
   return (
-    <>
-      <FormControl isInvalid={!!errors.difficulty}>
-        <FormLabel>Difficulty *</FormLabel>
-        <Select
+    <div className="w-full space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="difficulty-input">Difficulty *</Label>
+        <select
+          id="difficulty-input"
           {...register('difficulty', {
             required: 'Difficulty is required',
           })}
-          placeholder="Select difficulty"
+          className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+            errors.difficulty ? 'border-destructive focus-visible:ring-destructive' : ''
+          }`}
         >
+          <option value="">Select difficulty</option>
           <option value="beginner">Beginner</option>
           <option value="intermediate">Intermediate</option>
           <option value="advanced">Advanced</option>
-        </Select>
-        <FormErrorMessage>{errors.difficulty?.message}</FormErrorMessage>
-      </FormControl>
+        </select>
+        {errors.difficulty && (
+          <p className="text-xs text-destructive">{errors.difficulty.message}</p>
+        )}
+      </div>
 
-      <FormControl isInvalid={!!errors.partOfSpeech}>
-        <FormLabel>Part of Speech *</FormLabel>
+      <div className="space-y-2">
+        <Label htmlFor="partOfSpeech-input">Part of Speech *</Label>
         <Input
+          id="partOfSpeech-input"
           {...register('partOfSpeech', {
             required: 'Part of speech is required',
           })}
           placeholder="e.g. Adjective"
+          className={errors.partOfSpeech ? 'border-destructive focus-visible:ring-destructive' : ''}
         />
-        <FormErrorMessage>{errors.partOfSpeech?.message}</FormErrorMessage>
-      </FormControl>
-    </>
+        {errors.partOfSpeech && (
+          <p className="text-xs text-destructive">{errors.partOfSpeech.message}</p>
+        )}
+      </div>
+    </div>
   );
 }
+

@@ -1,6 +1,5 @@
 'use client';
 
-import { SimpleGrid } from '@chakra-ui/react';
 import { ReactNode } from 'react';
 
 interface StatsGridProps {
@@ -9,8 +8,11 @@ interface StatsGridProps {
 
 export function StatsGrid({ children }: StatsGridProps) {
   return (
-    <SimpleGrid columns={{ base: 1, md: 3, xl: 5 }} spacing={6} w="full">
+    <section
+      aria-label="Key Performance Indicators"
+      className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6 w-full"
+    >
       {children}
-    </SimpleGrid>
+    </section>
   );
 }

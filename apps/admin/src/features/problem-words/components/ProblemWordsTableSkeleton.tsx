@@ -1,39 +1,39 @@
-import { Flex, Skeleton, Td, Tr } from '@chakra-ui/react';
+import { TableCell, TableRow, Skeleton } from '@ielts/ui';
 
 export function ProblemWordsTableSkeleton() {
   return (
     <>
       {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-        <Tr key={i}>
+        <TableRow key={i}>
           {/* Word */}
-          <Td>
-            <Skeleton height="20px" width="120px" />
-          </Td>
+          <TableCell>
+            <Skeleton className="h-5 w-[120px]" />
+          </TableCell>
           {/* Meaning */}
-          <Td>
-            <Skeleton height="20px" width="200px" />
-          </Td>
+          <TableCell>
+            <Skeleton className="h-5 w-[200px]" />
+          </TableCell>
           {/* Difficulty */}
-          <Td>
-            <Skeleton height="24px" width="80px" borderRadius="md" />
-          </Td>
+          <TableCell>
+            <Skeleton className="h-6 w-[80px] rounded-md" />
+          </TableCell>
           {/* Accuracy */}
-          <Td isNumeric>
-            <Flex justify="flex-end">
-              <Skeleton height="24px" width="60px" borderRadius="md" />
-            </Flex>
-          </Td>
+          <TableCell className="text-right">
+            <div className="flex justify-end">
+              <Skeleton className="h-6 w-[60px] rounded-md" />
+            </div>
+          </TableCell>
           {/* Attempts */}
-          <Td isNumeric>
-            <Flex justify="flex-end">
-              <Skeleton height="20px" width="40px" />
-            </Flex>
-          </Td>
+          <TableCell className="text-right">
+            <div className="flex justify-end">
+              <Skeleton className="h-5 w-[40px]" />
+            </div>
+          </TableCell>
           {/* Last Updated */}
-          <Td>
-            <Skeleton height="20px" width="100px" />
-          </Td>
-        </Tr>
+          <TableCell>
+            <Skeleton className="h-5 w-[100px]" />
+          </TableCell>
+        </TableRow>
       ))}
     </>
   );

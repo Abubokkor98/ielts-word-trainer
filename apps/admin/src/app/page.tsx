@@ -1,14 +1,8 @@
 'use client';
 
-import {
-  Box,
-  Button,
-  Container,
-  Heading,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
 import { selectIsAuthenticated, useAuthStore } from '@ielts/auth';
+import { Button } from '@ielts/ui';
+import { Shield } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -26,42 +20,34 @@ export default function AdminHomePage() {
     }
   }, [isAuthenticated, router, hasHydrated]);
 
-  // Return null while hydrating (no flash of loading text)
   if (!hasHydrated) {
     return null;
   }
 
-  // Return null while redirecting (cleaner UX)
   if (isAuthenticated) {
     return null;
   }
 
-  // Show welcome page for unauthenticated users
   return (
-    <Box
-      minH="100vh"
-      bg="gray.900"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Container maxW="md">
-        <VStack spacing={8} align="center" textAlign="center">
-          <Heading as="h1" size="2xl" color="white">
+    <main className="min-h-screen bg-background flex items-center justify-center">
+      <section className="max-w-md w-full text-center space-y-8 px-6">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+          <Shield className="h-8 w-8 text-primary" />
+        </div>
+
+        <div className="space-y-3">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">
             IELTS Admin Portal
-          </Heading>
-
-          <Text fontSize="lg" color="gray.400">
+          </h1>
+          <p className="text-lg text-muted-foreground">
             Secure administration dashboard
-          </Text>
+          </p>
+        </div>
 
-          <Link href="/login">
-            <Button size="lg" colorScheme="brand" px={12} mt={4}>
-              Login
-            </Button>
-          </Link>
-        </VStack>
-      </Container>
-    </Box>
+        <Button asChild size="lg" className="px-12 glow-button">
+          <Link href="/login">Login</Link>
+        </Button>
+      </section>
+    </main>
   );
 }
