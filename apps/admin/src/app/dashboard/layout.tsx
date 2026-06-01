@@ -26,10 +26,10 @@ export default function DashboardLayout({
         }`}
       >
         {isViewer && (
-          <section className="mb-6 p-4 rounded-xl border border-primary/30 bg-primary/10 text-primary-foreground flex gap-3 items-start glass-card">
+          <section className="mb-6 p-4 rounded-xl border border-primary/30 bg-primary/10 flex gap-3 items-start glass-card">
             <Info className="h-5 w-5 text-primary shrink-0 mt-0.5" />
             <div>
-              <h4 className="font-semibold text-primary-foreground text-sm">
+              <h4 className="font-semibold text-foreground text-sm">
                 Demo Mode (Read-Only Access)
               </h4>
               <p className="text-xs text-muted-foreground mt-1">

@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -29,10 +30,10 @@ export function DeleteAdminDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="py-4 text-center text-sm text-muted-foreground leading-relaxed">
+        <DialogDescription className="py-4 text-center text-sm text-muted-foreground leading-relaxed">
           Are you sure you want to delete <strong>{adminName}</strong>? <br />
           This action cannot be undone.
-        </div>
+        </DialogDescription>
 
         <DialogFooter className="flex flex-row justify-center sm:justify-center gap-3 pt-2">
           <Button
