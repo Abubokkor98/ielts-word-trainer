@@ -4,6 +4,7 @@ import {
   Badge,
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@ielts/ui';
@@ -40,10 +41,10 @@ export function UserDetailModal({ isOpen, onClose, user }: UserDetailModalProps)
               <DialogTitle className="text-2xl font-bold text-foreground">
                 {user.name}
               </DialogTitle>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+              <DialogDescription className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground">
                 <Mail size={14} className="shrink-0" />
                 <span>{user.email}</span>
-              </div>
+              </DialogDescription>
 
               <div className="mt-2 flex items-center gap-2">
                 <Badge variant="secondary" className="px-3 py-1 text-xs uppercase tracking-wider">

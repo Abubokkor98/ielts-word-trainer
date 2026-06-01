@@ -17,10 +17,14 @@ export function SettingsContainer() {
         </h1>
       </header>
 
-      <div className="flex border-b border-border mb-6">
+      <div className="flex border-b border-border mb-6" role="tablist">
         <Button
           type="button"
           variant="ghost"
+          role="tab"
+          id="tab-profile"
+          aria-selected={activeTab === 'profile'}
+          aria-controls="panel-profile"
           onClick={() => setActiveTab('profile')}
           className={`flex items-center gap-2 px-4 py-2 border-b-2 rounded-none h-auto font-medium transition-colors hover:bg-transparent ${
             activeTab === 'profile'
@@ -34,6 +38,10 @@ export function SettingsContainer() {
         <Button
           type="button"
           variant="ghost"
+          role="tab"
+          id="tab-security"
+          aria-selected={activeTab === 'security'}
+          aria-controls="panel-security"
           onClick={() => setActiveTab('security')}
           className={`flex items-center gap-2 px-4 py-2 border-b-2 rounded-none h-auto font-medium transition-colors hover:bg-transparent ${
             activeTab === 'security'
@@ -48,18 +56,22 @@ export function SettingsContainer() {
 
       <main>
         {activeTab === 'profile' && (
-          <Card className="border border-border bg-card">
-            <CardContent className="p-6">
-              <ProfileForm />
-            </CardContent>
-          </Card>
+          <div role="tabpanel" id="panel-profile" aria-labelledby="tab-profile">
+            <Card className="border border-border bg-card">
+              <CardContent className="p-6">
+                <ProfileForm />
+              </CardContent>
+            </Card>
+          </div>
         )}
         {activeTab === 'security' && (
-          <Card className="border border-border bg-card">
-            <CardContent className="p-6">
-              <SecurityForm />
-            </CardContent>
-          </Card>
+          <div role="tabpanel" id="panel-security" aria-labelledby="tab-security">
+            <Card className="border border-border bg-card">
+              <CardContent className="p-6">
+                <SecurityForm />
+              </CardContent>
+            </Card>
+          </div>
         )}
       </main>
     </div>

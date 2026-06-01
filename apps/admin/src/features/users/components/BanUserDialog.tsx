@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -30,10 +31,10 @@ export function BanUserDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="py-4 text-center text-sm text-muted-foreground leading-relaxed">
+        <DialogDescription className="py-4 text-center text-sm text-muted-foreground leading-relaxed">
           Are you sure you want to ban <strong>{user?.name}</strong>? <br />
           They will no longer be able to log in.
-        </div>
+        </DialogDescription>
 
         <DialogFooter className="flex flex-row justify-center sm:justify-center gap-3 pt-2">
           <Button

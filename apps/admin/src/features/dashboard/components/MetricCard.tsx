@@ -7,7 +7,6 @@ interface MetricCardProps {
   value: number | string | undefined;
   change?: number; // Percent change
   icon: LucideIcon;
-  color: string;
 }
 
 export const MetricCard = ({

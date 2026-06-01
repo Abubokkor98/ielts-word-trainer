@@ -103,7 +103,6 @@ export function DashboardContainer() {
             value={metrics.activeUsers.current}
             change={metrics.activeUsers.percentChange}
             icon={Users}
-            color="blue.500"
           />
           <MetricCard
             label="Active Learners"
@@ -111,7 +110,6 @@ export function DashboardContainer() {
             value={metrics.activeLearners.current}
             change={metrics.activeLearners.percentChange}
             icon={BookOpen}
-            color="purple.500"
           />
           <MetricCard
             label="New Users"
@@ -119,7 +117,6 @@ export function DashboardContainer() {
             value={metrics.newUsers.current}
             change={metrics.newUsers.percentChange}
             icon={TrendingUp}
-            color="green.500"
           />
           <MetricCard
             label="Completion Rate"
@@ -127,7 +124,6 @@ export function DashboardContainer() {
             value={`${metrics.quizCompletionRate.current.toFixed(0)}%`}
             change={metrics.quizCompletionRate.percentChange}
             icon={Activity}
-            color="orange.500"
           />
           <MetricCard
             label="Avg Score"
@@ -135,7 +131,6 @@ export function DashboardContainer() {
             value={`${metrics.avgQuizScore.current.toFixed(0)}%`}
             change={metrics.avgQuizScore.percentChange}
             icon={BookOpen}
-            color="red.500"
           />
         </StatsGrid>
       </DashboardSection>
