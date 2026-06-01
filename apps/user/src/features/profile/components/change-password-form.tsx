@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, useToast } from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, PasswordInput, useToast } from '@ielts/ui';
 import { useState } from 'react';
 import type { ChangePasswordRequest } from '../types';
 
@@ -54,9 +54,8 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
               <Label htmlFor="currentPassword" className="text-sm font-medium text-muted-foreground">
                 Current Password
               </Label>
-              <Input
+              <PasswordInput
                 id="currentPassword"
-                type="password"
                 required
                 value={passwords.current}
                 onChange={(e) =>
@@ -66,16 +65,14 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
                   })
                 }
                 placeholder="Enter current password"
-                className="bg-background text-foreground border-input focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
               />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="newPassword" className="text-sm font-medium text-muted-foreground">
                 New Password
               </Label>
-              <Input
+              <PasswordInput
                 id="newPassword"
-                type="password"
                 required
                 value={passwords.new}
                 onChange={(e) =>
@@ -85,16 +82,14 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
                   })
                 }
                 placeholder="Enter new password"
-                className="bg-background text-foreground border-input focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
               />
             </div>
             <div className="flex flex-col gap-2">
               <Label htmlFor="confirmPassword" className="text-sm font-medium text-muted-foreground">
                 Confirm New Password
               </Label>
-              <Input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 required
                 value={passwords.confirm}
                 onChange={(e) =>
@@ -104,7 +99,6 @@ export function ChangePasswordForm({ onChangePassword, isLoading }: ChangePasswo
                   })
                 }
                 placeholder="Confirm new password"
-                className="bg-background text-foreground border-input focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-0"
               />
             </div>
             <Button

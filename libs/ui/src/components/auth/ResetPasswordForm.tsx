@@ -1,7 +1,7 @@
 'use client';
 
 import { axiosInstance } from '@ielts/auth';
-import { Button, Card, CardContent, CardHeader, Input, Label, useToast } from '@ielts/ui';
+import { Button, Card, CardContent, Label, PasswordInput, useToast } from '@ielts/ui';
 import { useMutation } from '@tanstack/react-query';
 import { Key } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -106,14 +106,12 @@ export function ResetPasswordForm({
                   <Label htmlFor="newPassword" className="font-semibold text-muted-foreground">
                     New Password
                   </Label>
-                  <Input
+                  <PasswordInput
                     id="newPassword"
-                    type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="Min 6 characters"
                     required
-                    className="bg-background text-foreground border-input"
                   />
                 </div>
 
@@ -121,14 +119,12 @@ export function ResetPasswordForm({
                   <Label htmlFor="confirmPassword" className="font-semibold text-muted-foreground">
                     Confirm Password
                   </Label>
-                  <Input
+                  <PasswordInput
                     id="confirmPassword"
-                    type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="Confirm new password"
                     required
-                    className="bg-background text-foreground border-input"
                   />
                 </div>
               </div>

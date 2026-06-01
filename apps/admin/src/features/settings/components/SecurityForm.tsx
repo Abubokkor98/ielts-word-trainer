@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Input, Label, useToast } from '@ielts/ui';
+import { Button, Label, PasswordInput, useToast } from '@ielts/ui';
 import { axiosInstance } from '@ielts/auth';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -45,9 +45,8 @@ export function SecurityForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg space-y-6">
       <div className="space-y-2">
         <Label htmlFor="currentPassword">Current Password</Label>
-        <Input
+        <PasswordInput
           id="currentPassword"
-          type="password"
           {...register('currentPassword', {
             required: 'Current password is required',
           })}
@@ -60,9 +59,8 @@ export function SecurityForm() {
 
       <div className="space-y-2">
         <Label htmlFor="newPassword">New Password</Label>
-        <Input
+        <PasswordInput
           id="newPassword"
-          type="password"
           {...register('newPassword', {
             required: 'New password is required',
             minLength: { value: 6, message: 'Minimum 6 characters' },
@@ -76,9 +74,8 @@ export function SecurityForm() {
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">Confirm New Password</Label>
-        <Input
+        <PasswordInput
           id="confirmPassword"
-          type="password"
           {...register('confirmPassword', {
             required: 'Confirming password is required',
             validate: (value, formValues) =>

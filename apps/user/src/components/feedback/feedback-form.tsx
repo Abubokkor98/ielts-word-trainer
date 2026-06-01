@@ -1,10 +1,11 @@
 'use client';
 
-import { useAuthStore } from '@ielts/auth';
-import { Button, Input, Label, Textarea } from '@ielts/ui';
+import { axiosInstance, useAuthStore } from '@ielts/auth';
+import { Button, Input, Label, Textarea, useToast } from '@ielts/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bug, CheckCircle, Lightbulb, RefreshCw, Send, ThumbsUp } from 'lucide-react';
 import { useEffect, useState, type FormEvent } from 'react';
+import type { AxiosError } from 'axios';
 
 // ============================================================================
 // Types & Interfaces
@@ -76,6 +77,7 @@ function getFriendlyDeviceInfo(userAgent: string): string {
 
 export function FeedbackForm() {
   const { user } = useAuthStore();
+  const { toast } = useToast();
 
   // State parameters
   const [feedbackType, setFeedbackType] = useState<FeedbackType>('love');
@@ -92,37 +94,110 @@ export function FeedbackForm() {
       setEmail(user.email);
     }
     if (typeof window !== 'undefined') {
-      setDeviceInfo(getFriendlyDeviceInfo(window.navigator.userAgent));
+      const userAgent = window.navigator.userAgent;
+      let friendlyInfo = getFriendlyDeviceInfo(userAgent);
+
+      // Async Brave browser detection override
+      const detectBrave = async () => {
+        const nav = window.navigator as any;
+        if (nav.brave && typeof nav.brave.isBrave === 'function') {
+          const isBrave = await nav.brave.isBrave();
+          if (isBrave) {
+            friendlyInfo = friendlyInfo.replace(/Chrome|Unknown Browser/i, 'Brave');
+            setDeviceInfo(friendlyInfo);
+          }
+        }
+      };
+
+      setDeviceInfo(friendlyInfo);
+      detectBrave().catch(() => {});
     }
   }, [user]);
 
   // Form submission handler
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      toast({
+        title: 'Authentication Required',
+        description: 'Please log in to submit your feedback.',
+        variant: 'destructive',
+      });
+      setError('You must be logged in to submit feedback.');
+      return;
+    }
+
+    if (rating === null) {
+      setError('Please select a satisfaction rating.');
+      return;
+    }
+
+    if (!email.trim()) {
+      setError('Please enter your email address.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     if (!message.trim()) {
       setError('Please enter your feedback comments.');
       return;
     }
-    if (rating === null) {
-      setError('Please select a satisfaction rating.');
+
+    if (message.trim().length < 3) {
+      setError('Feedback comments must be at least 3 characters long.');
+      return;
+    }
+
+    if (message.trim().length > 2000) {
+      setError('Feedback comments cannot exceed 2000 characters.');
       return;
     }
 
     setError(null);
     setStatus('submitting');
 
-    try {
-      // Simulate network request latency
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+    const payload = {
+      feedbackType,
+      rating,
+      message,
+      email,
+      deviceInfo,
+    };
 
-      // TODO: Integrate with backend feedback API
-      // Example:
-      // await axios.post('/api/feedback', { feedbackType, rating, message, email, deviceInfo });
+    console.log('Submitting feedback:', payload);
+
+    try {
+      const response = await axiosInstance.post('/feedback', payload);
+      console.log('Feedback response:', response.data);
 
       setStatus('success');
+      toast({
+        title: 'Thank You!',
+        description: 'Your feedback has been successfully submitted.',
+      });
     } catch (err) {
-      setError('An error occurred while submitting feedback. Please try again.');
+      console.error('Feedback submission error:', err);
+      const axiosError = err as AxiosError<{ message?: string; errors?: { path: string; message: string }[] }>;
+      let errorMessage = axiosError.response?.data?.message || 'An error occurred while submitting feedback. Please try again.';
+
+      // Extract specific validation messages instead of displaying generic "Validation Error"
+      if (axiosError.response?.data?.errors && Array.isArray(axiosError.response.data.errors) && axiosError.response.data.errors.length > 0) {
+        errorMessage = axiosError.response.data.errors.map((e) => e.message).join('. ');
+      }
+
+      setError(errorMessage);
       setStatus('idle');
+      toast({
+        title: 'Submission Failed',
+        description: errorMessage,
+        variant: 'destructive',
+      });
     }
   };
 
@@ -259,7 +334,7 @@ export function FeedbackForm() {
                 {/* Email */}
                 <div className="flex flex-col gap-1.5">
                   <Label htmlFor="feedback-email" className="text-xs font-mono font-bold text-zinc-400 uppercase tracking-wider">
-                    Email (Optional)
+                    Email Address
                   </Label>
                   <Input
                     id="feedback-email"
@@ -267,6 +342,7 @@ export function FeedbackForm() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
+                    required
                     className="w-full rounded-lg bg-white/[0.02] border border-white/5 hover:border-white/10 focus:border-primary/50 text-white placeholder-zinc-500 text-sm px-3 py-2.5 outline-none transition-all duration-300 font-sans"
                   />
                 </div>

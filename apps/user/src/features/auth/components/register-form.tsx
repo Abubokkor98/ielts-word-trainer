@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Card, CardContent, CardHeader, Input, Label } from '@ielts/ui';
+import { Button, Card, CardContent, CardHeader, Input, Label, PasswordInput } from '@ielts/ui';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRegister } from '../hooks/use-register';
@@ -67,15 +67,13 @@ export function RegisterForm() {
               <Label htmlFor="password" className="font-semibold text-muted-foreground">
                 Password
               </Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 autoComplete="new-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min 6 characters"
                 required
-                className="bg-background text-foreground border-input"
               />
             </div>
 
