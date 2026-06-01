@@ -2,7 +2,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@ielts/ui';
 import { motion } from 'framer-motion';
-import { Facebook, Github, Globe, Instagram, Youtube } from 'lucide-react';
+import { Github, Globe, Mail } from 'lucide-react';
+import { CONTACT_LINKS } from '@ielts/shared';
 
 // ============================================================================
 // Types
@@ -27,33 +28,23 @@ const XIcon = ({ size = 16 }: { readonly size?: number }) => (
 
 const DEVELOPER_SOCIALS: readonly SocialItem[] = [
   {
-    label: 'Facebook',
-    href: 'https://facebook.com/abubokkor.siddik.98',
-    icon: Facebook,
+    label: 'Email',
+    href: `mailto:${CONTACT_LINKS.developer.email}`,
+    icon: Mail,
   },
   {
     label: 'X (Twitter)',
-    href: 'https://x.com/abubokkor',
+    href: CONTACT_LINKS.developer.twitter,
     icon: XIcon,
   },
   {
-    label: 'YouTube',
-    href: 'https://youtube.com',
-    icon: Youtube,
-  },
-  {
-    label: 'Instagram',
-    href: 'https://instagram.com/abubokkor',
-    icon: Instagram,
-  },
-  {
     label: 'GitHub',
-    href: 'https://github.com/Abubokkor98',
+    href: CONTACT_LINKS.developer.github,
     icon: Github,
   },
   {
     label: 'Portfolio',
-    href: 'https://abubokkor.vercel.app',
+    href: CONTACT_LINKS.developer.portfolio,
     icon: Globe,
   },
 ] as const;
@@ -94,7 +85,7 @@ export function AboutDeveloper() {
             <Avatar className="w-28 h-28 sm:w-32 sm:h-32 p-0.5 bg-gradient-to-tr from-primary/30 to-purple-500/30 border border-[var(--glass-border)] relative z-10 rounded-full flex items-center justify-center overflow-hidden">
               <AvatarImage
                 src="/dev.png"
-                alt="Abu Bokkor Siddik"
+                alt={CONTACT_LINKS.creatorName}
                 className="object-cover w-full h-full rounded-full"
               />
               <AvatarFallback className="bg-zinc-900 text-zinc-400 font-bold text-xl uppercase flex items-center justify-center w-full h-full rounded-full">
@@ -113,12 +104,12 @@ export function AboutDeveloper() {
                 id="developer-heading"
                 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight"
               >
-                Abu Bokkor Siddik
+                {CONTACT_LINKS.creatorName}
               </h2>
             </header>
             <p className="text-sm sm:text-base leading-relaxed text-zinc-300 mb-4 font-sans max-w-[65ch]">
               IELTS Vocabs is built and maintained by{' '}
-              <span className="font-semibold text-white">Abu Bokkor Siddik</span>, a
+              <span className="font-semibold text-white">{CONTACT_LINKS.creatorName}</span>, a
               full-stack developer passionate about educational technology and helping
               students achieve their IELTS goals.
             </p>

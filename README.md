@@ -165,6 +165,23 @@ Customize your learning experience:
 - View learning statistics
 - Track achievement milestones
 
+#### IELTS Guides & Resources
+
+Boost your preparation with comprehensive, interactive guides:
+
+- **IELTS Test Format**: Detailed breakdown of Academic vs. General Training, listening/reading band score conversions, and test modules.
+- **Assessment Criteria**: Deep-dive into Writing and Speaking band descriptors, with simplified explanations of Band 9 standards.
+- **Methodology & Strategies**: Actionable advice on vocabulary acquisition strategies and maximizing the Spaced Repetition System.
+- **Unified Band Tables**: Interactive tools to query Band score requirements and requirements for each scoring criteria.
+
+#### Platform & Auxiliary Pages
+
+Access core pages built to enhance your overall platform experience:
+
+- **About Page**: Learn about the platform's vision, creation history, and core objectives.
+- **Contact & Feedback**: Send queries directly or provide feedback to help improve the learning experience.
+- **Privacy Policy & Terms of Service**: Read about data security, rights, and usage rules.
+
 ### Best Learning Practices
 
 #### Recommended Daily Routine
@@ -346,8 +363,8 @@ This project is built as an Nx monorepo containing three main applications that 
 
 #### Frontend Applications (Next.js 16)
 
-- **User App**: Public-facing learning platform where students browse vocabulary, take quizzes, and track progress
-- **Admin Panel**: Internal management dashboard for vocabulary CRUD operations, user management, and analytics
+- **User App**: Public-facing learning platform where students browse vocabulary, take quizzes, and track progress, fully styled with shadcn/ui and custom tailwind animations
+- **Admin Panel**: Internal management dashboard for vocabulary CRUD operations, user management, and analytics, migrated to the new design system using shadcn/ui
 
 #### Backend API (Express.js)
 
@@ -370,6 +387,8 @@ This project is built as an Nx monorepo containing three main applications that 
 - Client-side state management with Zustand for auth persistence
 - Server state management with TanStack Query for caching and synchronization
 - URL state management with nuqs for shareable, bookmarkable filter views
+- **Design System Migration**: Transitioned from Chakra UI to shadcn/ui and Tailwind CSS to implement a modern, highly responsive design system with a clean, cohesive user interface and optimized accessibility (e.g. Radix UI primitives and semantic ARIA labeling)
+- **Component Reusability**: Unification of user interface parts such as a single `ScrollspySidebar` for layout navigation and custom `BandTable` for rendering speaking and writing criteria grids
 
 ### Tech Stack
 
@@ -380,7 +399,7 @@ This project is built as an Nx monorepo containing three main applications that 
 - **Next.js 16**: React framework with App Router for server-side rendering and routing
 - **React 19**: Latest React with improved concurrent features
 - **TypeScript 5.9**: Type safety and developer experience
-- **Chakra UI 2.x**: Component library for consistent, accessible UI
+- **shadcn/ui**: Premium component library built on Radix UI primitives and Tailwind CSS
 - **TanStack Query 5.x**: Server state management, caching, and synchronization
 - **Zustand 5.x**: Lightweight client state management for auth and UI state
 - **nuqs 2.x**: Type-safe URL query string state management for shareable filters
@@ -392,7 +411,7 @@ This project is built as an Nx monorepo containing three main applications that 
 ##### Styling & UI
 
 - **Tailwind CSS**: Utility-first CSS framework
-- **Emotion**: CSS-in-JS for Chakra UI styling
+- **Tailwind CSS Animate**: Plugin for smooth transitions and modern web animations
 - **Lucide React**: Icon library
 
 ##### Development Tools
@@ -2012,7 +2031,9 @@ This project would not be possible without these amazing open-source projects:
 - [React](https://reactjs.org/) - UI library
 - [Express.js](https://expressjs.com/) - Backend framework
 - [MongoDB](https://www.mongodb.com/) - Database
-- [Chakra UI](https://chakra-ui.com/) - Component library
+- [shadcn/ui](https://ui.shadcn.com/) - Component library
+- [Radix UI](https://www.radix-ui.com/) - Accessible headless UI primitives
+- [Tailwind CSS](https://tailwindcss.com/) - Styling engine
 - [TanStack Query](https://tanstack.com/query) - Server state management
 - [Zustand](https://github.com/pmndrs/zustand) - Client state management
 - [Nx](https://nx.dev/) - Monorepo tooling

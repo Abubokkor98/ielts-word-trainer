@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { PrivacyContent } from '../../../components/privacy/privacy-content';
 
+import { CONTACT_LINKS } from '@ielts/shared';
+
 export const metadata: Metadata = {
   title: 'Privacy Policy',
   description:
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
     'IELTS Vocabs Privacy Policy',
     'free IELTS prep privacy',
     'spaced repetition IELTS privacy',
-    'Abu Bokkor Siddik privacy',
+    `${CONTACT_LINKS.creatorName} privacy`,
   ],
   alternates: {
     canonical: '/privacy',

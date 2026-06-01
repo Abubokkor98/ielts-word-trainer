@@ -7,6 +7,7 @@ import {
   TableRow,
 } from '@ielts/ui';
 import type { ReactNode } from 'react';
+import { CONTACT_LINKS } from '@ielts/shared';
 
 export interface PrivacySectionData {
   readonly id: string;
@@ -242,10 +243,10 @@ export const PRIVACY_SECTIONS: readonly PrivacySectionData[] = [
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed pt-2">
           To exercise these rights, email us at{' '}
           <a
-            href="mailto:support@ielts-vocabs.com"
+            href={`mailto:${CONTACT_LINKS.supportEmail}`}
             className="text-primary hover:text-primary-hover font-medium underline underline-offset-4 decoration-primary/30 transition-colors"
           >
-            support@ielts-vocabs.com
+            {CONTACT_LINKS.supportEmail}
           </a>
           . We will respond within 30 days.
         </p>
@@ -337,10 +338,10 @@ export const PRIVACY_SECTIONS: readonly PrivacySectionData[] = [
         <p className="text-sm sm:text-base text-zinc-300">
           Email:{' '}
           <a
-            href="mailto:support@ielts-vocabs.com"
+            href={`mailto:${CONTACT_LINKS.supportEmail}`}
             className="text-primary hover:text-primary-hover font-medium underline underline-offset-4 decoration-primary/30 transition-colors"
           >
-            support@ielts-vocabs.com
+            {CONTACT_LINKS.supportEmail}
           </a>
         </p>
         <p className="text-xs sm:text-sm text-zinc-400 italic pt-2">

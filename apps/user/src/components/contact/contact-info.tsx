@@ -1,8 +1,9 @@
 'use client';
 
+import type { ComponentType } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, Github, Mail } from 'lucide-react';
-import type { ComponentType } from 'react';
+import { CONTACT_LINKS } from '@ielts/shared';
 
 // ============================================================================
 // Types
@@ -25,9 +26,9 @@ const INFO_ITEMS: readonly InfoItem[] = [
   {
     icon: Mail,
     label: 'Email',
-    value: 'support@ielts-vocabs.com',
+    value: CONTACT_LINKS.supportEmail,
     isLink: true,
-    href: 'mailto:support@ielts-vocabs.com',
+    href: `mailto:${CONTACT_LINKS.supportEmail}`,
   },
   {
     icon: Clock,
@@ -40,7 +41,7 @@ const INFO_ITEMS: readonly InfoItem[] = [
     label: 'GitHub Issues',
     value: 'GitHub Issues Portal',
     isLink: true,
-    href: 'https://github.com/Abubokkor98/ielts-word-trainer/issues',
+    href: CONTACT_LINKS.githubIssues,
     note: 'Recommended for bug reports and technical issues to get a faster resolution.',
   },
 ] as const;
