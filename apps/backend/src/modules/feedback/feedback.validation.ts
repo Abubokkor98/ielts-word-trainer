@@ -7,7 +7,7 @@ export const createFeedbackSchema = z.object({
   }),
   rating: z.number().min(1, 'Rating must be at least 1').max(5, 'Rating must be at most 5'),
   message: z.string().min(3, 'Feedback must be at least 3 characters long').max(2000, 'Feedback cannot exceed 2000 characters'),
-  email: z.string().email('Invalid email address'),
+  email: z.email({ message: 'Invalid email address' }),
   deviceInfo: z.string().optional(),
 });
 
