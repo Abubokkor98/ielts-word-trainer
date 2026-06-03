@@ -73,5 +73,21 @@ export default async function StandaloneWordPage({ params }: StandaloneWordPageP
     notFound();
   }
 
-  return <WordDetailsView word={word} />;
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'DefinedTerm',
+    name: word.word,
+    description: word.meaning,
+    inDefinedTermSet: 'https://ieltsvocabs.com/vocabulary',
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
+      <WordDetailsView word={word} />
+    </>
+  );
 }

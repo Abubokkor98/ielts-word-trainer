@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/login',
   },
+  robots: {
+    index: false,
+  },
 };
 
 export default function LoginPage() {
