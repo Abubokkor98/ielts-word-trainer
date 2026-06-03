@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/register',
   },
+  robots: {
+    index: false,
+  },
 };
 
 export default function RegisterPage() {

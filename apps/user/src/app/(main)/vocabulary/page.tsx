@@ -30,7 +30,14 @@ const DEFAULT_DIFFICULTY = 'all';
 const DEFAULT_SEARCH = '';
 const DEFAULT_TOPIC = '';
 
-export default async function VocabularyPage() {
+export default async function VocabularyPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  // Await search params to opt into dynamic rendering so the component does not bailout to CSR
+  await searchParams;
+
   const queryClient = getQueryClient();
 
   // Prefetch the first page of words on the server.

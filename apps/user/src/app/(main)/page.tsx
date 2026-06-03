@@ -3,7 +3,7 @@ import { LandingContainer } from '../../features/landing';
 import { siteConfig } from '../../lib/site-config';
 
 export const metadata: Metadata = {
-  title: { absolute: 'Master IELTS Vocabulary - Free Learning Platform' },
+  title: { absolute: 'IELTS Vocabs - Master 3500+ IELTS Vocabulary Words for Free' },
   description:
     'Learn 3500+ essential IELTS words completely free. Improve your band score with adaptive quizzes, spaced repetition, and personalized vocabulary tracking.',
   keywords: [
@@ -33,9 +33,22 @@ export default function HomePage() {
     },
   };
 
+  const courseJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: 'IELTS Vocabulary Mastery',
+    description: 'Master 3500+ essential IELTS words with spaced repetition and adaptive quizzes.',
+    provider: {
+      '@type': 'Organization',
+      name: siteConfig.displayName,
+      sameAs: siteConfig.url
+    }
+  };
+
   return (
     <>
-      <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd).replace(/</g, '\\u003c') }} />
       <LandingContainer />
     </>
   );

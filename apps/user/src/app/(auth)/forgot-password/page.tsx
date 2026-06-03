@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/forgot-password',
   },
+  robots: {
+    index: false,
+  },
 };
 
 export default function ForgotPasswordPage() {
