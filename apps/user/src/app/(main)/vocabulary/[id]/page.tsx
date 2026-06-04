@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { WordDetailsView } from '../../../../features/vocabulary/components/word-details-view';
 import { serverVocabularyApi } from '../../../../features/vocabulary/services/server-vocabulary.api';
+import { siteConfig } from '../../../../lib/site-config';
 
 export const dynamicParams = true;
 
@@ -78,7 +79,7 @@ export default async function StandaloneWordPage({ params }: StandaloneWordPageP
     '@type': 'DefinedTerm',
     name: word.word,
     description: word.meaning,
-    inDefinedTermSet: 'https://ieltsvocabs.com/vocabulary',
+    inDefinedTermSet: `${siteConfig.url}/vocabulary`,
   };
 
   return (
