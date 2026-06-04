@@ -33,6 +33,8 @@ export default function HomePage() {
     },
   };
 
+  // Google Course rich results structured data
+  // Docs: https://developers.google.com/search/docs/appearance/structured-data/course
   const courseJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Course',
@@ -41,8 +43,15 @@ export default function HomePage() {
     provider: {
       '@type': 'Organization',
       name: siteConfig.displayName,
-      sameAs: siteConfig.url
-    }
+      url: siteConfig.url,
+      // Uncomment when project-specific social accounts exist (e.g. facebook.com/ieltsvocabs)
+      // sameAs: ['https://x.com/ieltsvocabs', 'https://facebook.com/ieltsvocabs'],
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'online',
+      courseWorkload: 'PT100H', // ISO 8601 duration — estimated ~100 hours to master 3500+ words
+    },
   };
 
   return (
