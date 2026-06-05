@@ -23,7 +23,7 @@ export function TopicCard({ topic }: { topic: TopicItem }) {
 
   return (
     <Link
-      href={`/vocabulary?topic=${topic.slug}`}
+      href={`/vocabulary?topic=${encodeURIComponent(topic.slug)}`}
       className="group block h-full"
     >
       <article className="glass-card rounded-[14px] p-4 sm:p-5 h-full flex flex-row sm:flex-col items-center text-left sm:text-center gap-4 sm:gap-3 hover:border-[rgba(255,255,255,0.15)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">

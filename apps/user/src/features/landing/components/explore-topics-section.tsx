@@ -120,9 +120,9 @@ export function ExploreTopicsSection() {
           variants={CARD_VARIANTS}
           transition={{ duration: 0.5, delay: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
         >
-          <Link href="/vocabulary">
-            <Button>View All 3500+ Words</Button>
-          </Link>
+          <Button asChild>
+            <Link href="/vocabulary">View All 3500+ Words</Link>
+          </Button>
         </motion.nav>
       </div>
     </section>
