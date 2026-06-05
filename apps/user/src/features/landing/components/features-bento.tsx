@@ -67,11 +67,17 @@ export function FeaturesBentoSection() {
     <section className="w-full bg-[#0e0b13] relative z-10 py-16 sm:py-24" aria-label="Features">
       <div className="container max-w-[1324px] px-6 mx-auto">
         {/* Section Header */}
-        <header className="text-center mb-12 flex flex-col items-center">
+        <motion.header
+          className="text-center mb-12 flex flex-col items-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+        >
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             Everything You Need to Ace IELTS
           </h2>
-        </header>
+        </motion.header>
 
         {/* Bento Grid */}
         <div className="flex flex-col gap-4">

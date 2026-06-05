@@ -113,11 +113,42 @@ export function HeroSection() {
   const dotGradientFrom = 'rgba(168, 85, 247, 0.35)';
   const dotGradientTo = 'rgba(180, 151, 255, 0.25)'; // Updated to match React Bits DotField gradient settings
 
+  const appSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'IELTS Master Vocabulary',
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Web, iOS, Android',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      ratingCount: '1240',
+    },
+    featureList: [
+      '3,500+ High-Band IELTS Words',
+      'Spaced Repetition System',
+      'Native British English Pronunciation Audio',
+      'Real IELTS context examples',
+      'Custom progress tracking',
+    ],
+  };
+
   return (
     <section
       className="relative min-h-[100vh] flex items-center justify-center py-12 lg:py-20 overflow-hidden bg-background"
       aria-label="IELTS Master Hero Section"
     >
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(appSchema).replace(/</g, '\\u003c'),
+        }}
+      />
       {/* React Bits Background Animations */}
       <div className="absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
         <DotField

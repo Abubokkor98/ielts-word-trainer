@@ -50,14 +50,20 @@ export function HowItWorksSection() {
     <section className="w-full bg-background relative z-10 py-16 sm:py-24" aria-label="How It Works">
       <div className="container max-w-[1324px] px-6 mx-auto">
         {/* Section Title & Subtitle */}
-        <header className="text-center mb-16 flex flex-col items-center">
+        <motion.header
+          className="text-center mb-16 flex flex-col items-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+        >
           <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
             How It Works
           </h2>
           <p className="mt-4 max-w-[600px] text-zinc-400 text-sm sm:text-base leading-relaxed">
             A proven scientific methodology to ensure long-term retention of vocabulary.
           </p>
-        </header>
+        </motion.header>
 
         {/* Steps Grid */}
         <ul className="grid grid-cols-1 md:grid-cols-3 gap-8 py-4 list-none p-0 m-0">

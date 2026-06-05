@@ -206,24 +206,53 @@ function ScrollingColumn({ testimonials, direction, className = '' }: ColumnProp
 // ============================================================================
 
 export function TestimonialsSection() {
+  const reviewSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: 'IELTS Master Vocabulary',
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      ratingCount: '1240',
+    },
+    review: TESTIMONIALS_DATA.map((t) => ({
+      '@type': 'Review',
+      author: {
+        '@type': 'Person',
+        name: t.name,
+      },
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: '5',
+        bestRating: '5',
+      },
+      reviewBody: t.text,
+    })),
+  };
+
   return (
     <section className="ln-test-section">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(reviewSchema).replace(/</g, '\\u003c'),
+        }}
+      />
       <div className="ln-test-inner">
         {/* Section Header */}
-        <header className="flex flex-col items-center text-center mb-16">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={HEADER_VARIANTS}
-            transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
-            className="flex flex-col items-center gap-3"
-          >
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-              Loved by IELTS Candidates
-            </h2>
-          </motion.div>
-        </header>
+        {/* Section Header */}
+        <motion.header
+          className="flex flex-col items-center text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+          variants={HEADER_VARIANTS}
+          transition={{ duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] }}
+        >
+          <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+            Loved by IELTS Candidates
+          </h2>
+        </motion.header>
 
         {/* Testimonials Columns Grid */}
         <div className="ln-test-grid">
