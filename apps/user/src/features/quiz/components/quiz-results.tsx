@@ -99,7 +99,7 @@ export function QuizResults({ score, questions, answers, onRestart }: QuizResult
               {recommendation && (
                 <div className="p-3 rounded-xl border border-primary/20 bg-primary/5 text-left relative overflow-hidden">
                   <div className="flex items-start space-x-3">
-                    <LightbulbIcon className="w-4.5 h-4.5 text-primary mt-0.5 flex-shrink-0" />
+                    <LightbulbIcon className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                     <div>
                       <h4 className="text-xs font-bold text-foreground">Recommendation</h4>
                       <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
