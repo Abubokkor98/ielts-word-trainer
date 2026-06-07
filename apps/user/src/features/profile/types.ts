@@ -7,10 +7,14 @@ export interface UserProfile {
   xp: number;
   streak: number;
   lastQuizDate?: string;
+  profilePictureUrl?: string;
+  profilePictureId?: string;
 }
 
 export interface UpdateProfileRequest {
-  name: string;
+  name?: string;
+  profilePictureUrl?: string | null;
+  profilePictureId?: string | null;
 }
 
 export interface ChangePasswordRequest {

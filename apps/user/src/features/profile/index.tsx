@@ -16,6 +16,8 @@ export function ProfileContainer() {
     isUpdatingProfile,
     changePassword,
     isChangingPassword,
+    deleteProfilePicture,
+    isDeletingProfilePicture,
   } = useProfile();
 
   return (
@@ -46,6 +48,8 @@ export function ProfileContainer() {
                   profile={profile}
                   onUpdate={updateProfile}
                   isLoading={isUpdatingProfile}
+                  onDeletePicture={deleteProfilePicture}
+                  isDeletingPicture={isDeletingProfilePicture}
                 />
               </section>
 

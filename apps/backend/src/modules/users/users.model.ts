@@ -7,6 +7,8 @@ export interface IUser extends Document {
   passwordHash: string;
   role: UserRole;
   status: 'active' | 'inactive' | 'banned';
+  profilePictureUrl?: string;
+  profilePictureId?: string;
   refreshToken: string[];
   xp: number;
   streak: number;
@@ -46,6 +48,8 @@ const UserSchema = new Schema<IUser>(
     lastLoginAt: { type: Date },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    profilePictureUrl: { type: String, default: null },
+    profilePictureId: { type: String, default: null },
   },
   {
     timestamps: true,
