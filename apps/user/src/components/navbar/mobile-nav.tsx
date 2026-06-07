@@ -16,6 +16,7 @@ import {
   User,
   UserPlus,
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@ielts/ui';
 import * as React from 'react';
 import { MobileNavLink } from './nav-links';
 
@@ -30,6 +31,17 @@ interface MobileNavProps {
   user: AuthUser | null;
   onLogout: () => void;
   dueCount: number;
+}
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+function getInitials(name?: string): string {
+  if (!name) return '';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
 // ============================================================================
@@ -141,6 +153,24 @@ export const MobileNav = ({
             {/* Navigation links */}
             <nav className="p-1.5" aria-label="Mobile Navigation">
               <div className="flex flex-col gap-0.5">
+                {isAuthenticated && user && (
+                  <>
+                    <div className="flex items-center gap-3 px-3 py-3 mb-1">
+                      <Avatar className="h-10 w-10 border border-white/10 shrink-0">
+                        <AvatarImage src={user.profilePictureUrl || undefined} alt={user.name} className="object-cover" />
+                        <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-sm flex items-center justify-center">
+                          {getInitials(user.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col overflow-hidden">
+                        <span className="text-sm font-semibold text-zinc-200 truncate">{user.name}</span>
+                        {user.email && <span className="text-xs text-zinc-400 truncate">{user.email}</span>}
+                      </div>
+                    </div>
+                    <div className="h-px bg-white/[0.06] mx-2 mb-1.5" />
+                  </>
+                )}
+
                 {PUBLIC_LINKS.map(({ href, label, icon: Icon }) => (
                   <MobileNavLink key={href} href={href} icon={<Icon size={16} />} onClick={onClose}>
                     {label}

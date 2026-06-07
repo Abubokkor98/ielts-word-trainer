@@ -51,16 +51,16 @@ export function ProfileAvatarCropModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !isUploading && !open && onClose()}>
-      <DialogContent className="bg-[#1b1722] border-[#2f293a] text-[#f4f4f5] max-w-md shadow-2xl rounded-lg p-6">
+      <DialogContent className="bg-card border-border text-foreground w-[92vw] max-w-md sm:w-full shadow-2xl rounded-lg p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-[#a855f7]">Crop your picture</DialogTitle>
-          <DialogDescription className="text-sm text-[#a1a1aa]">
+          <DialogTitle className="text-lg sm:text-xl font-bold text-brand">Crop your picture</DialogTitle>
+          <DialogDescription className="text-xs sm:text-sm text-muted-foreground">
             Drag and zoom to perfectly frame your face.
           </DialogDescription>
         </DialogHeader>
 
         {imageSrc && (
-          <div className="relative w-full h-64 mt-4 bg-black/50 rounded-md overflow-hidden">
+          <div className="relative w-full h-48 sm:h-64 mt-3 sm:mt-4 bg-black/50 rounded-md overflow-hidden">
             <Cropper
               image={imageSrc}
               crop={crop}
@@ -75,12 +75,13 @@ export function ProfileAvatarCropModal({
           </div>
         )}
 
-        <DialogFooter className="mt-6 flex justify-end gap-3">
+        <DialogFooter className="mt-4 sm:mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
           <Button
             type="button"
             variant="ghost"
             onClick={onClose}
             disabled={isUploading}
+            className="w-full sm:w-auto"
           >
             Cancel
           </Button>
@@ -88,7 +89,7 @@ export function ProfileAvatarCropModal({
             type="button"
             onClick={handleConfirm}
             disabled={isUploading || !croppedAreaPixels}
-            className="bg-[#a855f7] hover:bg-[#a855f7]/80 text-white"
+            className="bg-brand hover:bg-brand/90 text-white w-full sm:w-auto"
           >
             {isUploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {isUploading ? 'Uploading...' : 'Save Picture'}
