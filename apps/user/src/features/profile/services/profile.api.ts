@@ -16,6 +16,15 @@ export const profileApi = {
     return { ...data.data, id: data.data._id };
   },
 
+  deleteProfilePicture: async (): Promise<void> => {
+    await axiosInstance.delete('/users/picture');
+  },
+
+  getCloudinarySignature: async (): Promise<{ signature: string; timestamp: number; publicId: string }> => {
+    const { data } = await axiosInstance.post<{ signature: string; timestamp: number; publicId: string }>('/users/cloudinary-signature');
+    return data;
+  },
+
   changePassword: async (payload: Omit<ChangePasswordRequest, 'confirm'>): Promise<void> => {
     await axiosInstance.post('/users/change-password', {
       currentPassword: payload.current,

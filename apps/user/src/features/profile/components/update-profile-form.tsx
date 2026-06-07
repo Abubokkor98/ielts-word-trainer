@@ -1,19 +1,32 @@
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@ielts/ui';
 import { useState } from 'react';
 import type { UpdateProfileRequest, UserProfile } from '../types';
+import { ProfileAvatarUpload } from './profile-avatar-upload';
 
 interface UpdateProfileFormProps {
   profile: UserProfile;
   onUpdate: (data: UpdateProfileRequest) => void;
   isLoading: boolean;
+  onDeletePicture?: () => void;
+  isDeletingPicture?: boolean;
 }
 
-export function UpdateProfileForm({ profile, onUpdate, isLoading }: UpdateProfileFormProps) {
+export function UpdateProfileForm({ 
+  profile, 
+  onUpdate, 
+  isLoading,
+  onDeletePicture,
+  isDeletingPicture 
+}: UpdateProfileFormProps) {
   const [name, setName] = useState(profile.name);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onUpdate({ name });
+  };
+
+  const handleUploadSuccess = (url: string, publicId: string) => {
+    onUpdate({ profilePictureUrl: url, profilePictureId: publicId });
   };
 
   return (
@@ -24,6 +37,19 @@ export function UpdateProfileForm({ profile, onUpdate, isLoading }: UpdateProfil
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="mb-8">
+          <Label className="text-sm font-medium text-muted-foreground mb-4 block">
+            Profile Picture
+          </Label>
+          <ProfileAvatarUpload
+            currentImageUrl={profile.profilePictureUrl}
+            userName={profile.name}
+            onUploadSuccess={handleUploadSuccess}
+            onDelete={() => onDeletePicture?.()}
+            isDeleting={isDeletingPicture}
+          />
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">

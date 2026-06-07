@@ -9,6 +9,8 @@ export interface User {
   xp: number;
   streak: number;
   lastQuizDate?: string;
+  profilePictureUrl?: string | null;
+  profilePictureId?: string | null;
 }
 
 interface AuthState {

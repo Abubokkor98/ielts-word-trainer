@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import * as React from 'react';
-import { Avatar, AvatarFallback } from '../components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
@@ -16,6 +15,7 @@ interface User {
   name: string;
   role: string;
   email?: string;
+  profilePictureUrl?: string | null;
 }
 
 interface UserMenuProps {
@@ -52,6 +52,7 @@ export const UserMenu = ({ user, onLogout }: UserMenuProps) => {
           className="flex items-center gap-2 hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full p-1 text-left transition-opacity"
         >
           <Avatar className="h-8 w-8">
+            <AvatarImage src={user.profilePictureUrl || undefined} alt={user.name} className="object-cover" />
             <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-xs flex items-center justify-center">
               {getInitials(user.name)}
             </AvatarFallback>

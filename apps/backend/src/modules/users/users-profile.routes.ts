@@ -11,6 +11,8 @@ const router = Router();
 const updateProfileSchema = {
   body: z.object({
     name: z.string().min(2).optional(),
+    profilePictureUrl: z.string().url().optional().nullable(),
+    profilePictureId: z.string().optional().nullable(),
   }),
 };
 
@@ -40,6 +42,18 @@ router.post(
   authenticate,
   validateRequest(changePasswordSchema),
   UserProfileController.changePassword
+);
+
+router.post(
+  '/cloudinary-signature',
+  authenticate,
+  UserProfileController.getUploadSignature
+);
+
+router.delete(
+  '/picture',
+  authenticate,
+  UserProfileController.deleteProfilePicture
 );
 
 export default router;

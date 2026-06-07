@@ -4,8 +4,10 @@ import { AppError } from '../../core/errors/AppError';
 import type { RequestWithTimezone } from '../../middleware/request-with-timezone';
 import type { AuthRequest } from '../auth/auth.middleware';
 import { QuizAttemptService } from '../quiz/quiz-attempt.service';
+import cloudinary from '../../config/cloudinary';
 import { StreakUtils } from './streak-utils';
 import { UserService } from './users.service';
+import { Logger } from '../../utils';
 
 export class UserProfileController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
@@ -52,6 +54,7 @@ export class UserProfileController {
           role: user.role,
           xp: user.xp,
           streak: user.streak,
+          profilePictureUrl: user.profilePictureUrl,
           createdAt: user.createdAt,
           stats,
         },
@@ -69,9 +72,21 @@ export class UserProfileController {
       const user = await UserService.findById(authReq.user.id);
       if (!user) throw new AppError('User not found', 404);
 
-      const { name } = req.body;
+      const { name, profilePictureUrl, profilePictureId } = req.body;
 
       if (name) user.name = name;
+      
+      // Clean up old picture if a new one is being set
+      if (profilePictureId && user.profilePictureId && user.profilePictureId !== profilePictureId) {
+        try {
+          await cloudinary.uploader.destroy(user.profilePictureId);
+        } catch (error) {
+          console.error('Failed to delete old profile picture from Cloudinary:', error);
+        }
+      }
+
+      if (profilePictureUrl !== undefined) user.profilePictureUrl = profilePictureUrl;
+      if (profilePictureId !== undefined) user.profilePictureId = profilePictureId;
 
       await user.save();
 
@@ -81,6 +96,7 @@ export class UserProfileController {
           id: user._id,
           name: user.name,
           email: user.email,
+          profilePictureUrl: user.profilePictureUrl,
         },
       });
     } catch (error) {
@@ -118,6 +134,75 @@ export class UserProfileController {
       res.json({
         success: true,
         message: 'Password changed successfully',
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getUploadSignature(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const authReq = req as AuthRequest;
+      const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+      if (!apiSecret) {
+        throw new AppError('Cloudinary configuration is missing', 500);
+      }
+
+      // Industry Best Practice: Hardcode allowed parameters on the backend
+      // instead of blindly trusting the client's payload.
+      const timestamp = Math.round(Date.now() / 1000);
+      const paramsToSign = {
+        timestamp,
+        folder: 'profile_pictures',
+        public_id: `user_${authReq.user.id}`,
+        overwrite: true,
+        invalidate: true,
+      };
+      
+      Logger.info(`Generating Cloudinary signature for user: ${authReq.user.id}`);
+      
+      const signature = cloudinary.utils.api_sign_request(
+        paramsToSign,
+        apiSecret
+      );
+
+      Logger.info(`Successfully generated Cloudinary signature for public_id: ${paramsToSign.public_id}`);
+
+      res.json({ signature, timestamp, publicId: paramsToSign.public_id });
+    } catch (error) {
+      Logger.error(`Error generating Cloudinary signature: ${error}`);
+      next(error);
+    }
+  }
+
+  static async deleteProfilePicture(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const authReq = req as AuthRequest;
+      if (!authReq.user) throw new AppError('Unauthenticated', 401);
+
+      const user = await UserService.findById(authReq.user.id);
+      if (!user) throw new AppError('User not found', 404);
+
+      if (user.profilePictureId) {
+        await cloudinary.uploader.destroy(user.profilePictureId);
+      }
+
+      user.profilePictureUrl = undefined;
+      user.profilePictureId = undefined;
+      await user.save();
+
+      res.json({
+        success: true,
+        message: 'Profile picture removed successfully',
       });
     } catch (error) {
       next(error);

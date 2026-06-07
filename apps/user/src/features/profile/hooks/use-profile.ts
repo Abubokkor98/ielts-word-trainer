@@ -66,6 +66,28 @@ export function useProfile() {
     },
   });
 
+  const deleteProfilePictureMutation = useMutation({
+    mutationFn: profileApi.deleteProfilePicture,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user', 'profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
+      
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser) {
+        setUser({ ...currentUser, profilePictureUrl: undefined });
+      }
+
+      toast({ title: 'Profile picture removed!' });
+    },
+    onError: (err: AxiosError<{ message: string }>) => {
+      toast({
+        title: 'Delete failed',
+        description: err.response?.data?.message || 'Something went wrong',
+        variant: 'destructive',
+      });
+    },
+  });
+
   return {
     profile,
     isLoading,
@@ -74,5 +96,7 @@ export function useProfile() {
     isUpdatingProfile: updateProfileMutation.isPending,
     changePassword: changePasswordMutation.mutateAsync,
     isChangingPassword: changePasswordMutation.isPending,
+    deleteProfilePicture: deleteProfilePictureMutation.mutate,
+    isDeletingProfilePicture: deleteProfilePictureMutation.isPending,
   };
 }
