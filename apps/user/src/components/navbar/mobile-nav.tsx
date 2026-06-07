@@ -3,20 +3,12 @@
 import type { User as AuthUser } from '@ielts/auth';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import {
-  BarChart2,
-  Book,
-  HelpCircle,
-  Home,
-  LayoutDashboard,
-  List,
   LogIn,
   LogOut,
-  RotateCcw,
   Settings,
-  User,
   UserPlus,
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@ielts/ui';
+import { Avatar, AvatarFallback, AvatarImage, getInitials } from '@ielts/ui';
 import * as React from 'react';
 import { MobileNavLink } from './nav-links';
 
@@ -34,33 +26,13 @@ interface MobileNavProps {
 }
 
 // ============================================================================
-// Helpers
-// ============================================================================
-
-function getInitials(name?: string): string {
-  if (!name) return '';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-// ============================================================================
 // Constants & Configuration
 // ============================================================================
 
-const PUBLIC_LINKS = [
-  { href: '/', label: 'Home', icon: Home },
-  { href: '/vocabulary', label: 'Vocabulary', icon: Book },
-  { href: '/quiz', label: 'Quiz', icon: HelpCircle },
-];
+import { APP_NAV_LINKS, PUBLIC_NAV_LINKS, USER_MENU_LINKS } from './nav-config';
 
-const AUTH_LINKS = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/my-lists', label: 'My Lists', icon: List },
-  { href: '/profile', label: 'Profile', icon: User },
-  { href: '/review', label: 'Review', icon: RotateCcw, hasBadge: true },
-  { href: '/analytics', label: 'Analytics', icon: BarChart2 },
-];
+const PUBLIC_LINKS = PUBLIC_NAV_LINKS;
+const AUTH_LINKS = [...APP_NAV_LINKS, ...USER_MENU_LINKS];
 
 // ============================================================================
 // Animation Config — top dropdown

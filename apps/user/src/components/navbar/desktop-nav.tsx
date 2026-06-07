@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
+import { APP_NAV_LINKS, PUBLIC_NAV_LINKS } from './nav-config';
 
 // ============================================================================
 // Types
@@ -14,10 +15,7 @@ interface DesktopNavProps {
   dueCount: number;
 }
 
-interface NavLinkItem {
-  label: string;
-  href: string;
-}
+
 
 // ============================================================================
 // Constants
@@ -47,22 +45,11 @@ export const DesktopNav = ({ isAuthenticated, dueCount }: DesktopNavProps) => {
   // Derived Variables
   // ============================================================================
 
-  const navLinks = React.useMemo((): NavLinkItem[] => {
-    const links: NavLinkItem[] = [
-      { label: 'Home', href: '/' },
-      { label: 'Vocabulary', href: '/vocabulary' },
-      { label: 'Quiz', href: '/quiz' },
-    ];
-
+  const navLinks = React.useMemo(() => {
     if (isAuthenticated) {
-      links.push(
-        { label: 'Dashboard', href: '/dashboard' },
-        { label: 'My Lists', href: '/my-lists' },
-        { label: 'Review', href: '/review' },
-      );
+      return [...PUBLIC_NAV_LINKS, ...APP_NAV_LINKS];
     }
-
-    return links;
+    return PUBLIC_NAV_LINKS;
   }, [isAuthenticated]);
 
   // ============================================================================
