@@ -74,7 +74,11 @@ export function useProfile() {
       
       const currentUser = useAuthStore.getState().user;
       if (currentUser) {
-        setUser({ ...currentUser, profilePictureUrl: undefined });
+        setUser({
+          ...currentUser,
+          profilePictureUrl: undefined,
+          profilePictureId: undefined,
+        });
       }
 
       toast({ title: 'Profile picture removed!' });

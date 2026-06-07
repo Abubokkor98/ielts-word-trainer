@@ -73,9 +73,18 @@ export class UserProfileController {
       if (!user) throw new AppError('User not found', 404);
 
       const { name, profilePictureUrl, profilePictureId } = req.body;
+      const expectedPublicId = `user_${authReq.user.id}`;
 
       if (name) user.name = name;
-      
+
+      if (
+        profilePictureId !== undefined &&
+        profilePictureId !== null &&
+        profilePictureId !== expectedPublicId
+      ) {
+        throw new AppError('Invalid profilePictureId', 400);
+      }
+
       // Clean up old picture if a new one is being set
       if (profilePictureId && user.profilePictureId && user.profilePictureId !== profilePictureId) {
         try {

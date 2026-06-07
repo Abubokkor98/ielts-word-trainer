@@ -73,7 +73,9 @@ export function ProfileAvatarUpload({
       formData.append('invalidate', 'true');
 
       const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-      
+      if (!cloudName) {
+        throw new Error('Cloudinary cloud name is missing');
+      }
       const response = await fetch(
         `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
         {

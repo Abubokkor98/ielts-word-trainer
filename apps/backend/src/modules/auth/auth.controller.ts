@@ -30,6 +30,7 @@ export class AuthController {
           name: user.name,
           email: user.email,
           role: user.role,
+          profilePictureUrl: user.profilePictureUrl,
         },
       });
     } catch (err) {
@@ -77,6 +78,7 @@ export class AuthController {
           name: user.name,
           email: user.email,
           role: user.role,
+          profilePictureUrl: user.profilePictureUrl,
         },
       });
     } catch (err) {
@@ -126,6 +128,7 @@ export class AuthController {
           xp: user.xp,
           streak: user.streak,
           lastQuizDate: user.lastQuizDate,
+          profilePictureUrl: user.profilePictureUrl,
         },
       });
     } catch (err) {
