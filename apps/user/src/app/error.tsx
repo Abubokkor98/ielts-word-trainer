@@ -11,11 +11,8 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   useEffect(() => {
-    +(
-      // Log the error to console (TODO: integrate with error reporting service)
-
-      console.error(error)
-    );
+    // Log the error to console (TODO: integrate with error reporting service)
+    console.error(error);
   }, [error]);
 
   return <ErrorUI reset={reset} />;
