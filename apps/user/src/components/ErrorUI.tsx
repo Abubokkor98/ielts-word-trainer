@@ -16,7 +16,7 @@ export function ErrorUI({ reset }: ErrorUIProps) {
       <div className="nf-container">
         {/* Error code, floating above the card */}
         <p
-          className="nf-error-code nf-error-code--danger text-red-500/40!"
+          className="nf-error-code nf-error-code--danger"
           aria-hidden="true"
         >
           500
