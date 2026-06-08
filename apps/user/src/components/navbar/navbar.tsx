@@ -38,8 +38,9 @@ export const UserNavbar = () => {
 
       {/* Main Navbar Wrapper matching React Bits */}
       <header
-        className="fixed top-5 left-0 z-[1500] flex flex-col items-center px-6 font-mono pointer-events-none"
+        className="fixed left-0 z-[1500] flex flex-col items-center px-6 font-mono pointer-events-none transition-[top] duration-300"
         style={{
+          top: 'calc(1.25rem + var(--banner-height, 0px))',
           right: 'var(--removed-body-scroll-bar-size, 0px)',
         }}
       >

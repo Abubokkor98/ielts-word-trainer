@@ -1,6 +1,8 @@
 import { env } from './config/env';
 import { connectToDatabase } from './config/mongo';
 import { createServer } from './server';
+import { agenda, initAgenda } from './config/agenda';
+import { defineEmailJobs } from './jobs';
 
 const startServer = async () => {
   await connectToDatabase();
@@ -13,6 +15,11 @@ const startServer = async () => {
   });
 
   server.on('error', console.error);
+
+  initAgenda();
+  defineEmailJobs();
+  await agenda.start();
+  console.log('Agenda job scheduler started');
 };
 
 startServer();

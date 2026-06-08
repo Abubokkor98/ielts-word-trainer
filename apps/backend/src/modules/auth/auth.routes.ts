@@ -7,7 +7,12 @@ import { validateRequest } from '../../core/middleware/validate.middleware';
 import { extractTimezone } from '../../middleware/timezone.middleware';
 import { AuthController } from './auth.controller';
 import { authenticate } from './auth.middleware';
-import { loginSchema, registerSchema } from './auth.validation';
+import {
+  loginSchema,
+  registerSchema,
+  sendVerificationSchema,
+  verifyEmailSchema,
+} from './auth.validation';
 
 const router = Router();
 
@@ -28,5 +33,19 @@ router.get('/verify-cookies', AuthController.verifyCookies);
 //needs timezone for streak checking
 router.get('/me', authenticate, extractTimezone, AuthController.me);
 router.post('/logout', authenticate, AuthController.logout);
+
+router.post(
+  '/send-verification',
+  strictRateLimit,
+  validateRequest(sendVerificationSchema),
+  AuthController.sendVerification
+);
+
+router.post(
+  '/verify',
+  strictRateLimit,
+  validateRequest(verifyEmailSchema),
+  AuthController.verifyEmail
+);
 
 export default router;

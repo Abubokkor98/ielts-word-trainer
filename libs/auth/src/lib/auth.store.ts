@@ -11,6 +11,7 @@ export interface User {
   lastQuizDate?: string;
   profilePictureUrl?: string | null;
   profilePictureId?: string | null;
+  isEmailVerified?: boolean;
 }
 
 interface AuthState {

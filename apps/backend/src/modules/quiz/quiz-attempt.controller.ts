@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 import type { AuthRequest } from '../auth/auth.middleware';
 import { QuizAttemptSchema } from './quiz-attempt.schema';
 import { QuizAttemptService } from './quiz-attempt.service';
-import { RequestWithTimezone } from '../../middleware/request-with-timezone';
+import type { RequestWithTimezone } from '../../middleware/request-with-timezone';
+import { agenda } from '../../config/agenda';
 
 export class QuizAttemptController {
   static async create(req: AuthRequest, res: Response) {
@@ -69,6 +70,22 @@ export class QuizAttemptController {
         console.log(`✅ XP Calculate: ${xpEarned}`);
       }
 
+      type AgendaCancelQuery = Parameters<typeof agenda.cancel>[0] & {
+        'data.userId'?: string;
+      };
+
+      // 1. Cancel ANY existing inactivity reminders for this user
+      await agenda.cancel({
+        name: 'send-inactivity-reminder',
+        'data.userId': userId,
+      } as AgendaCancelQuery);
+
+      // 2. Reschedule the 3-day clock from today!
+      await agenda.schedule('in 3 days', 'send-inactivity-reminder', {
+        userId,
+        daysInactive: 3,
+      });
+
       return res.status(201).json({
         success: true,
         message: 'Quiz attempt saved successfully',
@@ -77,13 +94,12 @@ export class QuizAttemptController {
           xpEarned,
         },
       });
-      // biome-ignore lint/suspicious/noExplicitAny: <>
     } catch (error: any) {
-      console.error('❌ Error creating quiz attempt:', error);
+      console.error('Error creating quiz attempt:', error);
 
       if (error.name === 'ZodError') {
         console.error(
-          '❌ Validation errors:',
+          'Validation errors:',
           JSON.stringify(error.errors, null, 2)
         );
         return res.status(400).json({
