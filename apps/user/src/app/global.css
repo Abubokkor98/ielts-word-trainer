@@ -1485,6 +1485,10 @@
   line-height: 1.15;
 }
 
+.nf-word--danger {
+  color: #f87171; /* Tailwind red-400 */
+}
+
 .nf-pos-badge {
   display: inline-flex;
   align-items: center;
@@ -1499,6 +1503,12 @@
   white-space: nowrap;
   flex-shrink: 0;
   margin-top: 2px;
+}
+
+.nf-pos-badge--danger {
+  color: #fca5a5; /* Tailwind red-300 */
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3); /* Tailwind red-500/30 */
 }
 
 /* Divider */
@@ -1550,10 +1560,18 @@
   border-left: 2px solid rgba(168, 85, 247, 0.2);
 }
 
+.nf-example--danger {
+  border-left-color: rgba(239, 68, 68, 0.3); /* Tailwind red-500/30 */
+}
+
 .nf-em {
   color: #a855f7;
   font-weight: 600;
   font-style: italic;
+}
+
+.nf-em--danger {
+  color: #f87171; /* Tailwind red-400 */
 }
 
 /* Synonyms */
