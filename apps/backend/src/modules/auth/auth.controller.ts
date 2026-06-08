@@ -6,7 +6,9 @@ import { StreakUtils } from '../users/streak-utils';
 import { UserService } from '../users/users.service';
 import type { AuthRequest } from './auth.middleware';
 import { AuthService } from './auth.service';
-
+import crypto from 'node:crypto';
+import { EmailService } from '../../core/services/email.service';
+import { agenda } from '../../config/agenda';
 export class AuthController {
   static async register(req: Request, res: Response, next: NextFunction) {
     try {
@@ -31,6 +33,7 @@ export class AuthController {
           email: user.email,
           role: user.role,
           profilePictureUrl: user.profilePictureUrl,
+          isEmailVerified: user.isEmailVerified,
         },
       });
     } catch (err) {
@@ -79,6 +82,7 @@ export class AuthController {
           email: user.email,
           role: user.role,
           profilePictureUrl: user.profilePictureUrl,
+          isEmailVerified: user.isEmailVerified,
         },
       });
     } catch (err) {
@@ -129,6 +133,7 @@ export class AuthController {
           streak: user.streak,
           lastQuizDate: user.lastQuizDate,
           profilePictureUrl: user.profilePictureUrl,
+          isEmailVerified: user.isEmailVerified,
         },
       });
     } catch (err) {
@@ -244,6 +249,58 @@ export class AuthController {
 
       clearAuthCookies(res);
       res.json({ success: true, message: 'Logged out successfully' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async sendVerification(req: Request, res: Response, next: NextFunction) {
+    try {
+      const email = req.body.email;
+      const user = await UserService.findByEmail(email);
+      if (!user) throw new AppError('User not found', 404);
+      if (user.isEmailVerified) throw new AppError('Email is already verified', 400);
+
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      user.verificationToken = verificationToken;
+      user.verificationTokenExpires = tokenExpires;
+      await user.save();
+
+      await EmailService.sendVerificationEmail(user.email, verificationToken, user.role);
+
+      res.status(200).json({ success: true, message: 'Verification email sent' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token } = req.body;
+      const user = await UserService.findOne({ verificationToken: token });
+
+      if (!user) {
+        throw new AppError('Invalid or expired verification token', 400);
+      }
+
+      if (user.verificationTokenExpires && user.verificationTokenExpires < new Date()) {
+        throw new AppError('Invalid or expired verification token', 400);
+      }
+
+      user.isEmailVerified = true;
+      user.verificationToken = undefined;
+      user.verificationTokenExpires = undefined;
+      await user.save();
+
+      // Schedule the first 3-day inactivity reminder!
+      await agenda.schedule('in 3 days', 'send-inactivity-reminder', { 
+        userId: user._id.toString(), 
+        daysInactive: 3 
+      });
+
+      res.status(200).json({ success: true, message: 'Email verified successfully' });
     } catch (err) {
       next(err);
     }

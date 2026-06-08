@@ -19,6 +19,9 @@ export interface IUser extends Document {
   lastLoginAt?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
+  isEmailVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +53,9 @@ const UserSchema = new Schema<IUser>(
     resetPasswordExpires: { type: Date },
     profilePictureUrl: { type: String, default: null },
     profilePictureId: { type: String, default: null },
+    isEmailVerified: { type: Boolean, default: false },
+    verificationToken: { type: String },
+    verificationTokenExpires: { type: Date },
   },
   {
     timestamps: true,

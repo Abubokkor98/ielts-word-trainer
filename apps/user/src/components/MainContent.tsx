@@ -17,7 +17,8 @@ export function MainContent({ children }: MainContentProps) {
   return (
     <main
       id="main-content"
-      className={`flex-1 flex flex-col ${isHome ? '' : 'pt-[88px] sm:pt-[96px]'}`}
+      className={`flex-1 flex flex-col transition-[padding] duration-300 ${isHome ? '' : 'pt-[88px] sm:pt-[96px]'}`}
+      style={isHome ? {} : { paddingTop: 'calc(var(--banner-height, 0px) + 88px)' }}
     >
       {children}
     </main>

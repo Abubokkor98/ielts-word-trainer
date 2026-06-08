@@ -1669,3 +1669,29 @@
     width: 100%;
   }
 }
+
+/* ----------------------------------------------
+   Verify Page Specifics
+   ---------------------------------------------- */
+
+.nf-verify-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+}
+
+.nf-verify-icon--primary {
+  background: rgba(168, 85, 247, 0.1);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.nf-verify-icon--danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
