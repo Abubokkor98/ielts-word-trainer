@@ -24,7 +24,7 @@ export function ErrorUI({ reset }: ErrorUIProps) {
 
         {/* Dictionary card with animated border */}
         <div className="nf-card-wrapper">
-          <div className="nf-card-border nf-card-border--danger" aria-hidden="true" />
+          <div className="nf-card-border" aria-hidden="true" />
           <article className="nf-card">
             {/* Header row */}
             <header className="nf-card-header">
