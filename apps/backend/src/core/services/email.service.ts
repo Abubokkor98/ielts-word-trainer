@@ -106,6 +106,78 @@ export class EmailService {
     }
   }
 
+  static async sendEmailChangeVerification(
+    email: string,
+    token: string,
+    role: string = 'user'
+  ) {
+    const baseUrl =
+      role === 'admin' ? process.env.ADMIN_URL : process.env.CLIENT_URL;
+
+    if (!baseUrl) {
+      throw new AppError(
+        `Missing base URL env for email change verification (role=${role}).`,
+        500
+      );
+    }
+
+    const verifyUrl = new URL('/change-email/verify', baseUrl);
+    verifyUrl.searchParams.set('token', token);
+
+    try {
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || '"IELTS Vocabs" <noreply@ieltsvocabs.com>',
+        to: email,
+        subject: 'Verify your new Email - IELTS Vocabs',
+        html: `
+          <h1>Confirm your new email address</h1>
+          <p>We received a request to change your account email to this address. Please click the link below to verify:</p>
+          <a href="${verifyUrl}">Verify New Email</a>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you didn't request this change, please ignore this email.</p>
+        `,
+      });
+      Logger.info(`Email change verification sent to ${email}`);
+    } catch (error) {
+      Logger.error(`Failed to send email change verification: ${error}`);
+      throw error;
+    }
+  }
+
+  static async sendEmailChangeAlert(
+    email: string,
+    role: string = 'user'
+  ) {
+    const baseUrl =
+      role === 'admin' ? process.env.ADMIN_URL : process.env.CLIENT_URL;
+
+    if (!baseUrl) {
+      throw new AppError(
+        `Missing base URL env for email change alert (role=${role}).`,
+        500
+      );
+    }
+
+    try {
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || '"IELTS Vocabs" <noreply@ieltsvocabs.com>',
+        to: email,
+        subject: 'Security Alert: Email Change Requested - IELTS Vocabs',
+        html: `
+          <h1>Security Alert</h1>
+          <p>We received a request to change the email address associated with your IELTS Vocabs account.</p>
+          <p><strong>If you made this request,</strong> no further action is required here. Please check your new email address to complete the verification.</p>
+          <p><strong>If you did NOT make this request,</strong> your account may be compromised. Please secure your account immediately and reset your password.</p>
+          <a href="${baseUrl}">Secure your account</a>
+        `,
+      });
+      Logger.info(`Email change security alert sent to ${email}`);
+    } catch (error) {
+      Logger.error(`Failed to send email change security alert: ${error}`);
+      throw error;
+    }
+  }
+
   static async sendInactivityReminderEmail(
     email: string,
     name: string,

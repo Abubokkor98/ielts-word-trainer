@@ -5,6 +5,7 @@ import type {
   LoginCredentials,
   RegisterCredentials,
   ResetPasswordCredentials,
+  ChangeEmailCredentials,
 } from '../types';
 
 export const authApi = {
@@ -35,6 +36,16 @@ export const authApi = {
 
   sendVerification: async (email: string): Promise<{ success: boolean; message: string }> => {
     const { data } = await axiosInstance.post('/auth/send-verification', { email });
+    return data;
+  },
+
+  requestEmailChange: async (credentials: ChangeEmailCredentials): Promise<{ success: boolean; message: string }> => {
+    const { data } = await axiosInstance.post('/auth/change-email/request', credentials);
+    return data;
+  },
+
+  verifyEmailChange: async (token: string): Promise<{ success: boolean; message: string }> => {
+    const { data } = await axiosInstance.post('/auth/change-email/verify', { token });
     return data;
   },
 

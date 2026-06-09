@@ -1,5 +1,6 @@
 'use client';
 
+import { ChangeEmailForm } from './components/change-email-form';
 import { ChangePasswordForm } from './components/change-password-form';
 import { ProfileErrorState } from './components/profile-error-state';
 import { ProfileInfoCard } from './components/profile-info-card';
@@ -31,12 +32,8 @@ export function ProfileContainer() {
           <div className="flex flex-col gap-6">
             {/* Header */}
             <header>
-              <h1 className="text-2xl font-bold text-foreground mb-1">
-                Account Settings
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Manage your profile and preferences
-              </p>
+              <h1 className="text-2xl font-bold text-foreground mb-1">Account Settings</h1>
+              <p className="text-sm text-muted-foreground">Manage your profile and preferences</p>
             </header>
 
             {/* Two Column Layout */}
@@ -55,6 +52,7 @@ export function ProfileContainer() {
 
               {/* Right Column */}
               <section className="flex flex-col gap-6" aria-label="Security Settings">
+                <ChangeEmailForm />
                 <ChangePasswordForm
                   onChangePassword={changePassword}
                   isLoading={isChangingPassword}

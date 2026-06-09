@@ -319,4 +319,78 @@ export class AuthController {
       next(err);
     }
   }
+  static async requestEmailChange(req: Request, res: Response, next: NextFunction) {
+    try {
+      const authReq = req as AuthRequest;
+      if (!authReq.user) throw new AppError('Unauthenticated', 401);
+
+      const { newEmail, currentPassword } = req.body;
+
+      const user = await UserService.findById(authReq.user.id);
+      if (!user) throw new AppError('User not found', 404);
+
+      // Validate current password
+      const isValid = await AuthService.validatePassword(currentPassword, user.passwordHash);
+      if (!isValid) throw new AppError('Invalid current password', 400);
+
+      // Check if new email is already in use
+      if (newEmail.toLowerCase() === user.email.toLowerCase()) {
+        throw new AppError('New email must be different from current email', 400);
+      }
+      const existingUser = await UserService.findByEmail(newEmail);
+      if (existingUser) {
+        throw new AppError('Email is already in use by another account', 400);
+      }
+
+      // Generate tokens
+      const token = crypto.randomBytes(32).toString('hex');
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+      const tokenExpires = new Date(Date.now() + 3600000); // 1 hour
+
+      user.pendingNewEmail = newEmail;
+      user.changeEmailToken = tokenHash;
+      user.changeEmailTokenExpires = tokenExpires;
+      await user.save();
+
+      // Send emails
+      await EmailService.sendEmailChangeAlert(user.email, user.role);
+      await EmailService.sendEmailChangeVerification(newEmail, token, user.role);
+
+      res.status(200).json({ success: true, message: 'Verification email sent to new address' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  static async verifyEmailChange(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token } = req.body;
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+      const now = new Date();
+
+      const user = await UserService.findOne({
+        changeEmailToken: tokenHash,
+        changeEmailTokenExpires: { $gt: now },
+      });
+
+      if (!user || !user.pendingNewEmail) {
+        throw new AppError('Invalid or expired token', 400);
+      }
+
+      user.email = user.pendingNewEmail;
+      user.pendingNewEmail = undefined;
+      user.changeEmailToken = undefined;
+      user.changeEmailTokenExpires = undefined;
+      // Invalidate all active sessions for the user to ensure security
+      user.refreshToken = [];
+      await user.save();
+
+      // Clear the current user's cookies to force a re-login
+      clearAuthCookies(res);
+
+      res.status(200).json({ success: true, message: 'Email changed successfully' });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
