@@ -12,6 +12,11 @@ export default function VerificationBanner() {
   const [isVisible, setIsVisible] = useState(true);
   const [isSent, setIsSent] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    setIsVisible(true);
+    setIsSent(false);
+  }, [user?.id]);
   
   // React 19 best practice: useTransition for async UI interactions
   const [isPending, startTransition] = useTransition();

@@ -301,11 +301,18 @@ export class AuthController {
         throw new AppError('Invalid or expired verification token', 400);
       }
 
-      // Schedule the first 3-day inactivity reminder!
-      await agenda.schedule('in 3 days', 'send-inactivity-reminder', { 
-        userId: user._id.toString(), 
-        daysInactive: 3 
-      });
+      // Best effort: verification must remain successful even if scheduling fails.
+      try {
+        await agenda.schedule('in 3 days', 'send-inactivity-reminder', {
+          userId: user._id.toString(),
+          daysInactive: 3,
+        });
+      } catch (scheduleError) {
+        console.error(
+          'Failed to schedule inactivity reminder after email verification',
+          scheduleError
+        );
+      }
 
       res.status(200).json({ success: true, message: 'Email verified successfully' });
     } catch (err) {
