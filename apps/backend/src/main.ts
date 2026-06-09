@@ -17,7 +17,7 @@ const startServer = async () => {
   server.on('error', console.error);
 
   try {
-    initAgenda();
+    await initAgenda();
     defineEmailJobs();
     await agenda.start();
     console.log('Agenda job scheduler started');
