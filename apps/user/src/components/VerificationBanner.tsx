@@ -3,7 +3,8 @@
 import { useState, useTransition, useEffect, useRef } from 'react';
 import { useAuthStore } from '@ielts/auth';
 import { Mail, CheckCircle2, X } from 'lucide-react';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
+import { authApi } from '../features/auth/services/auth.api';
 import { Button, useToast } from '@ielts/ui';
 
 export default function VerificationBanner() {
@@ -53,13 +54,9 @@ export default function VerificationBanner() {
   const handleSendVerification = () => {
     startTransition(async () => {
       try {
-        const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/auth/send-verification`,
-          { email: user.email },
-          { withCredentials: true }
-        );
+        const response = await authApi.sendVerification(user.email);
         
-        if (response.data.success) {
+        if (response.success) {
           setIsSent(true);
           toast({
             title: 'Magic Link Sent!',

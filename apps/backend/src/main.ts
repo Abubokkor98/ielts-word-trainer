@@ -16,10 +16,16 @@ const startServer = async () => {
 
   server.on('error', console.error);
 
-  initAgenda();
-  defineEmailJobs();
-  await agenda.start();
-  console.log('Agenda job scheduler started');
+  try {
+    initAgenda();
+    defineEmailJobs();
+    await agenda.start();
+    console.log('Agenda job scheduler started');
+  } catch (error) {
+    console.error('Failed to start Agenda job scheduler:', error);
+    server.close();
+    process.exit(1);
+  }
 };
 
-startServer();
+void startServer();

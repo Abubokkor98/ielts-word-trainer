@@ -23,6 +23,8 @@ export const sendVerificationSchema = {
 
 export const verifyEmailSchema = {
   body: z.object({
-    token: z.string().min(1, 'Token is required'),
+    token: z
+      .string()
+      .regex(/^[a-f0-9]{64}$/i, 'Invalid verification token format'),
   }),
 };

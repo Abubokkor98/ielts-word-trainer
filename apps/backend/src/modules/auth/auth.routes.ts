@@ -36,6 +36,7 @@ router.post('/logout', authenticate, AuthController.logout);
 
 router.post(
   '/send-verification',
+  authenticate,
   strictRateLimit,
   validateRequest(sendVerificationSchema),
   AuthController.sendVerification
