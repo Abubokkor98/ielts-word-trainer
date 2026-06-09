@@ -1,10 +1,18 @@
 import { agenda } from '../config/agenda';
 import { EmailService } from '../core/services/email.service';
 import { User } from '../modules/users/users.model';
+import { z } from 'zod';
+
+const inactivityPayloadSchema = z.object({
+  userId: z.string().min(1),
+  daysInactive: z.number().int().positive(),
+});
 
 export const defineEmailJobs = () => {
   agenda.define('send-inactivity-reminder', async (job) => {
-    const { userId, daysInactive } = job.attrs.data as { userId: string, daysInactive: number };
+    const parsed = inactivityPayloadSchema.safeParse(job.attrs.data);
+    if (!parsed.success) return;
+    const { userId, daysInactive } = parsed.data;
     
     // 1. Check if user still exists
     const user = await User.findById(userId);

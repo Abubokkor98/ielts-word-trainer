@@ -256,21 +256,24 @@ export class AuthController {
 
   static async sendVerification(req: Request, res: Response, next: NextFunction) {
     try {
-      const email = req.body.email;
-      const user = await UserService.findByEmail(email);
-      if (!user) throw new AppError('User not found', 404);
-      if (user.isEmailVerified) throw new AppError('Email is already verified', 400);
+      const authReq = req as AuthRequest;
+      if (!authReq.user) throw new AppError('Unauthenticated', 401);
+      const user = await UserService.findById(authReq.user.id);
+      if (!user || user.isEmailVerified) {
+        return res.status(200).json({ success: true, message: 'If eligible, verification email was sent' });
+      }
 
       const verificationToken = crypto.randomBytes(32).toString('hex');
-      const tokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      const verificationTokenHash = crypto.createHash('sha256').update(verificationToken).digest('hex');
+      const tokenExpires = new Date(Date.now() + 3600000); // 1 hour
 
-      user.verificationToken = verificationToken;
+      user.verificationToken = verificationTokenHash;
       user.verificationTokenExpires = tokenExpires;
       await user.save();
 
       await EmailService.sendVerificationEmail(user.email, verificationToken, user.role);
 
-      res.status(200).json({ success: true, message: 'Verification email sent' });
+      res.status(200).json({ success: true, message: 'If eligible, verification email was sent' });
     } catch (err) {
       next(err);
     }
@@ -279,20 +282,24 @@ export class AuthController {
   static async verifyEmail(req: Request, res: Response, next: NextFunction) {
     try {
       const { token } = req.body;
-      const user = await UserService.findOne({ verificationToken: token });
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+      const now = new Date();
+      const user = await UserService.findOneAndUpdate(
+        {
+          verificationToken: tokenHash,
+          verificationTokenExpires: { $gt: now },
+          isEmailVerified: false,
+        },
+        {
+          $set: { isEmailVerified: true },
+          $unset: { verificationToken: 1, verificationTokenExpires: 1 },
+        },
+        { new: true }
+      );
 
       if (!user) {
         throw new AppError('Invalid or expired verification token', 400);
       }
-
-      if (user.verificationTokenExpires && user.verificationTokenExpires < new Date()) {
-        throw new AppError('Invalid or expired verification token', 400);
-      }
-
-      user.isEmailVerified = true;
-      user.verificationToken = undefined;
-      user.verificationTokenExpires = undefined;
-      await user.save();
 
       // Schedule the first 3-day inactivity reminder!
       await agenda.schedule('in 3 days', 'send-inactivity-reminder', { 

@@ -6,6 +6,7 @@ import { QuizAttemptSchema } from './quiz-attempt.schema';
 import { QuizAttemptService } from './quiz-attempt.service';
 import type { RequestWithTimezone } from '../../middleware/request-with-timezone';
 import { agenda } from '../../config/agenda';
+import { UserService } from '../users/users.service';
 
 export class QuizAttemptController {
   static async create(req: AuthRequest, res: Response) {
@@ -74,17 +75,24 @@ export class QuizAttemptController {
         'data.userId'?: string;
       };
 
-      // 1. Cancel ANY existing inactivity reminders for this user
-      await agenda.cancel({
-        name: 'send-inactivity-reminder',
-        'data.userId': userId,
-      } as AgendaCancelQuery);
+      try {
+        const isVerified = await UserService.isUserVerified(userId);
+        if (isVerified) {
+          // 1. Cancel ANY existing inactivity reminders for this user
+          await agenda.cancel({
+            name: 'send-inactivity-reminder',
+            'data.userId': userId,
+          } as AgendaCancelQuery);
 
-      // 2. Reschedule the 3-day clock from today!
-      await agenda.schedule('in 3 days', 'send-inactivity-reminder', {
-        userId,
-        daysInactive: 3,
-      });
+          // 2. Reschedule the 3-day clock from today!
+          await agenda.schedule('in 3 days', 'send-inactivity-reminder', {
+            userId,
+            daysInactive: 3,
+          });
+        }
+      } catch (scheduleError) {
+        console.error('Failed to reschedule inactivity reminder:', scheduleError);
+      }
 
       return res.status(201).json({
         success: true,

@@ -33,6 +33,11 @@ export const authApi = {
     await axiosInstance.post('/auth/verify', { token });
   },
 
+  sendVerification: async (email: string): Promise<{ success: boolean; message: string }> => {
+    const { data } = await axiosInstance.post('/auth/send-verification', { email });
+    return data;
+  },
+
   getMe: async (config?: { skipErrorLogging?: boolean }): Promise<AuthResponse['data']> => {
     const { data } = await axiosInstance.get<{
       success: boolean;

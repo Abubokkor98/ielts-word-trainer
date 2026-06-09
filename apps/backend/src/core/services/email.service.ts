@@ -95,7 +95,7 @@ export class EmailService {
           <h1>Email Verification</h1>
           <p>Thank you for registering! Please click the link below to verify your email address:</p>
           <a href="${verifyUrl}">Verify Email</a>
-          <p>This link will expire in 24 hours.</p>
+          <p>This link will expire in 1 hour.</p>
           <p>If you didn't create an account, please ignore this email.</p>
         `,
       });
@@ -140,13 +140,20 @@ export class EmailService {
       message = `It's been ${daysInactive} days since your last practice.`;
     }
 
+    const safeName = name
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
     try {
       await transporter.sendMail({
         from: process.env.SMTP_FROM || '"IELTS Vocabs" <noreply@ieltsvocabs.com>',
         to: email,
         subject: `${title} - IELTS Vocabs`,
         html: `
-          <h1>Hi ${name},</h1>
+          <h1>Hi ${safeName},</h1>
           <p>${message}</p>
           <a href="${appUrl}">Resume Practice Now</a>
           <p>You can turn off smart learning reminders in your account settings.</p>

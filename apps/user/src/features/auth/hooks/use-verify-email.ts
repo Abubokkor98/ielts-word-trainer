@@ -3,14 +3,14 @@ import { authApi } from '../services/auth.api';
 import { useAuthStore } from '@ielts/auth';
 
 export function useVerifyEmail() {
-  const { user, setUser } = useAuthStore();
+  const { setUser } = useAuthStore();
 
   const mutation = useMutation({
     mutationFn: (token: string) => authApi.verifyEmail(token),
     onSuccess: () => {
-      if (user) {
-        setUser({ ...user, isEmailVerified: true });
-      }
+      const currentUser = useAuthStore.getState().user;
+      if (!currentUser) return;
+      setUser({ ...currentUser, isEmailVerified: true });
     },
   });
 

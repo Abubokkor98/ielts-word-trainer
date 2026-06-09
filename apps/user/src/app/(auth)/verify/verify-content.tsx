@@ -13,13 +13,13 @@ export function VerifyContent() {
   const token = searchParams.get('token');
   const { verifyEmail, isVerifying, isSuccess, isError, error } = useVerifyEmail();
   
-  const hasFetched = useRef(false);
+  const lastSubmittedToken = useRef<string | null>(null);
 
   useEffect(() => {
     if (!token) return;
-    if (hasFetched.current) return;
+    if (lastSubmittedToken.current === token) return;
     
-    hasFetched.current = true;
+    lastSubmittedToken.current = token;
     verifyEmail(token);
   }, [token, verifyEmail]);
 
