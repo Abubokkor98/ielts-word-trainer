@@ -2,7 +2,7 @@
 
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label } from '@ielts/ui';
 import { Pencil, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { UpdateProfileRequest, UserProfile } from '../types';
 
 // ============================================================================
@@ -26,6 +26,12 @@ export function ProfileDetailsSection({
 }: ProfileDetailsSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(profile.name);
+
+  useEffect(() => {
+    if (!isEditing) {
+      setName(profile.name);
+    }
+  }, [profile.name, isEditing]);
 
   const handleSave = (event: React.FormEvent) => {
     event.preventDefault();

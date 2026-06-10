@@ -30,6 +30,7 @@ export function SettingsMobileTabs({ sections }: SettingsMobileTabsProps) {
             <TabsTrigger
               key={section.id}
               value={section.id}
+              aria-label={section.title}
               className={cn(
                 'flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-medium flex-1',
                 'text-muted-foreground',
@@ -38,7 +39,9 @@ export function SettingsMobileTabs({ sections }: SettingsMobileTabsProps) {
               )}
             >
               <Icon className="h-3.5 w-3.5 shrink-0" />
-              <span className="hidden sm:inline">{section.title}</span>
+              <span className="hidden sm:inline" aria-hidden="true">
+                {section.title}
+              </span>
             </TabsTrigger>
           );
         })}
