@@ -20,6 +20,11 @@ export interface ResetPasswordCredentials {
   password: string;
 }
 
+export interface ChangeEmailCredentials {
+  newEmail: string;
+  currentPassword: string;
+}
+
 export interface AuthResponse {
   success: boolean;
   accessToken: string;

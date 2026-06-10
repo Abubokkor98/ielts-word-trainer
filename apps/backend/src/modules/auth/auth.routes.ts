@@ -12,6 +12,8 @@ import {
   registerSchema,
   sendVerificationSchema,
   verifyEmailSchema,
+  changeEmailRequestSchema,
+  verifyEmailChangeSchema,
 } from './auth.validation';
 
 const router = Router();
@@ -47,6 +49,21 @@ router.post(
   strictRateLimit,
   validateRequest(verifyEmailSchema),
   AuthController.verifyEmail
+);
+
+router.post(
+  '/change-email/request',
+  authenticate,
+  strictRateLimit,
+  validateRequest(changeEmailRequestSchema),
+  AuthController.requestEmailChange
+);
+
+router.post(
+  '/change-email/verify',
+  strictRateLimit,
+  validateRequest(verifyEmailChangeSchema),
+  AuthController.verifyEmailChange
 );
 
 export default router;

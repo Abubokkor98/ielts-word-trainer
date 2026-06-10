@@ -11,7 +11,7 @@ const router = Router();
 
 const requestResetSchema = {
   body: z.object({
-    email: z.string().email(),
+    email: z.email(),
   }),
 };
 
@@ -26,13 +26,13 @@ router.post(
   '/request-reset',
   passwordResetRateLimit,
   validateRequest(requestResetSchema),
-  AdminPasswordResetController.requestReset,
+  AdminPasswordResetController.requestReset
 );
 router.post(
   '/reset-password',
   strictRateLimit,
   validateRequest(resetPasswordSchema),
-  AdminPasswordResetController.resetPassword,
+  AdminPasswordResetController.resetPassword
 );
 
 export default router;
