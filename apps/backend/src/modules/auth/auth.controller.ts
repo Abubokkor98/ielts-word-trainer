@@ -342,6 +342,15 @@ export class AuthController {
         throw new AppError('Email is already in use by another account', 400);
       }
 
+      // Check if another user has this as a currently valid pending email
+      const pendingUser = await UserService.findOne({
+        pendingNewEmail: newEmail,
+        changeEmailTokenExpires: { $gt: new Date() },
+      });
+      if (pendingUser && pendingUser._id.toString() !== user._id.toString()) {
+        throw new AppError('This email is currently pending verification by another user', 400);
+      }
+
       // Generate tokens
       const token = crypto.randomBytes(32).toString('hex');
       const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
@@ -378,9 +387,12 @@ export class AuthController {
       }
 
       user.email = user.pendingNewEmail;
+      user.isEmailVerified = true;
       user.pendingNewEmail = undefined;
       user.changeEmailToken = undefined;
       user.changeEmailTokenExpires = undefined;
+      user.verificationToken = undefined;
+      user.verificationTokenExpires = undefined;
       // Invalidate all active sessions for the user to ensure security
       user.refreshToken = [];
       await user.save();

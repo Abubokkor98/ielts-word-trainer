@@ -20,8 +20,8 @@ export function VerifyEmailChangeContent() {
     if (lastSubmittedToken.current === token) return;
 
     lastSubmittedToken.current = token;
-    verifyEmailChange(token).catch((err) => {
-      console.error('Email change verification failed:', err);
+    verifyEmailChange(token).catch(() => {
+      console.warn('Email change verification failed');
     });
   }, [token, verifyEmailChange]);
 
