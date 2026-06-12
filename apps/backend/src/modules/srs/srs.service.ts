@@ -220,7 +220,7 @@ export class SRSService {
     });
 
     if (limit > 0) {
-      pipeline.push({ $limit: limit });
+      pipeline.push({ $sample: { size: limit } });
     }
 
     const words = await SRSItem.aggregate(pipeline);
@@ -279,7 +279,7 @@ export class SRSService {
     // 4. Sample or Limit
     pipeline.push(
       { $project: { isStudied: 0 } }, // Remove temp field
-      { $limit: limit },
+      { $sample: { size: limit } },
       {
         $lookup: {
           from: 'topics',

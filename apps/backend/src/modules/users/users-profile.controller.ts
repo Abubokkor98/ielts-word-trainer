@@ -55,6 +55,7 @@ export class UserProfileController {
           xp: user.xp,
           streak: user.streak,
           profilePictureUrl: user.profilePictureUrl,
+          isEmailVerified: user.isEmailVerified,
           createdAt: user.createdAt,
           stats,
         },
@@ -106,6 +107,7 @@ export class UserProfileController {
           name: user.name,
           email: user.email,
           profilePictureUrl: user.profilePictureUrl,
+          isEmailVerified: user.isEmailVerified,
         },
       });
     } catch (error) {
@@ -120,6 +122,10 @@ export class UserProfileController {
 
       const user = await UserService.findById(authReq.user.id);
       if (!user) throw new AppError('User not found', 404);
+
+      if (!user.isEmailVerified) {
+        throw new AppError('Email verification is required to change password', 403);
+      }
 
       const { currentPassword, newPassword } = req.body;
 

@@ -7,6 +7,7 @@ export const quizApi = {
     if (difficulty && difficulty !== 'mixed') {
       params.append('difficulty', difficulty);
     }
+
     const { data } = await axiosInstance.get<{ data: Question[] }>(`/quiz/generate?${params}`);
     return data.data;
   },

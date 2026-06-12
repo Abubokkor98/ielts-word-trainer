@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Badge,
   Button,
   Card,
   CardContent,
@@ -13,9 +14,11 @@ import {
   useToast,
 } from '@ielts/ui';
 import type { AxiosError } from 'axios';
-import { Pencil, X } from 'lucide-react';
+import { Pencil, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useRequestEmailChange } from '../../auth/hooks/use-change-email';
+import { useAuthStore } from '@ielts/auth';
+import { authApi } from '../../auth/services/auth.api';
 
 // ============================================================================
 // Types
@@ -32,6 +35,31 @@ interface SecuritySectionProps {
 export function SecuritySection({ email }: SecuritySectionProps) {
   const { toast } = useToast();
   const { requestEmailChange, isRequesting } = useRequestEmailChange();
+  
+  const user = useAuthStore((state) => state.user);
+  const isEmailVerified = user?.isEmailVerified ?? false;
+
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
+
+  const handleResendVerification = async () => {
+    if (!user) return;
+    setIsSendingVerification(true);
+    try {
+      await authApi.sendVerification(user.email);
+      toast({
+        title: 'Verification email sent',
+        description: 'Please check your inbox to verify your email address.',
+      });
+    } catch (err) {
+      toast({
+        title: 'Request failed',
+        description: 'Failed to send verification email. Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSendingVerification(false);
+    }
+  };
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -132,14 +160,39 @@ export function SecuritySection({ email }: SecuritySectionProps) {
                 <dt className="text-xs text-muted-foreground uppercase font-semibold tracking-wider mb-1">
                   Email Address
                 </dt>
-                <dd className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <span className="truncate">{email}</span>
+                <dd className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm font-medium text-foreground">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate">{email}</span>
+                    {isEmailVerified ? (
+                      <Badge variant="outline" className="text-emerald-500 border-emerald-500/20 bg-emerald-500/10 gap-1 rounded-full px-2 py-0 text-[10px] font-medium h-5">
+                        <CheckCircle2 className="h-3 w-3" />
+                        Verified
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-amber-500 border-amber-500/20 bg-amber-500/10 gap-1 rounded-full px-2 py-0 text-[10px] font-medium h-5">
+                        <AlertCircle className="h-3 w-3" />
+                        Unverified
+                      </Badge>
+                    )}
+                  </div>
+
+                  {!isEmailVerified && (
+                    <button
+                      type="button"
+                      onClick={handleResendVerification}
+                      disabled={isSendingVerification}
+                      className="text-xs text-primary hover:underline transition-all sm:ml-2 disabled:opacity-50"
+                    >
+                      {isSendingVerification ? 'Sending...' : 'Resend Verification'}
+                    </button>
+                  )}
+
                   {!isFormOpen && (
                     <button
                       type="button"
                       onClick={() => setIsFormOpen(true)}
                       aria-label="Change email address"
-                      className="text-muted-foreground hover:text-primary transition-colors duration-200 shrink-0"
+                      className="text-muted-foreground hover:text-primary transition-colors duration-200 shrink-0 sm:ml-auto"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>

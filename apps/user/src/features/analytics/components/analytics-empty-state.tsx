@@ -5,7 +5,9 @@ import Link from 'next/link';
 export function AnalyticsEmptyState() {
   return (
     <div className="flex flex-col items-center justify-center text-center min-h-[50vh] gap-4 py-16">
-      <span className="text-5xl" aria-hidden="true">📊</span>
+      <div className="inline-flex p-4 rounded-full border bg-primary/10 border-primary/20 text-primary mb-1">
+        <BarChart3 className="w-10 h-10 md:w-12 md:h-12" strokeWidth={1.5} />
+      </div>
       <h2 className="text-xl font-bold text-foreground">
         No Quiz Data Yet
       </h2>

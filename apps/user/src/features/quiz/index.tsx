@@ -12,6 +12,7 @@ import { QuizResults } from './components/quiz-results';
 import { QuizStartScreen } from './components/quiz-start-screen';
 import { useQuizGame } from './hooks/use-quiz-game';
 import { quizApi } from './services/quiz.api';
+import { VerificationModal } from '../../components/VerificationModal';
 import type { QuizAttempt } from './types';
 
 export function QuizContainer() {
@@ -32,6 +33,8 @@ export function QuizContainer() {
     handleAnswerSelection,
     questionAnswers,
     startTime,
+    isLimitModalOpen,
+    setIsLimitModalOpen,
   } = useQuizGame({
     isAuthenticated,
     selectedDifficulty,
@@ -49,8 +52,17 @@ export function QuizContainer() {
       queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       queryClient.invalidateQueries({ queryKey: ['srs', 'stats'] });
     },
-    onError: (error: AxiosError) => {
+    onError: (error: AxiosError<{ message?: string }>) => {
       console.error('Failed to save quiz attempt:', error);
+      
+      if (
+        error.response?.status === 403 &&
+        error.response?.data?.message?.includes('1 quiz per day')
+      ) {
+        setIsLimitModalOpen(true);
+        return;
+      }
+
       toast({
         title: 'Failed to save quiz',
         description: "Your progress couldn't be saved.",
@@ -63,12 +75,12 @@ export function QuizContainer() {
   // We use a ref to ensure we only save once per quiz finish
   const hasSavedRef = useRef(false);
 
-  // Reset saved ref when quiz starts (questions become empty or change)
+  // Reset saved ref when quiz starts (showResult becomes false)
   useEffect(() => {
-    if (questions.length === 0) {
+    if (!showResult) {
       hasSavedRef.current = false;
     }
-  }, [questions]);
+  }, [showResult]);
 
   // Derive score from answers map locally in render to be safe
   const calculatedScore = Array.from(questionAnswers.values()).filter((a) => a.isCorrect).length;
@@ -133,23 +145,35 @@ export function QuizContainer() {
 
   if (questions.length === 0 && !showResult) {
     return (
-      <QuizStartScreen
-        onStart={handleStart}
-        isLoading={isLoadingQuiz}
-        selectedDifficulty={selectedDifficulty}
-        onDifficultyChange={setSelectedDifficulty}
-      />
+      <>
+        <QuizStartScreen
+          onStart={handleStart}
+          isLoading={isLoadingQuiz}
+          selectedDifficulty={selectedDifficulty}
+          onDifficultyChange={setSelectedDifficulty}
+        />
+        <VerificationModal 
+          isOpen={isLimitModalOpen} 
+          onClose={() => setIsLimitModalOpen(false)} 
+        />
+      </>
     );
   }
 
   if (showResult) {
     return (
-      <QuizResults
-        score={calculatedScore}
-        questions={questions}
-        answers={questionAnswers}
-        onRestart={handleStart}
-      />
+      <>
+        <QuizResults
+          score={calculatedScore}
+          questions={questions}
+          answers={questionAnswers}
+          onRestart={handleStart}
+        />
+        <VerificationModal 
+          isOpen={isLimitModalOpen} 
+          onClose={() => setIsLimitModalOpen(false)} 
+        />
+      </>
     );
   }
 

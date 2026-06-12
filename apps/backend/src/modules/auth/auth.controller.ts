@@ -18,6 +18,21 @@ export class AuthController {
       }
 
       const user = await UserService.createUser(req.body);
+
+      // Step 1: Auto-generate verification token for frictionless registration
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationTokenHash = crypto.createHash('sha256').update(verificationToken).digest('hex');
+      const tokenExpires = new Date(Date.now() + 3600000); // 1 hour
+
+      user.verificationToken = verificationTokenHash;
+      user.verificationTokenExpires = tokenExpires;
+      await user.save();
+
+      // Step 1: Send the email in the background (fire and forget)
+      EmailService.sendVerificationEmail(user.email, verificationToken, user.role).catch((err) => {
+        console.error('Failed to send auto-verification email during registration:', err);
+      });
+
       const { accessToken, refreshToken } = await AuthService.generateTokens(
         user
       );
