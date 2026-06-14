@@ -31,6 +31,7 @@ export class QuizAttemptController {
         if (daysDiff === 0) {
           return res.status(403).json({
             success: false,
+            code: 'QUIZ_DAILY_LIMIT_UNVERIFIED',
             message: 'Unverified users can only take 1 quiz per day. Please verify your email to unlock unlimited quizzes.',
           });
         }

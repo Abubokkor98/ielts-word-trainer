@@ -1,6 +1,6 @@
 import { useToast } from '@ielts/ui';
 import { useAuthStore } from '@ielts/auth';
-import { useState, useEffect, useCallback, useTransition } from 'react';
+import { useState, useEffect, useCallback, useTransition, useRef } from 'react';
 import { authApi } from '../services/auth.api';
 
 import type { AxiosError } from 'axios';
@@ -11,6 +11,7 @@ const STORAGE_KEY = 'lastVerificationResend';
 export function useVerificationResend() {
   const { toast } = useToast();
   const user = useAuthStore((state) => state.user);
+  const inFlightRef = useRef(false);
   
   const [cooldown, setCooldown] = useState(() => {
     if (typeof window === 'undefined') return 0;
@@ -36,7 +37,8 @@ export function useVerificationResend() {
   }, [cooldown]);
 
   const sendVerification = useCallback(() => {
-    if (!user || cooldown > 0) return;
+    if (!user || cooldown > 0 || inFlightRef.current) return;
+    inFlightRef.current = true;
 
     startTransition(async () => {
       try {
@@ -58,6 +60,8 @@ export function useVerificationResend() {
           description: errorMessage,
           variant: 'destructive',
         });
+      } finally {
+        inFlightRef.current = false;
       }
     });
   }, [user, cooldown, toast]);

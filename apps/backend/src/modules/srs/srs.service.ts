@@ -165,6 +165,8 @@ export class SRSService {
     difficulty?: string;
     limit?: number;
   }) {
+    if (limit <= 0) return [];
+
     const pipeline: any[] = [
       // 1. Match due SRS items
       {

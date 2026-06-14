@@ -43,7 +43,7 @@ export function PasswordSection({
 }: PasswordSectionProps) {
   const { toast } = useToast();
   const user = useAuthStore((state) => state.user);
-  const isEmailVerified = user?.isEmailVerified ?? profileIsVerified;
+  const isEmailVerified = profileIsVerified || user?.isEmailVerified === true;
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [passwords, setPasswords] = useState({

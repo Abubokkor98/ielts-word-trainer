@@ -33,7 +33,7 @@ export function ProfileHeroCard({
   isDeletingPicture,
 }: ProfileHeroCardProps) {
   const user = useAuthStore((state) => state.user);
-  const isEmailVerified = user?.isEmailVerified ?? profile.isEmailVerified;
+  const isEmailVerified = profile.isEmailVerified || user?.isEmailVerified === true;
 
   return (
     <Card className="border-[var(--glass-border)] bg-card/80 backdrop-blur-sm">

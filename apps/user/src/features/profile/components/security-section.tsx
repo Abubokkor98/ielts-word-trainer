@@ -38,7 +38,7 @@ export function SecuritySection({ email, isEmailVerified: profileIsVerified }: S
   const { requestEmailChange, isRequesting } = useRequestEmailChange();
   
   const user = useAuthStore((state) => state.user);
-  const isEmailVerified = user?.isEmailVerified ?? profileIsVerified;
+  const isEmailVerified = profileIsVerified || user?.isEmailVerified === true;
 
   const { sendVerification, isPending, cooldown, isAllowed } = useVerificationResend();
 

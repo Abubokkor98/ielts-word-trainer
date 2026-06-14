@@ -23,7 +23,7 @@ export class QuizController {
           const daysDiff = StreakUtils.getDaysDifference(lastQuizDay, today);
 
           if (daysDiff === 0) {
-            throw new AppError('Unverified users can only take 1 quiz per day. Please verify your email to unlock unlimited quizzes.', 403);
+            throw new AppError('Unverified users can only take 1 quiz per day. Please verify your email to unlock unlimited quizzes.', 403, 'QUIZ_DAILY_LIMIT_UNVERIFIED');
           }
         }
       }
