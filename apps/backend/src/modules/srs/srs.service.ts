@@ -165,6 +165,8 @@ export class SRSService {
     difficulty?: string;
     limit?: number;
   }) {
+    if (limit <= 0) return [];
+
     const pipeline: any[] = [
       // 1. Match due SRS items
       {
@@ -220,7 +222,7 @@ export class SRSService {
     });
 
     if (limit > 0) {
-      pipeline.push({ $limit: limit });
+      pipeline.push({ $sample: { size: limit } });
     }
 
     const words = await SRSItem.aggregate(pipeline);
@@ -233,6 +235,8 @@ export class SRSService {
     difficulty?: string,
     limit: number = 10
   ) {
+    if (limit <= 0) return [];
+
     // Utilize Word model to find new words via Aggregation
     // Improved: Avoid fetching all seen IDs into memory ($nin method)
     const pipeline: any[] = [];
@@ -279,7 +283,7 @@ export class SRSService {
     // 4. Sample or Limit
     pipeline.push(
       { $project: { isStudied: 0 } }, // Remove temp field
-      { $limit: limit },
+      { $sample: { size: limit } },
       {
         $lookup: {
           from: 'topics',

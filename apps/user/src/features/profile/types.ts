@@ -9,6 +9,7 @@ export interface UserProfile {
   lastQuizDate?: string;
   profilePictureUrl?: string;
   profilePictureId?: string;
+  isEmailVerified: boolean;
 }
 
 export interface UpdateProfileRequest {

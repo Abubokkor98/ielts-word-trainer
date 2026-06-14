@@ -49,17 +49,15 @@ export const createServer = (): Express => {
     next();
   });
 
-  // SRS endpoints: Very short cache (10s) - data changes after every study session
-  // React Query staleTime: 2min, but invalidates on mutations
+  // SRS endpoints: Highly dynamic, React Query handles caching
   app.use('/api/v1/srs', (_req, res, next) => {
-    res.setHeader('Cache-Control', 'private, max-age=10');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     next();
   });
 
-  // Quiz/Analytics: 1 minute cache - updates after quiz completion
-  // React Query staleTime: 10min, but invalidates on quiz save
+  // Quiz/Analytics: Highly dynamic, React Query handles caching
   app.use('/api/v1/quiz', (_req, res, next) => {
-    res.setHeader('Cache-Control', 'private, max-age=60');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     next();
   });
 

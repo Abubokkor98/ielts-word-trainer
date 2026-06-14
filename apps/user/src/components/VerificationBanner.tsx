@@ -11,16 +11,45 @@ export default function VerificationBanner() {
   const user = useAuthStore((state) => state.user);
   const [isVisible, setIsVisible] = useState(true);
   const [isSent, setIsSent] = useState(false);
+  const [isNewlyRegistered, setIsNewlyRegistered] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
     setIsVisible(true);
-    setIsSent(false);
   }, [user?.id]);
   
   // React 19 best practice: useTransition for async UI interactions
   const [isPending, startTransition] = useTransition();
   const bannerRef = useRef<HTMLElement>(null);
+
+  // Read session storage on mount
+  useEffect(() => {
+    if (sessionStorage.getItem('justRegistered') === 'true') {
+      setIsNewlyRegistered(true);
+      // Clean up immediately so it doesn't persist if they log out and log back in
+      sessionStorage.removeItem('justRegistered');
+    }
+
+    const lastSent = sessionStorage.getItem('lastVerificationResend');
+    if (lastSent) {
+      const elapsed = Math.floor((Date.now() - parseInt(lastSent, 10)) / 1000);
+      if (elapsed < 60) {
+        setCooldown(60 - elapsed);
+        setIsSent(true);
+      }
+    }
+  }, []);
+
+  // Cooldown timer logic
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setInterval(() => {
+        setCooldown((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [cooldown]);
 
   useEffect(() => {
     if (!user || user.isEmailVerified || !isVisible || !bannerRef.current) {
@@ -63,6 +92,8 @@ export default function VerificationBanner() {
         
         if (response.success) {
           setIsSent(true);
+          setCooldown(60);
+          sessionStorage.setItem('lastVerificationResend', Date.now().toString());
           toast({
             title: 'Magic Link Sent!',
             description: 'Please check your inbox to verify your email.',
@@ -83,6 +114,8 @@ export default function VerificationBanner() {
     });
   };
 
+  const isStateA = isNewlyRegistered || isSent;
+
   return (
     <aside 
       ref={bannerRef}
@@ -96,27 +129,39 @@ export default function VerificationBanner() {
           </div>
           
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
-              <p className="font-medium text-xs sm:text-sm leading-tight">Verify your email address</p>
-              <span className="hidden sm:inline text-primary-foreground/60">-</span>
-              <p className="text-[10px] sm:text-xs text-primary-foreground/80 leading-tight">
-                Turn on smart learning reminders to boost your vocabulary.
-              </p>
-            </div>
+            {isStateA ? (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                <p className="font-medium text-xs sm:text-sm leading-tight">Welcome!</p>
+                <span className="hidden sm:inline text-primary-foreground/60">-</span>
+                <p className="text-[10px] sm:text-xs text-primary-foreground/80 leading-tight">
+                  We've automatically sent a verification link to your email. Please check your inbox.
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                <p className="font-medium text-xs sm:text-sm leading-tight">Verify your email address</p>
+                <span className="hidden sm:inline text-primary-foreground/60">-</span>
+                <p className="text-[10px] sm:text-xs text-primary-foreground/80 leading-tight">
+                  Turn on smart learning reminders to boost your vocabulary.
+                </p>
+              </div>
+            )}
 
             <Button
               onClick={handleSendVerification}
-              disabled={isPending || isSent}
+              disabled={isPending || cooldown > 0}
               size="sm"
               variant="secondary"
               className="h-7 text-xs px-3 whitespace-nowrap bg-background text-foreground hover:bg-background/90 w-fit shrink-0"
             >
-              {isSent ? (
+              {cooldown > 0 ? (
                 <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> Link Sent
+                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" /> Sent ({cooldown}s)
                 </span>
               ) : isPending ? (
                 'Sending...'
+              ) : isStateA ? (
+                'Resend Magic Link'
               ) : (
                 'Send Magic Link'
               )}

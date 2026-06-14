@@ -1,8 +1,10 @@
 import { useToast } from '@ielts/ui';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import type { AxiosError } from 'axios';
 import { useEffect, useRef, useState } from 'react';
+import { useAuthStore } from '@ielts/auth';
 import { quizApi } from '../services/quiz.api';
+import { isQuizLimitError } from '../utils';
 import type { Question, QuestionAnswer } from '../types';
 
 interface UseQuizGameProps {
@@ -18,6 +20,9 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [questionStartTime, setQuestionStartTime] = useState<Date | null>(null);
   const [questionAnswers, setQuestionAnswers] = useState<Map<number, QuestionAnswer>>(new Map());
+  const [isLimitModalOpen, setIsLimitModalOpen] = useState(false);
+  const [hasCompletedQuizToday, setHasCompletedQuizToday] = useState(false);
+  const isEmailVerified = useAuthStore((state) => state.user?.isEmailVerified ?? false);
 
   const { toast } = useToast();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -30,11 +35,17 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
     };
   }, []);
 
-  const { refetch: fetchQuiz, isLoading: isLoadingQuiz } = useQuery({
-    queryKey: ['quiz', 'generate', selectedDifficulty],
-    queryFn: () => quizApi.generateQuiz(selectedDifficulty),
-    enabled: false,
-    retry: false,
+  // Hydrate client-side guard from session storage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (sessionStorage.getItem('hasCompletedQuizToday') === 'true') {
+        setHasCompletedQuizToday(true);
+      }
+    }
+  }, []);
+
+  const { mutateAsync: generateQuizMutation, isPending: isLoadingQuiz } = useMutation({
+    mutationFn: () => quizApi.generateQuiz(selectedDifficulty),
   });
 
   const startQuiz = async () => {
@@ -45,11 +56,27 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
       timeoutRef.current = null;
     }
 
-    const result = await fetchQuiz();
+    // Client-side guard: if unverified and already completed a quiz this session, block immediately
+    if (!isEmailVerified && hasCompletedQuizToday) {
+      setIsLimitModalOpen(true);
+      return;
+    }
 
-    if (result.error) {
-      const error = result.error as AxiosError<{ message: string }>;
-      if (
+    try {
+      const data = await generateQuizMutation();
+      setQuestions(data);
+      setCurrentIdx(0);
+      setShowResult(false);
+      setSelectedAnswer(null);
+      setStartTime(new Date());
+      setQuestionStartTime(new Date());
+      setQuestionAnswers(new Map());
+    } catch (err) {
+      const error = err as AxiosError<{ message: string }>;
+      
+      if (isQuizLimitError(error)) {
+        setIsLimitModalOpen(true);
+      } else if (
         error.response?.status === 400 &&
         error.response?.data?.message?.includes('Not enough words')
       ) {
@@ -64,17 +91,6 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
           variant: 'destructive',
         });
       }
-      return;
-    }
-
-    if (result.data) {
-      setQuestions(result.data);
-      setCurrentIdx(0);
-      setShowResult(false);
-      setSelectedAnswer(null);
-      setStartTime(new Date());
-      setQuestionStartTime(new Date());
-      setQuestionAnswers(new Map());
     }
   };
 
@@ -125,6 +141,10 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
       setCurrentIdx((i) => i + 1);
     } else {
       setShowResult(true);
+      if (!isEmailVerified) {
+        setHasCompletedQuizToday(true);
+        sessionStorage.setItem('hasCompletedQuizToday', 'true');
+      }
     }
   };
 
@@ -138,5 +158,7 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
     isLoadingQuiz,
     questionAnswers,
     startTime,
+    isLimitModalOpen,
+    setIsLimitModalOpen,
   };
 }

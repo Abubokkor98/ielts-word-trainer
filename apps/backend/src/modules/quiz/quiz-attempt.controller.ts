@@ -7,6 +7,7 @@ import { QuizAttemptService } from './quiz-attempt.service';
 import type { RequestWithTimezone } from '../../middleware/request-with-timezone';
 import { agenda } from '../../config/agenda';
 import { UserService } from '../users/users.service';
+import { StreakUtils } from '../users/streak-utils';
 
 export class QuizAttemptController {
   static async create(req: AuthRequest, res: Response) {
@@ -17,6 +18,23 @@ export class QuizAttemptController {
           success: false,
           message: 'Unauthorized',
         });
+      }
+
+      const userTimezone = (req as RequestWithTimezone).userTimezone || 'UTC';
+      const user = await UserService.findById(userId);
+
+      if (user && !user.isEmailVerified && user.lastQuizDate) {
+        const lastQuizDay = StreakUtils.getUserCalendarDay(userTimezone, user.lastQuizDate);
+        const today = StreakUtils.getUserCalendarDay(userTimezone, new Date());
+        const daysDiff = StreakUtils.getDaysDifference(lastQuizDay, today);
+
+        if (daysDiff === 0) {
+          return res.status(403).json({
+            success: false,
+            code: 'QUIZ_DAILY_LIMIT_UNVERIFIED',
+            message: 'Unverified users can only take 1 quiz per day. Please verify your email to unlock unlimited quizzes.',
+          });
+        }
       }
 
       if (process.env.NODE_ENV !== 'production') {
@@ -38,9 +56,6 @@ export class QuizAttemptController {
         ...q,
         wordId: new mongoose.Types.ObjectId(q.wordId),
       }));
-
-      // Extract user timezone from request header (set by middleware)
-      const userTimezone = (req as RequestWithTimezone).userTimezone || 'UTC';
 
       // Create quiz attempt with timezone
       const attempt = await QuizAttemptService.createAttempt(
@@ -76,8 +91,7 @@ export class QuizAttemptController {
       };
 
       try {
-        const isVerified = await UserService.isUserVerified(userId);
-        if (isVerified) {
+        if (user?.isEmailVerified) {
           // 1. Cancel ANY existing inactivity reminders for this user
           await agenda.cancel({
             name: 'send-inactivity-reminder',

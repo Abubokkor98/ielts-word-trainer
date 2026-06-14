@@ -13,6 +13,7 @@ import {
 } from '@ielts/ui';
 import { Pencil, X } from 'lucide-react';
 import { useState } from 'react';
+import { useAuthStore } from '@ielts/auth';
 import type { ChangePasswordRequest } from '../types';
 
 // ============================================================================
@@ -28,6 +29,7 @@ const MIN_PASSWORD_LENGTH = 6;
 interface PasswordSectionProps {
   readonly onChangePassword: (data: ChangePasswordRequest) => Promise<void>;
   readonly isLoading: boolean;
+  readonly isEmailVerified: boolean;
 }
 
 // ============================================================================
@@ -37,8 +39,12 @@ interface PasswordSectionProps {
 export function PasswordSection({
   onChangePassword,
   isLoading,
+  isEmailVerified: profileIsVerified,
 }: PasswordSectionProps) {
   const { toast } = useToast();
+  const user = useAuthStore((state) => state.user);
+  const isEmailVerified = profileIsVerified || user?.isEmailVerified === true;
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [passwords, setPasswords] = useState({
     current: '',
@@ -107,17 +113,25 @@ export function PasswordSection({
             <dt className="text-xs text-muted-foreground uppercase font-semibold tracking-wider mb-1">
               Password
             </dt>
-            <dd className="flex items-center gap-2 text-sm font-medium text-foreground">
-              <span className="tracking-widest text-muted-foreground">••••••••••</span>
-              {!isFormOpen && (
-                <button
-                  type="button"
-                  onClick={() => setIsFormOpen(true)}
-                  aria-label="Change password"
-                  className="text-muted-foreground hover:text-primary transition-colors duration-200 shrink-0"
-                >
-                  <Pencil className="h-3.5 w-3.5" />
-                </button>
+            <dd className="flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <span className="tracking-widest text-muted-foreground">••••••••••</span>
+                {!isFormOpen && (
+                  <button
+                    type="button"
+                    onClick={() => setIsFormOpen(true)}
+                    disabled={!isEmailVerified}
+                    aria-label="Change password"
+                    className="text-muted-foreground hover:text-primary transition-colors duration-200 shrink-0 disabled:opacity-30 disabled:hover:text-muted-foreground disabled:cursor-not-allowed"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+              {!isEmailVerified && (
+                <p className="text-xs text-amber-500 font-medium">
+                  Please verify your email address to change your password.
+                </p>
               )}
             </dd>
           </dl>

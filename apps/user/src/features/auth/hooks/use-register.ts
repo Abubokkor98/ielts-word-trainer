@@ -22,6 +22,8 @@ export function useRegister() {
         description: 'Welcome to IELTS Word Trainer!',
       });
 
+      sessionStorage.setItem('justRegistered', 'true');
+      sessionStorage.setItem('lastVerificationResend', Date.now().toString());
       router.push('/vocabulary');
     },
     onError: (error: AxiosError<{ message: string }>) => {

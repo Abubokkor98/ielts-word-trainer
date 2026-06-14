@@ -61,7 +61,7 @@ export class QuizService {
     }
 
     // Shuffle the final selection so due/new words are mixed
-    const shuffled = selectedWords.sort(() => 0.5 - Math.random());
+    const shuffled = QuizService.shuffleArray(selectedWords);
     const selected = shuffled.slice(0, limit);
 
     return selected.map((word, index) => {
@@ -85,6 +85,15 @@ export class QuizService {
     });
   }
 
+  private static shuffleArray<T>(arr: T[]): T[] {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
   private static selectQuestionType(_index: number): QuestionType {
     const rand = Math.random();
     // 40% Word -> Meaning
@@ -101,14 +110,14 @@ export class QuizService {
 
   private static generateWordToMeaning(word: IWord, allWords: IWord[]) {
     // Pick 3 distractors
-    const distractors = allWords
-      .filter((w) => w._id.toString() !== word._id.toString())
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3);
+    const distractors = QuizService.shuffleArray(
+      allWords.filter((w) => w._id.toString() !== word._id.toString())
+    ).slice(0, 3);
 
-    const options = [word, ...distractors]
-      .sort(() => 0.5 - Math.random())
-      .map((w) => ({ id: w._id, text: w.meaning }));
+    const options = QuizService.shuffleArray([word, ...distractors]).map((w) => ({
+      id: w._id,
+      text: w.meaning,
+    }));
 
     return {
       id: word._id,
@@ -121,14 +130,14 @@ export class QuizService {
   }
 
   private static generateMeaningToWord(word: IWord, allWords: IWord[]) {
-    const distractors = allWords
-      .filter((w) => w._id.toString() !== word._id.toString())
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3);
+    const distractors = QuizService.shuffleArray(
+      allWords.filter((w) => w._id.toString() !== word._id.toString())
+    ).slice(0, 3);
 
-    const options = [word, ...distractors]
-      .sort(() => 0.5 - Math.random())
-      .map((w) => ({ id: w._id, text: w.word }));
+    const options = QuizService.shuffleArray([word, ...distractors]).map((w) => ({
+      id: w._id,
+      text: w.word,
+    }));
 
     return {
       id: word._id,
@@ -146,18 +155,16 @@ export class QuizService {
     }
 
     const correctSynonym = word.synonyms[0];
-    const distractors = allWords
-      .filter((w) => w._id.toString() !== word._id.toString())
-      .map((w) => w.word)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3);
+    const distractors = QuizService.shuffleArray(
+      allWords.filter((w) => w._id.toString() !== word._id.toString()).map((w) => w.word)
+    ).slice(0, 3);
 
-    const options = [correctSynonym, ...distractors]
-      .sort(() => 0.5 - Math.random())
-      .map((text, idx) => ({
+    const options = QuizService.shuffleArray([correctSynonym, ...distractors]).map(
+      (text, idx) => ({
         id: text === correctSynonym ? word._id : `opt_${idx}`,
         text,
-      }));
+      })
+    );
 
     return {
       id: word._id,
@@ -175,18 +182,16 @@ export class QuizService {
     }
 
     const correctAntonym = word.antonyms[0];
-    const distractors = allWords
-      .filter((w) => w._id.toString() !== word._id.toString())
-      .map((w) => w.word)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3);
+    const distractors = QuizService.shuffleArray(
+      allWords.filter((w) => w._id.toString() !== word._id.toString()).map((w) => w.word)
+    ).slice(0, 3);
 
-    const options = [correctAntonym, ...distractors]
-      .sort(() => 0.5 - Math.random())
-      .map((text, idx) => ({
+    const options = QuizService.shuffleArray([correctAntonym, ...distractors]).map(
+      (text, idx) => ({
         id: text === correctAntonym ? word._id : `opt_${idx}`,
         text,
-      }));
+      })
+    );
 
     return {
       id: word._id,
@@ -214,18 +219,16 @@ export class QuizService {
       '_____',
     );
 
-    const distractors = allWords
-      .filter((w) => w._id.toString() !== word._id.toString())
-      .map((w) => w.word)
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 3);
+    const distractors = QuizService.shuffleArray(
+      allWords.filter((w) => w._id.toString() !== word._id.toString()).map((w) => w.word)
+    ).slice(0, 3);
 
-    const options = [word.word, ...distractors]
-      .sort(() => 0.5 - Math.random())
-      .map((text, idx) => ({
+    const options = QuizService.shuffleArray([word.word, ...distractors]).map(
+      (text, idx) => ({
         id: text === word.word ? word._id : `dist_${idx}`,
         text,
-      }));
+      })
+    );
 
     return {
       id: word._id,
