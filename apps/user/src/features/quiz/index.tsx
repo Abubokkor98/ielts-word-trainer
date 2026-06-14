@@ -13,6 +13,7 @@ import { QuizStartScreen } from './components/quiz-start-screen';
 import { useQuizGame } from './hooks/use-quiz-game';
 import { quizApi } from './services/quiz.api';
 import { VerificationModal } from '../../components/VerificationModal';
+import { isQuizLimitError } from './utils';
 import type { QuizAttempt } from './types';
 
 export function QuizContainer() {
@@ -55,10 +56,7 @@ export function QuizContainer() {
     onError: (error: AxiosError<{ message?: string }>) => {
       console.error('Failed to save quiz attempt:', error);
       
-      if (
-        error.response?.status === 403 &&
-        error.response?.data?.message?.includes('1 quiz per day')
-      ) {
+      if (isQuizLimitError(error)) {
         setIsLimitModalOpen(true);
         return;
       }

@@ -18,7 +18,7 @@ import { Pencil, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useRequestEmailChange } from '../../auth/hooks/use-change-email';
 import { useAuthStore } from '@ielts/auth';
-import { authApi } from '../../auth/services/auth.api';
+import { useVerificationResend } from '../../auth/hooks/use-verification-resend';
 
 // ============================================================================
 // Types
@@ -26,40 +26,21 @@ import { authApi } from '../../auth/services/auth.api';
 
 interface SecuritySectionProps {
   readonly email: string;
+  readonly isEmailVerified: boolean;
 }
 
 // ============================================================================
 // Component
 // ============================================================================
 
-export function SecuritySection({ email }: SecuritySectionProps) {
+export function SecuritySection({ email, isEmailVerified: profileIsVerified }: SecuritySectionProps) {
   const { toast } = useToast();
   const { requestEmailChange, isRequesting } = useRequestEmailChange();
   
   const user = useAuthStore((state) => state.user);
-  const isEmailVerified = user?.isEmailVerified ?? false;
+  const isEmailVerified = user?.isEmailVerified ?? profileIsVerified;
 
-  const [isSendingVerification, setIsSendingVerification] = useState(false);
-
-  const handleResendVerification = async () => {
-    if (!user) return;
-    setIsSendingVerification(true);
-    try {
-      await authApi.sendVerification(user.email);
-      toast({
-        title: 'Verification email sent',
-        description: 'Please check your inbox to verify your email address.',
-      });
-    } catch (err) {
-      toast({
-        title: 'Request failed',
-        description: 'Failed to send verification email. Please try again later.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsSendingVerification(false);
-    }
-  };
+  const { sendVerification, isPending, cooldown, isAllowed } = useVerificationResend();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
@@ -179,11 +160,11 @@ export function SecuritySection({ email }: SecuritySectionProps) {
                   {!isEmailVerified && (
                     <button
                       type="button"
-                      onClick={handleResendVerification}
-                      disabled={isSendingVerification}
+                      onClick={sendVerification}
+                      disabled={!isAllowed}
                       className="text-xs text-primary hover:underline transition-all sm:ml-2 disabled:opacity-50"
                     >
-                      {isSendingVerification ? 'Sending...' : 'Resend Verification'}
+                      {cooldown > 0 ? `Resend available in ${cooldown}s` : isPending ? 'Sending...' : 'Resend Verification'}
                     </button>
                   )}
 

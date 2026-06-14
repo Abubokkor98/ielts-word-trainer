@@ -4,6 +4,7 @@ import type { AxiosError } from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@ielts/auth';
 import { quizApi } from '../services/quiz.api';
+import { isQuizLimitError } from '../utils';
 import type { Question, QuestionAnswer } from '../types';
 
 interface UseQuizGameProps {
@@ -32,6 +33,15 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
         clearTimeout(timeoutRef.current);
       }
     };
+  }, []);
+
+  // Hydrate client-side guard from session storage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (sessionStorage.getItem('hasCompletedQuizToday') === 'true') {
+        setHasCompletedQuizToday(true);
+      }
+    }
   }, []);
 
   const { mutateAsync: generateQuizMutation, isPending: isLoadingQuiz } = useMutation({
@@ -64,10 +74,7 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
     } catch (err) {
       const error = err as AxiosError<{ message: string }>;
       
-      if (
-        error.response?.status === 403 &&
-        error.response?.data?.message?.includes('1 quiz per day')
-      ) {
+      if (isQuizLimitError(error)) {
         setIsLimitModalOpen(true);
       } else if (
         error.response?.status === 400 &&
@@ -136,6 +143,7 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
       setShowResult(true);
       if (!isEmailVerified) {
         setHasCompletedQuizToday(true);
+        sessionStorage.setItem('hasCompletedQuizToday', 'true');
       }
     }
   };

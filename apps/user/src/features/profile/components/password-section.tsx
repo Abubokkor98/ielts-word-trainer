@@ -29,6 +29,7 @@ const MIN_PASSWORD_LENGTH = 6;
 interface PasswordSectionProps {
   readonly onChangePassword: (data: ChangePasswordRequest) => Promise<void>;
   readonly isLoading: boolean;
+  readonly isEmailVerified: boolean;
 }
 
 // ============================================================================
@@ -38,10 +39,11 @@ interface PasswordSectionProps {
 export function PasswordSection({
   onChangePassword,
   isLoading,
+  isEmailVerified: profileIsVerified,
 }: PasswordSectionProps) {
   const { toast } = useToast();
   const user = useAuthStore((state) => state.user);
-  const isEmailVerified = user?.isEmailVerified ?? false;
+  const isEmailVerified = user?.isEmailVerified ?? profileIsVerified;
 
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [passwords, setPasswords] = useState({

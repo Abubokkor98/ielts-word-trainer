@@ -91,7 +91,10 @@ export function ProfileContainer() {
                   value="security"
                   className="mt-0 w-full animate-in fade-in duration-200"
                 >
-                  <SecuritySection email={profile.email} />
+                  <SecuritySection 
+                    email={profile.email} 
+                    isEmailVerified={profile.isEmailVerified} 
+                  />
                 </TabsContent>
 
                 <TabsContent
@@ -101,6 +104,7 @@ export function ProfileContainer() {
                   <PasswordSection
                     onChangePassword={changePassword}
                     isLoading={isChangingPassword}
+                    isEmailVerified={profile.isEmailVerified}
                   />
                 </TabsContent>
               </div>

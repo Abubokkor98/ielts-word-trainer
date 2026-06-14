@@ -233,6 +233,8 @@ export class SRSService {
     difficulty?: string,
     limit: number = 10
   ) {
+    if (limit <= 0) return [];
+
     // Utilize Word model to find new words via Aggregation
     // Improved: Avoid fetching all seen IDs into memory ($nin method)
     const pipeline: any[] = [];

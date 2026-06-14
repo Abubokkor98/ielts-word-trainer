@@ -8,10 +8,8 @@ import {
   DialogTitle,
 } from '@ielts/ui';
 import { CheckCircle2, Mail, Shield, Sparkles, Target, TrendingUp } from 'lucide-react';
-import { useState, useTransition } from 'react';
 import { useAuthStore } from '@ielts/auth';
-import { useToast } from '@ielts/ui';
-import { authApi } from '../features/auth/services/auth.api';
+import { useVerificationResend } from '../features/auth/hooks/use-verification-resend';
 
 interface VerificationModalProps {
   isOpen: boolean;
@@ -26,36 +24,7 @@ const BENEFITS = [
 
 export function VerificationModal({ isOpen, onClose }: VerificationModalProps) {
   const user = useAuthStore((state) => state.user);
-  const { toast } = useToast();
-  const [isSent, setIsSent] = useState(false);
-  const [isPending, startTransition] = useTransition();
-
-  const handleSendVerification = () => {
-    if (!user) return;
-
-    startTransition(async () => {
-      try {
-        const response = await authApi.sendVerification(user.email);
-        if (response.success) {
-          setIsSent(true);
-          sessionStorage.setItem('lastVerificationResend', Date.now().toString());
-          toast({
-            title: 'Magic Link Sent!',
-            description: 'Please check your inbox to verify your email.',
-          });
-        }
-      } catch (error: unknown) {
-        const errorMessage =
-          (error as { response?: { data?: { message?: string } } }).response?.data?.message ||
-          'Failed to send verification email';
-        toast({
-          title: 'Error',
-          description: errorMessage,
-          variant: 'destructive',
-        });
-      }
-    });
-  };
+  const { sendVerification, isPending, cooldown, isAllowed } = useVerificationResend();
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -113,12 +82,12 @@ export function VerificationModal({ isOpen, onClose }: VerificationModalProps) {
           <Button
             className="w-full font-semibold text-xs sm:text-sm"
             size="lg"
-            onClick={handleSendVerification}
-            disabled={isPending || isSent}
+            onClick={sendVerification}
+            disabled={!isAllowed}
           >
-            {isSent ? (
+            {cooldown > 0 ? (
               <span className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4" /> Verification Link Sent
+                <CheckCircle2 className="h-4 w-4" /> Resend available in {cooldown}s
               </span>
             ) : isPending ? (
               'Sending...'

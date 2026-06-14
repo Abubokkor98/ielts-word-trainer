@@ -17,8 +17,9 @@ export function useProfile() {
   } = useQuery({
     queryKey: ['user', 'profile'],
     queryFn: profileApi.getProfile,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 60 * 1000, // 1 minute
     gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: true,
   });
 
   const updateProfileMutation = useMutation({
