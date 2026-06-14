@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogDescription,
 } from '@ielts/ui';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { VerifyView } from './verification/VerifyView';
 import { ChangeEmailView } from './verification/ChangeEmailView';
 
@@ -32,13 +32,27 @@ const EXIT_ANIMATION_DELAY_MS = 200;
 
 export function VerificationModal({ isOpen, onClose }: VerificationModalProps) {
   const [view, setView] = useState<ModalView>('verify');
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      setTimeout(() => setView('verify'), EXIT_ANIMATION_DELAY_MS);
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = setTimeout(() => {
+        setView('verify');
+        resetTimerRef.current = null;
+      }, EXIT_ANIMATION_DELAY_MS);
       onClose();
+    } else if (resetTimerRef.current) {
+      clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = null;
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
