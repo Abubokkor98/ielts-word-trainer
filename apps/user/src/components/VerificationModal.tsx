@@ -1,110 +1,77 @@
 'use client';
 
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogTitle,
 } from '@ielts/ui';
-import { CheckCircle2, Mail, Shield, Sparkles, Target, TrendingUp } from 'lucide-react';
-import { useAuthStore } from '@ielts/auth';
-import { useVerificationResend } from '../features/auth/hooks/use-verification-resend';
+import { useEffect, useRef, useState } from 'react';
+import { VerifyView } from './verification/VerifyView';
+import { ChangeEmailView } from './verification/ChangeEmailView';
+
+// ============================================================================
+// Types
+// ============================================================================
+
+type ModalView = 'verify' | 'change-email';
 
 interface VerificationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
 }
 
-const BENEFITS = [
-  { icon: Sparkles, label: 'Unlimited daily quizzes' },
-  { icon: TrendingUp, label: 'Track streaks, XP & progress' },
-  { icon: Target, label: 'Detailed performance analytics' },
-] as const;
+// ============================================================================
+// Constants
+// ============================================================================
+
+const EXIT_ANIMATION_DELAY_MS = 200;
+
+// ============================================================================
+// Component
+// ============================================================================
 
 export function VerificationModal({ isOpen, onClose }: VerificationModalProps) {
-  const user = useAuthStore((state) => state.user);
-  const { sendVerification, isPending, cooldown, isAllowed } = useVerificationResend();
+  const [view, setView] = useState<ModalView>('verify');
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = setTimeout(() => {
+        setView('verify');
+        resetTimerRef.current = null;
+      }, EXIT_ANIMATION_DELAY_MS);
+      onClose();
+    } else if (resetTimerRef.current) {
+      clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+    };
+  }, []);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-sm p-0 gap-0 overflow-hidden border-border/40 bg-[#1b1722] shadow-2xl rounded-xl max-h-[90dvh] overflow-y-auto">
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="w-[calc(100%-2rem)] sm:max-w-lg p-0 gap-0 overflow-hidden border-border/30 bg-card shadow-2xl rounded-2xl max-h-[90dvh] overflow-y-auto min-h-[420px] flex flex-col">
         <DialogDescription className="sr-only">
           Verify your email to unlock unlimited quizzes and full features.
         </DialogDescription>
 
-        {/* Header Banner */}
-        <header className="relative h-20 w-full bg-primary/8 flex items-center justify-center flex-shrink-0">
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1b1722] to-transparent pointer-events-none" />
-          <div className="h-11 w-11 bg-primary/15 rounded-full flex items-center justify-center relative z-10 border border-primary/25 animate-in zoom-in duration-500">
-            <Shield className="h-5 w-5 text-primary" />
-          </div>
-        </header>
-
-        {/* Body */}
-        <section className="px-5 pb-1">
-          <DialogTitle className="text-base sm:text-lg font-bold tracking-tight text-foreground text-center">
-            Verify to Keep Practicing
-          </DialogTitle>
-          <p className="text-[11px] sm:text-xs text-muted-foreground mt-1.5 text-center leading-relaxed">
-            Unverified accounts are limited to 1 quiz per day. A quick email verification
-            unlocks your full IELTS prep toolkit.
-          </p>
-
-          {/* Benefits List */}
-          <ul className="mt-3.5 space-y-2">
-            {BENEFITS.map(({ icon: Icon, label }) => (
-              <li
-                key={label}
-                className="flex items-center gap-2.5"
-              >
-                <span className="h-6 w-6 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Icon className="h-3 w-3 text-primary" />
-                </span>
-                <span className="text-[11px] sm:text-xs font-medium text-foreground/90">{label}</span>
-              </li>
-            ))}
-          </ul>
-
-          {/* Email Indicator */}
-          <figure className="mt-3.5 bg-muted/20 rounded-lg p-2.5 flex items-center gap-2.5 border border-border/40">
-            <span className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <Mail className="h-3.5 w-3.5 text-primary" />
-            </span>
-            <span className="flex-1 text-[11px] sm:text-xs font-medium text-foreground truncate">
-              {user?.email}
-            </span>
-          </figure>
-        </section>
-
-        {/* Footer Actions */}
-        <footer className="px-5 pb-5 pt-3.5 flex flex-col gap-2">
-          <Button
-            className="w-full font-semibold text-xs sm:text-sm"
-            size="lg"
-            onClick={sendVerification}
-            disabled={!isAllowed}
-          >
-            {cooldown > 0 ? (
-              <span className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4" /> Resend available in {cooldown}s
-              </span>
-            ) : isPending ? (
-              'Sending...'
-            ) : (
-              'Verify My Email'
-            )}
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full text-muted-foreground hover:text-foreground text-[11px]"
-            onClick={onClose}
-          >
-            Maybe Later
-          </Button>
-        </footer>
+        {view === 'verify' ? (
+          <VerifyView
+            onClose={onClose}
+            onChangeEmailClick={() => setView('change-email')}
+          />
+        ) : (
+          <ChangeEmailView
+            onBack={() => setView('verify')}
+            onSuccess={() => setView('verify')}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
