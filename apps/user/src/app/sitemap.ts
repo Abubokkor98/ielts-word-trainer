@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { siteConfig } from '../lib/site-config';
-import { serverVocabularyApi } from '../features/vocabulary/services/server-vocabulary.api';
+import { vocabularyData } from '../data/vocabulary';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
@@ -28,17 +28,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === '' ? 1 : route === '/vocabulary' || route === '/quiz' ? 0.9 : 0.7,
   }));
 
-  try {
-    const words = await serverVocabularyApi.getWords(1, 5000);
-    const wordRoutes = words.map((word) => ({
-      url: `${siteConfig.url}/vocabulary/${encodeURIComponent(word.word.toLowerCase())}`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    }));
-    return [...staticRoutes, ...wordRoutes];
-  } catch (error) {
-    console.error('Failed to fetch words for sitemap', error);
-    return staticRoutes;
-  }
+  const wordRoutes = vocabularyData.map((word) => ({
+    url: `${siteConfig.url}/vocabulary/${encodeURIComponent(word.word.toLowerCase())}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...wordRoutes];
 }
+

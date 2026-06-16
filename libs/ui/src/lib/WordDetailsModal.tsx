@@ -17,7 +17,7 @@ interface WordDetailsModalProps {
     partOfSpeech?: string;
     synonyms?: string[];
     antonyms?: string[];
-    topics?: Array<string | { _id: string; name: string }>;
+    topics?: Array<string | { id?: string; _id?: string; name: string; slug?: string; wordCount?: number }>;
     modules?: string[];
   } | null;
   headerAction?: React.ReactNode;

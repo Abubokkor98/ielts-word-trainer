@@ -53,7 +53,7 @@ export function VocabularyList({
       aria-label="Vocabulary Cards"
     >
       {words.map((word) => (
-        <article key={word._id} className="h-full">
+        <article key={word.id || word._id} className="h-full">
           <Card className="flex flex-col justify-between h-full bg-card/50 border-border hover:border-border/80 transition-colors">
             <CardHeader className="p-5 pb-0">
               <div className="flex justify-between items-start gap-4">

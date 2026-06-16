@@ -4,31 +4,36 @@ import { useAuthStore } from '@ielts/auth';
 import { Pagination } from '@ielts/ui';
 import { useRouter } from 'next/navigation';
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs';
-import { useEffect } from 'react';
+import { useEffect, useTransition } from 'react';
 
-import { useDebounce } from '../../hooks/use-debounce';
 import { VocabularyFilters } from './components/vocabulary-filters';
 import { VocabularyList } from './components/vocabulary-list';
-import { useVocabulary } from './hooks/use-vocabulary';
 import type { Word } from './types';
 
 const DIFFICULTY_OPTIONS = ['all', 'beginner', 'intermediate', 'advanced'] as const;
 const MODULE_OPTIONS = ['reading', 'writing', 'listening', 'speaking'] as const;
 
-export function VocabularyContainer() {
+interface VocabularyContainerProps {
+  initialWords: Word[];
+  totalPages: number;
+}
+
+export function VocabularyContainer({ initialWords, totalPages }: VocabularyContainerProps) {
+  const [isPending, startTransition] = useTransition();
   const [filters, setFilters] = useQueryStates(
     {
       page: parseAsInteger.withDefault(1),
       difficulty: parseAsStringLiteral(DIFFICULTY_OPTIONS).withDefault('all'),
       module: parseAsStringLiteral(MODULE_OPTIONS),
-      search: parseAsString.withDefault(''),
-      topic: parseAsString.withDefault(''),
+      search: parseAsString.withDefault('').withOptions({ throttleMs: 500 }),
+      topic: parseAsString.withDefault('').withOptions({ throttleMs: 500 }),
     },
-    { history: 'push' },
+    { 
+      history: 'push',
+      shallow: false, // Forces Next.js Server Component to re-render when filters change!
+      startTransition, // Shows loading state automatically during RSC fetch
+    },
   );
-
-  const debouncedWordSearch = useDebounce(filters.search, 500);
-  const debouncedTopicSearch = useDebounce(filters.topic, 500);
 
   const { user } = useAuthStore();
   const router = useRouter();
@@ -38,17 +43,6 @@ export function VocabularyContainer() {
       router.push('/dashboard');
     }
   }, [user, router]);
-
-  const { data, isFetching } = useVocabulary({
-    page: filters.page,
-    difficulty: filters.difficulty,
-    module: filters.module ?? undefined,
-    search: debouncedWordSearch,
-    topic: debouncedTopicSearch,
-  });
-
-  const words = data?.words || [];
-  const totalPages = data?.totalPages || 1;
 
   const handleViewDetails = (word: Word) => {
     router.push(`/vocabulary/${encodeURIComponent(word.word.toLowerCase())}`, { scroll: false });
@@ -96,8 +90,8 @@ export function VocabularyContainer() {
         </header>
 
         <VocabularyList
-          isLoading={isFetching}
-          words={words}
+          isLoading={isPending}
+          words={initialWords}
           onViewDetails={handleViewDetails}
           onClearFilters={handleClearFilters}
           hasActiveFilters={
@@ -105,7 +99,7 @@ export function VocabularyContainer() {
           }
         />
 
-        {!isFetching && words.length > 0 && (
+        {initialWords.length > 0 && (
           <div className="mt-8 flex justify-center">
             <Pagination
               currentPage={filters.page}

@@ -1,14 +1,18 @@
 import type { DifficultyLevel } from '../../types';
 
 export interface Word {
-  _id: string;
+  id: string;
+  _id?: string;
   word: string;
   meaning: string;
   exampleSentence: string;
   difficulty: DifficultyLevel;
   topics: Array<{
-    _id: string;
+    id?: string;
+    _id?: string;
     name: string;
+    slug: string;
+    wordCount?: number;
   }>;
   partOfSpeech: string;
   modules: ('reading' | 'writing' | 'listening' | 'speaking')[];

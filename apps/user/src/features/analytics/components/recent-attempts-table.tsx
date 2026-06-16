@@ -66,13 +66,13 @@ export function RecentAttemptsTable({ attempts }: RecentAttemptsTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {attempts.map((attempt, index) => {
+            {attempts.map((attempt) => {
               const { fullFormat, mobileDateOnly, timeOnly } = formatDateTime(
                 attempt.completedAt,
               );
 
               return (
-                <TableRow key={attempt._id}>
+                <TableRow key={attempt._id as string}>
                   <TableCell className="text-foreground">
                     {/* Desktop */}
                     <span className="hidden md:inline whitespace-nowrap">

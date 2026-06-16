@@ -1,11 +1,6 @@
-import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
 import type { Metadata } from 'next';
-import { Suspense } from 'react';
-
 import { VocabularyContainer } from '../../../features/vocabulary';
-import { VocabularyPageSkeleton } from '../../../features/vocabulary/components/vocabulary-page-skeleton';
-import { serverVocabularyApi } from '../../../features/vocabulary/services/server-vocabulary.api';
-import { getQueryClient } from '../../../lib/get-query-client';
+import { vocabularyData } from '../../../data/vocabulary';
 
 export const metadata: Metadata = {
   title: {
@@ -24,42 +19,58 @@ export const metadata: Metadata = {
   },
 };
 
-// Default filter values matching VocabularyContainer's initial state
-const DEFAULT_PAGE = 1;
-const DEFAULT_DIFFICULTY = 'all';
-const DEFAULT_SEARCH = '';
-const DEFAULT_TOPIC = '';
-
 export default async function VocabularyPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  // Await search params to opt into dynamic rendering so the component does not bailout to CSR
-  await searchParams;
+  const params = await searchParams;
 
-  const queryClient = getQueryClient();
+  // 2. Extract Filters from URL
+  const page = Number(params.page) || 1;
+  const search = typeof params.search === 'string' ? params.search.toLowerCase() : '';
+  const topicSlug = typeof params.topic === 'string' ? params.topic : '';
+  const difficulty = typeof params.difficulty === 'string' ? params.difficulty : 'all';
+  const moduleParam = typeof params.module === 'string' ? params.module : '';
+  const limit = 12;
 
-  // Prefetch the first page of words on the server.
-  // The queryKey must exactly match what useVocabulary produces for the default filters.
-  await queryClient.prefetchQuery({
-    queryKey: [
-      'words',
-      DEFAULT_PAGE,
-      undefined, // limit
-      DEFAULT_DIFFICULTY,
-      DEFAULT_SEARCH,
-      DEFAULT_TOPIC,
-      undefined, // module
-    ],
-    queryFn: () => serverVocabularyApi.getWordsPage(DEFAULT_PAGE),
-  });
+  // 3. Filter the Data in Memory
+  let filteredWords = vocabularyData;
 
+  if (search) {
+    filteredWords = filteredWords.filter(w => 
+      w.word.toLowerCase().includes(search) || 
+      w.meaning.toLowerCase().includes(search) ||
+      w.synonyms?.some(s => s.toLowerCase().includes(search))
+    );
+  }
+
+  if (topicSlug) {
+    filteredWords = filteredWords.filter(w => 
+      w.topics?.some(t => t.slug === topicSlug)
+    );
+  }
+
+  if (difficulty !== 'all') {
+    filteredWords = filteredWords.filter(w => w.difficulty === difficulty);
+  }
+
+  if (moduleParam) {
+    filteredWords = filteredWords.filter(w => 
+      w.modules?.includes(moduleParam as 'reading' | 'writing' | 'listening' | 'speaking')
+    );
+  }
+
+  // 4. Paginate
+  const startIndex = (page - 1) * limit;
+  const paginatedWords = filteredWords.slice(startIndex, startIndex + limit);
+  const totalPages = Math.ceil(filteredWords.length / limit) || 1;
+
+  // 5. Pass only the paginated slice to the Client Component
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<VocabularyPageSkeleton />}>
-        <VocabularyContainer />
-      </Suspense>
-    </HydrationBoundary>
+    <VocabularyContainer 
+      initialWords={paginatedWords} 
+      totalPages={totalPages} 
+    />
   );
 }
