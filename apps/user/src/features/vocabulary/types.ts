@@ -7,6 +7,7 @@ export interface Word {
   meaning: string;
   exampleSentence: string;
   difficulty: DifficultyLevel;
+  //will update topic type in future
   topics: Array<{
     id?: string;
     _id?: string;

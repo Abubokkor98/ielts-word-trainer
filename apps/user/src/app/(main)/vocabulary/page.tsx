@@ -27,7 +27,8 @@ export default async function VocabularyPage({
   const params = await searchParams;
 
   // 2. Extract Filters from URL
-  const page = Number(params.page) || 1;
+  const rawPage = Number(params.page);
+  const requestedPage = Number.isFinite(rawPage) ? Math.floor(rawPage) : 1;
   const search = typeof params.search === 'string' ? params.search.toLowerCase() : '';
   const topicSlug = typeof params.topic === 'string' ? params.topic : '';
   const difficulty = typeof params.difficulty === 'string' ? params.difficulty : 'all';
@@ -62,9 +63,10 @@ export default async function VocabularyPage({
   }
 
   // 4. Paginate
+  const totalPages = Math.max(1, Math.ceil(filteredWords.length / limit));
+  const page = Math.min(Math.max(requestedPage, 1), totalPages);
   const startIndex = (page - 1) * limit;
   const paginatedWords = filteredWords.slice(startIndex, startIndex + limit);
-  const totalPages = Math.ceil(filteredWords.length / limit) || 1;
 
   // 5. Pass only the paginated slice to the Client Component
   return (

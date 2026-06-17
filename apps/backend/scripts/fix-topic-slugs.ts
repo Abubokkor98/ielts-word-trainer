@@ -27,14 +27,26 @@ async function fixSlugs() {
     console.log('Connected!');
 
     console.log('Finding topics without slugs...');
-    const topics = await Topic.find({ slug: { $exists: false } });
+    const topics = await Topic.find({
+      $or: [
+        { slug: { $exists: false } },
+        { slug: null },
+        { slug: '' },
+      ],
+    });
 
     if (topics.length === 0) {
       console.log('✅ All topics already have slugs.');
     } else {
       console.log(`Found ${topics.length} topics missing slugs. Fixing...`);
       for (const topic of topics) {
-        topic.slug = topic.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        const normalized = topic.name
+          .toLowerCase()
+          .trim()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9-]/g, '')
+          .replace(/-+/g, '-');
+        topic.slug = normalized || `topic-${topic._id.toString()}`;
         await topic.save();
         console.log(`✅ Fixed slug for topic: "${topic.name}" -> "${topic.slug}"`);
       }

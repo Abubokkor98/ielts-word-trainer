@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: StandaloneWordPageProps): Pro
   }
 
   const word = vocabularyData.find(
-    (w) => w.id === decodedId || w.word.toLowerCase() === decodedId.toLowerCase()
+    (w) => w.word.toLowerCase() === decodedId.toLowerCase()
   );
 
   if (!word) {
@@ -59,7 +59,7 @@ export default async function StandaloneWordPage({ params }: StandaloneWordPageP
   }
 
   const word = vocabularyData.find(
-    (w) => w.id === decodedId || w.word.toLowerCase() === decodedId.toLowerCase()
+    (w) => w.word.toLowerCase() === decodedId.toLowerCase()
   );
 
   if (!word) {

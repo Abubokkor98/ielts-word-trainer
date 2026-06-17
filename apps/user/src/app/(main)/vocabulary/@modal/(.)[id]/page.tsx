@@ -15,7 +15,7 @@ export default async function InterceptedWordPage({ params }: InterceptedWordPag
   }
 
   const word = vocabularyData.find(
-    (w) => w.id === decodedId || w.word.toLowerCase() === decodedId.toLowerCase()
+    (w) => w.word.toLowerCase() === decodedId.toLowerCase()
   );
 
   if (!word) {

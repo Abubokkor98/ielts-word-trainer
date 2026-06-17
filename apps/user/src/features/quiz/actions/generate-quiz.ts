@@ -35,6 +35,27 @@ function buildWordDetails(word: Word) {
   };
 }
 
+function buildTextOptions(
+  correctText: string,
+  distractorTexts: string[],
+  correctId: string,
+  wrongPrefix: string,
+): Option[] {
+  const normalizedCorrect = correctText.trim().toLowerCase();
+  const uniqueDistractors = [...new Set(distractorTexts.map((t) => t.trim()))]
+    .filter((t) => t.toLowerCase() !== normalizedCorrect)
+    .slice(0, 3);
+
+  const texts = shuffle([correctText, ...uniqueDistractors]);
+  let consumedCorrect = false;
+
+  return texts.map((text, idx) => {
+    const isCorrect = !consumedCorrect && text.trim().toLowerCase() === normalizedCorrect;
+    if (isCorrect) consumedCorrect = true;
+    return { id: isCorrect ? correctId : `${wrongPrefix}_${idx}`, text };
+  });
+}
+
 function generateWordToMeaning(word: Word, quizPool: Word[]): Question {
   const distractors = shuffle(
     quizPool.filter((w) => w.id !== word.id)
@@ -87,12 +108,7 @@ function generateSynonymMatch(word: Word, quizPool: Word[]): Question {
     quizPool.filter((w) => w.id !== word.id).map((w) => w.word)
   ).slice(0, 3);
 
-  const options: Option[] = shuffle([correctSynonym, ...distractors]).map(
-    (text, idx) => ({
-      id: text === correctSynonym ? word.id : `opt_${idx}`,
-      text,
-    })
-  );
+  const options = buildTextOptions(correctSynonym, distractors, word.id, 'opt');
 
   return {
     id: word.id,
@@ -115,12 +131,7 @@ function generateAntonymMatch(word: Word, quizPool: Word[]): Question {
     quizPool.filter((w) => w.id !== word.id).map((w) => w.word)
   ).slice(0, 3);
 
-  const options: Option[] = shuffle([correctAntonym, ...distractors]).map(
-    (text, idx) => ({
-      id: text === correctAntonym ? word.id : `opt_${idx}`,
-      text,
-    })
-  );
+  const options = buildTextOptions(correctAntonym, distractors, word.id, 'opt');
 
   return {
     id: word.id,
@@ -152,12 +163,7 @@ function generateSentenceCompletion(word: Word, quizPool: Word[]): Question {
     quizPool.filter((w) => w.id !== word.id).map((w) => w.word)
   ).slice(0, 3);
 
-  const options: Option[] = shuffle([word.word, ...distractors]).map(
-    (text, idx) => ({
-      id: text === word.word ? word.id : `dist_${idx}`,
-      text,
-    })
-  );
+  const options = buildTextOptions(word.word, distractors, word.id, 'dist');
 
   return {
     id: word.id,

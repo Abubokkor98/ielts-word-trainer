@@ -75,9 +75,13 @@ export function WordDetailsModal({
               word.topics.length > 0 &&
               word.topics.slice(0, 3).map((topic) => {
                 const topicName = typeof topic === 'object' && topic !== null ? topic.name : topic;
+                const topicKey =
+                  typeof topic === 'object' && topic !== null
+                    ? topic.id ?? topic._id ?? topic.slug ?? topic.name
+                    : topic;
                 return (
                   <Badge
-                    key={`topic-${topicName}`}
+                    key={`topic-${topicKey}`}
                     className="bg-[#b794f4]/20 text-[#d6bcfa] hover:bg-[#b794f4]/20 px-2 py-0.5 rounded-full text-[10.4px] font-bold uppercase tracking-wider"
                   >
                     {topicName}
