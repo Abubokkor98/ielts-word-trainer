@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { WordDetailsView } from '../../../../features/vocabulary/components/word-details-view';
-import { serverVocabularyApi } from '../../../../features/vocabulary/services/server-vocabulary.api';
 import { siteConfig } from '../../../../lib/site-config';
+import { vocabularyData } from '../../../../data/vocabulary';
 
 export const dynamicParams = true;
 
@@ -13,22 +13,10 @@ interface StandaloneWordPageProps {
 }
 
 export async function generateStaticParams() {
-  try {
-    // Pre-render the top 100 most popular/critical words at build time for fast builds
-    const words = await serverVocabularyApi.getWords(1, 100);
-
-    if (words.length === 0) {
-      return [];
-    }
-
-    return words.map((word) => ({
-      id: word.word.toLowerCase(),
-    }));
-  } catch (error) {
-    console.error('Failed to generate static params in build:', error);
-    // Return empty array so build doesn't crash; all pages will render dynamically.
-    return [];
-  }
+  // Pre-render ALL word pages — zero cost since data is from local JSON
+  return vocabularyData.map((word) => ({
+    id: word.word.toLowerCase(),
+  }));
 }
 
 export async function generateMetadata({ params }: StandaloneWordPageProps): Promise<Metadata> {
@@ -41,7 +29,9 @@ export async function generateMetadata({ params }: StandaloneWordPageProps): Pro
     };
   }
 
-  const word = await serverVocabularyApi.getWordById(decodedId);
+  const word = vocabularyData.find(
+    (w) => w.word.toLowerCase() === decodedId.toLowerCase()
+  );
 
   if (!word) {
     return {
@@ -68,7 +58,9 @@ export default async function StandaloneWordPage({ params }: StandaloneWordPageP
     notFound();
   }
 
-  const word = await serverVocabularyApi.getWordById(decodedId);
+  const word = vocabularyData.find(
+    (w) => w.word.toLowerCase() === decodedId.toLowerCase()
+  );
 
   if (!word) {
     notFound();

@@ -271,7 +271,7 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
                     <AnimatePresence>
                       {list.words.map((word) => (
                         <motion.div
-                          key={word._id}
+                          key={word._id ?? word.id}
                           layout
                           initial={{ opacity: 0, scale: 0.85 }}
                           animate={{ opacity: 1, scale: 1 }}
@@ -296,7 +296,7 @@ export function ListCard({ list, onViewDetails }: ListCardProps) {
                           <button
                             type="button"
                             className="h-4 w-4 rounded-full flex items-center justify-center text-muted-foreground/45 hover:text-red-400 hover:bg-white/5 transition-colors focus:outline-none"
-                            onClick={(e) => handleRemoveWord(word._id, e)}
+                            onClick={(e) => handleRemoveWord(word._id ?? word.id, e)}
                             aria-label="Remove word"
                           >
                             <X size={9} />

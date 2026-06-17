@@ -1,10 +1,8 @@
 import { useToast } from '@ielts/ui';
 import { useMutation } from '@tanstack/react-query';
-import type { AxiosError } from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useAuthStore } from '@ielts/auth';
-import { quizApi } from '../services/quiz.api';
-import { isQuizLimitError } from '../utils';
+import { generateLocalQuiz } from '../actions/generate-quiz';
 import type { Question, QuestionAnswer } from '../types';
 
 interface UseQuizGameProps {
@@ -45,7 +43,7 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
   }, []);
 
   const { mutateAsync: generateQuizMutation, isPending: isLoadingQuiz } = useMutation({
-    mutationFn: () => quizApi.generateQuiz(selectedDifficulty),
+    mutationFn: () => generateLocalQuiz(selectedDifficulty),
   });
 
   const startQuiz = async () => {
@@ -72,14 +70,9 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
       setQuestionStartTime(new Date());
       setQuestionAnswers(new Map());
     } catch (err) {
-      const error = err as AxiosError<{ message: string }>;
+      const error = err instanceof Error ? err : new Error('Unknown error');
       
-      if (isQuizLimitError(error)) {
-        setIsLimitModalOpen(true);
-      } else if (
-        error.response?.status === 400 &&
-        error.response?.data?.message?.includes('Not enough words')
-      ) {
+      if (error.message.includes('Not enough words')) {
         toast({
           title: 'Not Enough Words',
           description: 'You need to learn more vocabulary before taking a quiz.',
@@ -87,7 +80,7 @@ export function useQuizGame({ isAuthenticated, selectedDifficulty }: UseQuizGame
       } else {
         toast({
           title: 'Failed to Generate Quiz',
-          description: error.response?.data?.message || 'Please try again',
+          description: error.message || 'Please try again',
           variant: 'destructive',
         });
       }

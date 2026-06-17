@@ -44,7 +44,7 @@ export function WordDetailsView({ word }: WordDetailsViewProps) {
                   {word.word}
                 </h1>
                 <PronunciationButton word={word.word} size="sm" />
-                <SaveToListButton wordId={word._id} isAuthenticated={!!user} />
+                <SaveToListButton wordId={word.id} isAuthenticated={!!user} />
                 {word.partOfSpeech && (
                   <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/10 text-xs px-2.5 py-0.5 rounded-md uppercase font-semibold">
                     {word.partOfSpeech}
@@ -66,7 +66,7 @@ export function WordDetailsView({ word }: WordDetailsViewProps) {
                   word.topics.length > 0 &&
                   word.topics.map((topic) => (
                     <Badge
-                      key={topic._id}
+                      key={topic.id || topic.name}
                       className="bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/10 text-xs px-2.5 py-1 rounded-full uppercase font-medium"
                     >
                       {topic.name}
