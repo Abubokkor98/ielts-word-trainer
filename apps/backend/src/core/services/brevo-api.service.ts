@@ -10,6 +10,7 @@ import { Logger } from '../../utils';
 
 const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 const BATCH_SIZE = 5;
+const BREVO_TIMEOUT_MS = 5_000;
 
 interface BrevoSender {
   name: string;
@@ -67,19 +68,32 @@ export class BrevoApiService {
       htmlContent: request.htmlContent,
     };
 
-    const response = await fetch(BREVO_API_URL, {
-      method: 'POST',
-      headers: {
-        'api-key': BrevoApiService.getApiKey(),
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), BREVO_TIMEOUT_MS);
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      throw new Error(`Brevo API ${response.status}: ${errorBody}`);
+    try {
+      const response = await fetch(BREVO_API_URL, {
+        method: 'POST',
+        headers: {
+          'api-key': BrevoApiService.getApiKey(),
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new Error(`Brevo API ${response.status}: ${errorBody}`);
+      }
+    } catch (error) {
+      if ((error as Error).name === 'AbortError') {
+        throw new Error(`Brevo API timeout after ${BREVO_TIMEOUT_MS}ms`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 

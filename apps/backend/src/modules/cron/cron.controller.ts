@@ -151,7 +151,9 @@ export class CronController {
       const result = await BrevoApiService.sendBulk(emailRequests);
 
       return res.status(200).json({
-        success: true,
+        success: result.totalFailed === 0,
+        totalSent: result.totalSent,
+        totalFailed: result.totalFailed,
         message: `Daily inactivity sweep complete. ${result.totalSent} sent, ${result.totalFailed} failed.`,
       });
     } catch (error) {
