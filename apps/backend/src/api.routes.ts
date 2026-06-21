@@ -9,9 +9,11 @@ import topicsRoutes from './modules/topics/topics.routes';
 import userProfileRoutes from './modules/users/users-profile.routes';
 import wordsRoutes from './modules/words/words.routes';
 import wordListRoutes from './modules/word-list/word-list.routes';
+import cronRoutes from './modules/cron/cron.routes'; // NOTE: VERCEL-ONLY — Remove this import when migrating to VPS/Render
 
 const router = Router();
 
+router.use('/cron', cronRoutes); // NOTE: VERCEL-ONLY — Remove this route when migrating to VPS/Render
 router.use('/auth', authRoutes);
 router.use('/password', passwordResetRoutes);
 router.use('/users', userProfileRoutes);
