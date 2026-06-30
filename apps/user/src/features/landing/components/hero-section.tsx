@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Layers, RotateCcw, Sparkles, Volume2 } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
+import { CONTACT_LINKS } from '@ielts/shared';
 
 import DotField from './dot-field';
 import HeroBand from './hero-band';
@@ -135,6 +136,9 @@ export function HeroSection() {
       'Native British English Pronunciation Audio',
       'Real IELTS context examples',
       'Custom progress tracking',
+    ],
+    sameAs: [
+      CONTACT_LINKS.companyLinkedin,
     ],
   };
 
