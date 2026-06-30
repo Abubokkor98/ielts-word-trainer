@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ExternalLink, Github, Heart } from 'lucide-react';
+import { ExternalLink, Github, Heart, Linkedin } from 'lucide-react';
 import Link from 'next/link';
 import {
   APP_NAME,
@@ -43,16 +43,28 @@ export function UserFooter() {
               {APP_NAME}
             </Link>
             <p className="ln-footer-tagline">{APP_TAGLINE}</p>
-            <a
-              href={EXTERNAL_LINKS.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ln-footer-github-link"
-              aria-label="GitHub repository"
-            >
-              <Github size={16} />
-              <span>GitHub</span>
-            </a>
+            <div className="flex items-center gap-3">
+              <a
+                href={EXTERNAL_LINKS.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ln-footer-github-link"
+                aria-label="GitHub repository"
+              >
+                <Github size={16} />
+                <span>GitHub</span>
+              </a>
+              <a
+                href={EXTERNAL_LINKS.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ln-footer-github-link"
+                aria-label="LinkedIn company page"
+              >
+                <Linkedin size={16} />
+                <span>LinkedIn</span>
+              </a>
+            </div>
           </div>
 
           <nav className="ln-footer-nav" aria-label="Footer navigation">

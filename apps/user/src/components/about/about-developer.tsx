@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@ielts/ui';
 import { motion } from 'framer-motion';
-import { Github, Globe, Mail } from 'lucide-react';
+import { Github, Globe, Linkedin, Mail } from 'lucide-react';
 import { CONTACT_LINKS } from '@ielts/shared';
 
 // ============================================================================
@@ -41,6 +41,11 @@ const DEVELOPER_SOCIALS: readonly SocialItem[] = [
     label: 'GitHub',
     href: CONTACT_LINKS.developer.github,
     icon: Github,
+  },
+  {
+    label: 'LinkedIn',
+    href: CONTACT_LINKS.developer.linkedin,
+    icon: Linkedin,
   },
   {
     label: 'Portfolio',

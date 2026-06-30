@@ -71,6 +71,7 @@ export const STUDY_TIPS: readonly FooterLink[] = [
 export const EXTERNAL_LINKS = {
   portfolio: CONTACT_LINKS.developer.portfolio,
   github: CONTACT_LINKS.githubRepo,
+  linkedin: CONTACT_LINKS.companyLinkedin,
 } as const;
 
 export const getCurrentYear = () => new Date().getFullYear();

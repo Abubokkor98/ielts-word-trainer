@@ -136,6 +136,9 @@ export function HeroSection() {
       'Real IELTS context examples',
       'Custom progress tracking',
     ],
+    sameAs: [
+      'https://www.linkedin.com/company/ieltsvocabs',
+    ],
   };
 
   return (
