@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Layers, RotateCcw, Sparkles, Volume2 } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
+import { CONTACT_LINKS } from '@ielts/shared';
 
 import DotField from './dot-field';
 import HeroBand from './hero-band';
@@ -137,7 +138,7 @@ export function HeroSection() {
       'Custom progress tracking',
     ],
     sameAs: [
-      'https://www.linkedin.com/company/ieltsvocabs',
+      CONTACT_LINKS.companyLinkedin,
     ],
   };
 
