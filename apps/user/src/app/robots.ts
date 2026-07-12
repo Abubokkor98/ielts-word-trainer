@@ -9,15 +9,15 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: ['/api/'],
       },
-      // AI crawlers: Explicitly allowed to maximize citation chances
-      // in ChatGPT, Perplexity, Google AI Overviews, and Claude.
-      // Since IELTSVocabs is a free educational resource, AI visibility
-      // drives traffic and brand awareness.
-      // To block AI training while keeping Search indexing, change
-      // Google-Extended to disallow: ['/'].
+      // --- AI Retrieval Bots (drive citations in AI search answers) ---
+      { userAgent: 'OAI-SearchBot', allow: '/', disallow: ['/api/'] },
+      { userAgent: 'Claude-Web', allow: '/', disallow: ['/api/'] },
+      { userAgent: 'PerplexityBot', allow: '/', disallow: ['/api/'] },
+      // --- AI Training Bots (feed model training data) ---
+      // Allowed because IELTS Vocabs is a free educational resource.
+      // To block training while keeping retrieval, change allow to disallow.
       { userAgent: 'GPTBot', allow: '/', disallow: ['/api/'] },
       { userAgent: 'ClaudeBot', allow: '/', disallow: ['/api/'] },
-      { userAgent: 'PerplexityBot', allow: '/', disallow: ['/api/'] },
       { userAgent: 'Google-Extended', allow: '/', disallow: ['/api/'] },
     ],
     sitemap: `${siteConfig.url}/sitemap.xml`,
