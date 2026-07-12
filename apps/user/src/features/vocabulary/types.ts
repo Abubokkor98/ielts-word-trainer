@@ -19,6 +19,8 @@ export interface Word {
   modules: ('reading' | 'writing' | 'listening' | 'speaking')[];
   synonyms: string[];
   antonyms: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface VocabularyResponse {

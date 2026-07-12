@@ -57,7 +57,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'reading-differences',
     number: '2',
-    title: 'Differences in Reading Section',
+    title: 'How Does the Reading Section Differ Between Academic and General?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -99,7 +99,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'writing-task-1',
     number: '3',
-    title: 'Differences in Writing Task 1',
+    title: 'How Does Writing Task 1 Differ Between Academic and General?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -137,7 +137,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'writing-task-2',
     number: '4',
-    title: 'Writing Task 2 (Same for Both)',
+    title: 'Is Writing Task 2 the Same for Both IELTS Modules?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -173,7 +173,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'similarities',
     number: '5',
-    title: 'Similarities (Identical for Both Tests)',
+    title: 'What Is the Same in Both IELTS Academic and General?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -209,7 +209,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'countries',
     number: '6',
-    title: 'Countries & Institutions Accepting Each Format',
+    title: 'Which Countries Accept IELTS Academic vs General Training?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -248,7 +248,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'scoring-differences',
     number: '7',
-    title: 'Scoring Differences & Conversions',
+    title: 'Are There Scoring Differences Between Academic and General IELTS?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">

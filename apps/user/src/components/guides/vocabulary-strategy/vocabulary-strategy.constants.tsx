@@ -19,7 +19,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'importance',
     number: '1',
-    title: 'Why Vocabulary Is Critical for ALL 4 IELTS Sections',
+    title: 'Why Is Vocabulary Critical for All 4 IELTS Sections?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -54,7 +54,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'lexical-resource',
     number: '2',
-    title: 'The Role of &ldquo;Lexical Resource&rdquo; in Band Scores',
+    title: 'What Role Does Lexical Resource Play in IELTS Band Scores?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -93,7 +93,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'active-passive',
     number: '3',
-    title: 'Active vs. Passive Vocabulary',
+    title: 'What Is the Difference Between Active and Passive Vocabulary?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -116,7 +116,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'context-learning',
     number: '4',
-    title: 'Context-Based Learning: The Right Way',
+    title: 'How Does Context-Based Learning Improve Vocabulary Retention?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -151,7 +151,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'topics',
     number: '5',
-    title: 'Topic-Based Organization: What to Study',
+    title: 'Which IELTS Vocabulary Topics Should You Study First?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -190,7 +190,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'recommendations',
     number: '6',
-    title: 'Daily Study Recommendations',
+    title: 'How Many IELTS Words Should You Study Per Day?',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -245,7 +245,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'common-mistakes',
     number: '7',
-    title: 'Common Vocabulary Mistakes to Avoid',
+    title: 'What Are the Most Common IELTS Vocabulary Mistakes?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">

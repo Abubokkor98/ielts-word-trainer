@@ -19,7 +19,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'marking-criteria-overview',
     number: '1',
-    title: '4 Criteria Used by IELTS Examiners',
+    title: 'What Are the 4 Criteria Used by IELTS Writing Examiners?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -59,7 +59,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'task-achievement-response',
     number: '2',
-    title: 'Task Achievement / Task Response',
+    title: 'What Is Task Achievement and Task Response in IELTS Writing?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
@@ -103,7 +103,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'coherence-cohesion',
     number: '3',
-    title: 'Coherence and Cohesion',
+    title: 'What Is Coherence and Cohesion in IELTS Writing?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
@@ -161,7 +161,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'lexical-resource',
     number: '4',
-    title: 'Lexical Resource (Vocabulary)',
+    title: 'How Is Lexical Resource Scored in IELTS Writing?',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -226,7 +226,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'grammatical-range-accuracy',
     number: '5',
-    title: 'Grammatical Range and Accuracy',
+    title: 'How Is Grammatical Range and Accuracy Scored in Writing?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-semibold">
@@ -265,7 +265,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'task-differences',
     number: '6',
-    title: 'Differences Between Task 1 and Task 2 Assessment',
+    title: 'What Are the Differences Between Task 1 and Task 2 Assessment?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">

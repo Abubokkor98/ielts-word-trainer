@@ -206,38 +206,8 @@ function ScrollingColumn({ testimonials, direction, className = '' }: ColumnProp
 // ============================================================================
 
 export function TestimonialsSection() {
-  const reviewSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: 'IELTS Master Vocabulary',
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.9',
-      ratingCount: '1240',
-    },
-    review: TESTIMONIALS_DATA.map((t) => ({
-      '@type': 'Review',
-      author: {
-        '@type': 'Person',
-        name: t.name,
-      },
-      reviewRating: {
-        '@type': 'Rating',
-        ratingValue: '5',
-        bestRating: '5',
-      },
-      reviewBody: t.text,
-    })),
-  };
-
   return (
     <section className="ln-test-section">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(reviewSchema).replace(/</g, '\\u003c'),
-        }}
-      />
       <div className="ln-test-inner">
         {/* Section Header */}
         {/* Section Header */}

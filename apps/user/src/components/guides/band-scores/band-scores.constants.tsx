@@ -19,7 +19,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'scale',
     number: '1',
-    title: 'Understanding the 9-Band Scoring Scale',
+    title: 'How Does the IELTS 9-Band Scoring Scale Work?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -76,7 +76,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'calculation',
     number: '3',
-    title: 'How the Overall Band Score is Calculated',
+    title: 'How Is the Overall IELTS Band Score Calculated?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -123,7 +123,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'university',
     number: '4',
-    title: 'Common Band Score Requirements for Universities',
+    title: 'What IELTS Band Score Do Universities Require?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -160,7 +160,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'immigration',
     number: '5',
-    title: 'Common Band Score Requirements for Immigration',
+    title: 'What IELTS Score Do You Need for Immigration?',
     content: (
       <div className="space-y-8">
         {/* Canada Express Entry */}
@@ -278,7 +278,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'tips',
     number: '6',
-    title: 'Tips for Improving by 0.5 to 1.0 Band',
+    title: 'How Can You Improve Your IELTS Band by 0.5 to 1.0?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">

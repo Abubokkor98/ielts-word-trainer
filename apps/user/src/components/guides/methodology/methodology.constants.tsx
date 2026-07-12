@@ -19,7 +19,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'our-engine',
     number: '1',
-    title: 'Our Spaced Repetition Engine',
+    title: 'How Does Our Spaced Repetition Engine Work?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -31,7 +31,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'review-stages',
     number: '2',
-    title: 'Review Stages & Timing',
+    title: 'What Are the Review Stages and Timing?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -69,7 +69,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'how-engine-works',
     number: '3',
-    title: 'How the Algorithm Works',
+    title: 'How Does the Algorithm Calculate Review Intervals?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -92,7 +92,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'srs-vs-traditional',
     number: '4',
-    title: 'Traditional Word Lists vs. Our Spaced Repetition Approach',
+    title: 'How Does Spaced Repetition Compare to Traditional Word Lists?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -131,7 +131,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'ielts-customizations',
     number: '5',
-    title: 'Our Customized IELTS Methodologies',
+    title: 'What IELTS-Specific Methodologies Do We Use?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
