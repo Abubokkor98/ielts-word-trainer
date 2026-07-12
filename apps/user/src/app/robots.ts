@@ -15,10 +15,10 @@ export default function robots(): MetadataRoute.Robots {
       // drives traffic and brand awareness.
       // To block AI training while keeping Search indexing, change
       // Google-Extended to disallow: ['/'].
-      { userAgent: 'GPTBot', allow: '/' },
-      { userAgent: 'ClaudeBot', allow: '/' },
-      { userAgent: 'PerplexityBot', allow: '/' },
-      { userAgent: 'Google-Extended', allow: '/' },
+      { userAgent: 'GPTBot', allow: '/', disallow: ['/api/'] },
+      { userAgent: 'ClaudeBot', allow: '/', disallow: ['/api/'] },
+      { userAgent: 'PerplexityBot', allow: '/', disallow: ['/api/'] },
+      { userAgent: 'Google-Extended', allow: '/', disallow: ['/api/'] },
     ],
     sitemap: `${siteConfig.url}/sitemap.xml`,
   };

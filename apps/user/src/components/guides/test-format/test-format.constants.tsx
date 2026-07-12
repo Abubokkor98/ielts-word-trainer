@@ -306,7 +306,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'duration-order',
     number: '7',
-    title: 'How Long Is the IELTS Test and What Is the Order?',
+    title: 'How Long Is the IELTS Test, and What Is the Test Order?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
