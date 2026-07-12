@@ -2,6 +2,7 @@ import { safeDecodeURIComponent } from '@ielts/utils';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
+import { BreadcrumbJsonLd } from '../../../../components/seo';
 import { WordDetailsView } from '../../../../features/vocabulary/components/word-details-view';
 import { siteConfig } from '../../../../lib/site-config';
 import { vocabularyData } from '../../../../data/vocabulary';
@@ -71,11 +72,26 @@ export default async function StandaloneWordPage({ params }: StandaloneWordPageP
     '@type': 'DefinedTerm',
     name: word.word,
     description: word.meaning,
-    inDefinedTermSet: `${siteConfig.url}/vocabulary`,
+    termCode: word.partOfSpeech,
+    inDefinedTermSet: {
+      '@type': 'DefinedTermSet',
+      name: 'IELTS Vocabulary',
+      url: `${siteConfig.url}/vocabulary`,
+    },
+    ...(word.createdAt && { dateCreated: word.createdAt }),
+    ...(word.updatedAt && { dateModified: word.updatedAt }),
   };
+
+  const capitalizedWord = word.word.charAt(0).toUpperCase() + word.word.slice(1);
 
   return (
     <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: 'Vocabulary', path: '/vocabulary' },
+          { name: capitalizedWord, path: `/vocabulary/${encodeURIComponent(word.word.toLowerCase())}` },
+        ]}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}

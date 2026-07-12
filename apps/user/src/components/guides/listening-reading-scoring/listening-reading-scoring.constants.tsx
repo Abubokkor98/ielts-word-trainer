@@ -19,7 +19,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'raw-scores',
     number: '1',
-    title: 'How Raw Scores Convert to Band Scores',
+    title: 'How Do IELTS Raw Scores Convert to Band Scores?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -34,7 +34,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'listening-scoring',
     number: '2',
-    title: 'Listening Score Conversion',
+    title: 'What Is the IELTS Listening Score Conversion Table?',
     content: (
       <div className="space-y-6">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -98,7 +98,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'reading-scoring',
     number: '3',
-    title: 'Reading Score Conversion',
+    title: 'What Is the IELTS Reading Score Conversion Table?',
     content: (
       <div className="space-y-6">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -143,7 +143,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'important-notes',
     number: '4',
-    title: 'Important Score Parameters',
+    title: 'What Are the Important IELTS Score Parameters?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -179,7 +179,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'tips-maximizing',
     number: '5',
-    title: 'Tips for Maximizing Correct Answers',
+    title: 'How Can You Maximize Correct Answers in IELTS?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">

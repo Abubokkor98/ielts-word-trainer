@@ -34,7 +34,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'forgetting-curve',
     number: '2',
-    title: 'The Forgetting Curve & Review Spacing',
+    title: 'How Does the Forgetting Curve Affect Your Memory?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -57,7 +57,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'srs-vs-cramming',
     number: '3',
-    title: 'Why Spaced Repetition Beats Cramming',
+    title: 'Why Does Spaced Repetition Beat Cramming?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -98,7 +98,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'scientific-evidence',
     number: '4',
-    title: 'Scientific Evidence Supporting Spaced Retrieval',
+    title: 'What Scientific Evidence Supports Spaced Repetition?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -121,7 +121,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'expected-results',
     number: '5',
-    title: 'Expected Results & Study Metrics',
+    title: 'What Results Can You Expect from Spaced Repetition?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">

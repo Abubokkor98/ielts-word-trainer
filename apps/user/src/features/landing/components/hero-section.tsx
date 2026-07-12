@@ -6,6 +6,7 @@ import { ArrowRight, Layers, RotateCcw, Sparkles, Volume2 } from 'lucide-react';
 import Link from 'next/link';
 import * as React from 'react';
 import { CONTACT_LINKS } from '@ielts/shared';
+import { siteConfig } from '../../../lib/site-config';
 
 import DotField from './dot-field';
 import HeroBand from './hero-band';
@@ -117,7 +118,7 @@ export function HeroSection() {
   const appSchema = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'IELTS Master Vocabulary',
+    name: siteConfig.displayName,
     applicationCategory: 'EducationalApplication',
     operatingSystem: 'Web, iOS, Android',
     offers: {

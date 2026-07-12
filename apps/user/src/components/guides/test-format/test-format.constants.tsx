@@ -19,7 +19,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'overview',
     number: '1',
-    title: 'Complete Test Structure',
+    title: 'What Is the Complete IELTS Test Structure?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -265,7 +265,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'comparison',
     number: '6',
-    title: 'Paper-Based vs Computer-Delivered Format Differences',
+    title: 'What Are the Differences Between Paper-Based and Computer-Delivered IELTS?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -306,7 +306,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'duration-order',
     number: '7',
-    title: 'Test Duration and Order',
+    title: 'How Long Is the IELTS Test, and What Is the Test Order?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">

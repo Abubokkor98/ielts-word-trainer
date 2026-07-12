@@ -21,7 +21,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'overview',
     number: '1',
-    title: '4 Criteria Used by IELTS Examiners',
+    title: 'What Are the 4 Criteria Used by IELTS Speaking Examiners?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
@@ -36,7 +36,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'fluency-coherence',
     number: '2',
-    title: 'Fluency and Coherence',
+    title: 'What Is Fluency and Coherence in IELTS Speaking?',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -75,7 +75,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'lexical-resource',
     number: '3',
-    title: 'Lexical Resource (Vocabulary Usage)',
+    title: 'How Is Lexical Resource Assessed in IELTS Speaking?',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -122,7 +122,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'grammatical-range',
     number: '4',
-    title: 'Grammatical Range and Accuracy',
+    title: 'How Is Grammatical Range and Accuracy Scored in Speaking?',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -161,7 +161,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'pronunciation',
     number: '5',
-    title: 'Pronunciation',
+    title: 'How Is Pronunciation Scored in IELTS Speaking?',
     content: (
       <div className="space-y-6">
         <div className="space-y-4">
@@ -207,7 +207,7 @@ export const GUIDE_SECTIONS: readonly GuideSectionData[] = [
   {
     id: 'summary-table',
     number: '6',
-    title: 'Band Descriptor Summary Table',
+    title: 'What Do the Speaking Band Descriptors Look Like?',
     content: (
       <div className="space-y-4">
         <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { LandingContainer } from '../../features/landing';
 import { siteConfig } from '../../lib/site-config';
+import { CONTACT_LINKS } from '@ielts/shared';
 
 export const metadata: Metadata = {
   title: { absolute: 'IELTS Vocabs - Master 3500+ IELTS Vocabulary Words for Free' },
@@ -44,8 +45,6 @@ export default function HomePage() {
       '@type': 'Organization',
       name: siteConfig.displayName,
       url: siteConfig.url,
-      // Uncomment when project-specific social accounts exist (e.g. facebook.com/ieltsvocabs)
-      // sameAs: ['https://x.com/ieltsvocabs', 'https://facebook.com/ieltsvocabs'],
     },
     hasCourseInstance: {
       '@type': 'CourseInstance',
@@ -54,11 +53,50 @@ export default function HomePage() {
     },
   };
 
+  // Organization schema — enables knowledge panels and entity linking
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: siteConfig.displayName,
+    url: siteConfig.url,
+    logo: `${siteConfig.url}/icon.png`,
+    sameAs: [
+      CONTACT_LINKS.companyLinkedin,
+      CONTACT_LINKS.githubRepo,
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      email: CONTACT_LINKS.supportEmail,
+      contactType: 'customer service',
+    },
+    founder: {
+      '@type': 'Person',
+      name: CONTACT_LINKS.creatorName,
+      url: CONTACT_LINKS.developer.portfolio,
+    },
+  };
+
+  // Person schema for the creator — EEAT authority signal for AI systems
+  const creatorJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: CONTACT_LINKS.creatorName,
+    url: CONTACT_LINKS.developer.portfolio,
+    sameAs: [
+      CONTACT_LINKS.developer.github,
+      CONTACT_LINKS.developer.twitter,
+      CONTACT_LINKS.developer.linkedin,
+    ],
+  };
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(creatorJsonLd).replace(/</g, '\\u003c') }} />
       <LandingContainer />
     </>
   );
 }
+
